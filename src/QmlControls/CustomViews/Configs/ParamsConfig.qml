@@ -52,6 +52,7 @@ Rectangle {
 
         }
     }
+
     ListView {
         id: listView
         clip: true
@@ -123,28 +124,7 @@ Rectangle {
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
                     Keys.onReturnPressed: {
-                        console.log("Keys.onReturnPressed")
-                        if(!footerBar.isShowConfirm){
-                            footerBar.isShowConfirm = true;
-                            var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
-                            var confirmDialogObj = compo.createObject(rootItem,{
-                                "title":"Are you sure to want to change \n  value of param ["+lblName.text+"] to "+lblValue.text,
-                                "type": "CONFIRM",
-                                "x":rootItem.width / 2 - UIConstants.sRect * 13 / 2,
-                                "y":rootItem.height / 2 - UIConstants.sRect * 6 / 2,
-                                "z":200});
-                            confirmDialogObj.clicked.connect(function (type,func){
-                                footerBar.isShowConfirm = false;
-                                if(func === "DIALOG_OK"){
-                                    vehicle.paramsController._writeParameterRaw(lblName.text,lblValue.text);
-                                }else if(func === "DIALOG_CANCEL"){
-
-                                }
-                                confirmDialogObj.destroy();
-                                compo.destroy();
-
-                            });
-                        }
+                        vehicle.paramsController._writeParameterRaw(lblName.text,lblValue.text);
                     }
                 }
             }
