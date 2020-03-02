@@ -1,0 +1,135 @@
+/**
+ * ==============================================================================
+ * @Project: FCS-Groundcontrol-based
+ * @Module: PreflightCheck page
+ * @Breif:
+ * @Author: Hai Nguyen Hoang
+ * @Date: 14/05/2019
+ * @Language: QML
+ * @License: (c) Viettel Aerospace Institude - Viettel Group
+ * ============================================================================
+ */
+
+//------------------ Include QT libs ------------------------------------------
+import QtQuick.Window 2.2
+import QtQuick 2.6
+import QtQuick.Controls 2.1
+import QtQuick.Layouts 1.3
+import QtGraphicalEffects 1.0
+import QtQuick 2.0
+
+//------------------ Include Custom modules/plugins
+import CustomViews.Components 1.0
+import CustomViews.UIConstants 1.0
+Rectangle{
+    id: root
+    width: 600
+    height: 600
+    color: "transparent"
+    Label {
+        id: lblTitle1
+        height: 54
+        text: "Cover the pitot, monitor velocity parameter"
+        wrapMode: Text.WordWrap
+        anchors.right: parent.right
+        anchors.rightMargin: 8
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.leftMargin: 8
+        anchors.topMargin: 0
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+        color: UIConstants.textColor
+        font.pixelSize: UIConstants.fontSize
+        font.family: UIConstants.appFont
+    }
+
+    Rectangle {
+        id: rectangle
+        x: 120
+        width: 520
+        color: "#00000000"
+        anchors.top: rectangle1.bottom
+        anchors.topMargin: 20
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 8
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        Image {
+            id: imgLogo
+            x: 164
+            y: -226
+            width: 446
+            height: 285
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            rotation: 0
+            source: "qrc:/assets/images/Shikra_2.png"
+        }
+
+        Label {
+            id: label
+            y: 384
+            height: 50
+            text: qsTr("Does velocity parameter change when cover the pitot?")
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            color: UIConstants.textColor
+            font.pixelSize: UIConstants.fontSize
+            font.family: UIConstants.appFont
+        }
+    }
+
+    Rectangle {
+        id: rectangle1
+        x: 200
+        y: 60
+        width: 290
+        height: 78
+        color: "#00000000"
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        Label {
+            id: label1
+            x: 8
+            y: 38
+            text: qsTr("Current Velocity:")
+            color: UIConstants.textColor
+            font.pixelSize: UIConstants.fontSize
+            font.family: UIConstants.appFont
+            anchors.verticalCenter: parent.verticalCenter
+        }
+
+        Rectangle {
+            id: rectangle2
+            x: 130
+            width: 152
+            color: "#00000000"
+            radius: 20
+            anchors.top: parent.top
+            anchors.topMargin: 8
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 8
+            border.width: 2
+            border.color: "gray"
+            Label {
+                id: label2
+                text: (vehicle?Number(vehicle.airSpeed*3.6).toFixed(1).toString():"0") + " km/h"
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                anchors.fill: parent
+                color: UIConstants.textColor
+                font.pixelSize: UIConstants.fontSize
+                font.family: UIConstants.appFont
+            }
+        }
+    }
+}

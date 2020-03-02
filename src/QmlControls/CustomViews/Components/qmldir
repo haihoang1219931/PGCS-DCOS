@@ -1,0 +1,24 @@
+Module CustomViews.Components
+
+CameraStateManager              1.0 CameraStateManager.qml
+FlatButton                      1.0 FlatButton.qml
+FlatButtonIcon                  1.0 FlatButtonIcon.qml
+Icon                            1.0 Icon.qml
+DotProcessingAnimation          1.0 DotProcessingAnimation.qml
+FooterButton                    1.0 FooterButton.qml
+MapControlBtns                  1.0 MapControlBtns.qml
+Overlay                         1.0 Overlay.qml
+ProcessingOverlay               1.0 ProcessingOverlay.qml
+RectBorder                      1.0 RectBorder.qml
+CheckList                       1.0 CheckList.qml
+CheckListEle                    1.0 CheckListEle.qml
+SidebarTitle                    1.0 SidebarTitle.qml
+SubNav                          1.0 SubNav.qml
+SubRight                        1.0 SubRight.qml
+SystemTime                      1.0 SystemTime.qml
+Notification                    1.0 Notification.qml
+FooterSpecialButton             1.0 FooterSpecialButton.qml
+IconSVG                         1.0 IconSVG.qml
+SwitchFlatButton                1.0 SwitchFlatButton.qml
+FlatIcon                        1.0 FlatIcon.qml
+ScrollBar                       1.0 ScrollBar.qml

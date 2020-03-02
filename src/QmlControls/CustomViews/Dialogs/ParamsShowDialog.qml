@@ -1,0 +1,162 @@
+import QtQuick 2.3
+import QtQuick.Controls 1.2
+import QtQuick.Dialogs 1.2
+import QtQuick.Layouts 1.1
+import QtQuick.Window 2.0
+
+//---------------- Include custom libs ----------------------------------------
+import CustomViews.Components 1.0
+import CustomViews.UIConstants 1.0
+
+Rectangle {
+    id: root
+    clip: true
+    color: UIConstants.transparentBlue
+    radius: UIConstants.rectRadius
+    border.color: "gray"
+    border.width: 1
+    property bool showContent: true
+    property var vehicle
+    property alias title: txtDialog.text
+    property color fontColor: UIConstants.textColor
+    property int fontSize: UIConstants.fontSize
+    signal clicked(string type,string func)
+    signal died()
+    width: UIConstants.sRect * 12
+    height: UIConstants.sRect + listView.height
+    function setFocus(enable){
+        rectangle.focus = enable
+    }
+    PropertyAnimation{
+        id: animParamsShow
+        target: root
+        properties: "height"
+        to: !showContent ? UIConstants.sRect : UIConstants.sRect + listView.height
+        duration: 800
+        easing.type: Easing.InOutBack
+        running: false
+    }
+    MouseArea {
+        id: rectangle
+        anchors.fill: parent
+        focus: true
+        Rectangle{
+            id: rectMinize
+            height: UIConstants.sRect-4
+            color:UIConstants.bgAppColor
+            anchors.left: parent.left
+            anchors.leftMargin: 2
+            anchors.top: parent.top
+            anchors.topMargin: 2
+            anchors.right: parent.right
+            anchors.rightMargin: 2
+
+            Label{
+                id: txtDialog
+                anchors.fill: parent
+                color: UIConstants.textColor
+                font.pixelSize: UIConstants.fontSize
+                font.family: UIConstants.appFont
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+            MouseArea{
+                hoverEnabled: true
+                anchors.fill: parent
+                onPressed: {
+                    rectMinize.scale = 0.9;
+                }
+                onReleased: {
+                    rectMinize.scale = 1;
+                }
+                onClicked: {
+                    console.log("Param clicked");
+                    if(vehicle.propertiesShowCount > 0){
+                        showContent =!showContent;
+                        animParamsShow.start()
+                    }
+                }
+            }
+        }
+        ListView {
+            id: listView
+            clip: true
+            anchors.top: parent.top
+            anchors.topMargin: UIConstants.sRect
+            height: vehicle.propertiesShowCount < 15? vehicle.propertiesShowCount * UIConstants.sRect:
+                                                  15*UIConstants.sRect
+            anchors.right: parent.right
+            anchors.rightMargin: 8
+            anchors.left: parent.left
+            anchors.leftMargin: 8
+            model: vehicle.propertiesModel
+//            model: ListModel {
+//                ListElement {selected: false;paramName: "Param A"; unit:"m/s"; value:"12"}
+//                ListElement {selected: true;paramName: "Param B"; unit:"m/s"; value:"12"}
+//                ListElement {selected: true;paramName: "Param C"; unit:"m/s"; value:"12"}
+//                ListElement {selected: false;paramName: "Param D"; unit:"m/s"; value:"12"}
+//            }
+            delegate: Item {
+                height: selected?UIConstants.sRect:0
+                visible: selected
+                width: listView.width
+                Label {
+                    id: lblName
+                    width: 120
+                    height: 17
+                    text: name
+                    anchors.verticalCenter: parent.verticalCenter
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignRight
+                    color: UIConstants.textColor
+                    font.pixelSize: UIConstants.fontSize
+                    font.family: UIConstants.appFont
+                }
+
+                Rectangle {
+                    id: rectValue
+                    color: rectMinize.color
+                    anchors.bottomMargin: 2
+                    anchors.topMargin: 2
+                    anchors.rightMargin: 2
+                    anchors.left: lblName.right
+                    anchors.right: lblUnit.left
+                    anchors.bottom: parent.bottom
+                    anchors.top: parent.top
+                    anchors.leftMargin: 2
+
+                    Label {
+                        id: lblValue
+                        text: value
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignRight
+                        anchors.fill: parent
+                        color: UIConstants.textColor
+                        font.pixelSize: UIConstants.fontSize
+                        font.family: UIConstants.appFont
+                    }
+                }
+
+                Label {
+                    id: lblUnit
+                    width: 20
+                    height: 17
+                    text: unit
+                    color: UIConstants.textColor
+                    font.pixelSize: UIConstants.fontSize
+                    font.family: UIConstants.appFont
+                    anchors.right: parent.right
+                    anchors.rightMargin: 8
+                    anchors.verticalCenter: parent.verticalCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+        }
+
+
+    }
+    Component.onCompleted: {
+        console.log("Set Focus true");
+        setFocus(true)
+    }
+}

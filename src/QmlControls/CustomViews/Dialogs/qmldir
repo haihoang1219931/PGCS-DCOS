@@ -1,0 +1,13 @@
+Module CustomViews.Dialogs
+
+VideoTab                        1.0 VideoTab.qml
+MarkerEditor                    1.0 MarkerEditor.qml
+TrackerInfo                     1.0 TrackerInfo.qml
+ConfirmDialog                   1.0 ConfirmDialog.qml
+WaypointEditor                  1.0 WaypointEditor.qml
+AltitudeEditor                  1.0 AltitudeEditor.qml
+SpeedEditor                     1.0 SpeedEditor.qml
+ParamsSelectDialog              1.0 ParamsSelectDialog.qml
+ParamsShowDialog                1.0 ParamsShowDialog.qml
+FileDialog                      1.0 FileDialog.qml
+MapDialog                       1.0 MapDialog.qml

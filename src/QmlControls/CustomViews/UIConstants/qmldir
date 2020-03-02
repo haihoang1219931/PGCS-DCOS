@@ -1,0 +1,4 @@
+Module CustomViews.UIConstants
+
+singleton UIConstants 1.0 UIConstants.qml
+singleton ExternalFontLoader 1.0 ExternalFontLoader.qml

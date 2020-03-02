@@ -1,0 +1,12 @@
+Module CustomViews.SubComponents
+
+CCInfo          1.0 CCInfo.qml
+DroneInfo       1.0 DroneInfo.qml
+FlightAltitude  1.0 FlightAltitude.qml
+FlightDirection 1.0 FlightDirection.qml
+PMInfo          1.0 PMInfo.qml
+InputBox        1.0 InputBox.qml
+CCGraphics      1.0 CCGraphics.qml
+DroneGraphics   1.0 DroneGraphics.qml
+PMGraphics      1.0 PMGraphics.qml
+MarkerGraphics  1.0 MarkerGraphics.qml

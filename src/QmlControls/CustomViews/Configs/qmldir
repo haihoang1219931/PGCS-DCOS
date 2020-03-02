@@ -1,0 +1,6 @@
+Module CustomViews.Configs
+
+PageConfig                      1.0 PageConfig.qml
+JoystickConfig                  1.0 JoystickConfig.qml
+ThemeConfig                     1.0 ThemeConfig.qml
+ParamsConfig                    1.0 ParamsConfig.qml
