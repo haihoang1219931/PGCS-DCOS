@@ -1252,7 +1252,7 @@ ApplicationWindow {
                     confirmDialogObj.confirmClicked.connect(function (){
                         console.log("vehicle.currentWaypoint = "+vehicle.currentWaypoint);
                         footerBar.isShowConfirm = false;
-//                        footerBar.setFlightAltitudeTarget(vehicle.currentWaypoint,confirmDialogObj.currentValue);
+                        footerBar.setFlightAltitudeTarget(vehicle.currentWaypoint,confirmDialogObj.currentValue);
                         vehicle.commandSetAltitude(confirmDialogObj.currentValue);
                         confirmDialogObj.destroy();
                         compo.destroy();
