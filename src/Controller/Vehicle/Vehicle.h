@@ -38,6 +38,7 @@ class Vehicle : public QObject
     Q_PROPERTY(QStringList          flightModes                 READ flightModes                                    NOTIFY flightModesChanged)
     Q_PROPERTY(QString              flightMode                  READ flightMode         WRITE setFlightMode         NOTIFY flightModeChanged)
     Q_PROPERTY(bool                 armed                       READ armed                                          NOTIFY armedChanged)
+    Q_PROPERTY(bool                 landed                      READ landed                                         NOTIFY landedChanged)
     Q_PROPERTY(QGeoCoordinate       coordinate                  READ coordinate                                     NOTIFY coordinateChanged)
     Q_PROPERTY(QGeoCoordinate       homePosition                READ homePosition       WRITE setHomePosition       NOTIFY homePositionChanged)
     Q_PROPERTY(float                roll                        READ roll                                           NOTIFY rollChanged)
@@ -379,6 +380,8 @@ public:
     bool armed(void) { return _armed; }
     Q_INVOKABLE void setArmed(bool armed);
 
+    bool landed(void) { return _landed; }
+
     bool flightModeSetAvailable(void);
     QStringList flightModes(void);
     QString flightMode(void);
@@ -464,6 +467,7 @@ Q_SIGNALS:
     void mavCommandResult(int vehicleId, int component, int command, int result, bool noReponseFromVehicle);
     void homePositionChanged(const QGeoCoordinate& currentHomePosition);
     void armedChanged(bool armed);
+    void landedChanged();
     void flightModeChanged(const QString& flightMode);
     void flightModesChanged         (void);
     void coordinateChanged(const QGeoCoordinate& position);
@@ -713,6 +717,7 @@ private:
     bool    _armed = false;         ///< true: vehicle is armed
     uint8_t _base_mode = 0;     ///< base_mode from HEARTBEAT
     uint32_t _custom_mode = 0;  ///< custom_mode from HEARTBEAT
+    bool _landed = true;
 
     uint64_t    _mavlinkSentCount       = 0;
     uint64_t    _mavlinkReceivedCount   = 0;

@@ -123,8 +123,26 @@ Rectangle {
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
+//                    property var valueUpdate: value
+//                    property bool isEditing: false
+//                    onValueUpdateChanged: {
+//                        console.log("Focus = "+focus);
+//                        if(isEditing){
+
+//                        }else{
+//                            text = value;
+//                        }
+//                    }
+
+//                    onFocusChanged: {
+//                        console.log("Focus = "+focus);
+//                        if(focus) isEditing = focus;
+//                    }
+
                     Keys.onReturnPressed: {
                         vehicle.paramsController._writeParameterRaw(lblName.text,lblValue.text);
+//                        isEditing = false;
+                        focus = false;
                     }
                 }
             }

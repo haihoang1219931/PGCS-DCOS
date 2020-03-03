@@ -8,6 +8,9 @@ ParamsController::ParamsController(Vehicle *vehicle)
     _waitingParamTimeoutTimer.setSingleShot(false);
     _waitingParamTimeoutTimer.setInterval(600);
     connect(&_waitingParamTimeoutTimer, SIGNAL(timeout()), this, SLOT(_waitingParamTimeout()));
+    _updateParamTimer.setInterval(1000);
+    _updateParamTimer.setSingleShot(false);
+//    connect(&_updateParamTimer, SIGNAL(timeout()), this, SLOT(_updateParamTimeout()));
 }
 ParamsController::~ParamsController(){
 
@@ -109,6 +112,9 @@ void ParamsController::_waitingParamTimeout(void){
             }
         }
     }
+}
+void ParamsController::_updateParamTimeout(void){
+    Q_EMIT _vehicle->paramsModelChanged();
 }
 void ParamsController::_initialRequestMissingParams(void){
     printf("%s\r\n",__func__);
@@ -236,7 +242,8 @@ void ParamsController::_handleParamRequest(mavlink_message_t msg)
                    homePosition.setAltitude(static_cast<double>(rawValue.param_value)/100);
                     _vehicle->setHomePosition(homePosition);
                 }
-            }else if(paramID == "TRIM_ARSPD_CM"){
+            }else if(_vehicle->m_firmwarePlugin != nullptr &&
+                     paramID == _vehicle->m_firmwarePlugin->airSpeedParamName()){
                 _vehicle->setParamAirSpeed(static_cast<float>(rawValue.param_value)/100);
             }else if(paramID == "WP_LOITER_RAD"){
                 _vehicle->setParamLoiterRadius(static_cast<float>(rawValue.param_value));
@@ -268,6 +275,7 @@ void ParamsController::_handleParamRequest(mavlink_message_t msg)
             _setLoadProgress(1);
             _waitingParamTimeoutTimer.stop();
             _parametersReady = true;
+//            _updateParamTimer.start();
             Q_EMIT _vehicle->paramsModelChanged();
         }
     }else{
@@ -285,7 +293,8 @@ void ParamsController::_handleParamRequest(mavlink_message_t msg)
                homePosition.setAltitude(static_cast<double>(rawValue.param_value)/100);
                 _vehicle->setHomePosition(homePosition);
             }
-        }else if(paramID == "TRIM_ARSPD_CM"){
+        }else if(_vehicle->m_firmwarePlugin != nullptr &&
+                 paramID == _vehicle->m_firmwarePlugin->airSpeedParamName()){
             _vehicle->setParamAirSpeed(static_cast<float>(rawValue.param_value)/100);
         }else if(paramID == "WP_LOITER_RAD"){
             _vehicle->setParamLoiterRadius(static_cast<float>(rawValue.param_value));

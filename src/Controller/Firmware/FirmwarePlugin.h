@@ -25,6 +25,7 @@ public:
     /// Returns the list of available flight modes. Flight modes can be different in normal/advanced ui mode.
     /// Call will be made again if advanced mode changes.
     virtual QString rtlAltParamName();
+    virtual QString airSpeedParamName();
     virtual QString flightMode(int flightModeId);
     virtual bool flightModeID(QString flightMode,int* base_mode,int* custom_mode);
     /// Called when Vehicle is first created to perform any firmware specific setup.
@@ -152,6 +153,7 @@ public Q_SLOTS:
 
 public:
     QString m_rtlAltParamName;
+    QString m_airSpeedParamName;
     QMap<int,QString> m_mapFlightMode;
     QList<Fact*> _listParamShow;
 };

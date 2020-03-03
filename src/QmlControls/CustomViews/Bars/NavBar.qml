@@ -45,7 +45,7 @@ Item {
     property int   _lastSeq: -1
     property int fontSize: 30
     //----- Signals
-    signal itemNavChoosed(real seq)
+    signal itemNavChoosed(real seq) 
     signal requestDisplayMessages()
     signal requestDisplayGPS()
     signal doSwitchPlaneMode(var previousMode, var currentMode)
@@ -58,6 +58,10 @@ Item {
 
     //----- List tab button
     property var listTab: [tabMP,tabPC,tabFlight]
+    function startFlightTimer(){
+        timerFlightTime.start();
+    }
+
     function changeTabFocus(id){
         console.log("Focus on NAV["+id+"]");
         if(btnSystemConfig.idxBefore<0){
@@ -545,11 +549,24 @@ Item {
                         verticalAlignment: Text.AlignVCenter
                     }
                 }
+                Connections{
+                    target: vehicle
+                    onLandedChanged:{
+                        if(vehicle.landed === false){
+                            _flightTime = 0;
+                            timerFlightTime.start();
+                        }else{
+                            timerFlightTime.stop();
+                        }
+
+                    }
+                }
+
                 Timer{
                     id: timerFlightTime
                     interval: 1000
                     repeat: true
-                    running: true
+                    running: false
                     onTriggered: {
                         _flightTime++;
 //                        console.log("_flightTime = "+_flightTime);

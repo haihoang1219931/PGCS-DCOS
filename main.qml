@@ -1215,6 +1215,7 @@ ApplicationWindow {
                                 vehicle.setArmed(true);
                             vehicle.commandTakeoff(100);
                             vehicle.startMission();
+//                            navbar.startFlightTimer();
                         }else if(func === "DIALOG_CANCEL"){
 
                         }
@@ -1229,11 +1230,24 @@ ApplicationWindow {
                 if(!isShowConfirm){
                     isShowConfirm = true;
                     console.log("Do Altitude changed");
+                    var minValue = 10;
+                    var maxValue = 400;
+                    var currentValue = 0;
+                    if(vehicle.vehicleType === 2 || vehicle.vehicleType == 14){
+                        minValue = 10;
+                        maxValue = 400;
+                    }else {
+                        minValue = 150;
+                        maxValue = 3000;
+                    }
+
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/AltitudeEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
                         "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
                         "y":parent.height / 2 - UIConstants.sRect * 15 / 4,
                         "z":200,
+                        "minValue": minValue,
+                        "maxValue": maxValue,
                         "currentValue": footerBar.getFlightAltitudeTarget()});
                     confirmDialogObj.confirmClicked.connect(function (){
                         console.log("vehicle.currentWaypoint = "+vehicle.currentWaypoint);
@@ -1255,11 +1269,22 @@ ApplicationWindow {
                 if(!isShowConfirm){
                     isShowConfirm = true;
                     console.log("Do Speed changed");
+                    var minValue = 0;
+                    var maxValue = 36;
+                    if(vehicle.vehicleType === 2 || vehicle.vehicleType == 14){
+                        minValue = 0;
+                        maxValue = 36;
+                    }else {
+                        minValue = 85;
+                        maxValue = 110;
+                    }
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/SpeedEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
                         "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
                         "y":parent.height / 2 - UIConstants.sRect * 15 / 4,
                         "z":200,
+                        "minValue": minValue,
+                        "maxValue": maxValue,
                         "currentValue": Math.round(footerBar.getFlightSpeedTarget())});
                     confirmDialogObj.confirmClicked.connect(function (){
                         vehicle.commandChangeSpeed(confirmDialogObj.currentValue);

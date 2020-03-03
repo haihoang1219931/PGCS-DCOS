@@ -3,6 +3,7 @@
 ArduCopterFirmware::ArduCopterFirmware(FirmwarePlugin *parent) : FirmwarePlugin(parent)
 {
     m_rtlAltParamName = "RTL_ALT";
+    m_airSpeedParamName = "WPNAV_SPEED";
     m_mapFlightMode.insert(STABILIZE, "Stabilize");
     m_mapFlightMode.insert(ACRO,      "Acro");
     m_mapFlightMode.insert(ALT_HOLD,  "Altitude Hold");
@@ -187,8 +188,9 @@ void ArduCopterFirmware::commandSetAltitude(Vehicle *vehicle,double newAltitude)
 
 void ArduCopterFirmware::commandChangeSpeed(Vehicle* vehicle,double speedChange)
 {
-    Q_UNUSED(vehicle);
-    Q_UNUSED(speedChange);
+    if (vehicle != nullptr) {
+        vehicle->params()->_writeParameterRaw(m_airSpeedParamName,speedChange*100/3.6);
+    }
 }
 
 void ArduCopterFirmware::commandOrbit(const QGeoCoordinate &centerCoord,

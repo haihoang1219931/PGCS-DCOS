@@ -3,6 +3,7 @@
 QuadPlaneFirmware::QuadPlaneFirmware(FirmwarePlugin *parent) : FirmwarePlugin(parent)
 {
     m_rtlAltParamName = "ALT_HOLD_RTL";
+    m_airSpeedParamName = "TRIM_ARSPD_CM";
     m_mapFlightMode.insert(MANUAL,         "Manual");
     m_mapFlightMode.insert(CIRCLE,         "Circle");
     m_mapFlightMode.insert(STABILIZE,      "Stabilize");
@@ -125,7 +126,7 @@ void QuadPlaneFirmware::commandSetAltitude(Vehicle* vehicle,double newAltitude){
 
 void QuadPlaneFirmware::commandChangeSpeed(Vehicle* vehicle,double speedChange){
     if (vehicle != nullptr) {
-        vehicle->params()->_writeParameterRaw("TRIM_ARSPD_CM",speedChange*100/3.6);;
+        vehicle->params()->_writeParameterRaw(m_airSpeedParamName,speedChange*100/3.6);
     }
 }
 

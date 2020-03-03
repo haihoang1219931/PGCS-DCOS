@@ -536,7 +536,7 @@ Item {
     property var lstWaypointAttributeKind:  ["bound","index","altitude"]
     property var lstColor:  {"normal":"orange","selected":"green","current":"blue"}
     property int wpFontSize: 10
-    property int wpBoundSize: 25
+    property int wpBoundSize: 30
     property int numPoinTrailUAV: 1500
     property var listGraphicMarker: []
     property var selectedMarker: undefined

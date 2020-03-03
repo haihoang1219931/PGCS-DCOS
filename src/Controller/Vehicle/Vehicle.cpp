@@ -364,9 +364,9 @@ void Vehicle::_setParamValue(QString name,QString value,QString unit,bool notify
         fact->setUnit(unit);
         _paramsModel.append(fact);
     }
-    if(notify){
-        Q_EMIT paramsModelChanged();
-    }
+//    if(notify){
+//        Q_EMIT paramsModelChanged();
+//    }
 }
 void Vehicle::_sendMessageOnLink(IOFlightController *link, mavlink_message_t message)
 {
@@ -745,6 +745,7 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
 //        printf("heartbeat.system_status=%d\r\n",heartbeat.system_status);
 //        printf("heartbeat.autopilot=%d\r\n",heartbeat.autopilot);
 //        printf("heartbeat.mavlink_version=%d\r\n",heartbeat.mavlink_version);
+
     if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID &&
         (heartbeat.base_mode != _base_mode || heartbeat.custom_mode != _custom_mode)) {
         bool newArmed = heartbeat.base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY;
@@ -756,7 +757,14 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
 
     if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID) {
         //        printf("_handleHeartbeat\r\n");
-        _setPropertyValue("Landed",((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY)?"True":"False","");
+
+        if(_landed != ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY))
+        {
+            _landed = ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY);
+            _setPropertyValue("Landed",((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY)?"True":"False","");
+            Q_EMIT landedChanged();
+        }
+
         if (_firmwareType != static_cast<MAV_AUTOPILOT>(heartbeat.autopilot)) {
             _firmwareType = static_cast<MAV_AUTOPILOT>(heartbeat.autopilot);
         }

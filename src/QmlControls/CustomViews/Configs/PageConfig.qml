@@ -92,7 +92,10 @@ Rectangle {
                 MouseArea{
                     anchors.fill: parent
                     onClicked: {
-                        lstItem.currentIndex = id_
+                        lstItem.currentIndex = id_;
+                        if(id_ === 2){
+                            rootItem.vehicle.paramsController._updateParamTimeout();
+                        }
                     }
                 }
             }
@@ -163,6 +166,7 @@ Rectangle {
                 xPosition: 20
             }
             ParamsConfig{
+                id: paramsConfig
                 anchors.top: sdbParameters.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right

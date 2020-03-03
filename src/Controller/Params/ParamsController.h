@@ -37,6 +37,7 @@ Q_SIGNALS:
 public Q_SLOTS:
     void _handleMessageReceived(mavlink_message_t msg);
     void _waitingParamTimeout(void);
+    void _updateParamTimeout(void);
     void _initialRequestMissingParams(void);
     void _readParameterRaw(const QString& paramName, int paramIndex);
     void _writeParameterRaw(const QString& paramName, const QVariant& value);
@@ -68,6 +69,7 @@ public:
     QMap<int, ParamTypeVal> _debugCacheMap;
     QMap<QString, mavlink_param_value_t> _paramMap;
     QTimer _waitingParamTimeoutTimer;
+    QTimer _updateParamTimer;
 };
 
 #endif // PARAMSCONTROLLER_H

@@ -56,6 +56,9 @@ QList<Fact*> FirmwarePlugin::listParamsShow(){
 QString FirmwarePlugin::rtlAltParamName(){
     return m_rtlAltParamName;
 }
+QString FirmwarePlugin::airSpeedParamName(){
+    return m_airSpeedParamName;
+}
 QString FirmwarePlugin::flightMode(int flightModeId){
     Q_UNUSED(flightModeId);
     return "UNDEFINED";
