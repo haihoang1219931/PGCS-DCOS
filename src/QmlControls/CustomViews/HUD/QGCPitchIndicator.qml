@@ -15,7 +15,7 @@
  */
 
 import QtQuick 2.3
-
+import CustomViews.UIConstants  1.0
 Rectangle {
     property real pitchAngle:       0
     property real rollAngle:        0
@@ -46,7 +46,7 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: (_pitch % 10) === 0 ? _longDash : _shortDash
                     height: _reticleHeight
-                    color: "white"
+                    color: UIConstants.textColor
                     antialiasing: true
                     smooth: true
                     Text {
@@ -54,9 +54,9 @@ Rectangle {
                         anchors.horizontalCenterOffset: -(_longDash)
                         anchors.verticalCenter: parent.verticalCenter
                         smooth: true
-                        font.pointSize: _fontSize
                         text: _pitch
-                        color: "white"
+                        color: UIConstants.textColor
+                        font.pixelSize: UIConstants.fontSize
                         visible: (_pitch != 0) && ((_pitch % 10) === 0)
                     }
                     Text {
@@ -64,9 +64,9 @@ Rectangle {
                         anchors.horizontalCenterOffset: (_longDash)
                         anchors.verticalCenter: parent.verticalCenter
                         smooth: true
-                        font.pointSize: _fontSize
                         text: _pitch
-                        color: "white"
+                        color: UIConstants.textColor
+                        font.pixelSize: UIConstants.fontSize
                         visible: (_pitch != 0) && ((_pitch % 10) === 0)
                     }
                 }

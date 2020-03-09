@@ -34,21 +34,6 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             x: 10
         }
-//        Text {
-//            text: "\uf057"
-//            font{ pointSize: 18; family: ExternalFontLoader.solidFont }
-//            color: "#fff"
-//            x: -10
-//            y: -10
-//            opacity: .8
-//            MouseArea {
-//                anchors.fill: parent
-//                cursorShape: Qt.OpenHandCursor
-//                onClicked: {
-//                    notiShowReverse.running = true;
-//                }
-//            }
-//        }
     }
 
     NumberAnimation {

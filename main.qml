@@ -16,43 +16,9 @@ import UC 1.0
 ApplicationWindow {
     id: mainWindow
     visible: true
-    width: 1280
-    height: 720
-//    visibility: ApplicationWindow.FullScreen
+    width: 1920
+    height: 1080
     title: qsTr("DCOS - PGCSv0.1")
-//    Keys.onPressed: {
-//        console.log("Main window Key pressed");
-//        if(event.key === Qt.Key_S){
-//            mapPane.focusAllObject();
-//        }else if(event.key === Qt.Key_Plus || event.key === Qt.Key_Equal){
-//            mapPane.zoomIn();
-//        }else if(event.key === Qt.Key_Minus || event.key === Qt.Key_Underscore){
-//            mapPane.zoomOut();
-//        }else if(event.key === Qt.Key_Backspace){
-//            if(mapPane.ctrlPress === true){
-//                console.log("removeAllMeasurementLine");
-//                mapPane.removeAllMeasurementLine();
-//                mapPane.ctrlPress = false;
-//            }else{
-//                console.log("removeLastMeasurementLine");
-//                mapPane.removeLastMeasurementLine();
-//            }
-//        }else if(event.key === Qt.Key_Control){
-//            mapPane.ctrlPress = true;
-//        }else if(event.key === Qt.Key_Equal || event.key === Qt.Key_Minus ||
-//                 event.key === Qt.Key_Up || event.key === Qt.Key_Down ||
-//                 event.key === Qt.Key_Right || event.key === Qt.Key_left ){
-//            mapPane.setFocus(true);
-//        }else if(event.key >= Qt.Key_0 && event.key <= Qt.Key_9){
-//            mapPane.selectedIndex = event.key - Qt.Key_0
-//            mapPane.focusOnWP(event.key - Qt.Key_0);
-//        }else if(event.key === Qt.Key_Q){
-//            mapPane.focusOnMarker("next");
-//            mapPane.setFocus(true);
-//        }else if(event.key === Qt.Key_C){
-//            mapPane.clearFlightPath();
-//        }
-//    }
     function switchVideoMap(onResize){
         if(onResize){
             if(videoPane.z < mapPane.z){

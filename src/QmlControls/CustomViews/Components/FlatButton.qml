@@ -31,6 +31,7 @@ Rectangle {
     property alias icon: iconBtn.text
     property bool active: true
     property int idx
+    property int iconSize: UIConstants.fontSize * 3 / 2
 
     //---------- Signals
     signal clicked(real idx)
@@ -46,7 +47,7 @@ Rectangle {
         id: iconBtn
         visible: false
         text: UIConstants.iX
-        font{ pixelSize: 18; bold: true;  family: ExternalFontLoader.solidFont }
+        font{ pixelSize: iconSize; bold: true;  family: ExternalFontLoader.solidFont }
         anchors{ verticalCenter: parent.verticalCenter; right: flatBtnText.left;
                  rightMargin: 5 }
         color: flatBtnText.color

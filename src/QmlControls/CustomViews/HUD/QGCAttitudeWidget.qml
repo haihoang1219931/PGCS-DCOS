@@ -24,7 +24,7 @@ Item {
 
     property bool showPitch:    true
 //    property var  vehicle:      null
-    property real size:100
+    property real size: UIConstants.sRect * 5
     property bool showHeading:  false
 
     property real _rollAngle:   vehicle ? vehicle.roll  : 0

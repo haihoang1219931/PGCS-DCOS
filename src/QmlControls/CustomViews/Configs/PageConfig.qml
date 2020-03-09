@@ -26,9 +26,9 @@ Rectangle {
     property var vehicle
     CustomViews.SidebarTitle {
         id: sidebarTitle
-        width: 270
+        width: UIConstants.sRect * 9
         anchors { top: parent.top; left: parent.left; }
-        height: 70
+        height: UIConstants.sRect * 2
         visible: true
         title: "Menu settings"
         CustomViews.RectBorder {
@@ -112,7 +112,7 @@ Rectangle {
         Item{
             CustomViews.SidebarTitle {
                 id: sdbJoystick
-                height: 70
+                height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
                 title: "Joystick Configuration"
@@ -141,7 +141,7 @@ Rectangle {
         Item{
             CustomViews.SidebarTitle {
                 id: sdbTheme
-                height: 70
+                height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
                 title: "Theme Configuration"
@@ -158,7 +158,7 @@ Rectangle {
         Item{
             CustomViews.SidebarTitle {
                 id: sdbParameters
-                height: 70
+                height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
                 title: "Parameter List"

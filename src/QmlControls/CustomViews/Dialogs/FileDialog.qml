@@ -56,6 +56,9 @@ Rectangle {
         border.width: 1
         border.color: UIConstants.grayColor
         radius: UIConstants.rectRadius
+        anchors.rightMargin: 8
+        anchors.leftMargin: 8
+        anchors.topMargin: 8
         TextInput{
             id: lblCurrentFile
             anchors.fill: parent
@@ -151,8 +154,8 @@ Rectangle {
 
     FlatButtonIcon{
         id: btnConfirm
-        height: 30
-        width: 60
+        height: UIConstants.sRect * 2
+        width: UIConstants.sRect * 4
         icon: UIConstants.iChecked
         isSolid: true
         color: "green"
@@ -169,8 +172,8 @@ Rectangle {
     }
     FlatButtonIcon{
         id: btnCancel
-        height: 30
-        width: 60
+        height: UIConstants.sRect * 2
+        width: UIConstants.sRect * 4
         icon: UIConstants.iMouse
         isSolid: true
         color: "red"

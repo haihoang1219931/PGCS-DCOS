@@ -534,9 +534,9 @@ Item {
     }
     property var lstWaypointMode: ["normal","selected","current"]
     property var lstWaypointAttributeKind:  ["bound","index","altitude"]
-    property var lstColor:  {"normal":"orange","selected":"green","current":"blue"}
-    property int wpFontSize: 10
-    property int wpBoundSize: 30
+    property var lstColor:  {"normal":"orange","selected":"green","current":"blue"}    
+    property int wpBoundSize: UIConstants.sRect
+    property int wpFontSize: wpBoundSize / 2
     property int numPoinTrailUAV: 1500
     property var listGraphicMarker: []
     property var selectedMarker: undefined
@@ -921,10 +921,10 @@ Item {
                                                                color: "white",
                                                                fontWidth: Enums.FontWeightBold,
                                                                fontFamily: UIConstants.appFont,
+                                                               fontSize: UIConstants.fontSize,
                                                                text: description,
                                                                size: wpFontSize,
-                                                               offsetY: - wpBoundSize*3/2,
-
+                                                               offsetY: - wpBoundSize/2 - wpFontSize / 2,
                                                                verticalAlignment: Enums.VerticalAlignmentBottom
                                                            });
         compositeSymbol.symbols.append(symbol);
@@ -1017,7 +1017,7 @@ Item {
                                                                        text: Number(position.altitude).toFixed(0).toString() +"m",
                                                                        size: wpFontSize,
                                                                        offsetX: 0,
-                                                                       offsetY: -20,
+                                                                       offsetY: - wpBoundSize / 2 - wpFontSize / 2,
                                                                    });
         compositeSymbol.symbols.append(symbol);
         compositeSymbol.symbols.append(indexSymbol);
@@ -1082,7 +1082,7 @@ Item {
                                                                            text: "->"+Number(param1).toFixed(0).toString(),
                                                                            size: wpFontSize,
                                                                            offsetX: 0,
-                                                                           offsetY: -20,
+                                                                           offsetY: - wpBoundSize / 2 - wpFontSize / 2,
                                                                        });
             console.log("create WP symbol do jump ->"+param1)
             compositeSymbol.symbols.remove(2,1);
@@ -1700,7 +1700,7 @@ Item {
                                                                            text: Number(position.altitude).toFixed(0).toString() +"m",
                                                                            size: wpFontSize,
                                                                            offsetX: 0,
-                                                                           offsetY: -20,
+                                                                           offsetY: - wpBoundSize /2 - wpFontSize / 2,
                                                                        });
             selectedWP.symbol = createWPSymbol(selectedWP.attributes.attributeValue("id"),
                                                position,command,
@@ -2262,6 +2262,8 @@ Item {
                     PictureMarkerSymbol{
                         url: vehicleSymbolLink["MAV_TYPE_GENERIC"]
                         angle: 20
+                        width: wpBoundSize * 2
+                        height: wpBoundSize * 2
                     }
                 }
             }
@@ -2345,6 +2347,8 @@ Item {
                 symbol: PictureMarkerSymbol{
                     url: vehicleSymbolLink["MAV_TYPE_GENERIC"]
                     opacity: 1
+                    width: wpBoundSize * 2
+                    height: wpBoundSize * 2
                 }
             }
             Graphic{

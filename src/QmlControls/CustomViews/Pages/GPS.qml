@@ -46,12 +46,13 @@ Rectangle{
     }
 
     Rectangle {
-        id: rectangle
+        id: rectQuestion
         x: 120
-        y: 166
         width: 520
         height: 49
         color: "#00000000"
+        anchors.top: rectLocation.bottom
+        anchors.topMargin: 8
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -75,11 +76,11 @@ Rectangle{
     }
 
     Rectangle {
-        id: rectangle2
+        id: rectLocation
         x: 224
         y: 68
-        width: 292
-        height: 100
+        width: UIConstants.sRect * 10
+        height: UIConstants.sRect * 3
         color: "#00000000"
         radius: 20
         anchors.horizontalCenterOffset: 0
@@ -103,3 +104,8 @@ Rectangle{
         }
     }
 }
+
+/*##^## Designer {
+    D{i:2;anchors_y:166}
+}
+ ##^##*/

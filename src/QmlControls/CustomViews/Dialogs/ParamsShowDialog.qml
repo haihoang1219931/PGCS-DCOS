@@ -31,7 +31,7 @@ Rectangle {
         id: animParamsShow
         target: root
         properties: "height"
-        to: !showContent ? UIConstants.sRect : UIConstants.sRect + listView.height
+        to: !showContent ? UIConstants.sRect * 2 : UIConstants.sRect * 2 + listView.height
         duration: 800
         easing.type: Easing.InOutBack
         running: false
@@ -42,14 +42,14 @@ Rectangle {
         focus: true
         Rectangle{
             id: rectMinize
-            height: UIConstants.sRect-4
+            height: UIConstants.sRect * 2 - 8
             color:UIConstants.bgAppColor
             anchors.left: parent.left
-            anchors.leftMargin: 2
+            anchors.leftMargin: 8
             anchors.top: parent.top
-            anchors.topMargin: 2
+            anchors.topMargin: 4
             anchors.right: parent.right
-            anchors.rightMargin: 2
+            anchors.rightMargin: 4
 
             Label{
                 id: txtDialog
@@ -81,8 +81,8 @@ Rectangle {
         ListView {
             id: listView
             clip: true
-            anchors.top: parent.top
-            anchors.topMargin: UIConstants.sRect
+            anchors.top: rectMinize.bottom
+            anchors.topMargin: 4
             height: vehicle.propertiesShowCount < 15? vehicle.propertiesShowCount * UIConstants.sRect:
                                                   15*UIConstants.sRect
             anchors.right: parent.right
@@ -102,12 +102,12 @@ Rectangle {
                 width: listView.width
                 Label {
                     id: lblName
-                    width: 120
-                    height: 17
+                    width: UIConstants.sRect * 5
+                    height: UIConstants.sRect
                     text: name
                     anchors.verticalCenter: parent.verticalCenter
                     verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignRight
+                    horizontalAlignment: Text.AlignLeft
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
@@ -139,8 +139,8 @@ Rectangle {
 
                 Label {
                     id: lblUnit
-                    width: 20
-                    height: 17
+                    width: UIConstants.sRect
+                    height: UIConstants.sRect
                     text: unit
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize

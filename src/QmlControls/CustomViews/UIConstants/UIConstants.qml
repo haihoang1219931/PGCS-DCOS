@@ -15,10 +15,10 @@ import QtQuick 2.0
 
 QtObject {
     //---------------------- Size of smallest rect  --------------------
-    readonly property int sRect:                    22
+    readonly property int sRect:                    34
     //------------------------------ App Font --------------------------
     property bool isMobile:                         false
-    property int fontSize:                          12
+    property int fontSize:                          20
     property string appFont:                        "monospace"
     property int rectRadius:                        5
     property color transparentRed:                  "#b3ff0000"

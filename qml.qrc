@@ -64,6 +64,16 @@
         <file alias="CustomViews/Components/Overlay.qml">src/QmlControls/CustomViews/Components/Overlay.qml</file>
         <file alias="CustomViews/Components/ProcessingOverlay.qml">src/QmlControls/CustomViews/Components/ProcessingOverlay.qml</file>
         <file alias="CustomViews/Components/CameraStateManager.qml">src/QmlControls/CustomViews/Components/CameraStateManager.qml</file>
+        <file alias="CustomViews/Components/RectBorder.qml">src/QmlControls/CustomViews/Components/RectBorder.qml</file>
+        <file alias="CustomViews/Components/SidebarTitle.qml">src/QmlControls/CustomViews/Components/SidebarTitle.qml</file>
+        <file alias="CustomViews/Components/SubRight.qml">src/QmlControls/CustomViews/Components/SubRight.qml</file>
+        <file alias="CustomViews/Components/SubNav.qml">src/QmlControls/CustomViews/Components/SubNav.qml</file>
+        <file alias="CustomViews/Components/SwitchFlatButton.qml">src/QmlControls/CustomViews/Components/SwitchFlatButton.qml</file>
+        <file alias="CustomViews/Components/SystemTime.qml">src/QmlControls/CustomViews/Components/SystemTime.qml</file>      
+        <file alias="CustomViews/Components/CoordinateEditor.qml">src/QmlControls/CustomViews/Components/CoordinateEditor.qml</file>
+        <file alias="CustomViews/Components/QTextInput.qml">src/QmlControls/CustomViews/Components/QTextInput.qml</file>            
+        <file alias="CustomViews/Components/ScrollBar.qml">src/QmlControls/CustomViews/Components/ScrollBar.qml</file>        
+        <file alias="CustomViews/Components/QLabel.qml">src/QmlControls/CustomViews/Components/QLabel.qml</file>                
         <file alias="CustomViews/Components/qmldir">src/QmlControls/CustomViews/Components/qmldir</file>
         <file alias="CustomViews/Advanced/AdvancedConfig.qml">src/QmlControls/CustomViews/Advanced/AdvancedConfig.qml</file>
         <file alias="CustomViews/Advanced/ConfigOverlay.qml">src/QmlControls/CustomViews/Advanced/ConfigOverlay.qml</file>
@@ -77,13 +87,7 @@
         <file alias="CustomViews/Advanced/ConfigMotionCParams.qml">src/QmlControls/CustomViews/Advanced/ConfigMotionCParams.qml</file>
         <file alias="CustomViews/Advanced/ConfigSearchPlate.qml">src/QmlControls/CustomViews/Advanced/ConfigSearchPlate.qml</file>
         <file alias="CustomViews/Advanced/PlateIDItem.qml">src/QmlControls/CustomViews/Advanced/PlateIDItem.qml</file>
-        <file alias="CustomViews/Advanced/qmldir">src/QmlControls/CustomViews/Advanced/qmldir</file>
-        <file alias="CustomViews/Components/RectBorder.qml">src/QmlControls/CustomViews/Components/RectBorder.qml</file>
-        <file alias="CustomViews/Components/SidebarTitle.qml">src/QmlControls/CustomViews/Components/SidebarTitle.qml</file>
-        <file alias="CustomViews/Components/SubRight.qml">src/QmlControls/CustomViews/Components/SubRight.qml</file>
-        <file alias="CustomViews/Components/SubNav.qml">src/QmlControls/CustomViews/Components/SubNav.qml</file>
-        <file alias="CustomViews/Components/SwitchFlatButton.qml">src/QmlControls/CustomViews/Components/SwitchFlatButton.qml</file>
-        <file alias="CustomViews/Components/SystemTime.qml">src/QmlControls/CustomViews/Components/SystemTime.qml</file>        
+        <file alias="CustomViews/Advanced/qmldir">src/QmlControls/CustomViews/Advanced/qmldir</file>        
         <file alias="CustomViews/Pages/PreflightCheck.qml">src/QmlControls/CustomViews/Pages/PreflightCheck.qml</file>
         <file alias="CustomViews/Pages/ModeCheck.qml">src/QmlControls/CustomViews/Pages/ModeCheck.qml</file>
         <file alias="CustomViews/Pages/Propellers.qml">src/QmlControls/CustomViews/Pages/Propellers.qml</file>
@@ -169,8 +173,7 @@
         <file alias="qmlimages/vehicleArrowOpaque.svg">src/QmlControls/CustomViews/assets/images/widgets/vehicleArrowOpaque.svg</file>
         <file alias="qmlimages/vehicleArrowOutline.svg">src/QmlControls/CustomViews/assets/images/widgets/vehicleArrowOutline.svg</file>
         <file alias="qmlimages/ZoomMinus.svg">src/QmlControls/CustomViews/assets/images/widgets/ZoomMinus.svg</file>
-        <file alias="qmlimages/ZoomPlus.svg">src/QmlControls/CustomViews/assets/images/widgets/ZoomPlus.svg</file>
-        <file alias="CustomViews/Components/ScrollBar.qml">src/QmlControls/CustomViews/Components/ScrollBar.qml</file>
+        <file alias="qmlimages/ZoomPlus.svg">src/QmlControls/CustomViews/assets/images/widgets/ZoomPlus.svg</file>        
     </qresource>
     <qresource prefix="/qmlimages">
         <file alias="markers/AntiClockwiseCircle.png">src/QmlControls/CustomViews/assets/images/markers/AntiClockwiseCircle.png</file>

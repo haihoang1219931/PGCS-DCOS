@@ -40,14 +40,14 @@ Rectangle {
     Text {
         id: iconList
         text: UIConstants.iList
-        font{ bold: true; pixelSize: 16; family: ExternalFontLoader.solidFont }
+        font{ bold: true; pixelSize: UIConstants.fontSize; family: ExternalFontLoader.solidFont }
         x: parent.width * 1 / 5
         anchors.verticalCenter: parent.verticalCenter
         color: UIConstants.textColor
     }
     Text {
         id: txtTitle
-        text: "Danh sách thiết bị"
+        text: "Title"
         font.pixelSize: UIConstants.fontSize
         font.family: UIConstants.appFont
         anchors.left: iconList.right
@@ -61,17 +61,6 @@ Rectangle {
             }
         }
     }
-    //------------ Gradient
-    //        gradient: Gradient {
-    //            GradientStop { position: 0.0; color: UIConstants.dropshadowColor }
-    //            GradientStop { position: 0.8; color: UIConstants.categoryEleBgColor }
-    //            GradientStop { position: 1.0; color: UIConstants.categoryEleBgColor }
-    //        }
-    //    gradient: Gradient {
-    //        GradientStop { position: 1.0; color: UIConstants.bgColorOverlay }
-    //        GradientStop { position: 0.6; color: UIConstants.sidebarBgColor }
-    //        GradientStop { position: 0.0; color: UIConstants.sidebarBorderColor }
-    //    }
     gradient: Gradient {
         GradientStop { position: 0.0; color: UIConstants.cfProcessingOverlayBg }
         GradientStop { position: 0.8; color: UIConstants.bgColorOverlay }

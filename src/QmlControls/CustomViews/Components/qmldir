@@ -22,3 +22,6 @@ IconSVG                         1.0 IconSVG.qml
 SwitchFlatButton                1.0 SwitchFlatButton.qml
 FlatIcon                        1.0 FlatIcon.qml
 ScrollBar                       1.0 ScrollBar.qml
+CoordinateEditor                1.0 CoordinateEditor.qml
+QTextInput                      1.0 QTextInput.qml
+QLabel                          1.0 QLabel.qml

@@ -28,17 +28,15 @@ Item {
     id:             rootItem
     width:  640
     height: 480
-//    anchors.top:    parent.top
-//    anchors.bottom: parent.bottom
     property bool showIndicator: false
     property int iconSize: 30
     signal clicked();
     Item {
         id: gpsInfo
-        width: 280
-        height: 150
+        width: UIConstants.sRect * 12
+        height: UIConstants.sRect * 6
         anchors.top: parent.top
-        anchors.topMargin: 55 + UIConstants.defaultFontPixelHeight
+        anchors.topMargin: UIConstants.sRect * 2 + UIConstants.defaultFontPixelHeight
         visible: showIndicator
         anchors.horizontalCenter: parent.horizontalCenter
         Rectangle {

@@ -180,6 +180,7 @@ Rectangle{
                 icon: UIConstants.iZoomIn
                 isAutoReturn: true
                 isShowRect: false
+                isSolid: true
                 anchors.verticalCenter: parent.verticalCenter
             }
 

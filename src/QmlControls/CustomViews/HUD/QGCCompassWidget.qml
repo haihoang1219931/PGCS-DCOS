@@ -28,9 +28,9 @@ Item {
     property real size:     _defaultSize
 //    property var  vehicle:  null
 
-    property real _defaultSize: 10* (10)
+    property real _defaultSize: UIConstants.sRect * 4
     property real _sizeRatio:   1.2
-    property int  _fontSize:    10 * _sizeRatio
+    property int  _fontSize:    UIConstants.fontSize
     property real _heading:     vehicle ? vehicle.heading : 0
 
     Rectangle {
@@ -48,7 +48,7 @@ Item {
 
         Image {
             id:                 pointer
-            width:              size * 0.65
+            width:              size * 0.6510 * _sizeRatio
             source:             vehicle ? "/qmlimages/compassInstrumentArrow.svg" : ""
             mipmap:             true
             sourceSize.width:   width
@@ -79,7 +79,7 @@ Item {
             color: UIConstants.transparentBlue
             Text {
                 text:               _headingString3
-                font.pointSize:     _fontSize < 8 ? 8 : _fontSize;
+                font.pixelSize:     _fontSize < 8 ? 8 : _fontSize;
                 color:              UIConstants.textColor
                 anchors.centerIn:   parent
 

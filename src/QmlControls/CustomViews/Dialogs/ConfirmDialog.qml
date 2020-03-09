@@ -47,9 +47,8 @@ Rectangle {
 
         FlatButtonIcon{
             id: btnConfirm
-            y: 192
-            height: 30
-            width: 60
+            height: UIConstants.sRect * 1
+            width: UIConstants.sRect * 2
             icon: UIConstants.iChecked
             isSolid: true
             color: "green"
@@ -67,8 +66,8 @@ Rectangle {
             id: btnCancel
             x: 102
             y: 192
-            height: 30
-            width: 60
+            height: UIConstants.sRect * 1
+            width: UIConstants.sRect * 2
             icon: UIConstants.iMouse
             isSolid: true
             color: "red"
@@ -84,9 +83,11 @@ Rectangle {
         }
         Text {
             id: txtDialog
-            y: 8
-            height: 68
             color: fontColor
+            anchors.bottom: btnConfirm.top
+            anchors.bottomMargin: 8
+            anchors.top: parent.top
+            anchors.topMargin: 8
             wrapMode: Text.WordWrap
             anchors.right: parent.right
             anchors.rightMargin: 8
@@ -103,3 +104,8 @@ Rectangle {
         setFocus(true)
     }
 }
+
+/*##^## Designer {
+    D{i:4;anchors_height:148;anchors_y:8}
+}
+ ##^##*/

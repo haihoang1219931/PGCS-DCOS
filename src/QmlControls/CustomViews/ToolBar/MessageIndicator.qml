@@ -60,11 +60,11 @@ Item {
     //-- System Message Area
     Rectangle {
         id:                         messageArea
-        width:                      1000  * 0.5
-        height:                     576* 0.5
+        width:                      UIConstants.sRect * 20
+        height:                     UIConstants.sRect * 10
         anchors.horizontalCenter:   parent.horizontalCenter
         anchors.top:                parent.top
-        anchors.topMargin:          55 + UIConstants.defaultFontPixelHeight
+        anchors.topMargin:          UIConstants.sRect * 2 + UIConstants.defaultFontPixelHeight
         radius:                     UIConstants.rectRadius
         color:                      UIConstants.transparentBlue
         border.color:               UIConstants.grayColor
@@ -89,9 +89,8 @@ Item {
                 readOnly:       true
                 textFormat:     TextEdit.RichText
                 color:          formatedColor
-                font.family:    UIConstants.appFont
-                font.pixelSize: UIConstants.fontSize
                 text:           formatedText
+                font.pixelSize: UIConstants.fontSize
             }
             onCountChanged:{
                 console.log("On count changed")

@@ -34,7 +34,7 @@ Rectangle {
         //---------- Sidebar
         CheckList {
             id: sidebarGeneralConfigs
-            Layout.preferredWidth: 270
+            Layout.preferredWidth: UIConstants.sRect * 9
             Layout.preferredHeight: parent.height
             onDisplayActiveConfigBoard: {
                 checkingContentStack.currentIndex = boardId_;
@@ -46,7 +46,7 @@ Rectangle {
 
         StackLayout {
             id: checkingContentStack
-            Layout.preferredWidth: parent.width - 270
+            Layout.preferredWidth: parent.width - sidebarGeneralConfigs.width
             Layout.preferredHeight: parent.height
             Layout.leftMargin: -5
             currentIndex: 0
@@ -58,7 +58,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignTop
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70
+                        Layout.preferredHeight: UIConstants.sRect * 2
                         SidebarTitle {
                             id: title
                             anchors.fill: parent
@@ -74,7 +74,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignBottom
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70 * 9
+                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
                         Layout.fillHeight: true
                         ModeCheck{
                             anchors.fill: parent
@@ -91,7 +91,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignTop
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70
+                        Layout.preferredHeight: UIConstants.sRect * 2
                         SidebarTitle {
                             id: title1
                             anchors.fill: parent
@@ -106,7 +106,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignBottom
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70 * 9
+                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
                         Layout.fillHeight: true
                         Propellers{
                             anchors.fill: parent
@@ -123,7 +123,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignTop
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70
+                        Layout.preferredHeight: UIConstants.sRect * 2
                         SidebarTitle {
                             id: title2
                             anchors.fill: parent
@@ -138,7 +138,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignBottom
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70 * 9
+                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
                         Layout.fillHeight: true
                         Steering{
                             anchors.fill: parent
@@ -155,7 +155,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignTop
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70
+                        Layout.preferredHeight: UIConstants.sRect * 2
                         SidebarTitle {
                             id: title4
                             anchors.fill: parent
@@ -170,7 +170,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignBottom
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70 * 9
+                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
                         Layout.fillHeight: true
                         Pitot{
                             anchors.fill: parent
@@ -187,7 +187,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignTop
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70
+                        Layout.preferredHeight: UIConstants.sRect * 2
                         SidebarTitle {
                             id: title5
                             anchors.fill: parent
@@ -202,7 +202,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignBottom
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70 * 9
+                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
                         Layout.fillHeight: true
                         Laser{
                             anchors.fill: parent
@@ -219,7 +219,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignTop
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70
+                        Layout.preferredHeight: UIConstants.sRect * 2
                         SidebarTitle {
                             id: title7
                             anchors.fill: parent
@@ -234,7 +234,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignBottom
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70 * 9
+                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
                         Layout.fillHeight: true
                         GPS{
                             anchors.fill: parent
@@ -251,7 +251,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignTop
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70
+                        Layout.preferredHeight: UIConstants.sRect * 2
                         SidebarTitle {
                             anchors.fill: parent
                             visible: true
@@ -265,7 +265,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignBottom
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70 * 9
+                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
                         Layout.fillHeight: true
                         RPM{
                             anchors.fill: parent
@@ -282,7 +282,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignTop
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70
+                        Layout.preferredHeight: UIConstants.sRect * 2
                         SidebarTitle {
                             anchors.fill: parent
                             visible: true
@@ -296,7 +296,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignBottom
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70 * 9
+                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
                         Layout.fillHeight: true
                         Payload{
                             anchors.fill: parent
@@ -313,7 +313,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignTop
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70
+                        Layout.preferredHeight: UIConstants.sRect * 2
                         SidebarTitle {
                             anchors.fill: parent
                             visible: true
@@ -327,7 +327,7 @@ Rectangle {
                         color: UIConstants.transparentColor
                         Layout.alignment: Qt.AlignBottom
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: 70 * 9
+                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
                         Layout.fillHeight: true
                         Success{
                             anchors.fill: parent

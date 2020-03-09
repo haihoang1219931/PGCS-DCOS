@@ -14,6 +14,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.1
 import QtPositioning 5.8
+import QtQuick.Layouts 1.3
 //---------------- Include custom libs ----------------------------------------
 import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
@@ -23,8 +24,8 @@ Rectangle {
     id: root
     //---------- properties
     color: UIConstants.transparentBlue
-    height: UIConstants.sRect * 13
-    width: UIConstants.sRect * 14
+    height: UIConstants.sRect * 11
+    width: UIConstants.sRect * 10
     radius: UIConstants.rectRadius
     border.color: "gray"
     border.width: 1
@@ -82,16 +83,29 @@ Rectangle {
         }
     }
 
+    Label {
+        id: lblTitle
+        text: qsTr("Marker Editor")
+        anchors.top: parent.top
+        anchors.topMargin: 8
+        anchors.horizontalCenter: parent.horizontalCenter
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+        color: UIConstants.textColor
+        font.pixelSize: UIConstants.fontSize
+        font.family: UIConstants.appFont
+    }
+
     GridView{
         id: markerSelector
-        height: 40
+        height: UIConstants.sRect * 2 + 4
+        anchors.topMargin: 8
         clip: true
         anchors.rightMargin: 8
         anchors.leftMargin: 8
         anchors.right: parent.right
         anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.topMargin: UIConstants.sRect
+        anchors.top: lblTitle.bottom
         cellWidth: UIConstants.sRect*2
         cellHeight: UIConstants.sRect*2
         highlight: Rectangle {
@@ -104,22 +118,15 @@ Rectangle {
             id: contactsDelegate
             Item {
                 id: wrapper
-                width: markerSelector.cellWidth-1
-                height: markerSelector.cellHeight-1
+                width: markerSelector.cellWidth-3
+                height: markerSelector.cellHeight-3
                 property int markerSource: markerID
                 property string type: markerType
-//                        color: markerSelector.isCurrentItem ? "black" : "red"
                 Image{
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     source: iconSource + ".png"
                 }
-
-//                        Label {
-//                          id: contactInfo
-//                          text: name + ": " + number
-//                          color: wrapper.GridView.isCurrentItem ? "red" : "black"
-//                        }
                 MouseArea{
                     anchors.fill: parent
                     onClicked: {
@@ -139,146 +146,152 @@ Rectangle {
         delegate: contactsDelegate
     }
 
-    Label {
-        id: label
-        x: 8
-        y: 101
-        width: 34
-        height: 25
-        text: qsTr("Lat:")
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignLeft
-        color: UIConstants.textColor
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Rectangle {
-        y: 106
-        height: 25
+    ColumnLayout{
+        id: layoutGPS
+        height: UIConstants.sRect * 3
         anchors.left: parent.left
-        anchors.leftMargin: 48
+        anchors.leftMargin: 8
         anchors.right: parent.right
         anchors.rightMargin: 8
-        color: UIConstants.transparentColor
-        border.color: UIConstants.grayColor
-        border.width: 1
-        radius: UIConstants.rectRadius
-        TextInput {
-            id: txtLat
-            anchors.fill: parent
-            anchors.margins: UIConstants.rectRadius/2
-            text: focus?text:Number(root.latitude).toFixed(7)
-            clip: true
-            horizontalAlignment: Text.AlignLeft
-            color: UIConstants.textColor
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            validator: RegExpValidator { regExp: validatorLat }
-            onTextChanged: {
-                if(focus){
-                    console.log("isNaN("+text+")"+isNaN(text));
-                    if(text === "" || isNaN(text)){
-                        root.latitude = 0;
-                    }else{
-                        var newValue = parseFloat(text);
-                        root.latitude = newValue;
+        anchors.top: rectMarkerText.bottom
+        anchors.topMargin: 8
+        spacing: 8
+        RowLayout{
+            spacing: 0
+            Layout.preferredHeight: UIConstants.sRect
+            Layout.preferredWidth: parent.width
+            Label {
+                id: lblLat
+                Layout.preferredWidth: UIConstants.sRect * 4
+                Layout.preferredHeight: UIConstants.sRect
+                text: qsTr("Latitude:")
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignLeft
+                color: UIConstants.textColor
+                font.pixelSize: UIConstants.fontSize
+                font.family: UIConstants.appFont
+            }
+
+            Rectangle {
+                Layout.preferredHeight: UIConstants.sRect
+                Layout.preferredWidth: parent.width - UIConstants.sRect * 4
+                color: UIConstants.transparentColor
+                border.color: UIConstants.grayColor
+                border.width: 1
+                radius: UIConstants.rectRadius
+                TextInput {
+                    id: txtLat
+                    anchors.margins: UIConstants.rectRadius/2
+                    text: focus?text:Number(root.latitude).toFixed(7)
+                    anchors.fill: parent
+                    clip: true
+                    horizontalAlignment: Text.AlignLeft
+                    color: UIConstants.textColor
+                    font.pixelSize: UIConstants.fontSize
+                    font.family: UIConstants.appFont
+                    validator: RegExpValidator { regExp: validatorLat }
+                    onTextChanged: {
+                        if(focus){
+                            console.log("isNaN("+text+")"+isNaN(text));
+                            if(text === "" || isNaN(text)){
+                                root.latitude = 0;
+                            }else{
+                                var newValue = parseFloat(text);
+                                root.latitude = newValue;
+                            }
+                        }
                     }
                 }
             }
         }
-    }
+        RowLayout{
+            Layout.preferredHeight: UIConstants.sRect
+            Layout.preferredWidth: parent.width
+            spacing: 0
+            Label {
+                id: lblLon
+                Layout.preferredWidth: UIConstants.sRect * 4
+                Layout.preferredHeight: UIConstants.sRect
+                text: qsTr("Longitude:")
+                verticalAlignment: Text.AlignVCenter
+                color: UIConstants.textColor
+                font.pixelSize: UIConstants.fontSize
+                font.family: UIConstants.appFont
+            }
 
-    Label {
-        id: label1
-        x: 8
-        y: 140
-        width: 34
-        height: 25
-        text: qsTr("Lon:")
-        verticalAlignment: Text.AlignVCenter
-        color: UIConstants.textColor
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Rectangle {
-        y: 140
-        height: 25
-        anchors.left: parent.left
-        anchors.leftMargin: 48
-        anchors.right: parent.right
-        anchors.rightMargin: 8
-        color: UIConstants.transparentColor
-        border.color: UIConstants.grayColor
-        border.width: 1
-        radius: UIConstants.rectRadius
-        TextInput {
-            id: txtLon
-            anchors.fill: parent
-            anchors.margins: UIConstants.rectRadius/2
-            text: focus?text:Number(root.longitude).toFixed(7)
-            clip: true
-            horizontalAlignment: Text.AlignLeft
-            color: UIConstants.textColor
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            validator: RegExpValidator { regExp: validatorLon }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        root.longitude = 0;
-                    }else{
-                        var newValue = parseFloat(text);
-                        root.longitude = newValue;
+            Rectangle {
+                Layout.preferredHeight: UIConstants.sRect
+                Layout.preferredWidth: parent.width - UIConstants.sRect * 4
+                color: UIConstants.transparentColor
+                border.color: UIConstants.grayColor
+                border.width: 1
+                radius: UIConstants.rectRadius
+                TextInput {
+                    id: txtLon
+                    anchors.fill: parent
+                    anchors.margins: UIConstants.rectRadius/2
+                    text: focus?text:Number(root.longitude).toFixed(7)
+                    clip: true
+                    horizontalAlignment: Text.AlignLeft
+                    color: UIConstants.textColor
+                    font.pixelSize: UIConstants.fontSize
+                    font.family: UIConstants.appFont
+                    validator: RegExpValidator { regExp: validatorLon }
+                    onTextChanged: {
+                        if(focus){
+                            if(text === "" || isNaN(text)){
+                                root.longitude = 0;
+                            }else{
+                                var newValue = parseFloat(text);
+                                root.longitude = newValue;
+                            }
+                        }
                     }
                 }
             }
         }
-    }
+        RowLayout{
+            Layout.preferredHeight: UIConstants.sRect
+            Layout.preferredWidth: parent.width
+            spacing: 0
+            Label {
+                id: lblAlt
+                Layout.preferredWidth: UIConstants.sRect * 4
+                Layout.preferredHeight: UIConstants.sRect
+                color: UIConstants.textColor
+                text: qsTr("Altitude:")
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: UIConstants.fontSize
+                font.family: UIConstants.appFont
+            }
 
-    Label {
-        id: label2
-        x: 8
-        y: 176
-        width: 34
-        height: 25
-        color: UIConstants.textColor
-        text: qsTr("Alt:")
-        verticalAlignment: Text.AlignVCenter
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Rectangle {
-        y: 176
-        height: 25
-        anchors.left: parent.left
-        anchors.leftMargin: 48
-        anchors.right: parent.right
-        anchors.rightMargin: 8
-        color: UIConstants.transparentColor
-        border.color: UIConstants.grayColor
-        border.width: 1
-        radius: UIConstants.rectRadius
-        TextInput {
-            id: txtAlt
-            anchors.fill: parent
-            anchors.margins: UIConstants.rectRadius/2
-            text: focus?text:root.agl
-            clip: true
-            horizontalAlignment: Text.AlignLeft
-            color: UIConstants.textColor
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            validator: RegExpValidator { regExp: validatorAltitude }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        root.agl = 0;
-                    }else{
-                        var newValue = parseFloat(text);
-                        root.agl = newValue;
+            Rectangle {
+                Layout.preferredHeight: UIConstants.sRect
+                Layout.preferredWidth: parent.width - UIConstants.sRect * 4
+                color: UIConstants.transparentColor
+                border.color: UIConstants.grayColor
+                border.width: 1
+                radius: UIConstants.rectRadius
+                TextInput {
+                    id: txtAlt
+                    anchors.fill: parent
+                    anchors.margins: UIConstants.rectRadius/2
+                    text: focus?text:root.agl
+                    clip: true
+                    horizontalAlignment: Text.AlignLeft
+                    color: UIConstants.textColor
+                    font.pixelSize: UIConstants.fontSize
+                    font.family: UIConstants.appFont
+                    validator: RegExpValidator { regExp: validatorAltitude }
+                    onTextChanged: {
+                        if(focus){
+                            if(text === "" || isNaN(text)){
+                                root.agl = 0;
+                            }else{
+                                var newValue = parseFloat(text);
+                                root.agl = newValue;
+                            }
+                        }
                     }
                 }
             }
@@ -287,9 +300,8 @@ Rectangle {
 
     FlatButtonIcon{
         id: btnConfirm
-        y: 192
-        height: 30
-        width: 60
+        height: UIConstants.sRect * 2
+        width: UIConstants.sRect * 4
         icon: UIConstants.iChecked
         isSolid: true
         color: "green"
@@ -313,8 +325,8 @@ Rectangle {
         id: btnCancel
         x: 102
         y: 192
-        height: 30
-        width: 60
+        height: UIConstants.sRect * 2
+        width: UIConstants.sRect * 4
         icon: UIConstants.iMouse
         isSolid: true
         color: "red"
@@ -330,12 +342,14 @@ Rectangle {
         }
     }
     Rectangle {
-        y: 66
-        height: 25
+        id: rectMarkerText
+        height: UIConstants.sRect
         color: UIConstants.transparentColor
         border.color: UIConstants.grayColor
         border.width: 1
         radius: UIConstants.rectRadius
+        anchors.top: markerSelector.bottom
+        anchors.topMargin: 8
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.left: parent.left
@@ -354,5 +368,4 @@ Rectangle {
             }
         }
     }
-
 }

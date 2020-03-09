@@ -59,27 +59,39 @@ Rectangle{
         id: rectangle
         x: 120
         y: 226
-        width: 340
-        height: 214
+        width: UIConstants.sRect * 15
+        height: UIConstants.sRect * 10
         color: "#00000000"
         anchors.horizontalCenter: parent.horizontalCenter
 
-        Button {
+        FlatButtonIcon {
             id: btnP1
-            text: qsTr("Propeller 01")
+            icon: qsTr("Propeller 01")
+            iconSize: UIConstants.fontSize
+            border.color: UIConstants.greenColor
+            width: UIConstants.sRect * 6
+            height: UIConstants.sRect * 2
+            isAutoReturn: true
+            border.width: 2
             anchors.top: parent.top
             anchors.topMargin: 8
             anchors.left: parent.left
             anchors.leftMargin: 8
+
             onClicked: {
                 vehicle.motorTest(1,8)
             }
         }
 
-        Button {
+        FlatButtonIcon {
             id: btnP2
             x: 280
-            text: qsTr("Propeller 02")
+            icon: qsTr("Propeller 02")
+            iconSize: UIConstants.fontSize
+            border.color: UIConstants.greenColor
+            width: UIConstants.sRect * 6
+            height: UIConstants.sRect * 2
+            isAutoReturn: true
             anchors.top: parent.top
             anchors.topMargin: 8
             anchors.right: parent.right
@@ -89,11 +101,15 @@ Rectangle{
             }
         }
 
-        Button {
+        FlatButtonIcon {
             id: btnP3
             x: 280
             y: 187
-            text: qsTr("Propeller 03")
+            icon: qsTr("Propeller 03")
+            border.color: UIConstants.greenColor
+            width: UIConstants.sRect * 6
+            height: UIConstants.sRect * 2
+            isAutoReturn: true
             anchors.right: parent.right
             anchors.rightMargin: 8
             anchors.bottom: parent.bottom
@@ -103,10 +119,14 @@ Rectangle{
             }
         }
 
-        Button {
+        FlatButtonIcon {
             id: btnP4
             y: 168
-            text: qsTr("Propeller 04")
+            icon: qsTr("Propeller 04")
+            border.color: UIConstants.greenColor
+            width: UIConstants.sRect * 6
+            height: UIConstants.sRect * 2
+            isAutoReturn: true
             anchors.left: parent.left
             anchors.leftMargin: 8
             anchors.bottom: parent.bottom

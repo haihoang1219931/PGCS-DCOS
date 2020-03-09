@@ -39,34 +39,15 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
     }
-    FlatButtonIcon{
-        anchors.right: parent.right
-        anchors.top: parent.top
-//                anchors.rightMargin: 5
-//                anchors.topMargin: 5
-//                color: "white"
-        width: 20
-        height: 20
-        isShowRect: false
-        isAutoReturn: true
-        isSolid: true
-        iconColor: UIConstants.textColor
-        iconSize: 15
-        icon: UIConstants.iMouse
-
-        onClicked: {
-            cancelClicked();
-            root.visible = false;
-        }
-    }
-
     Label {
         id: label
         x: 8
-        y: 0
         width: 264
         height: 25
         text: qsTr("Speed editor")
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: 8
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         color: UIConstants.textColor
@@ -75,17 +56,18 @@ Rectangle {
     }
 
     Rectangle {
-        y: 75
-        height: 25
-        anchors.left: parent.left
-        anchors.leftMargin: 81
-        anchors.right: parent.right
-        anchors.rightMargin: 81
+        id: rectValue
+        height: UIConstants.sRect * 2
         color: UIConstants.transparentColor
         border.color: UIConstants.grayColor
         border.width: 1
         radius: UIConstants.rectRadius
-        TextInput {
+        anchors.left: btnMinus.right
+        anchors.leftMargin: 8
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: sldBar.bottom
+        anchors.topMargin: 8
+        Label {
             id: txtCurrentValue
             anchors.fill: parent
             anchors.margins: UIConstants.rectRadius/2
@@ -93,10 +75,11 @@ Rectangle {
             horizontalAlignment: Text.AlignHCenter
             color: UIConstants.textColor
             text: focus?text:Number(root.currentValue).toFixed(0).toString()
+            verticalAlignment: Text.AlignVCenter
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont
             anchors.topMargin: 3
-            validator: RegExpValidator { regExp: validatorValue }
+//            validator: RegExpValidator { regExp: validatorValue }
             enabled: false
             onTextChanged: {
                 if(focus){
@@ -109,8 +92,8 @@ Rectangle {
     FlatButtonIcon{
         id: btnConfirm
         y: 192
-        height: 30
-        width: 60
+        height: UIConstants.sRect * 2
+        width: UIConstants.sRect * 4
         icon: UIConstants.iChecked
         isSolid: true
         color: "green"
@@ -129,8 +112,8 @@ Rectangle {
         id: btnCancel
         x: 102
         y: 192
-        height: 30
-        width: 60
+        height: UIConstants.sRect * 2
+        width: UIConstants.sRect * 4
         icon: UIConstants.iMouse
         isSolid: true
         color: "red"
@@ -148,25 +131,28 @@ Rectangle {
 
     Slider {
         id: sldBar
-        x: 40
-        y: 28
+        width: 329
+        height: 48
+        anchors.top: label.bottom
+        anchors.topMargin: 8
+        anchors.left: lblMin.right
+        anchors.leftMargin: 8
         anchors.horizontalCenter: parent.horizontalCenter
         value: pressed?value:(currentValue-minValue)/(maxValue-minValue)
         onValueChanged: {
-            if(pressed){
+            if(pressed)
                 root.currentValue = value*(maxValue-minValue)+minValue;
-                txtCurrentValue.text = Number(root.currentValue).toFixed(0).toString()
-            }
         }
     }
 
     Label {
         id: lblMin
         y: 40
-        width: 26
-        height: 25
+        width: UIConstants.sRect * 2
+        height: UIConstants.sRect
         color: UIConstants.textColor
         text: Number(root.minValue).toFixed(0).toString()
+        anchors.verticalCenter: sldBar.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: 8
         horizontalAlignment: Text.AlignHCenter
@@ -179,10 +165,11 @@ Rectangle {
         id: lblMax
         x: 8
         y: 40
-        width: 26
-        height: 25
+        width: UIConstants.sRect * 2
+        height: UIConstants.sRect
         color: UIConstants.textColor
         text: Number(root.maxValue).toFixed(0).toString()
+        anchors.verticalCenter: sldBar.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 8
         horizontalAlignment: Text.AlignHCenter
@@ -198,6 +185,7 @@ Rectangle {
         isAutoReturn: true
         width: UIConstants.sRect*2
         height: UIConstants.sRect*2
+        anchors.verticalCenter: rectValue.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: 8
         icon: UIConstants.iRemoveMarker
@@ -208,7 +196,6 @@ Rectangle {
             else{
                 root.currentValue = root.minValue;
             }
-            txtCurrentValue.text = Number(root.currentValue).toFixed(0).toString()
         }
     }
     FlatButtonIcon{
@@ -221,6 +208,7 @@ Rectangle {
         width: UIConstants.sRect*2
         height: UIConstants.sRect*2
         radius: 1
+        anchors.verticalCenter: rectValue.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 8
         icon: UIConstants.iAddMarker
@@ -231,15 +219,6 @@ Rectangle {
             else{
                 root.currentValue = root.maxValue;
             }
-            txtCurrentValue.text = Number(root.currentValue).toFixed(0).toString()
         }
     }
-    Component.onCompleted: {
-        txtCurrentValue.text = Number(root.currentValue).toFixed(0).toString()
-    }
 }
-
-/*##^## Designer {
-    D{i:10;anchors_x:11}
-}
- ##^##*/

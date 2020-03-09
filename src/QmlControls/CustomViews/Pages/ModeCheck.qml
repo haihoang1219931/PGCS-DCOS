@@ -75,8 +75,8 @@ Rectangle{
         x: 250
         y: 219
         color: "transparent"
-        width: 100
-        height: 30
+        width: UIConstants.sRect * 8
+        height: UIConstants.sRect
         border.color: "gray"
         border.width: 2
         radius: 10

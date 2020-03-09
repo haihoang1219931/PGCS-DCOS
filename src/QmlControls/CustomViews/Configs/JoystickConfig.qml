@@ -545,7 +545,6 @@ Flickable {
                             visible: advancedSettings.checked
                             Label{
                                 width:       parent.width * 0.85
-                                font.pointSize:     smallFontPointSize
                                 wrapMode:           Text.WordWrap
                                 text:   qsTr("Deadband can be set during the first ") +
                                         qsTr("step of calibration by gently wiggling each axis. ") +

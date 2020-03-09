@@ -353,20 +353,21 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: navbarWrapper.bottom
-        height: 30
+        height: UIConstants.sRect + 4
         color: UIConstants.transparentBlue
         visible: rootItem._showParams
         RowLayout {
             id: uavInfosGroup
             spacing: 2
-            height: parent.height
-            anchors.leftMargin: 0
+            height: UIConstants.sRect
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: 2
             width: parent.height
             Rectangle{
                 id: rectLink
                 Layout.alignment: Qt.AlignVCenter
-                width: 70
-                height: 25
+                width: UIConstants.sRect * 2
+                height: parent.height
 //                color: vehicle.link?"green":"red"
                 color: vehicle.link?"green":"red"
                 radius: UIConstants.rectRadius
@@ -379,6 +380,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
                     font.family: UIConstants.appFont
+                    font.pixelSize: UIConstants.fontSize
                 }
                 Timer{
                     id: timerLinkLost
@@ -388,7 +390,7 @@ Item {
                     onTriggered: {
                         rectLink.timeCount++;
                         var second = rectLink.timeCount % 60;
-                        var minute = Number(rectLink.timeCount / 60).toFixed(0);
+                        var minute = (rectLink.timeCount - second) / 60;
                         lblLink.text = (minute< 100?Conv.pad(minute,2):minute)
                                 +":"+Conv.pad(second,2);
                     }
@@ -410,8 +412,8 @@ Item {
             Rectangle{
                 id: rectGPS
                 Layout.alignment: Qt.AlignVCenter
-                width: 50
-                height: 25
+                width: UIConstants.sRect * 2
+                height: parent.height
                 color: vehicle.gpsSignal?"green":"red"
                 radius: UIConstants.rectRadius
                 Label{
@@ -421,13 +423,14 @@ Item {
                     anchors.fill: parent
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: UIConstants.fontSize
                 }
             }
             Rectangle{
                 id: rectEKF
                 Layout.alignment: Qt.AlignVCenter
-                width: 50
-                height: 25
+                width: UIConstants.sRect * 2
+                height: parent.height
                 color: vehicle.ekfSignal
                 radius: UIConstants.rectRadius
                 Label{
@@ -437,13 +440,14 @@ Item {
                     anchors.fill: parent
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: UIConstants.fontSize
                 }
             }
             Rectangle{
                 id: rectVIBE
                 Layout.alignment: Qt.AlignVCenter
-                width: 50
-                height: 25
+                width: UIConstants.sRect * 2
+                height: parent.height
                 color: vehicle.vibeSignal
                 radius: UIConstants.rectRadius
                 Label{
@@ -453,6 +457,7 @@ Item {
                     anchors.fill: parent
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: UIConstants.fontSize
                 }
             }
             Label{
@@ -462,13 +467,13 @@ Item {
                 font.pixelSize: UIConstants.fontSize
                 font.family: UIConstants.appFont
                 color: UIConstants.textColor
-                width: 30
+                width: UIConstants.sRect
             }
             Rectangle{
                 id: rectU1
                 Layout.alignment: Qt.AlignVCenter
-                width: 80
-                height: 25
+                width: UIConstants.sRect * 3
+                height: parent.height
                 color: "transparent"
                 border.color: "gray"
                 radius: UIConstants.rectRadius
@@ -489,13 +494,13 @@ Item {
                 font.pixelSize: UIConstants.fontSize
                 font.family: UIConstants.appFont
                 color: UIConstants.textColor
-                width: 30
+                width: UIConstants.sRect
             }
             Rectangle{
                 id: rectI1
                 Layout.alignment: Qt.AlignVCenter
-                width: 80
-                height: 25
+                width: UIConstants.sRect * 3
+                height: parent.height
                 color: "transparent"
                 border.color: "gray"
                 radius: UIConstants.rectRadius
@@ -528,13 +533,13 @@ Item {
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
-                    width: 30
+                    width: UIConstants.sRect
                 }
                 Rectangle{
                     id: rectTxtFlightTime
                     Layout.alignment: Qt.AlignVCenter
-                    width: 100
-                    height: 25
+                    width: UIConstants.sRect * 4
+                    height: UIConstants.sRect
                     color: "transparent"
                     border.color: "gray"
                     radius: UIConstants.rectRadius
@@ -592,13 +597,13 @@ Item {
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
-                    width: 30
+                    width: UIConstants.sRect
                 }
                 Rectangle{
                     id: rectTxtWP0
                     Layout.alignment: Qt.AlignVCenter
-                    width: 100
-                    height: 25
+                    width: UIConstants.sRect * 4
+                    height: UIConstants.sRect
                     color: "transparent"
                     border.color: "gray"
                     radius: UIConstants.rectRadius
@@ -623,13 +628,13 @@ Item {
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
-                    width: 30
+                    width: UIConstants.sRect
                 }
                 Rectangle{
                     id: rectTxtHome
                     Layout.alignment: Qt.AlignVCenter
-                    width: 100
-                    height: 25
+                    width: UIConstants.sRect * 4
+                    height: UIConstants.sRect
                     color: "transparent"
                     border.color: "gray"
                     radius: UIConstants.rectRadius
@@ -654,13 +659,13 @@ Item {
                     text: "Flight Mode"
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
-                    width: 30
+                    width: UIConstants.sRect
                 }
                 Rectangle{
                     id: rectTxtFlightMode
                     Layout.alignment: Qt.AlignVCenter
-                    width: 170
-                    height: 25
+                    width: UIConstants.sRect * 6
+                    height: UIConstants.sRect
                     color: "transparent"
                     border.color: "gray"
                     radius: UIConstants.rectRadius

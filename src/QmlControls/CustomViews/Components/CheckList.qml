@@ -38,7 +38,7 @@ Rectangle {
     SidebarTitle {
         id: sidebarTitle
         anchors { top: parent.top; left: parent.left; right: parent.right }
-        height: 70
+        height: UIConstants.sRect * 2
         visible: true
         title: "Check List"
     }

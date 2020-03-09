@@ -3,7 +3,6 @@ QT += quickcontrols2
 QT += widgets
 CONFIG += c++11 no_keywords console
 
-
 DEFINES += QT_DEPRECATED_WARNINGS
 
 RESOURCES += qml.qrc

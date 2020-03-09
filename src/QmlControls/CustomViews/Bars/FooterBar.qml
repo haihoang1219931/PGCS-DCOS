@@ -36,9 +36,7 @@ Item {
     property alias topFooterBarVisible: topFooterBar.visible
     property var footerBarCorresFlyingBtnsEnable: [true,false]
     property string flightView: "MAP" // "WP"
-//    property var    _activeVehicle: false
     property bool   _armed: vehicle.armed
-//    property bool   _vehicleFlying:         _activeVehicle ? _activeVehicle.flying  : false
 
     //-------------------- Signals
     signal preflightCheckNext()
@@ -95,7 +93,6 @@ Item {
         color: UIConstants.bgColorOverlay
         StackLayout {
             id: footerBarStack
-//            anchors.horizontalCenterOffset: -(spacing+UIConstants.sRect*2*(1.5))
             anchors.fill: parent
             currentIndex: 2
             //--- Index = 0
@@ -106,7 +103,7 @@ Item {
                 RowLayout {
                     id: group1
                     x: 0
-                    spacing: 10
+                    spacing: 5
                     height: parent.height
                     width: parent.height
                     FooterButton {
@@ -154,9 +151,8 @@ Item {
 
                 RowLayout {
                     id: group2
-                    spacing: 10
+                    spacing: 5
                     height: parent.height
-//                    anchors.horizontalCenterOffset: -(spacing+UIConstants.sRect*2)
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: (spacing*4+height*5)
                     FooterButton {
@@ -231,7 +227,7 @@ Item {
                     layoutDirection: Qt.RightToLeft
                     height: parent.height
                     width: parent.height
-                    spacing: 10
+                    spacing: 5
                     FooterButton {
                         id: btnUploadPlan
                         Layout.preferredWidth: parent.height
@@ -293,7 +289,7 @@ Item {
                 RowLayout {
                     id: preflightCheckGroup1
                     x: 0
-                    spacing: 10
+                    spacing: 5
                     height: parent.height
                     width: parent.height
                     SwitchFlatButton {
@@ -324,7 +320,7 @@ Item {
 
                 RowLayout {
                     id: preflightCheckGroup2
-                    spacing: 10
+                    spacing: 5
                     height: parent.height
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: (spacing*0+height*1)
@@ -348,7 +344,7 @@ Item {
                     height: parent.height
                     width: parent.height
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 10
+                    spacing: 5
                     FooterButton {
                         id: btnNext
                         Layout.preferredWidth: parent.height
@@ -378,7 +374,7 @@ Item {
                 color: UIConstants.transparentColor
                 Layout.alignment: Qt.AlignCenter
                 RowLayout {
-                    spacing: 10
+                    spacing: 5
                     height: parent.height
                     width: parent.height
                     FooterSpecialButton {
@@ -405,9 +401,6 @@ Item {
                                             sequence,
                                             planController.missionItems[sequence].param7);
                                     }else {
-//                                        if(rootItem.waypointIDSetProperty != -1){
-//                                            rootItem.waypointIDSetProperty = -1;
-//                                        }
                                     }
                                 }
                             }
@@ -437,32 +430,49 @@ Item {
                         }
 
                     }
-                    Label{
-                        id: lblGroundSpeed
+                    Item{
                         Layout.preferredWidth: parent.height*1.5
                         Layout.preferredHeight: parent.height
-                        Layout.alignment: Qt.AlignTop
-                        Layout.margins: 5
-                        color: UIConstants.textColor
-                        text: "Ground Speed:\n"+(vehicle?Number(vehicle.groundSpeed*3.6).toFixed(2).toString():"--")+" km/h"
-                             + "\n\n"
-                             +"AMSL:\n"+(vehicle?Math.round(vehicle.altitudeAMSL).toString():"--")+" m"
-                        font.pixelSize: UIConstants.fontSize - 2
-                        font.family: UIConstants.appFont
+                        Label{
+                            id: lblGroundSpeed
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            color: UIConstants.textColor
+                            text: "Ground Speed:\n"+(vehicle?Number(vehicle.groundSpeed*3.6).toFixed(2).toString():"--")+" km/h"
+                            font.pixelSize: UIConstants.fontSize - 2
+                            font.family: UIConstants.appFont
+                        }
+                        Label{
+                            id: lblAMSL
+                            anchors.bottom: parent.bottom
+                            anchors.left: parent.left
+                            color: UIConstants.textColor
+                            text: "AMSL:\n"+(vehicle?Math.round(vehicle.altitudeAMSL).toString():"--")+" m"
+                            font.pixelSize: UIConstants.fontSize - 2
+                            font.family: UIConstants.appFont
+                        }
                     }
-
-                    Label{
-                        id: lblClimbSpeed
-                        Layout.alignment: Qt.AlignTop
-                        Layout.margins: 5
+                    Item{
                         Layout.preferredWidth: parent.height*1.5
                         Layout.preferredHeight: parent.height
-                        color: UIConstants.textColor
-                        text: "Climb Speed:\n"+(vehicle?Number(vehicle.climbSpeed*3.6).toFixed(2).toString():"--")+" km/h"
-                              + "\n\n"
-                              +"AGL:\n"+(vehicle?Number(vehicle.altitudeRelative).toFixed(2).toString():"--")+" m"
-                        font.pixelSize: UIConstants.fontSize - 2
-                        font.family: UIConstants.appFont
+                        Label{
+                            id: lblClimbSpeed
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            color: UIConstants.textColor
+                            text: "Climb Speed:\n"+(vehicle?Number(vehicle.climbSpeed*3.6).toFixed(2).toString():"--")+" km/h"
+                            font.pixelSize: UIConstants.fontSize - 2
+                            font.family: UIConstants.appFont
+                        }
+                        Label{
+                            id: lblAGL
+                            anchors.bottom: parent.bottom
+                            anchors.left: parent.left
+                            color: UIConstants.textColor
+                            text: "AGL:\n"+(vehicle?Number(vehicle.altitudeRelative).toFixed(2).toString():"--")+" m"
+                            font.pixelSize: UIConstants.fontSize - 2
+                            font.family: UIConstants.appFont
+                        }
                     }
                     FooterButton {
                         id: btnFlightToWP
@@ -558,7 +568,7 @@ Item {
                 }
 
                 RowLayout {
-                    spacing: 10
+                    spacing: 5
                     height: parent.height
                     width: parent.height
                     layoutDirection: Qt.RightToLeft
@@ -593,7 +603,7 @@ Item {
                         Layout.preferredHeight: parent.height
                         currentIndex: rootItem.flightView == "MAP"?0:1
                         RowLayout {
-                            spacing: 10
+                            spacing: 5
                             height: parent.height
                             layoutDirection: Qt.RightToLeft
                             width: (spacing*5+height*6)
@@ -647,7 +657,7 @@ Item {
                             }
                         }
                         RowLayout {
-                            spacing: 10
+                            spacing: 5
                             height: parent.height
                             layoutDirection: Qt.RightToLeft
                             width: (spacing*5+height*6)
@@ -685,8 +695,6 @@ Item {
                                 btnText: "Loiter"
                                 isOn: false
                                 onClicked: {
-        //                            var currentMode = _activeVehicle.flightMode;
-        //                            doSwitchPlaneMode(currentMode, circle.btnText)
                                     if(isOn === false){
                                         btnLoiterDir.isClockWise = true;
                                         doCircle(true);
@@ -701,9 +709,6 @@ Item {
             }
         }
         gradient: Gradient {
-//            GradientStop { position: 0.0; color: "#50613F" }
-//            GradientStop { position: 0.8; color: "#40552C" }
-//            GradientStop { position: 1.0; color: "#40552C" }
             GradientStop { position: 0.0; color: UIConstants.bgColorOverlay }
             GradientStop { position: 0.8; color: UIConstants.cfProcessingOverlayBg }
             GradientStop { position: 1.0; color: UIConstants.cfProcessingOverlayBg }

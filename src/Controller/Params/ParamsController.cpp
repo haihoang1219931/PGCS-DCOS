@@ -198,7 +198,8 @@ void ParamsController::_writeParameterRaw(const QString& paramName, const QVaria
            static_cast<double>(p.param_value),
            static_cast<double>(value.toFloat()));
     if(!foundParam) return;
-    p.param_value = value.toFloat();
+
+    p.param_value = value.toString().replace(",",".").toFloat();
 
     p.target_system = static_cast<uint8_t>(_vehicle->id());
     p.target_component = static_cast<uint8_t>(_vehicle->communication()->componentId());

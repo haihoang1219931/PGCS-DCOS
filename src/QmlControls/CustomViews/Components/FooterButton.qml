@@ -24,8 +24,8 @@ import CustomViews.UIConstants 1.0
 
 Rectangle {
     id: rootItem
-    width: 40
-    height: 40
+    width: UIConstants.sRect*3
+    height: UIConstants.sRect*3
     //--- Properties
     color: UIConstants.transparentColor
     property bool isPressed: false
@@ -33,7 +33,7 @@ Rectangle {
     property bool isActive: false
     property bool isNormal: true
     property alias icon: icon.text
-    property int iconSize: 16
+    property int iconSize: UIConstants.fontSize * 3 / 2
     property alias btnText: textBtn.text
     property alias iconRotate: icon.rotation
     property bool isEnable: true
@@ -70,7 +70,7 @@ Rectangle {
                 family: isSolid?ExternalFontLoader.solidFont:ExternalFontLoader.regularFont }
             color: textBtn.color
             rotation: 0
-            anchors.topMargin: 5
+            anchors.topMargin: 0
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
@@ -96,7 +96,8 @@ Rectangle {
         Text {
             id: textBtn
             text: "Text"
-//                anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: 0
+            //                anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignBottom
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: UIConstants.fontSize
@@ -105,7 +106,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 5
+            anchors.bottomMargin: 0
             color: isEnable ? UIConstants.textFooterColor : UIConstants.cDisableColor
         }
     }

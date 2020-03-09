@@ -72,7 +72,7 @@ Rectangle {
             anchors.topMargin: 0
             anchors.right: parent.right
             anchors.rightMargin: 0
-            font.pointSize: 10
+            font.pixelSize: UIConstants.fontSize
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
         }

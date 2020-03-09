@@ -50,9 +50,8 @@ Rectangle {
         }
         FlatButtonIcon{
             id: btnCancel
-            x: 580
-            width: 30
-            height: 30
+            height: UIConstants.sRect
+            width: UIConstants.sRect
             icon: UIConstants.iMouse
             isSolid: true
             color: "red"
@@ -78,8 +77,8 @@ Rectangle {
             anchors.rightMargin: 8
             anchors.left: parent.left
             anchors.leftMargin: 8
-            cellWidth: 150
-            cellHeight: 30
+            cellWidth: UIConstants.sRect * 7
+            cellHeight: UIConstants.sRect * 3 / 2
             model: vehicle.propertiesModel
             layoutDirection: Qt.LeftToRight
             flow: GridView.FlowTopToBottom
@@ -92,11 +91,11 @@ Rectangle {
                 CheckBox{
                     id: control
                     anchors.fill: parent
-                    anchors.margins: 2
+                    anchors.margins: 4
                     style: CheckBoxStyle{
                         indicator: Rectangle{
-                            implicitWidth: 16
-                            implicitHeight: 16
+                            implicitWidth: UIConstants.sRect
+                            implicitHeight: UIConstants.sRect
                             radius: 3
                             border.color: control.activeFocus? "darkblue":"gray"
                             Rectangle{
@@ -104,7 +103,7 @@ Rectangle {
                                 color: "#555"
                                 border.color: "#333"
                                 radius: 1
-                                anchors.margins: 4
+                                anchors.margins: UIConstants.sRect / 4
                                 anchors.fill: parent
                             }
                         }

@@ -37,8 +37,8 @@ public:
         }
     }
     void setValue(QString value){
-        if(_value!=value){
-            _value = value;
+        if(_value!=value){            
+            _value = value.replace(",",".");
             Q_EMIT valueChanged();
         }
     }

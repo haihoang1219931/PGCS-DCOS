@@ -42,7 +42,7 @@ Rectangle {
         font.family: UIConstants.appFont
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
-        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenterOffset: 8
         anchors.horizontalCenter: parent.horizontalCenter
     }
     FlatButton{
@@ -57,6 +57,9 @@ Rectangle {
         border.width: 1
         border.color: UIConstants.grayColor
         radius: UIConstants.rectRadius
+        anchors.rightMargin: 8
+        anchors.leftMargin: 8
+        anchors.topMargin: 8
         onClicked: {
             root.modeSelected("ONLINE");
         }
@@ -139,31 +142,10 @@ Rectangle {
         currentIndex: -1
         highlight: Rectangle { color: UIConstants.textColor }
     }
-
-    FlatButtonIcon{
-        id: btnConfirm
-        height: 30
-        width: 60
-        icon: UIConstants.iChecked
-        isSolid: true
-        color: "green"
-        visible: false
-        enabled: false
-        anchors.left: parent.left
-        anchors.leftMargin: 8
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 8
-        isAutoReturn: true
-        radius: root.radius
-        onClicked: {
-            currentFile = lblCurrentFile.text;
-            root.clicked(root.type,"DIALOG_OK");
-        }
-    }
     FlatButtonIcon{
         id: btnCancel
-        height: 30
-        width: 60
+        height: UIConstants.sRect* 2
+        width: UIConstants.sRect* 4
         icon: UIConstants.iMouse
         isSolid: true
         color: "red"

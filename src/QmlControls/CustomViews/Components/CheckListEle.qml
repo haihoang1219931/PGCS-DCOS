@@ -58,7 +58,7 @@ Item {
                     id: iconSide
                     visible: true
                     text: (stateE === "uncheck") ? UIConstants.iInfo : ( (stateE === "pass") ? UIConstants.iChecked : UIConstants.iX )
-                    font { pixelSize: 18; bold: true;family: ExternalFontLoader.solidFont }
+                    font { pixelSize: UIConstants.fontSize; bold: true;family: ExternalFontLoader.solidFont }
                     color: textSide.color
                     anchors.centerIn: parent
                     RotationAnimation on rotation {
@@ -84,7 +84,7 @@ Item {
                 Text {
                     id: textSide
                     text: "Lưu trữ"
-                    font {pixelSize: 13}
+                    font {pixelSize: UIConstants.fontSize}
                     font.family: UIConstants.appFont
                     color: UIConstants.textFooterColor
                     anchors.left: parent.left

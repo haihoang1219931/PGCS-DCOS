@@ -33,6 +33,7 @@ Rectangle {
     property alias icon: icon.text
     property alias btnText: textBtn.text
     property alias iconRotate: icon.rotation
+    property int iconSize: UIConstants.fontSize * 3 / 2
     property bool isSolid: true
     property bool isEnable: true
     property color bgColor: UIConstants.transparentColor
@@ -55,7 +56,7 @@ Rectangle {
             wrapMode: Text.WordWrap
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
-            font{ pixelSize: 16;
+            font{ pixelSize: iconSize;
                 weight: rootItem.isSolid?Font.Bold:Font.Normal;
                 family: rootItem.isSolid?ExternalFontLoader.solidFont:ExternalFontLoader.regularFont }
             color: textBtn.color
@@ -113,7 +114,7 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
 //                anchors.horizontalCenter: parent.horizontalCenter
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        font{ pixelSize: 10;
+        font{ pixelSize: iconSize / 2;
             weight: Font.Bold;
             family: ExternalFontLoader.solidFont}
         color: rootItem.isOn?"green":"gray"

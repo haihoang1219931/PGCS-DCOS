@@ -40,8 +40,9 @@ Rectangle{
         Label {
             id: label
             y: 384
-            height: 50
+            height: UIConstants.sRect * 2
             text: qsTr("Preflight check success. Ready to take off.")
+            font.pixelSize: UIConstants.fontSize
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             color: UIConstants.grayColor

@@ -28,7 +28,7 @@ Rectangle{
     color: "transparent"
     Label {
         id: lblTitle1
-        height: 54
+        height: UIConstants.sRect * 2
         text: "Cover the pitot, monitor velocity parameter"
         wrapMode: Text.WordWrap
         anchors.right: parent.right
@@ -71,7 +71,7 @@ Rectangle{
         Label {
             id: label
             y: 384
-            height: 50
+            height: UIConstants.sRect * 2
             text: qsTr("Does velocity parameter change when cover the pitot?")
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
@@ -91,17 +91,18 @@ Rectangle{
         id: rectangle1
         x: 200
         y: 60
-        width: 290
-        height: 78
+        width: UIConstants.sRect * 12
+        height: UIConstants.sRect * 2
         color: "#00000000"
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
 
         Label {
             id: label1
-            x: 8
             y: 38
             text: qsTr("Current Velocity:")
+            anchors.left: parent.left
+            anchors.leftMargin: 8
             color: UIConstants.textColor
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont
@@ -114,6 +115,8 @@ Rectangle{
             width: 152
             color: "#00000000"
             radius: 20
+            anchors.right: parent.right
+            anchors.rightMargin: 8
             anchors.top: parent.top
             anchors.topMargin: 8
             anchors.bottom: parent.bottom
@@ -133,3 +136,8 @@ Rectangle{
         }
     }
 }
+
+/*##^## Designer {
+    D{i:6;anchors_x:8}
+}
+ ##^##*/

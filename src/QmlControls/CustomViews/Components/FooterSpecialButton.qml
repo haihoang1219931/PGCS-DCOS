@@ -34,7 +34,7 @@ Item {
     property alias bottomValue: lblBottomValue.text
     property bool isEnable: true
     property bool fontBold: false
-    property int fontSize: 15
+    property int fontSize: UIConstants.fontSize * 3 / 2
 
     //--- Signals
     signal clicked()
@@ -53,7 +53,10 @@ Item {
             Label {
                 id: lblTopValue
                 text: "Label"
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignCenter
+                Layout.preferredHeight: parent.height/3
                 font.pixelSize: rootItem.fontSize
                 font.bold: rootItem.fontBold
                 font.family: UIConstants.appFont
@@ -64,8 +67,10 @@ Item {
             Label {
                 id: lblMiddleValue
                 text: "Label"
+                verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignCenter
-                font.pixelSize: rootItem.fontSize
+                Layout.preferredHeight: parent.height/3
+                font.pixelSize: rootItem.fontSize * 2 / 3
                 font.bold: rootItem.fontBold
                 font.family: UIConstants.appFont
                 color: isEnable ? UIConstants.textFooterValueColor : UIConstants.textFooterValueColorDisable
@@ -75,7 +80,9 @@ Item {
             Label {
                 id: lblBottomValue
                 text: "Label"
+                verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignCenter
+                Layout.preferredHeight: parent.height/3
                 font.pixelSize: rootItem.fontSize
                 font.bold: rootItem.fontBold
                 font.family: UIConstants.appFont

@@ -91,8 +91,8 @@ Rectangle{
         id: rectangle1
         x: 200
         y: 60
-        width: 290
-        height: 78
+        width: UIConstants.sRect * 10
+        height: UIConstants.sRect * 2
         color: "#00000000"
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
