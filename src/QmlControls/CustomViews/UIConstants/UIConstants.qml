@@ -26,6 +26,7 @@ QtObject {
     property color transparentBlueDarker:           "#e334495e"
     property color transparentColor:                "transparent"
     property color boundColor:                      "gray"
+    property string degreeSymbol :                  "\u00B0"
     //------------------------------ Flight Mode -----------------------
     property string monitorMode:                    monitorModeFlight // "MISSION","FLIGHT"
     property string monitorModeFlight:              "FLIGHT"

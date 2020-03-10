@@ -41,7 +41,7 @@ Rectangle {
     property bool isEnable: true
     property bool isSolid: false
     property color bgColor: UIConstants.transparentColor
-    property int iconSize: 30
+    property int iconSize: height / 3 * 2
     property int idx: -1
     //--- Signals
     signal clicked()

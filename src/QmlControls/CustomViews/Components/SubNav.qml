@@ -59,6 +59,7 @@ ListView {
                 color: rootItem.currentIndex === index ?
                            UIConstants.bgAppColor:UIConstants.textColor
                 font.family: UIConstants.appFont
+                font.pixelSize: UIConstants.fontSize
             }
 
             MouseArea {

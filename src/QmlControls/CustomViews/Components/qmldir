@@ -25,3 +25,4 @@ ScrollBar                       1.0 ScrollBar.qml
 CoordinateEditor                1.0 CoordinateEditor.qml
 QTextInput                      1.0 QTextInput.qml
 QLabel                          1.0 QLabel.qml
+QLabeledTextInput               1.0 QLabeledTextInput.qml

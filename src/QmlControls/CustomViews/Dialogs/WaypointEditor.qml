@@ -13,7 +13,7 @@
 //----------------------- Include QT libs -------------------------------------
 import QtQuick 2.6
 import QtQuick.Controls 2.1
-
+import QtQuick.Layouts 1.3
 //---------------- Include custom libs ----------------------------------------
 import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
@@ -24,16 +24,14 @@ Rectangle {
     //---------- properties
     color: UIConstants.transparentBlue
     radius: UIConstants.rectRadius
-    width: UIConstants.sRect * 24
-    height: UIConstants.sRect * 16.5
+    width: UIConstants.sRect * 19
+    height: UIConstants.sRect * 14.5
     border.color: "gray"
     border.width: 1
     property alias waypointModeEnabled: rectWaypointMode.enabled
     property string degreeSymbol : "\u00B0"
     property var lstTxt: [
-        txtLat,txtLatD1,txtLatM1,txtLatS1,txtLatD2,txtLatM2,
-        txtLon,txtLonD1,txtLonM1,txtLonS1,txtLonD2,txtLonM2,
-        txtAGL,txtAMSL,
+        cdeLat,cdeLon,txtAGL,
         txtParam1,txtParam2,txtParam3,txtParam4]
 
     signal waypointModeChanged(string waypointMode,
@@ -59,9 +57,6 @@ Rectangle {
     property var validatorLon: /^([-]|)([0-9]|[1-9][0-9]|[1][0-7][0-9])(\.)([0-9][0-9][0-9][0-9][0-9][0-9][0-9])/
     property var validatorLatDecimal: /^([-]|)([0-9]|[1-8][0-9])/
     property var validatorLonDecimal: /^([-]|)([0-9]|[1-9][0-9]|[1][0-7][0-9])/
-    property var validatorMinute: /^([0-9]|[1-5][0-9])/
-    property var validatorSecond: /^([0-9]|[1-5][0-9])/
-    property var validatorMinuteFloat: /^([0-9]|[1-5][0-9])(\.)([0-9][0-9][0-9])/
     property var waypointModes: Object.keys(lstWaypointCommand[vehicleType]).reverse()
     property string vehicleType: "MAV_TYPE_GENERIC"
     property var lstWaypointCommand:{
@@ -594,12 +589,214 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
     }
+    Label{
+        id: lblTitle
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignLeft
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.topMargin: 8
+        anchors.leftMargin: 8
+        color: UIConstants.textColor
+        text: "Waypoint Editor"
+        font.family: UIConstants.appFont
+        font.pixelSize: UIConstants.fontSize
+    }
 
+    ColumnLayout {
+        id: rectParam
+        width: UIConstants.sRect * 12
+        height: UIConstants.sRect * 11
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+        anchors.top: lblTitle.bottom
+        anchors.topMargin: 8
+        spacing: 8
+        RowLayout{
+            id: rlCoordinate
+            Layout.preferredWidth: parent.width
+            Layout.preferredHeight: UIConstants.sRect * 4
+            spacing: 16
+            CoordinateEditor{
+                id: cdeLat
+                Layout.fillHeight: true
+                width: UIConstants.sRect * 6
+                title: "Latitude"
+                directionLabel: "E"
+                value: root.latitude
+                validatorValue: root.validatorLat
+                validatorValueDecimal: root.validatorLatDecimal
+            }
+            CoordinateEditor{
+                id: cdeLon
+                Layout.fillHeight: true
+                width: UIConstants.sRect * 6
+                title: "Longitude"
+                directionLabel: "N"
+                value: root.longitude
+                validatorValue: root.validatorLon
+                validatorValueDecimal: root.validatorLonDecimal
+            }
+        }
+        RowLayout {
+            id: rlAltitude
+            Layout.preferredWidth: parent.width
+            Layout.preferredHeight: UIConstants.sRect * 2
+            spacing: 16
+            QLabeledTextInput {
+                id: txtAMSL
+                width: UIConstants.sRect * 6
+                Layout.fillHeight: true
+                enabled: false
+                text: focus?text:Number(root.agl+root.asl).toFixed(2)
+                title: "AMSL"
+            }
+            QLabeledTextInput {
+                id: txtAGL
+                width: UIConstants.sRect * 6
+                Layout.fillHeight: true
+                text: focus?text:root.agl
+                title: "AGL"
+                validator: RegExpValidator { regExp: validatorAltitude }
+                onTextChanged: {
+                    if(focus){
+                        if(text != "" && isNaN(text)){
+                            var newValue = parseFloat(text);
+                            root.agl = newValue;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        RowLayout {
+            id: rlParams
+            Layout.preferredWidth: parent.width
+            Layout.preferredHeight: UIConstants.sRect * 4
+            spacing: 16
+            ColumnLayout{
+                spacing: 0
+                width: UIConstants.sRect * 6
+                Layout.fillHeight: true
+                QLabeledTextInput {
+                    id: txtParam1
+                    width: parent.width
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: UIConstants.sRect * 2
+                    validator: RegExpValidator { regExp: root.validatorParam }
+                    text: focus?text:parseInt(root.param1)
+                    title: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM1"]["LABEL"]
+                    enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM1"]["EDITABLE"]
+                    onTextChanged: {
+                        if(focus){
+                            if(text != "" && isNaN(text)){
+                                root.param1 = parseInt(text);
+                            }
+                        }
+                    }
+                }
+                QLabeledTextInput {
+                    id: txtParam3
+                    width: parent.width
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: UIConstants.sRect * 2
+                    validator: RegExpValidator { regExp: root.validatorParam }
+                    text: focus?text:parseInt(root.param3)
+                    title: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM3"]["LABEL"]
+                    enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM3"]["EDITABLE"]
+                    onTextChanged: {
+                        if(focus){
+                            if(text != "" && isNaN(text)){
+                                root.param3 = parseInt(text);
+                            }
+                        }
+                    }
+                }
+            }
+            ColumnLayout{
+                spacing: 0
+                width: UIConstants.sRect * 6
+                Layout.fillHeight: true
+                QLabeledTextInput {
+                    id: txtParam2
+                    width: parent.width
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: UIConstants.sRect * 2
+                    validator: RegExpValidator { regExp: root.validatorParam }
+                    text: focus?text:parseInt(root.param2)
+                    title: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM2"]["LABEL"]
+                    enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM2"]["EDITABLE"]
+                    onTextChanged: {
+                        if(focus){
+                            if(text != "" && isNaN(text)){
+                                root.param2 = parseInt(text);
+                            }
+                        }
+                    }
+                }
+                QLabeledTextInput {
+                    id: txtParam4
+                    width: parent.width
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: UIConstants.sRect * 2
+                    validator: RegExpValidator { regExp: root.validatorParam }
+                    text: focus?text:parseInt(root.param4)
+                    title: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM4"]["LABEL"]
+                    enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM4"]["EDITABLE"]
+                    onTextChanged: {
+                        if(focus){
+                            if(text != "" && isNaN(text)){
+                                root.param4 = parseInt(text);
+                            }
+                        }
+                    }
+                }
+            }
+
+
+        }
+    }
+
+    Rectangle {
+        id: rectWaypointMode
+        height: rectParam.height
+        color: UIConstants.transparentColor
+        border.color: UIConstants.grayColor
+        radius: UIConstants.rectRadius
+        anchors.left: rectParam.right
+        anchors.leftMargin: UIConstants.sRect
+        anchors.right: parent.right
+        anchors.rightMargin: 8
+        anchors.top: lblTitle.bottom
+        anchors.topMargin: 8
+        SubNav {
+            id: lstWaypointMode
+            anchors.rightMargin: 2
+            anchors.leftMargin: 2
+            anchors.bottomMargin: 2
+            anchors.topMargin: 2
+            anchors.fill: parent
+            model: root.waypointModes
+            onListViewClicked: {
+                if(choosedItem === "LOITER"){
+                    param1 = 3600;
+                    param3 = 1;
+                }else {
+                    param1 = 0;
+                    param3 = 0;
+                }
+
+                waypointModeChanged(choosedItem,
+                    param1,param2,param3,param4)
+
+            }
+        }
+    }
     FlatButtonIcon{
         id: btnConfirm
-        y: 192
-        height: 30
-        width: 60
+        height: UIConstants.sRect * 2
+        width: UIConstants.sRect * 4
         icon: UIConstants.iChecked
         isSolid: true
         color: (root.latitude !== 0 && root.longitude !== 0)?"green":"gray"
@@ -610,18 +807,17 @@ Rectangle {
         isAutoReturn: true
         radius: root.radius
         enabled: (root.latitude !== 0 && root.longitude !== 0)
-
         onClicked: {
             root.confirmClicked();
             root.changeAllFocus(false);
         }
     }
+
+
     FlatButtonIcon{
         id: btnCancel
-        x: 102
-        y: 192
-        height: 30
-        width: 60
+        height: UIConstants.sRect * 2
+        width: UIConstants.sRect * 4
         icon: UIConstants.iMouse
         isSolid: true
         color: "red"
@@ -636,1150 +832,4 @@ Rectangle {
             root.changeAllFocus(false);
         }
     }
-
-    Rectangle {
-        id: rectParam
-        y: 26
-        width: 348
-        height: 293
-        color: UIConstants.transparentColor
-        border.color: UIConstants.grayColor
-        radius: UIConstants.rectRadius
-        anchors.left: parent.left
-        anchors.leftMargin: 8
-
-        Label {
-            id: lblParam1
-            x: 47
-            y: 172
-            width: 72
-            height: 25
-            color: UIConstants.textColor
-            text: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM1"]["LABEL"]
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-        }
-
-        Rectangle {
-            x: -5
-            y: 203
-            width: 158
-            height: 25
-            color: UIConstants.transparentColor
-            radius: 1
-            anchors.leftMargin: 4
-            border.width: 1
-            TextInput {
-                id: txtParam1
-                color: UIConstants.textColor
-                text: focus?text:Number(root.param1).toString()
-                anchors.margins: UIConstants.rectRadius/2
-                horizontalAlignment: Text.AlignLeft
-                anchors.fill: parent
-                clip: true
-                font.pixelSize: UIConstants.fontSize
-                font.family: UIConstants.appFont
-                validator: RegExpValidator { regExp: validatorParam }
-                enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM1"]["EDITABLE"]
-                onTextChanged: {
-                    if(focus){
-                        if(text === "" || isNaN(text)){
-                            root.param1 = 0;
-                        }else{
-                            root.param1 = parseInt(text);
-                        }
-                    }
-                }
-            }
-            anchors.left: parent.left
-            border.color: UIConstants.grayColor
-        }
-
-        Label {
-            id: lblParam2
-            x: 225
-            y: 172
-            width: 72
-            height: 25
-            color: UIConstants.textColor
-            text: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM2"]["LABEL"]
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-        }
-
-        Rectangle {
-            x: -5
-            y: 203
-            width: 158
-            height: 25
-            color: UIConstants.transparentColor
-            radius: 1
-            anchors.leftMargin: 182
-            border.width: 1
-            TextInput {
-                id: txtParam2
-                color: UIConstants.textColor
-                text: focus?text:Number(root.param2).toString()
-                anchors.margins: UIConstants.rectRadius/2
-                horizontalAlignment: Text.AlignLeft
-                anchors.fill: parent
-                clip: true
-                font.pixelSize: UIConstants.fontSize
-                font.family: UIConstants.appFont
-                validator: RegExpValidator { regExp: validatorParam }
-                enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM2"]["EDITABLE"]
-                onTextChanged: {
-                    if(focus){
-                        if(text === "" || isNaN(text)){
-                            root.param2 = 0;
-                        }else{
-                            root.param2 = parseInt(text);
-                        }
-                    }
-                }
-            }
-            anchors.left: parent.left
-            border.color: UIConstants.grayColor
-        }
-
-        Label {
-            id: lblParam3
-            x: 47
-            y: 229
-            width: 72
-            height: 25
-            color: UIConstants.textColor
-            text: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM3"]["LABEL"]
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-        }
-
-        Rectangle {
-            x: -5
-            y: 260
-            width: 158
-            height: 25
-            color: UIConstants.transparentColor
-            radius: 1
-            anchors.leftMargin: 4
-            border.width: 1
-            TextInput {
-                id: txtParam3
-                color: UIConstants.textColor
-                text: focus?text:Number(root.param3).toString()
-                anchors.margins: UIConstants.rectRadius/2
-                horizontalAlignment: Text.AlignLeft
-                anchors.fill: parent
-                clip: true
-                font.pixelSize: UIConstants.fontSize
-                font.family: UIConstants.appFont
-                validator: RegExpValidator { regExp: validatorParam }
-                enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM3"]["EDITABLE"]
-                onTextChanged: {
-                    if(focus){
-                        if(text === "" || isNaN(text)){
-                            root.param3 = 0;
-                        }else{
-                            root.param3 = parseInt(text);
-                        }
-                    }
-                }
-            }
-            anchors.left: parent.left
-            border.color: UIConstants.grayColor
-        }
-
-        Label {
-            id: lblParam4
-            x: 225
-            y: 229
-            width: 72
-            height: 25
-            color: UIConstants.textColor
-            text: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM4"]["LABEL"]
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-        }
-
-        Rectangle {
-            x: -5
-            y: 260
-            width: 158
-            height: 25
-            color: UIConstants.transparentColor
-            radius: 1
-            anchors.leftMargin: 182
-            border.width: 1
-            TextInput {
-                id: txtParam4
-                color: UIConstants.textColor
-                text: focus?text:Number(root.param4).toString()
-                anchors.margins: UIConstants.rectRadius/2
-                horizontalAlignment: Text.AlignLeft
-                anchors.fill: parent
-                clip: true
-                font.pixelSize: UIConstants.fontSize
-                font.family: UIConstants.appFont
-                validator: RegExpValidator { regExp: validatorParam }
-                enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM4"]["EDITABLE"]
-                onTextChanged: {
-                    if(focus){
-                        if(text === "" || isNaN(text)){
-                            root.param4 = 0;
-                        }else{
-                            root.param4 = parseInt(text);
-                        }
-                    }
-                }
-            }
-            anchors.left: parent.left
-            border.color: UIConstants.grayColor
-        }
-    }
-
-    Rectangle {
-        id: rectWaypointMode
-        y: 26
-        height: 293
-        color: UIConstants.transparentColor
-        border.color: UIConstants.grayColor
-        radius: UIConstants.rectRadius
-        anchors.left: rectParam.right
-        anchors.leftMargin: 8
-        anchors.right: parent.right
-        anchors.rightMargin: 8
-
-        SubNav {
-            id: lstWaypointMode
-            anchors.rightMargin: 2
-            anchors.leftMargin: 2
-            anchors.bottomMargin: 2
-            anchors.topMargin: 2
-            anchors.fill: parent
-            model: root.waypointModes
-            onListViewClicked: {
-                waypointModeChanged(choosedItem,
-                    param1,param2,param3,param4)
-            }
-        }
-    }
-
-    Rectangle {
-        x: -9
-        y: 57
-        width: 26
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 144
-        border.color: UIConstants.grayColor
-        Label {
-            color: UIConstants.textColor
-            text: "E"
-            clip: true
-            horizontalAlignment: Text.AlignHCenter
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: 0
-        y: 57
-        width: 26
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 324
-        border.color: UIConstants.grayColor
-        Label {
-            color: UIConstants.textColor
-            text: "N"
-            clip: true
-            horizontalAlignment: Text.AlignHCenter
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: -8
-        y: 88
-        width: 26
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 144
-        border.color: UIConstants.grayColor
-        Label {
-            color: UIConstants.textColor
-            text: "E"
-            clip: true
-            horizontalAlignment: Text.AlignHCenter
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: -5
-        y: 119
-        width: 26
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 144
-        border.color: UIConstants.grayColor
-        Label {
-            color: UIConstants.textColor
-            text: "E"
-            clip: true
-            horizontalAlignment: Text.AlignHCenter
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: -9
-        y: 88
-        width: 26
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 324
-        border.color: UIConstants.grayColor
-        Label {
-            color: UIConstants.textColor
-            text: "N"
-            clip: true
-            horizontalAlignment: Text.AlignHCenter
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: -1
-        y: 119
-        width: 26
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 324
-        border.color: UIConstants.grayColor
-        Label {
-            color: UIConstants.textColor
-            text: "N"
-            clip: true
-            horizontalAlignment: Text.AlignHCenter
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: -7
-        y: 88
-        width: 31
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 12
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtLatD1
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:parseInt(root.latitude)
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            validator: RegExpValidator { regExp: validatorLatDecimal }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        var newValue = Number(
-                        parseFloat(0) +
-                        parseFloat(txtLatM1.text)/60 +
-                        parseFloat(txtLatS1.text)/3600).toFixed(7);
-                        root.latitude = newValue;
-                    }else{
-                        var newValue = Number(
-                        parseFloat(txtLatD1.text) +
-                        parseFloat(txtLatM1.text)/60 +
-                        parseFloat(txtLatS1.text)/3600).toFixed(7);
-                        root.latitude = newValue;
-                    }
-                }
-            }
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: 2
-        y: 88
-        width: 31
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 57
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtLatM1
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:Math.round(Math.floor(
-                             Math.abs(
-                                 (root.latitude-parseInt(root.latitude))*60)
-                             )
-                         )
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            validator: RegExpValidator { regExp: validatorMinute }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        var newValue = Number(
-                        parseFloat(txtLatD1.text) +
-                        parseFloat(0)/60 +
-                        parseFloat(txtLatS1.text)/3600).toFixed(7);
-                        root.latitude = newValue;
-                    }else{
-                        var newValue = Number(
-                        parseFloat(txtLatD1.text) +
-                        parseFloat(txtLatM1.text)/60 +
-                        parseFloat(txtLatS1.text)/3600).toFixed(7);
-                        root.latitude = newValue;
-                    }
-                }
-            }
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: -11
-        y: 88
-        width: 31
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 101
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtLatS1
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:parseInt(
-                      (Math.abs(
-                           (root.latitude-parseInt(root.latitude))*60)-Math.floor(
-                                  Math.abs(
-                                      (root.latitude-parseInt(root.latitude))*60)
-                                  )
-                              )*60
-                        )
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            validator: RegExpValidator { regExp: validatorSecond }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        var newValue = Number(
-                        parseFloat(txtLatD1.text) +
-                        parseFloat(txtLatM1.text)/60 +
-                        parseFloat(0)/3600).toFixed(7);
-                        root.latitude = newValue;
-                    }else{
-                        var newValue = Number(
-                        parseFloat(txtLatD1.text) +
-                        parseFloat(txtLatM1.text)/60 +
-                        parseFloat(txtLatS1.text)/3600).toFixed(7);
-                        root.latitude = newValue;
-                    }
-                }
-            }
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: -8
-        y: 88
-        width: 31
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 190
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtLonD1
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:parseInt(root.longitude)
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            validator: RegExpValidator { regExp: validatorLonDecimal }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        var newValue = Number(
-                        parseFloat(0) +
-                        parseFloat(txtLonM1.text)/60 +
-                        parseFloat(txtLonS1.text)/3600).toFixed(7);
-                        root.longitude = newValue;
-                    }else{
-                        var newValue = Number(
-                        parseFloat(txtLonD1.text) +
-                        parseFloat(txtLonM1.text)/60 +
-                        parseFloat(txtLonS1.text)/3600).toFixed(7);
-                        root.longitude = newValue;
-                    }
-                }
-            }
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: 1
-        y: 88
-        width: 31
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 235
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtLonM1
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:Math.round(Math.floor(
-                             Math.abs(
-                                 (root.longitude-parseInt(root.longitude))*60)
-                             )
-                         )
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            validator: RegExpValidator { regExp: validatorMinute }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        var newValue = Number(
-                        parseFloat(txtLonD1.text) +
-                        parseFloat(0)/60 +
-                        parseFloat(txtLonS1.text)/3600).toFixed(7);
-                        root.longitude = newValue;
-                    }else{
-                        var newValue = Number(
-                        parseFloat(txtLonD1.text) +
-                        parseFloat(txtLonM1.text)/60 +
-                        parseFloat(txtLonS1.text)/3600).toFixed(7);
-                        root.longitude = newValue;
-                    }
-                }
-            }
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: -12
-        y: 88
-        width: 31
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 279
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtLonS1
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:parseInt(
-                      (Math.abs(
-                           (root.longitude-parseInt(root.longitude))*60)-Math.floor(
-                                  Math.abs(
-                                      (root.longitude-parseInt(root.longitude))*60)
-                                  )
-                              )*60
-                        )
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            validator: RegExpValidator { regExp: validatorSecond }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        var newValue = Number(
-                        parseFloat(txtLonD1.text) +
-                        parseFloat(txtLonM1.text)/60 +
-                        parseFloat(0)/3600).toFixed(7);
-                        root.longitude = newValue;
-                    }else{
-                        var newValue = Number(
-                        parseFloat(txtLonD1.text) +
-                        parseFloat(txtLonM1.text)/60 +
-                        parseFloat(txtLonS1.text)/3600).toFixed(7);
-                        root.longitude = newValue;
-                    }
-                }
-            }
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: -13
-        y: 119
-        width: 31
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 12
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtLatD2
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:parseInt(root.latitude)
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            validator: RegExpValidator { regExp: validatorLatDecimal }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        var newValue = Number(parseFloat(0) +
-                                               parseFloat(txtLatM2.text)/60).toFixed(7);
-                        root.latitude = newValue;
-                    }else{
-                        var newValue = Number(parseFloat(txtLatD2.text) +
-                                               parseFloat(txtLatM2.text)/60).toFixed(7);
-                        root.latitude = newValue;
-                    }
-                }
-            }
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: 2
-        y: 119
-        width: 75
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 57
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtLatM2
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:Number((root.latitude-parseInt(root.latitude))*60).toFixed(3);
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            validator: RegExpValidator { regExp: validatorMinuteFloat }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        var newValue = Number(parseFloat(txtLatD2.text) +
-                                               parseFloat(0)/60).toFixed(7);
-                        root.latitude = newValue;
-                    }else{
-                        var newValue = Number(parseFloat(txtLatD2.text) +
-                                               parseFloat(txtLatM2.text)/60).toFixed(7);
-                        root.latitude = newValue;
-                    }
-                }
-            }
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: -10
-        y: 119
-        width: 31
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 190
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtLonD2
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:parseInt(root.longitude)
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            validator: RegExpValidator { regExp: validatorLonDecimal }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        var newValue = Number(
-                                    parseFloat(0) +
-                                    parseFloat(txtLonM2.text)/60).toFixed(7);
-                        root.longitude = newValue;
-                    }else{
-                        var newValue = Number(
-                                    parseFloat(txtLonD2.text) +
-                                    parseFloat(txtLonM2.text)/60).toFixed(7);
-                        root.longitude = newValue;
-                    }
-                }
-            }
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Rectangle {
-        x: -1
-        y: 119
-        width: 75
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 235
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtLonM2
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:Number((root.longitude-parseInt(root.longitude))*60).toFixed(3);
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            validator: RegExpValidator { regExp: validatorMinuteFloat }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        var newValue = Number(
-                                    parseFloat(txtLonD2.text) +
-                                    parseFloat(0)/60).toFixed(7);
-                        root.longitude = newValue;
-                    }else{
-                        var newValue = Number(
-                                    parseFloat(txtLonD2.text) +
-                                    parseFloat(txtLonM2.text)/60).toFixed(7);
-                        root.longitude = newValue;
-                    }
-                }
-            }
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-    Label {
-        id: label3
-        x: 232
-        y: 144
-        width: 72
-        height: 25
-        color: UIConstants.textColor
-        text: qsTr("AGL")
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Rectangle {
-        x: 1
-        y: 173
-        width: 158
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 189
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtAGL
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:root.agl
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            validator: RegExpValidator { regExp: validatorAltitude }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        root.agl = 0;
-                    }else{
-                        var newValue = parseFloat(text);
-                        root.agl = newValue;
-                    }
-                }
-            }
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-    Label {
-        id: label2
-        x: 55
-        y: 144
-        width: 72
-        height: 25
-        color: UIConstants.textColor
-        text: qsTr("AMSL")
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-    Rectangle {
-        x: -5
-        y: 173
-        width: 158
-        height: 25
-        color: UIConstants.transparentColor
-        radius: 1
-        anchors.leftMargin: 12
-        border.color: UIConstants.grayColor
-        TextInput {
-            id: txtAMSL
-            color: UIConstants.textColor
-            clip: true
-            text: focus?text:Number(root.agl+root.asl).toFixed(2)
-            horizontalAlignment: Text.AlignLeft
-            anchors.fill: parent
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            anchors.margins: UIConstants.rectRadius/2
-            enabled: false
-        }
-        anchors.left: parent.left
-        border.width: 1
-    }
-
-
-
-    Label {
-        x: 43
-        y: 88
-        width: 14
-        height: 25
-        color: UIConstants.textColor
-        text: degreeSymbol
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Label {
-        x: 88
-        y: 88
-        width: 14
-        height: 25
-        color: UIConstants.textColor
-        text: qsTr("'")
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Label {
-        x: 132
-        y: 88
-        width: 14
-        height: 25
-        color: UIConstants.textColor
-        text: qsTr("\"")
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Label {
-        x: 43
-        y: 119
-        width: 14
-        height: 25
-        color: UIConstants.textColor
-        text: degreeSymbol
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Label {
-        x: 132
-        y: 119
-        width: 14
-        height: 25
-        color: UIConstants.textColor
-        text: qsTr("'")
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Label {
-        x: 221
-        y: 88
-        width: 14
-        height: 25
-        color: UIConstants.textColor
-        text: degreeSymbol
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Label {
-        x: 266
-        y: 88
-        width: 14
-        height: 25
-        color: UIConstants.textColor
-        text: qsTr("'")
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Label {
-        x: 307
-        y: 88
-        width: 14
-        height: 25
-        color: UIConstants.textColor
-        text: qsTr("\"")
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Label {
-        x: 221
-        y: 119
-        width: 14
-        height: 25
-        color: UIConstants.textColor
-        text: degreeSymbol
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Label {
-        x: 307
-        y: 119
-        width: 14
-        height: 25
-        color: UIConstants.textColor
-        text: qsTr("'")
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignTop
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Label {
-        x: 362
-        y: 0
-        width: 105
-        height: 25
-        color: UIConstants.textColor
-        text: qsTr("Waypoint Mode")
-        horizontalAlignment: Text.AlignLeft
-        verticalAlignment: Text.AlignVCenter
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Label {
-        x: 8
-        y: 0
-        width: 80
-        height: 25
-        color: UIConstants.textColor
-        text: qsTr("Coordinate")
-        horizontalAlignment: Text.AlignLeft
-        verticalAlignment: Text.AlignVCenter
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-    Label {
-        x: 55
-        y: 31
-        width: 72
-        height: 25
-        text: qsTr("Latitude")
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignHCenter
-        color: UIConstants.textColor
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Rectangle {
-        y: 57
-        width: 120
-        height: 25
-        anchors.left: parent.left
-        anchors.leftMargin: 13
-        color: UIConstants.transparentColor
-        radius: 1
-        border.color: UIConstants.grayColor
-        border.width: 1
-        TextInput {
-            id: txtLat
-            anchors.fill: parent
-            anchors.margins: UIConstants.rectRadius/2
-            text: focus?text:Number(root.latitude).toFixed(7)
-            clip: true
-            horizontalAlignment: Text.AlignLeft
-            color: UIConstants.textColor
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            validator: RegExpValidator { regExp: validatorLat }
-            onTextChanged: {
-                if(focus){
-                    console.log("isNaN("+text+")"+isNaN(text));
-                    if(text === "" || isNaN(text)){
-                        root.latitude = 0;
-                    }else{
-                        var newValue = parseFloat(text);
-                        root.latitude = newValue;
-                    }
-                }
-            }
-        }
-    }
-
-    Label {
-        x: 232
-        y: 31
-        width: 72
-        height: 25
-        text: qsTr("Longitude")
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        color: UIConstants.textColor
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Rectangle {
-        y: 57
-        width: 120
-        height: 25
-        anchors.left: parent.left
-        anchors.leftMargin: 191
-        color: UIConstants.transparentColor
-        border.color: UIConstants.grayColor
-        border.width: 1
-        radius: 1
-        TextInput {
-            id: txtLon
-            anchors.fill: parent
-            anchors.margins: UIConstants.rectRadius/2
-            text: focus?text:Number(root.longitude).toFixed(7)
-            clip: true
-            horizontalAlignment: Text.AlignLeft
-            color: UIConstants.textColor
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            validator: RegExpValidator { regExp: validatorLon }
-            onTextChanged: {
-                if(focus){
-                    if(text === "" || isNaN(text)){
-                        root.longitude = 0;
-                    }else{
-                        var newValue = parseFloat(text);
-                        root.longitude = newValue;
-                    }
-                }
-            }
-        }
-    }
 }
-
-/*##^## Designer {
-    D{i:4;anchors_x:8}D{i:21;anchors_width:130;anchors_x:362}
-}
- ##^##*/

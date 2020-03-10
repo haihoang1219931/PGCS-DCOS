@@ -12,37 +12,38 @@
 
 //----------------------- Include QT libs -------------------------------------
 //------------------ Include QT libs ------------------------------------------
-import QtQuick.Window 2.2
 import QtQuick 2.6
-import QtQuick.Controls 2.1
-import QtQuick.Layouts 1.3
-import QtQuick 2.0
 //---------------- Include custom libs ----------------------------------------
 import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
 
-Rectangle {
+TextInput {
     id: root
     width: UIConstants.sRect * 4
     height: UIConstants.sRect
-    color: UIConstants.transparentColor
+    color: UIConstants.textColor
+    horizontalAlignment: Text.AlignLeft
+    verticalAlignment: Text.AlignVCenter
+    leftPadding: 4
+    rightPadding: 4
+    font.pixelSize:UIConstants.fontSize
+    font.family: UIConstants.appFont
+    text: "Text input"
+    font.bold: false
     clip: true
-    border.color: UIConstants.grayColor
-    border.width: 1
-    radius: UIConstants.rectRadius
-//    property alias text: textInput.text
-//    property alias focus: textInput.focus
-//    TextInput{
-//        id: textInput
-//        color: UIConstants.textColor
-//        horizontalAlignment: Text.AlignLeft
-//        font.pixelSize:0
-//        font.family: UIConstants.appFont
-//        text: "Text input"
-//        anchors.verticalCenter: parent.verticalCenter
-//        anchors.left: parent.left
-//        anchors.leftMargin: 4
-//        anchors.right: parent.right
-//        anchors.rightMargin: 4
+//    onFocusChanged: {
+//        txtInput.focus = focus;
 //    }
+    Rectangle{
+        id: txtInput
+        color: UIConstants.transparentColor
+        border.color: UIConstants.grayColor
+        border.width: 1
+        radius: UIConstants.rectRadius
+        anchors.fill: parent
+//        onFocusChanged: {
+//            root.focus = focus;
+//            console.log("Focus changed to "+focus);
+//        }
+    }
 }
