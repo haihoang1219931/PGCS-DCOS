@@ -149,12 +149,12 @@ void COMPUTER_INFO::handleUsbDetected(QString mediaFolder){
 }
 
 void COMPUTER_INFO::checkSystemMem(){
-    std::string timeStamp = Utils::get_time_stamp();
+    std::string timeStamp = FileController::get_time_stamp();
     FILE* file = fopen("/proc/self/status", "r");
     char line[128];
     while (fgets(line, 128, file) != NULL){
         if (strncmp(line, "VmRSS:", 6) == 0){
-            m_ramUsed = Utils::parseLine(line) / 1024;
+            m_ramUsed = FileController::parseLine(line) / 1024;
             break;
         }
     }

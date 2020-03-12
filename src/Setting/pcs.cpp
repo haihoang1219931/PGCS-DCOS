@@ -50,81 +50,84 @@ int PCSConfig::readConfig(QString file){
     mapData.insert("CAM_CONTROL_IP",
                    QString::fromLocal8Bit(
                        camera->FirstChildElement("CONTROL")->FirstChildElement("IP")->GetText())
-                   );
-
+                  );
     mapData.insert("CAM_CONTROL_IN",
                    QString::fromLocal8Bit(
                        camera->FirstChildElement("CONTROL")->FirstChildElement("IN")->GetText())
-                   );
+                  );
     mapData.insert("CAM_CONTROL_REP",
                    QString::fromLocal8Bit(
                        camera->FirstChildElement("CONTROL")->FirstChildElement("REPLY")->GetText())
-                   );
-    mapData.insert("CAM_STREAM_IP",
+                  );
+    mapData.insert("SENSOR_CONTROL_IP",
                    QString::fromLocal8Bit(
-                       camera->FirstChildElement("STREAM")->FirstChildElement("IP")->GetText())
-                   );
-    mapData.insert("CAM_STREAM_PORT",
+                       camera->FirstChildElement("SENSOR")->FirstChildElement("IP")->GetText())
+                  );
+    mapData.insert("SENSOR_CONTROL_IN",
                    QString::fromLocal8Bit(
-                       camera->FirstChildElement("STREAM")->FirstChildElement("PORT")->GetText())
-                   );
+                       camera->FirstChildElement("SENSOR")->FirstChildElement("IN")->GetText())
+                  );
+    mapData.insert("CAM_STREAM_EO",
+                   QString::fromLocal8Bit(
+                       camera->FirstChildElement("STREAM_EO")->FirstChildElement("IP")->GetText())
+                  );
+    mapData.insert("CAM_STREAM_IR",
+                   QString::fromLocal8Bit(
+                       camera->FirstChildElement("STREAM_IR")->FirstChildElement("IP")->GetText())
+                  );
     mapData.insert("CAM_CONNECT",
                    QString::fromLocal8Bit(
                        camera->FirstChildElement("CONNECT")->GetText())
-                   );
-    XMLElement* fcs = m_doc.FirstChildElement("FCS");
-
+                  );
+    XMLElement *fcs = m_doc.FirstChildElement("FCS");
     mapData.insert("FCS_CONTROL_IP",
                    QString::fromLocal8Bit(
                        fcs->FirstChildElement("CONTROL")->FirstChildElement("IP")->GetText())
-                   );
+                  );
     mapData.insert("FCS_CONTROL_IN",
                    QString::fromLocal8Bit(
                        fcs->FirstChildElement("CONTROL")->FirstChildElement("IN")->GetText())
-                   );
+                  );
     mapData.insert("FCS_CONTROL_REP",
                    QString::fromLocal8Bit(
                        fcs->FirstChildElement("CONTROL")->FirstChildElement("REPLY")->GetText())
-                   );
-
-    XMLElement* tele = m_doc.FirstChildElement("TELEMETRY");
-
+                  );
+    XMLElement *tele = m_doc.FirstChildElement("TELEMETRY");
     mapData.insert("TEL_CONTROL_IP",
                    QString::fromLocal8Bit(
                        tele->FirstChildElement("IP")->GetText())
-                   );
+                  );
     mapData.insert("TEL_CONTROL_PORT",
                    QString::fromLocal8Bit(
                        tele->FirstChildElement("PORT")->GetText())
-                   );
-
-    XMLElement* joy = m_doc.FirstChildElement("JOYSTICK");
+                  );
+    XMLElement *joy = m_doc.FirstChildElement("JOYSTICK");
     mapData.insert("JOYSTICK_ID",
                    QString::fromLocal8Bit(
                        joy->FirstChildElement("PATH")->GetText())
-                   );
+                  );
     mapData.insert("JOYSTICK_PAN_INVERT",
                    QString::fromLocal8Bit(
                        joy->FirstChildElement("PAN")->GetText())
-                   );
+                  );
     mapData.insert("JOYSTICK_TILT_INVERT",
                    QString::fromLocal8Bit(
                        joy->FirstChildElement("TILT")->GetText())
-                   );
-    XMLElement* language = m_doc.FirstChildElement("LANGUAGE");
+                  );
+    XMLElement *language = m_doc.FirstChildElement("LANGUAGE");
     mapData.insert("LANGUAGE",
                    QString::fromLocal8Bit(
                        language->FirstChildElement("ID")->GetText())
-                   );
-    XMLElement* map = m_doc.FirstChildElement("MAP");
+                  );
+    XMLElement *map = m_doc.FirstChildElement("MAP");
     mapData.insert("MAP_FILE",
                    QString::fromLocal8Bit(
                        map->FirstChildElement("MAP_FILE")->GetText())
-                   );
+                  );
     mapData.insert("HEIGHT_FOLDER",
                    QString::fromLocal8Bit(
                        map->FirstChildElement("HEIGHT_FOLDER")->GetText())
-                   );
+                  );
     m_data = QVariant(mapData);
     print();
     return 0;

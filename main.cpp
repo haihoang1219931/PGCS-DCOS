@@ -7,6 +7,7 @@
 #include "src/Controller/Mission/PlanController.h"
 #include "src/Controller/Mission/MissionController.h"
 #include "src/Controller/Params/ParamsController.h"
+#include "src/Files/PlateLog.h"
 #include "src/Maplib/Elevation.h"
 #include "src/Maplib/Marker/MarkerList.h"
 #include "src/Machine/computer.hpp"
@@ -14,6 +15,7 @@
 #include "src/Maplib/profilepath.h"
 #ifdef CAMERA_CONTROL
     #include "src/Camera/ControllerLib/samplegimbal.h"
+    #include "src/Camera/Cache/Cache.h"
 #endif
 //--- UC
 #ifdef UC_API
@@ -22,14 +24,12 @@
     #include "src/UC/UCDataModel.hpp"
 #endif
 //--- Payload controller
-#ifdef VIDEO_DECODER
+#ifdef USE_VIDEO_CPU
     #include "src/Camera/CPUBased/stream/CVVideoCaptureThread.h"
 #endif
 //--- GPU Process
-#ifdef GPU_PROCESS
-    #include "src/Camera/GPUBased/Video/VDisplay.h"
-    #include "src/Camera/Cache/Cache.h"
-    Cache *Cache::m_instance = nullptr;
+#ifdef USE_VIDEO_GPU
+    #include "src/Camera/GPUBased/Video/VDisplay.h"    
 #endif
 
 //--- Joystick
@@ -71,19 +71,19 @@ int main(int argc, char *argv[])
     FCSConfig trkConfig;
     trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
     engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);
-#ifdef VIDEO_DECODER
+#ifdef USE_VIDEO_CPU
     //--- Camera controller
+    qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
     qmlRegisterType<CVVideoCaptureThread>("io.qdt.dev", 1, 0, "Player");
-    engine.rootContext()->setContextProperty("VIDEO_DECODER", QVariant(true));
+    engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(true));
 #else
-    engine.rootContext()->setContextProperty("VIDEO_DECODER", QVariant(false));
+    engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(false));
 #endif
-#ifdef GPU_PROCESS
-    Cache::instance();
+#ifdef USE_VIDEO_GPU
     qmlRegisterType<VDisplay>("io.qdt.dev", 1, 0, "Player");
-    engine.rootContext()->setContextProperty("GPU_PROCESS", QVariant(true));
+    engine.rootContext()->setContextProperty("USE_VIDEO_GPU", QVariant(true));
 #else
-    engine.rootContext()->setContextProperty("GPU_PROCESS", QVariant(false));
+    engine.rootContext()->setContextProperty("USE_VIDEO_GPU", QVariant(false));
 #endif
 #ifdef CAMERA_CONTROL
     PCSConfig pcsConfig;
@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "GimbalNetwork");
     engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(false));
 #endif
+    qmlRegisterType<PlateLog>("io.qdt.dev", 1, 0, "PlateLog");
 #ifdef UC_API
     //--- UC Socket API
     UCConfig ucConfig;
@@ -107,7 +108,6 @@ int main(int argc, char *argv[])
     appSocketApi->createNewRoom(
         ucConfig.value("Settings:UCStreamSource:Value:data").toString(),
         ucConfig.value("Settings:UCRoomName:Value:data").toString());
-//    QObject *appSocketApi = new QObject();
     engine.rootContext()->setContextProperty("UcApi", appSocketApi);
     engine.rootContext()->setContextProperty("UcApiConfig", &ucConfig);
     //---  UC Data Binding

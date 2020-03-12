@@ -139,51 +139,19 @@ Flickable{
     }
 
     Component.onCompleted: {
-        timer.start();
-    }
-
-    Timer{
-        id: timer
-        interval: 3000
-        repeat: false
-        running: false
-        property bool eo: true
-        onTriggered: {
-//            eo =! eo;
-            if(VIDEO_DECODER || GPU_PROCESS){
-                var component = Qt.createQmlObject('import io.qdt.dev 1.0;
-                                        Player {
-                                            id: player
-                                            enStream: true
-                                            enSaving: true
-                                            sensorMode: 0
-                                        }',
-                                                   rootItem,
-                                                   "dynamicSnipet1");
-                rootItem.player = component;
-                console.log("Player component="+rootItem.player);
-                videoOutput.source = rootItem.player;
-            }
-            if(VIDEO_DECODER){
-                if(eo){
-                    player.setVideo(
-                                "rtspsrc location=rtsp://192.168.0.103/z3-1.sdp latency=150 ! rtph265depay ! h265parse ! avdec_h265 ! "+
-                                "appsink name=mysink sync=true async=true");
-                    player.start()
-                }
-            }else if(GPU_PROCESS){
-                var config = PCSConfig.getData();
-                player.setVideoSource("232.4.130.146",
-                                      parseInt(18888));
-                player.play()
-            }
-
+        if(USE_VIDEO_CPU || USE_VIDEO_GPU){
+            var component = Qt.createQmlObject('import io.qdt.dev 1.0;
+                                    Player {
+                                        id: player
+                                        enStream: true
+                                        enSaving: true
+                                        sensorMode: 0
+                                    }',
+                                               rootItem,
+                                               "dynamicSnipet1");
+            rootItem.player = component;
+            console.log("Player component="+rootItem.player);
+            videoOutput.source = rootItem.player;
         }
     }
-
 }
-
-/*##^## Designer {
-    D{i:7;anchors_height:192;anchors_y:37}
-}
- ##^##*/

@@ -1006,7 +1006,7 @@ void KTrackers::getFeatures(const cv::Mat &patch,
 /*
  * Computes the NCC value for points from one frame to the other
  */
-void KFlow::NCC(const cv::Mat &I,
+void KFlow::ncc(const cv::Mat &I,
                 const cv::Mat &J,
                 vector<cv::Point2f> &ptsI,
                 vector<cv::Point2f> &ptsJ,
@@ -1044,7 +1044,7 @@ void KFlow::flowForward(const cv::Mat &I,
     vector<uchar>   accept[2];
     vector<float>      err[2]; //valuesNCC err[0]  //errorFB err[1]
     calcOpticalFlowPyrLK(I, J, from, to, accept[0], err[0], p.winLK, p.level, p.criteria);//CV_LKFLOW_INITIAL_GUESSES);
-    NCC(I, J, from, to, accept[0], err[0], p);
+    ncc(I, J, from, to, accept[0], err[0], p);
     // NORM2(points[0],points[2], err[1]);
     int goodPts = 0;
 
@@ -1101,7 +1101,7 @@ void KFlow::flowForwardBackward(const cv::Mat &I,
         accept[0][i] = accept[0][i] && accept[1][i];
     }
 
-    NCC(I, J, from, to, accept[0], err[0], p);
+    ncc(I, J, from, to, accept[0], err[0], p);
     NORM2(from, points, err[1]);
     int goodPts = 0;
 

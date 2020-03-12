@@ -618,8 +618,8 @@ Flickable {
         Column {
             id:             rightColumn
             x: 455
-            width: 185
-            height: 67
+            width: UIConstants.sRect * 7
+            height: UIConstants.sRect * 2
             anchors.top:    parent.top
             anchors.right:  parent.right
             anchors.rightMargin: 30
@@ -633,6 +633,8 @@ Flickable {
                 Label {
                     text: "TX Mode:"
                     color: UIConstants.textColor
+                    font.pixelSize: UIConstants.fontSize
+                    font.family: UIConstants.appFont
                 }
 
                 OldCtrl.RadioButton {
@@ -709,6 +711,8 @@ Flickable {
 
                 Label {
                     text: qsTr("Axis Monitor")
+                    font.pixelSize: UIConstants.fontSize
+                    font.family: UIConstants.appFont
                     color: UIConstants.textColor
                 }
                 Connections{
@@ -781,6 +785,8 @@ Flickable {
                 Label {
                     text: qsTr("Button Monitor")
                     color: UIConstants.textColor
+                    font.family: UIConstants.appFont
+                    font.pixelSize: UIConstants.fontSize
                 }
 
                 Flow {
@@ -799,6 +805,8 @@ Flickable {
                             Label {
                                 anchors.fill:           parent
                                 color:                  UIConstants.textColor
+                                font.family: UIConstants.appFont
+                                font.pixelSize: UIConstants.fontSize
                                 horizontalAlignment:    Text.AlignHCenter
                                 verticalAlignment:      Text.AlignVCenter
                                 text:                   Number(id).toString()

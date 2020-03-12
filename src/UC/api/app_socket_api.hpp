@@ -233,6 +233,11 @@ class AppSocketApi : public QObject {
          */
         void shouldReloadWebEngineView(const int& redoAction, QString const& redoData);
 
+        /**
+         * @brief networkCrash
+         */
+        void networkCrash();
+
     public Q_SLOTS:
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         //          List signals that you use to send request to server. The data flow is from you -> server in reverse with

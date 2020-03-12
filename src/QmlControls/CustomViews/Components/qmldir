@@ -26,3 +26,6 @@ CoordinateEditor                1.0 CoordinateEditor.qml
 QTextInput                      1.0 QTextInput.qml
 QLabel                          1.0 QLabel.qml
 QLabeledTextInput               1.0 QLabeledTextInput.qml
+FlatCorner                      1.0 FlatCorner.qml
+FlatRectangle                   1.0 FlatRectangle.qml
+ToastLabel                      1.0 ToastLabel.qml

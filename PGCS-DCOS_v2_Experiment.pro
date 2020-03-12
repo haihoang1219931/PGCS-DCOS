@@ -20,13 +20,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 CONFIG += use_flight_control
 
-#CONFIG += use_ucapi
+CONFIG += use_ucapi
 
-#CONFIG += use_camera_control
+CONFIG += use_camera_control
 
-#CONFIG += use_video
+#CONFIG += use_video_gpu
 
-#CONFIG += use_gpu
+CONFIG += use_video_cpu
 
 QML_IMPORT_PATH += \
     $$PWD \
@@ -60,7 +60,9 @@ SOURCES += \
     src/Controller/Mission/MissionItem.cpp \
     src/Controller/Mission/PlanController.cpp \
     src/Controller/Vehicle/Vehicle.cpp \
-    src/Joystick/Files/FileControler.cpp \
+    src/Files/FileControler.cpp \
+    src/Files/PlateLog.cpp \
+    src/Files/PlateLogThread.cpp \
     src/Joystick/JoystickLib/JoystickController.cpp \
     src/Joystick/JoystickLib/JoystickTask.cpp \
     src/Joystick/JoystickLib/JoystickThreaded.cpp \
@@ -81,6 +83,7 @@ SOURCES += \
     src/Maplib/profilepath.cpp \
     src/Controller/Params/Fact.cpp \
     src/Log/LogController.cpp
+
 HEADERS += \
     src/Controller/Com/IOFlightController.h \
     src/Controller/Com/LinkInterface.h \
@@ -101,7 +104,9 @@ HEADERS += \
     src/Controller/Mission/MissionItem.h \
     src/Controller/Mission/PlanController.h \
     src/Controller/Vehicle/Vehicle.h \
-    src/Joystick/Files/FileControler.h \
+    src/Files/FileControler.h \
+    src/Files/PlateLog.h \
+    src/Files/PlateLogThread.h \
     src/Joystick/JoystickLib/JoystickController.h \
     src/Joystick/JoystickLib/JoystickTask.h \
     src/Joystick/JoystickLib/JoystickThreaded.h \
@@ -173,7 +178,8 @@ SOURCES += \
     src/Camera/ControllerLib/versioncontext.cpp \
     src/Camera/ControllerLib/tcp/clientStuff.cpp \
     src/Camera/ControllerLib/tcp/gimbal_control.cpp \
-    src/Camera/ControllerLib/EPTools/EPHucomTool.cpp
+    src/Camera/ControllerLib/EPTools/EPHucomTool.cpp \
+    src/Camera/Cache/Cache.cpp
 
 HEADERS += \
     src/Camera/ControllerLib/Buffer/BufferOut.h \
@@ -249,6 +255,7 @@ HEADERS += \
     src/Camera/ControllerLib/udppayload.h \
     src/Camera/ControllerLib/versioncontext.h \
     src/Camera/Cache/Cache.h \
+    src/Camera/Cache/TrackObject.h \
     src/Camera/Cache/CacheItem.h \
     src/Camera/Cache/DetectedObjectsCacheItem.h \
     src/Camera/Cache/FixedPinnedMemory.h \
@@ -265,12 +272,10 @@ HEADERS += \
 # UC libs KURENTO
 use_ucapi{
 DEFINES += UC_API
+DEFINES += SIO_TLS
 QML_IMPORT_PATH += \
     $$PWD/src/QmlControls/UC
-    INCLUDEPATH += src/UC
-    LIBS += -lpthread
-    LIBS += -L$$PWD/src/UC/lib -lUc-Fcs-Lib
-    DEFINES += "SIO_TLS"
+INCLUDEPATH += src/UC
 SOURCES += \
     src/UC/UCDataModel.cpp \
     src/UC/UCEventListener.cpp
@@ -278,12 +283,52 @@ HEADERS += \
     src/UC/UCDataModel.hpp \
     src/UC/UCEventListener.hpp
 
+INCLUDEPATH += $$PWD/src/UC/sioclient/lib
+INCLUDEPATH += $$PWD/src/UC/boost1.62/include
+INCLUDEPATH += $$PWD/src/UC/openssl
+
+LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer -lcrypto -lssl
+LIBS += -pthread -lpthread
+
+SOURCES += \
+    src/UC/api/app_socket_api.cpp \
+    src/UC/json/jsoncpp.cpp \
+    src/UC/sioclient/src/internal/sio_client_impl.cpp \
+    src/UC/sioclient/src/internal/sio_packet.cpp \
+    src/UC/sioclient/src/sio_client.cpp \
+    src/UC/sioclient/src/sio_socket.cpp
+
+HEADERS += \
+    src/UC/api/app_socket_api.hpp \
+    src/UC/json/json-forwards.h \
+    src/UC/json/json.h \
+    src/UC/sioclient/src/internal/sio_client_impl.h \
+    src/UC/sioclient/src/internal/sio_packet.h \
+    src/UC/sioclient/src/sio_client.h \
+    src/UC/sioclient/src/sio_message.h \
+    src/UC/sioclient/src/sio_socket.h
+
 }
 # Image processing based GPU
-use_gpu{
+use_video_gpu{
+DEFINES += USE_VIDEO_GPU
+INCLUDEPATH += /usr/local/cuda-10.1/include
+INCLUDEPATH += /usr/local/cuda-10.1/targets/x86_64-linux/include
+
+# TensorFlow r1.14
+include(tensorflow_dependency.pri)
+# End TensorFlow
+
+LIBS += -LD:\usr\local\lib \
+ -ldarknet
+
+DEFINES += GPU
+DEFINES += OPENCV
+DEFINES += DAT
+
 QMAKE_CC = gcc-7
 QMAKE_CXX = g++-7
-DEFINES += GPU_PROCESS
+DEFINES += USE_VIDEO_GPU
 DEFINES += GPU
 DEFINES += OPENCV
 DEFINES += DAT
@@ -322,8 +367,6 @@ cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.o
 # Tell Qt that we want add more stuff to the Makefile
 QMAKE_EXTRA_COMPILERS += cuda
 
-
-#LIBS += `pkg-config --libs opencv lept tesseract`
 LIBS += `pkg-config --libs opencv`
 LIBS += $$PWD/src/Camera/GPUBased/Video/Multitracker/libdarknet.so
 
@@ -336,89 +379,103 @@ INCLUDEPATH += /usr/local/cuda-10.1/targets/x86_64-linux/include
 # End CUDA--------------------------
 
 # TensorFlow r1.14
-INCLUDEPATH += /home/pgcs-04/install/tensorflow/tensorflow-1.14.0
-INCLUDEPATH += /home/pgcs-04/install/tensorflow/tensorflow-1.14.0/tensorflow
-INCLUDEPATH += /home/pgcs-04/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/eigen_archive
-INCLUDEPATH += /home/pgcs-04/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/protobuf_archive/src
-INCLUDEPATH += /home/pgcs-04/install/tensorflow/tensorflow-1.14.0/bazel-genfiles
+INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0
+INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/tensorflow
+INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/eigen_archive
+INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/protobuf_archive/src
+INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/bazel-genfiles
 
 LIBS += -L/home/pgcs-04/install/tensorflow/tensorflow-1.14.0/bazel-bin/tensorflow -ltensorflow_cc -ltensorflow_framework
 # End TensorFlow
 
 # GStreamer
-    unix:!macx: DEPENDPATH += /usr/local/include
-    unix:!macx: INCLUDEPATH += /usr/include/gstreamer-1.0
-    unix:!macx: INCLUDEPATH += /usr/lib/x86_64-linux-gnu/gstreamer-1.0/include
-    unix:!macx: INCLUDEPATH += /usr/include/glib-2.0
-    unix:!macx: INCLUDEPATH += /usr/lib/x86_64-linux-gnu/glib-2.0/include
+unix:!macx: DEPENDPATH += /usr/local/include
+unix:!macx: INCLUDEPATH += /usr/include/gstreamer-1.0
+unix:!macx: INCLUDEPATH += /usr/lib/x86_64-linux-gnu/gstreamer-1.0/include
+unix:!macx: INCLUDEPATH += /usr/include/glib-2.0
+unix:!macx: INCLUDEPATH += /usr/lib/x86_64-linux-gnu/glib-2.0/include
 
-    unix:!macx: LIBS += -LD:\usr\lib\x86_64-linux-gnu\
-     -lglib-2.0 \
-     -lgstreamer-1.0 \
-     -lgstapp-1.0 \
-     -lgstrtsp-1.0 \
-     -lgstrtspserver-1.0 \
-     -lgobject-2.0 \
-     -lgstvideo-1.0
-    unix:!macx: INCLUDEPATH += /usr/local/include
-    unix:!macx: DEPENDPATH += /usr/local/include
-# lib zbar
-CONFIG+=link_pkgconfig
-PKGCONFIG+=zbar
+unix:!macx: LIBS += -LD:\usr\lib\x86_64-linux-gnu\
+ -lglib-2.0 \
+ -lgstreamer-1.0 \
+ -lgstapp-1.0 \
+ -lgstrtsp-1.0 \
+ -lgstrtspserver-1.0 \
+ -lgobject-2.0 \
+ -lgstvideo-1.0
+unix:!macx: INCLUDEPATH += /usr/local/include
+unix:!macx: DEPENDPATH += /usr/local/include
+
 HEADERS += \
-    src/Camera/GPUBasedVideo/Multitracker/Hungarian.h \
-    src/Camera/GPUBased/Video/Multitracker/multitrack.h \
-    src/Camera/GPUBased/Video/Multitracker/plate_utils.h \
-    src/Camera/GPUBased/Video/Multitracker/PlateOCR.h \
-    src/Camera/GPUBased/Video/Multitracker/utils.h \
-    src/Camera/GPUBased/Video/Multitracker/yolo_v2_class.hpp \
-    src/Camera/GPUBased/Video/VDisplay.h \
-    src/Camera/GPUBased/Video/VDisplayWorker.h \
-    src/Camera/GPUBased/Video/VFrameGrabber.h \
-    src/Camera/GPUBased/Video/VideoStatus.h \
-    src/Camera/GPUBased/Video/VODWorker.h \
-    src/Camera/GPUBased/Video/VPreprocess.h \
-    src/Camera/GPUBased/Video/VRTSPServer.h \
-    src/Camera/GPUBased/Video/VTrackWorker.h \
-    src/Camera/GPUBased/Zbar/ZbarLibs.h \
-    src/Camera/GPUBased/Video/Cuda/ipcuda_image.h \
-    src/Camera/GPUBased/Video/VSavingWorker.h \
-    src/Camera/GPUBased/Video/OCR/preprocessing.h \
-    src/Camera/GPUBased/Video/OCR/recognition.h \
-    src/Camera/GPUBased/Video/Multitracker/tracker.h
+    src/Camera/GPUBased/VDisplay.h \
+    src/Camera/GPUBased/VDisplayWorker.h \
+    src/Camera/GPUBased/VFrameGrabber.h \
+    src/Camera/GPUBased/VPreprocess.h \
+    src/Camera/GPUBased/VTrackWorker.h \
+    src/Camera/GPUBased/VODWorker.h \
+    src/Camera/GPUBased/Cuda/ip_utils.h \
+    src/Camera/GPUBased/Cuda/ipcuda_image.h \
+    src/Camera/GPUBased/VRTSPServer.h \
+    src/Camera/GPUBased/VSavingWorker.h \
+    src/Camera/GPUBased/Clicktrack/clicktrack.h \
+    src/Camera/GPUBased/Clicktrack/platedetector.h \
+    src/Camera/GPUBased/Clicktrack/preprocessing.h \
+    src/Camera/GPUBased/Clicktrack/recognition.h \
+    src/Camera/GPUBased/Multitrack/Dtracker.h \
+    src/Camera/GPUBased/Multitrack/Hungarian.h \
+    src/Camera/GPUBased/Multitrack/multitrack.h \
+    src/Camera/GPUBased/VMOTWorker.h \
+    src/Camera/GPUBased/VSearchWorker.h \
+    src/Camera/GPUBased/plateOCR/PlateOCR.h \
+    src/Camera/GPUBased/plateOCR/PlateOCR.h
 
 SOURCES += \
-    src/Camera/GPUBased/Video/Multitracker/Hungarian.cpp \
-    src/Camera/GPUBased/Video/Multitracker/multitrack.cpp \
-    src/Camera/GPUBased/Video/Multitracker/PlateOCR.cpp \
-    src/Camera/GPUBased/Video/VDisplay.cpp \
-    src/Camera/GPUBased/Video/VDisplayWorker.cpp \
-    src/Camera/GPUBased/Video/VFrameGrabber.cpp \
-    src/Camera/GPUBased/Video/VODWorker.cpp \
-    src/Camera/GPUBased/Video/VPreprocess.cpp \
-    src/Camera/GPUBased/Video/VRTSPServer.cpp \
-    src/Camera/GPUBased/Video/VTrackWorker.cpp \
-    src/Camera/GPUBased/Zbar/ZbarLibs.cpp \
-    src/Camera/GPUBased/Video/VSavingWorker.cpp \
-    src/Camera/GPUBased/Video/OCR/preprocessing.cpp \
-    src/Camera/GPUBased/Video/OCR/recognition.cpp \
-    src/Camera/GPUBased/Video/Multitracker/tracker.cpp
+    src/Camera/GPUBased/Clicktrack/clicktrack.cpp \
+    src/Camera/GPUBased/Clicktrack/platedetector.cpp \
+    src/Camera/GPUBased/Clicktrack/preprocessing.cpp \
+    src/Camera/GPUBased/Clicktrack/recognition.cpp \
+    src/Camera/GPUBased/Multitrack/Dtracker.cpp \
+    src/Camera/GPUBased/Multitrack/Hungarian.cpp \
+    src/Camera/GPUBased/Multitrack/multitrack.cpp \
+    src/Camera/GPUBased/VMOTWorker.cpp \
+    src/Camera/GPUBased/VSearchWorker.cpp \
+    src/Camera/GPUBased/plateOCR/PlateOCR.cpp \
+    src/Camera/GPUBased/VDisplay.cpp \
+    src/Camera/GPUBased/VDisplayWorker.cpp \
+    src/Camera/GPUBased/VFrameGrabber.cpp \
+    src/Camera/GPUBased/VPreprocess.cpp \
+    src/Camera/GPUBased/VTrackWorker.cpp \
+    src/Camera/GPUBased/VODWorker.cpp \
+    src/Camera/GPUBased/Cuda/ip_utils.cpp \
+    src/Camera/GPUBased/VSavingWorker.cpp \
+    src/Camera/GPUBased/VRTSPServer.cpp
 DISTFILES += \
-    src/Camera/GPUBased/Video/Multitracker/plate-weight/yolov3-tiny_best.weights \
-    src/Camera/GPUBased/Video/Multitracker/vehicle-weight/yolov3-tiny_3l_last.weights \
-    src/Camera/GPUBased/Video/Multitracker/libdarknet.so \
-    src/Camera/GPUBased/Video/Multitracker/plate-weight/class.names \
-    src/Camera/GPUBased/Video/Multitracker/plate-weight/yolov3-tiny.cfg \
-    src/Camera/GPUBased/Video/Multitracker/vehicle-weight/visdrone2019.names \
-    src/Camera/GPUBased/Video/Multitracker/vehicle-weight/yolov3-tiny_3l.cfg \
-    src/Camera/GPUBased/Video/Multitracker/plate_utils_kernel.cu \
-    src/Camera/GPUBased/Video/Multitracker/plate-weight/plate.data \
-    src/Camera/GPUBased/Video/Multitracker/vehicle-weight/visdrone2019.data \
-    src/Camera/GPUBased/Video/Cuda/ipcuda_image.cu
+    src/Camera/GPUBased/Multitracker/libdarknet.so \
+    src/Camera/GPUBased/Multitracker/plate-weight/yolov3-tiny_best.weights \
+    src/Camera/GPUBased/Multitracker/vehicle-weight/yolov3-tiny_3l_last.weights \
+    src/Camera/GPUBased/Multitracker/libdarknet.so \
+    src/Camera/GPUBased/Multitracker/plate-weight/class.names \
+    src/Camera/GPUBased/Multitracker/plate-weight/yolov3-tiny.cfg \
+    src/Camera/GPUBased/Multitracker/vehicle-weight/visdrone2019.names \
+    src/Camera/GPUBased/Multitracker/vehicle-weight/yolov3-tiny_3l.cfg \
+    src/Camera/GPUBased/Multitracker/plate_utils_kernel.cu \
+    src/Camera/GPUBased/Multitracker/plate-weight/plate.data \
+    src/Camera/GPUBased/Multitracker/vehicle-weight/visdrone2019.data \
+    src/Camera/GPUBased/Cuda/ipcuda_image.cu \
+    src/Camera/GPUBased/OD/yolo-setup/yolov3-tiny_3l_last.weights \
+    src/Camera/GPUBased/OD/yolo-setup/yolov3-tiny_best.weights \
+    src/Camera/GPUBased/OD/libdarknet.so \
+    src/Camera/GPUBased/OD/yolo-setup/visdrone2019.names \
+    src/Camera/GPUBased/OD/yolo-setup/yolov3-tiny.cfg \
+    src/Camera/GPUBased/OD/yolo-setup/yolov3-tiny_3l.cfg \
+    src/Camera/GPUBased/Clicktrack/yolo-setup/yolov3-tiny_best.weights \
+    src/Camera/GPUBased/Clicktrack/mynet.pb \
+    src/Camera/GPUBased/Clicktrack/yolo-setup/yolov3-tiny.cfg
 }
+
 # Camera libs
-use_video{
-DEFINES += VIDEO_DECODER
+use_video_cpu{
+DEFINES += USE_VIDEO_CPU
     unix:!macx: LIBS += -L/usr/local/lib/  \
         -lopencv_objdetect \
         -lopencv_shape -lopencv_stitching -lopencv_superres -lopencv_features2d -lopencv_calib3d \
@@ -499,12 +556,6 @@ HEADERS += \
     src/Camera/CPUBased/stream/CVVideoProcess.h \
     src/Camera/CPUBased/stream/gstreamer_element.h \
     src/Camera/CPUBased/stream/VRTSPServer.h \
-    src/Camera/CPUBased/stream/Cache/Cache.h \
-    src/Camera/CPUBased/stream/Cache/CacheItem.h \
-    src/Camera/CPUBased/stream/Cache/FixedPinnedMemory.h \
-    src/Camera/CPUBased/stream/Cache/FixHostMemory.h \
-    src/Camera/CPUBased/stream/Cache/GstFrameCacheItem.h \
-    src/Camera/CPUBased/stream/Cache/ProcessImageCacheItem.h \
     src/Camera/CPUBased/stream/VSavingWorker.h \
     src/Camera/CPUBased/tracker/dando/SKCF/gradient.h \
     src/Camera/CPUBased/tracker/dando/SKCF/skcf.h \
@@ -526,6 +577,4 @@ HEADERS += \
     src/Camera/CPUBased/tracker/dando/ITrack.hpp \
     src/Camera/CPUBased/tracker/dando/Utilities.hpp
 }
-
-
 

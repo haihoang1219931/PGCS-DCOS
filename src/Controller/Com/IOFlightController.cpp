@@ -159,7 +159,7 @@ void IOFlightController::loadConfig(Config* linkConfig){
         system("/bin/mkdir -p logs");
         m_logFile = QString::fromStdString("logs/"+
                                            linkConfig->value("Settings:LinkName:Value:data").toString().toStdString()+" "+
-                                           Utils::get_day()+" "+Utils::get_time()+".tlog");
+                                           FileController::get_day()+" "+FileController::get_time()+".tlog");
     }
 }
 void IOFlightController::connectLink(){

@@ -2,7 +2,7 @@
 #define GSTFRAMECACHEITEM_H
 
 #include "CacheItem.h"
-#include <gst/gst.h>
+#include "gst/gst.h"
 #include <memory>
 
 namespace rva {
@@ -17,6 +17,9 @@ public:
     }
 
   ~GstFrameCacheItem() {}
+
+//    std::shared_ptr<GstBuffer> getGstBuffer(){ return m_gstFrame; }
+//    void setGstBuffer(std::shared_ptr<GstBuffer> _gstBuf){ m_gstFrame = _gstBuf; }
 
     GstBuffer* getGstBuffer(){ return m_gstFrame; }
     void setGstBuffer(GstBuffer *_gstBuf){ m_gstFrame = _gstBuf; }
@@ -33,6 +36,7 @@ public:
   }
 
 private:
+//  std::shared_ptr<GstBuffer> m_gstFrame;
   GstBuffer *m_gstFrame = nullptr;
 };
 }

@@ -32,7 +32,8 @@ Flickable {
             color: isSelected ? UIConstants.cSelectedColor : UIConstants.transparentColor
             Text {
                 text: UIConstants.iPatrolMan
-                font{ pixelSize: 20;
+                font{
+                    pixelSize: UIConstants.fontSize
                     weight: Font.Bold;
                     family: ExternalFontLoader.solidFont}
                 color: connectionState ? UIConstants.greenColor: UIConstants.cDisableColor
@@ -44,7 +45,7 @@ Flickable {
             }
 
             Text {
-                text: "<p><strong>" + name + "</strong></p>"
+                text: "<p>" + name + "</p>"
                 color: connectionState?UIConstants.textColor:UIConstants.cDisableColor
                 textFormat: Text.RichText
                 font.family: UIConstants.appFont

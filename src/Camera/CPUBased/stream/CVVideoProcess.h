@@ -5,12 +5,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-//#include <opencv2/highgui/highgui.hpp>
-//#include <opencv2/imgproc/imgproc.hpp>
-//#include <opencv/cv.h>
 #include <QObject>
 #include <QDebug>
 #include <QMutex>
+#include <QRect>
+#include <QSize>
 #include <QVideoFrame>
 #include "gstreamer_element.h"
 #include <deque>
@@ -18,7 +17,7 @@
 #include <chrono>
 #include <utility>
 #include <map>
-
+#include "../../../Files/PlateLog.h"
 #include "../utils/filenameutils.h"
 #include "../stabilizer/dando_02/stab_gcs_kiir.hpp"
 #include "../tracker/dando/thresholding.hpp"
@@ -33,6 +32,7 @@
 #define MOVE_CLICK_TRACK
 //#define USE_SALIENCY
 #define DEBUG_TIME_OFF
+
 using namespace rva;
 class  CVVideoProcess : public QObject
 {
@@ -62,7 +62,7 @@ class  CVVideoProcess : public QObject
         cv::Mat grayFrame;
         cv::Mat enhancedFrame;
         cv::Mat m_img_get;
-        QString m_trackType = "KCF";
+        QString m_trackType = "sKCF";
         QString m_sensorTrack = "EO";
         float m_irFOV = 0;
         float m_eoFOV = 0;
@@ -89,7 +89,7 @@ class  CVVideoProcess : public QObject
 
         int m_streamWidth = -1;
         int m_streamHeight = - 1;
-
+        PlateLog* m_plateLog;
     public:
         void setTrack(int x, int y);
     Q_SIGNALS:
@@ -97,7 +97,7 @@ class  CVVideoProcess : public QObject
         void stopped();
         void detectObject();
         void getVideoStopped();
-        void trackStateFound(int x, int y, int width, int height, int trackWidth, int trackHeight);
+        void trackStateFound(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h);
         void trackStateLost();
         void objectSizeChange(float zoomRate);
         void trackInitSuccess(bool success, int _x, int _y, int _width, int _height);

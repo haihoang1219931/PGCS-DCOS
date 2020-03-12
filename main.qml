@@ -636,19 +636,23 @@ ApplicationWindow {
             }
             VideoPane{
                 id: videoPane
-                visible: false
+                visible: CAMERA_CONTROL
                 width: paneControl.width
                 height: paneControl.height
                 x: paneControl.x
                 y: paneControl.y
                 z: 2
+                ObjectsOnScreen{
+                    anchors.fill: parent
+                    player: videoPane.player
+
+                }
             }
             PaneControl{
                 id: paneControl
-                visible: false
                 anchors {bottom: parent.bottom; bottomMargin: UIConstants.sRect; left: parent.left; leftMargin: UIConstants.sRect}
                 z: 5
-//                visible: UIConstants.monitorMode === UIConstants.monitorModeFlight
+                visible: UIConstants.monitorMode === UIConstants.monitorModeFlight && CAMERA_CONTROL
                 layoutMax: UIConstants.layoutMaxPane
                 onSwitchClicked: {
                     mainWindow.switchVideoMap(false)
@@ -677,16 +681,14 @@ ApplicationWindow {
                         camState.sensorID = camState.sensorIDEO;
                     }
                     console.log("Change sensor ID to ["+camState.sensorID+"]");
-                    if(VIDEO_DECODER){
+                    if(USE_VIDEO_CPU){
                         if(camState.sensorID === camState.sensorIDEO){
-                            videoPane.player.setVideo(
-                                        "rtspsrc location=rtsp://192.168.0.103/z3-1.sdp latency=150 ! rtph265depay ! h265parse ! avdec_h265 ! "+
-                                        "appsink name=mysink sync=false async=false");
+                            var config = PCSConfig.getData();
+                            videoPane.player.setVideo(config["CAM_STREAM_EO"]);
                             videoPane.player.start()
                         }else{
-                            videoPane.player.setVideo(
-                                        "rtspsrc location=rtsp://192.168.0.103/z3-2.sdp latency=150 ! rtph265depay ! h265parse ! avdec_h265 ! "+
-                                        "appsink name=mysink sync=false async=false");
+                            var config = PCSConfig.getData();
+                            videoPane.player.setVideo(config["CAM_STREAM_IR"]);
                             videoPane.player.start()
                         }
                     }
@@ -697,13 +699,13 @@ ApplicationWindow {
 //                    }
                 }
                 onGcsSnapshotClicked: {
-                    if(VIDEO_DECODER){
+                    if(USE_VIDEO_CPU){
                         videoPane.player.capture();
                     }
                 }
                 onGcsStabClicked: {
                     camState.gcsStab =! camState.gcsStab;
-                    if(VIDEO_DECODER){
+                    if(USE_VIDEO_CPU){
                         videoPane.player.setStab(camState.gcsStab)
                     }
                 }
@@ -711,14 +713,14 @@ ApplicationWindow {
                 onGcsRecordClicked: {
                     camState.gcsRecord=!camState.gcsRecord;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
-                    if(VIDEO_DECODER){
+                    if(USE_VIDEO_CPU){
                         videoPane.player.setRecord(camState.gcsRecord);
                     }
                 }
                 onGcsShareClicked: {
                     camState.gcsShare=!camState.gcsShare;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
-                    if(VIDEO_DECODER){
+                    if(USE_VIDEO_CPU){
                         videoPane.player.setShare(camState.gcsShare);
                     }
                 }
@@ -753,6 +755,14 @@ ApplicationWindow {
                         return;
                     }
                 }
+                function updateObjectsOnMap(){
+                    for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
+                        var object = videoPane.player.listTrackObjectInfos[id];
+                        var pointMapOnScreen =
+                                mapPane.convertLocationToScreen(object.latitude,object.longitude);
+                        objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
+                    }
+                }
 
                 onMapClicked: {
                     footerBar.flightView = !isMap?"WP":"MAP";
@@ -779,6 +789,7 @@ ApplicationWindow {
                 }
                 onMapMoved: {
                     updateUsersOnMap()
+                    updateObjectsOnMap();
                 }
                 onHomePositionChanged: {
                     console.log("Home change to "+lat+","+lon);
@@ -796,6 +807,11 @@ ApplicationWindow {
                 UserOnMap {
                     id: userOnMap
                     anchors.fill: parent
+                }
+                ObjectsOnMap{
+                    id: objectsOnMap
+                    anchors.fill: parent
+                    player: videoPane.player
                 }
             }
             Rectangle{
@@ -879,8 +895,8 @@ ApplicationWindow {
             }
             Canvas{
                 y: 70
-                width: 20
-                height: 60
+                width: UIConstants.sRect
+                height: UIConstants.sRect * 3
                 z: 5
                 visible: UIConstants.monitorMode === UIConstants.monitorModeFlight && popUpInfo.visible
                 anchors.verticalCenter: popUpInfo.verticalCenter
@@ -901,13 +917,12 @@ ApplicationWindow {
                 }
                 FlatButtonIcon{
                     id: btnShowPopup
-                    y: 70
-                    width: 20
-                    height: 60
+                    width: UIConstants.sRect
+                    height: UIConstants.sRect * 3
                     z: 5
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
-                    iconSize: 20
+                    iconSize: UIConstants.fontSize * 2
                     icon: UIConstants.iChevronRight
                     isAutoReturn: true
                     isShowRect: false
@@ -937,6 +952,31 @@ ApplicationWindow {
                 }
                 onZoomOut: {
                     mapPane.zoomOut();
+                }
+            }
+            Rectangle{
+                visible: mapControl.visible
+                width: UIConstants.sRect * 2.5
+                height: UIConstants.sRect + 8
+                color: UIConstants.transparentBlue
+                anchors.left: parent.left
+                anchors.leftMargin: UIConstants.sRect
+                anchors.top: mapControl.bottom
+                anchors.topMargin: 8
+                border.color: UIConstants.grayColor
+                border.width: 1
+                radius: UIConstants.rectRadius
+                z: 8
+                CheckBox {
+                    id: chkLog
+                    anchors.fill: parent
+                    text: "<font color=\"white\">"+"OCR"+"</font>"
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 4
+                    anchors.left: parent.left
+                    anchors.leftMargin: 4
+                    checked: false
                 }
             }
         }
@@ -1546,7 +1586,7 @@ ApplicationWindow {
         onTriggered: {
 //            console.log("Get gimbal data");
             var frameID = 0;
-            if(VIDEO_DECODER){
+            if(USE_VIDEO_CPU){
 //                frameID = videoPane.player.frameID;
             }
 
@@ -1616,7 +1656,7 @@ ApplicationWindow {
         width: UIConstants.sRect * 13
         height: UIConstants.sRect * 6
         color: UIConstants.transparentBlue
-        visible: stkMainRect.currentIndex == 1 && false
+        visible: stkMainRect.currentIndex == 1 && CAMERA_CONTROL
         radius: UIConstants.rectRadius
         anchors.bottom: footerBar.top
         anchors.bottomMargin: UIConstants.sRect
@@ -1649,8 +1689,8 @@ ApplicationWindow {
             }
         }
         Canvas{
-            width: 60
-            height: 20
+            width: UIConstants.sRect * 3
+            height: UIConstants.sRect
             anchors.horizontalCenter: rectCameraControl.horizontalCenter
             anchors.bottom: rectCameraControl.top
             anchors.bottomMargin: 0
@@ -1669,12 +1709,11 @@ ApplicationWindow {
             }
             FlatButtonIcon{
                 id: btnShowCameraControl
-                y: 70
-                width: 20
-                height: 60
+                width: parent.height
+                height: parent.width
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
-                iconSize: 20
+                iconSize: UIConstants.fontSize * 2
                 icon: UIConstants.iChevronDown
                 isAutoReturn: true
                 isShowRect: false
@@ -1842,6 +1881,14 @@ ApplicationWindow {
         }
     }
 
+
+    ListPlatesLog{
+        id: listPlateLog
+        x: parent.width/2-width/2
+        y: parent.height/2-height/2
+        visible: chkLog.checked
+        z: 8
+    }
     Timer{
         id: timerStart
         repeat: false
@@ -1868,6 +1915,8 @@ ApplicationWindow {
                                          config["CAM_CONTROL_IN"],
                                          config["CAM_CONTROL_REP"]);
                 timerRequestData.start();
+                videoPane.player.setVideo(config["CAM_STREAM_EO"]);
+                videoPane.player.start();
             }
             if(UC_API)
             {
@@ -1884,8 +1933,3 @@ ApplicationWindow {
 
     }
 }
-
-/*##^## Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
- ##^##*/

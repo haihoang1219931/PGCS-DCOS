@@ -39,6 +39,8 @@ void CVVideoProcess::setTrackType(QString trackType)
 }
 void CVVideoProcess::setTrack(int _x, int _y)
 {
+//    printf("set Track at [%d,%d]\r\n",_x,_y);
+//    return;
     if (m_trackEnable == true) {
         if (m_setTrack == false) {
             m_setTrack = true;
@@ -148,21 +150,10 @@ void CVVideoProcess::doWork()
         cv::cvtColor(picYV12, m_img, CV_YUV2RGB_YV12);
         gst_buffer_unmap(buf, &map);
         gst_buffer_unref(buf);
-
-        //        printf("m_img %d-[%dx%d] channels = %d\r\n",
-        //               m_img.depth(),
-        //               m_img.rows,m_img.cols,
-        //               m_img.channels());
         if (m_img.cols <= 0 || m_img.rows <=  0) {
             msleep(SLEEP_TIME);
             continue;
         }
-
-        //        auto stopGetData = std::chrono::high_resolution_clock::now();
-        //        double time_ms_getData = std::chrono::duration_cast<std::chrono::microseconds>(stopGetData - startGetData).count() / 1000.0f;
-        //        std::cout << "---> Get Frame [" << (*m_frameID) << "] time: " << time_ms_getData << " ms" << std::endl;
-        //        auto start = std::chrono::high_resolution_clock::now();
-        //        m_imgStab = m_img.clone();
         if (m_usingIPC == true && m_stabEnable == true) {
             if (m_stabilizer->run(m_img, m_imgStab, NULL) != SUCCESS) {
                 //                        printf("m_stabilizer->run failed\r\n");
@@ -259,188 +250,104 @@ void CVVideoProcess::doWork()
          *      MINHBQ6: TRACK OBJECT
          * ============================================================
          */
-        if (m_usingIPC == true && m_trackEnable == true) {
-            if (m_setTrack) {
-                int x, y;
-                int xStab, yStab;
-
-                if (m_stabEnable == true) {
-                    xStab = m_pointSetTrack.x + m_imgStab.cols * (1 - m_cropRatio) / 2;
-                    yStab = m_pointSetTrack.y + m_imgStab.rows * (1 - m_cropRatio) / 2;
-                } else {
-                    xStab = m_pointSetTrack.x;
-                    yStab = m_pointSetTrack.y;
+        if(m_usingIPC == true && m_trackEnable == true){
+            if(m_setTrack){
+                int x,y;
+                int xStab,yStab;
+                int _x = m_pointSetTrack.x;
+                int _y = m_pointSetTrack.y;
+                if(m_stabEnable == true){
+                    xStab =_x + m_imgStab.cols * (1-m_cropRatio)/2;
+                    yStab = _y + m_imgStab.rows * (1-m_cropRatio)/2;
+                }else{
+                    xStab = _x;
+                    yStab =_y;
                 }
-
-                printf("1: Init tracker at (%d,%d)\r\n", xStab, yStab);
-
-                if (xStab + m_trackSize / 2 > m_imgStab.cols || yStab + m_trackSize / 2 > m_imgStab.rows ||
-                    xStab - m_trackSize / 2 < 0 || yStab - m_trackSize / 2 < 0) {
-                    printf("\n====>DCMN ahihi");
-                    m_setTrack = false;
-                    Q_EMIT trackInitSuccess(false, xStab, yStab, m_imgStab.cols, m_imgStab.rows);
-                    continue;
+//                printf("Init tracker at (%d,%d)\r\n",xStab,yStab);
+                if(xStab+m_trackSize/2 > m_imgStab.cols || yStab+m_trackSize/2 > m_imgStab.rows ||
+                        xStab-m_trackSize/2 < 0 || yStab-m_trackSize/2 < 0){
+                    return;
                 }
-
                 x = xStab;
                 y = yStab;
+                if(m_tracker->isInitialized()==false){
 
-                if (m_tracker->isInitialized() == false) {
-                } else {
-                    while (m_tracker->isRunning());
-
-                    m_tracker->resetTrack();
+                }else{
+                    while( m_tracker->isRunning() );
+                            m_tracker->resetTrack();
                 }
-
-                printf("2: Init tracker at (%d,%d)\r\n", x, y);
+//                printf("Init tracker at (%d,%d)\r\n",x,y);
+                if(grayFrame.rows < m_trackSize | grayFrame.cols < m_trackSize){
+                    return;
+                }
+                if(m_imgStab.rows < m_trackSize | m_imgStab.cols < m_trackSize){
+                    return;
+                }
                 cv::Rect roiOpen;
                 roiOpen.x       = ((x - m_trackSize) < 0) ? 0 : (x - m_trackSize);
                 roiOpen.y       = ((y - m_trackSize) < 0) ? 0 : (y - m_trackSize);
-                roiOpen.width   = ((roiOpen.x + 2 * m_trackSize) >= grayFramePrev.cols) ? (grayFramePrev.cols - roiOpen.x) : (2 * m_trackSize);
-                roiOpen.height  = ((roiOpen.y + 2 * m_trackSize) >= grayFramePrev.rows) ? (grayFramePrev.rows - roiOpen.y) : (2 * m_trackSize);
-                cv::Mat tmpPatch = grayFramePrev(roiOpen);
+                roiOpen.width   = ((roiOpen.x + 2*m_trackSize) >= grayFrame.cols) ? (grayFrame.cols - roiOpen.x) : (2 * m_trackSize);
+                roiOpen.height  = ((roiOpen.y + 2*m_trackSize) >= grayFrame.rows) ? (grayFrame.rows - roiOpen.y) : (2 * m_trackSize);
+
+                cv::Mat tmpPatch = grayFrame(roiOpen);
                 cv::Scalar meanVal, stdVal;
-                cv::meanStdDev(tmpPatch, meanVal, stdVal);
-                printf("mean = %f  std = %f  mean/std = %f\n", meanVal[0], stdVal[0], stdVal[0] / meanVal[0]);
-
-                //        if( (stdVal[0] / meanVal[0]) > 0.002)
-
-                if (!isTextureLess(tmpPatch)) {
+                cv::meanStdDev( tmpPatch, meanVal, stdVal );
+//                printf( "mean = %f  std = %f  mean/std = %f\n", meanVal[0], stdVal[0], stdVal[0] / meanVal[0] );
+                if( (stdVal[0] / meanVal[0]) > 0.002)
+                {
                     cv::Mat patchOpen = m_imgStab(roiOpen).clone();
                     //----- Get adjusted image patch by saliency
-                    printf("init thresh tracker inside setTrack function\n");
-#ifdef MOVE_CLICK_TRACK
-                    std::cout << "=============> 1\n";
-                    ClickTrackObj->Init(m_imgStab, cv::Point(x, y), 60);
-                    std::cout << "=============> 1.2\n";
-                    ClickTrackObj->Run();
-                    std::cout << "=============> 2\n";
-                    bool initTrackResult = false;
-                    initTrackResult = ClickTrackObj->foundObject;
-
-                    if (m_trackType == "sKCF") {
-                        k_tracker->initTrack(grayFramePrev, ClickTrackObj->object_position);
-                    }
-
-                    if (m_trackType == "Thresh") {
-                        thresh_tracker->initTrack(grayFramePrev, ClickTrackObj->object_position);
-                    }
-
-                    if (m_trackType == "KCF") {
-                        std::cout << "=============> 3\n";
-                        m_tracker->initTrack(grayFramePrev, ClickTrackObj->object_position);
-                        std::cout << "=============> 4\n";
-                    }
-
-                    Q_EMIT trackInitSuccess(initTrackResult, x, y, grayFramePrev.cols, grayFramePrev.rows);
-#endif
-#ifdef USE_SALIENCY
-                    cv::Rect roiSaliency = saliency(patchOpen);
-                    //            cv::Rect roiSaliency = computeThresMap( patchOpen );
+            //        cv::Rect roiSaliency = saliency( patchOpen );
+                    cv::Rect roiSaliency = computeThresMap( patchOpen );
+//                    cout << " roiSaliency" << roiSaliency << std::endl;
                     roiSaliency.x += roiOpen.x;
                     roiSaliency.y += roiOpen.y;
-
-                    if (roiSaliency.width <= 9) {
-                        roiSaliency.width = 9;
-                    }
-
-                    if (roiSaliency.height <= 9) {
-                        roiSaliency.height = 9;
-                    }
-
-                    if (roiSaliency.width >= 9 && roiSaliency.height >= 9) {
-                        if (m_trackType == "sKCF") {
-                            k_tracker->initTrack(m_imgStab, roiSaliency);
-                        }
-
-                        if (m_trackType == "Thresh") {
-                            thresh_tracker->initTrack(grayFramePrev, roiSaliency);
-                        } else {
-                            m_tracker->initTrack(grayFramePrev, roiSaliency);
-                        }
-                    }
-
-#endif
-                } else {
-                    Q_EMIT trackInitSuccess(false, x, y, grayFramePrev.cols, grayFramePrev.rows);
+                    if(roiSaliency.width <= 9) roiSaliency.width = 9;
+                    if(roiSaliency.height <= 9) roiSaliency.height = 9;
+                    if(roiSaliency.width >= 9 && roiSaliency.height >= 9)
+                       m_tracker->initTrack( grayFrame, roiSaliency );
                 }
-
-                printf("Emit track init done\r\n");
                 m_setTrack = false;
             }
+            if(m_tracker->isInitialized()){
+                m_tracker->performTrack(grayFrame);
+                cv::Rect rectTrack=m_tracker->getPosition();
 
-            //            printf("Start tracking \n");
-            // --------------original work------------------------------------
-            if (m_trackType == "KCF") {
-                if (m_tracker->isInitialized()) {
-                    //
-                    m_tracker->performTrack(enhancedFrame);
-                    object_position = m_tracker->getPosition();
+                if(m_tracker->trackStatus() == TRACK_INVISION){
 
-                    if (m_tracker->trackStatus() == TRACK_INVISION) {
-                        cv::rectangle(m_imgStab, object_position, cv::Scalar(255, 0, 0), 1, cv::LINE_AA);
-                        cv::Point centerTrack(object_position.x + object_position.width / 2,
-                                              object_position.y + object_position.height / 2);
-                        cv::Point centerFrame(m_imgStab.cols / 2, m_imgStab.rows / 2);
-                        cv::line(m_imgStab, centerFrame, centerTrack, cv::Scalar(0, 255, 255), 2);
-                        //                    Q_EMIT trackStateFound(centerTrack.x,centerTrack.y,grayFrame.cols,grayFrame.rows,
-                        //                                         rectTrack.width,rectTrack.height);
-                        //===== IR Zoom control
-                        //                    printf("IRFOV: %f ,EOFOV: %f\r\n",m_irFOV,m_eoFOV);
-                        std::string zoomDir = m_tracker->getZoomIR(m_irFOV);
-                        float deltaIRFov = 0;
+                    cv::rectangle(m_imgStab,rectTrack,cv::Scalar(255,0,0),1,cv::LINE_AA);
+                    cv::Point centerTrack(rectTrack.x+rectTrack.width/2,
+                                          rectTrack.y+rectTrack.height/2);
+//                    trackStateFound(centerTrack.x,centerTrack.y,grayFrame.cols,grayFrame.rows,
+//                                         rectTrack.width,rectTrack.height);
 
-                        if (zoomDir == std::string("ZOOM_IN")) {
-                            deltaIRFov = -1;
-                        } else if (zoomDir == std::string("ZOOM_OUT")) {
-                            deltaIRFov = 1;
-                        } else {
-                            deltaIRFov = 0;
-                        }
-
-                        {
-                            if (object_position.width > 0 && object_position.height > 0) {
-                                Q_EMIT trackStateFound(centerTrack.x, centerTrack.y, grayFrame.cols, grayFrame.rows,
-                                                       object_position.width, object_position.height);
-                            }
-                        }
-                    } else {
-                        Q_EMIT trackStateLost();
+                    //===== IR Zoom control
+//                    printf("IRFOV: %f ,EOFOV: %f\r\n",m_irFOV,m_eoFOV);
+                    std::string zoomDir = m_tracker->getZoomIR( m_irFOV );
+                    float deltaIRFov = 0;
+                    if( zoomDir == std::string("ZOOM_IN") )
+                    {
+                        deltaIRFov = -1;
                     }
-                }
-            }
-            //---------------thresholding-------------------
-            else if (m_trackType == "Thresh") {
-                if (thresh_tracker->isInitialized()) {
-                    thresh_tracker->performTrack(enhancedFrame);
-                    object_position = thresh_tracker->getPosition();
-                    //                    std::cout << "Position of object is " << object_position << std::endl;
-
-                    if (object_position.width > 0 && object_position.height > 0) {
-                        Q_EMIT trackStateFound(object_position.x + object_position.width / 2, object_position.y + object_position.height / 2,
-                                               grayFrame.cols, grayFrame.rows,
-                                               object_position.width, object_position.height);
+                    else if( zoomDir == std::string("ZOOM_OUT") )
+                    {
+                        deltaIRFov = 1;
                     }
-
-                    cv::rectangle(m_imgStab, object_position, cv::Scalar(0, 255, 0));
-                }
-            } else {
-                //---------------sKCF---------------------------
-                if (k_tracker->isInititalized()) {
-                    k_tracker->processFrame(enhancedFrame);
-                    object_position = k_tracker->getPosition();
-                    std::cout << "Position of object is " << object_position << std::endl;
-                    cv::rectangle(m_imgStab, object_position, cv::Scalar(255, 255, 0));
-
-                    if (object_position.width > 0 && object_position.height > 0) {
-                        Q_EMIT trackStateFound(object_position.x + object_position.width / 2, object_position.y + object_position.height / 2,
-                                               grayFrame.cols, grayFrame.rows,
-                                               object_position.width, object_position.height);
+                    else
+                    {
+                        deltaIRFov = 0;
                     }
+                    {
+                    Q_EMIT trackStateFound(0,
+                                       static_cast<double>(centerTrack.x),static_cast<double>(centerTrack.y),
+                                       static_cast<double>(rectTrack.width),static_cast<double>(rectTrack.height),
+                                       static_cast<double>(grayFrame.cols),static_cast<double>(grayFrame.rows));
+                    }
+                }else{
+                    trackStateLost();
                 }
             }
         }
-
         auto end = chrono::high_resolution_clock::now();
         auto elapsed = chrono::duration_cast<chrono::milliseconds>(end - start);
         //        std::cout << "Process Time elapsed: " << elapsed.count() << std::endl;
@@ -474,23 +381,25 @@ void CVVideoProcess::doWork()
             m_streamWidth = m_imgShow->cols;
             Q_EMIT streamFrameSizeChanged(m_streamWidth, m_streamHeight);
         }
-
+//        printf("m_imgShow S[%dx%d] C[%d] D[%d]\r\n",
+//               m_imgShow->cols,m_imgShow->rows,m_imgShow->channels(),m_imgShow->depth());
         // draw text
 //        cv::putText(*m_imgShow, "Long Range Surveillance", cv::Point(30, 15), CV_FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(200, 200, 250), 1, CV_AA);
 //        cv::putText(*m_imgShow, "HKVT-Viettel", cv::Point(70, 30), CV_FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(200, 200, 250), 1, CV_AA);
 
         //
+        cv::Mat _imgOtherFunc;
+        cv::cvtColor(*m_imgShow, _imgOtherFunc, CV_BGRA2YUV_I420);
         if(m_sharedEnable && m_recordEnable){
             GstBuffer *rtspImage = gst_buffer_new();
             assert(rtspImage != NULL);
-            GstMemory *gstMem = gst_allocator_alloc(NULL, m_imgShow->u->size, NULL);
+            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
             assert(gstMem != NULL);
             gst_buffer_append_memory(rtspImage, gstMem);
             GstMapInfo mapT;
             gst_buffer_map(rtspImage, &mapT, GST_MAP_READ);
-            memcpy((void *)mapT.data, m_imgShow->data, m_imgShow->u->size);
+            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
             gst_buffer_unmap(rtspImage , &mapT);
-
             //add to rtsp
             GstFrameCacheItem gstFrame;
             gstFrame.setIndex(*m_frameID);
@@ -504,14 +413,13 @@ void CVVideoProcess::doWork()
         }else if(m_sharedEnable && !m_recordEnable){
             GstBuffer *rtspImage = gst_buffer_new();
             assert(rtspImage != NULL);
-            GstMemory *gstMem = gst_allocator_alloc(NULL, m_imgShow->u->size, NULL);
+            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
             assert(gstMem != NULL);
             gst_buffer_append_memory(rtspImage, gstMem);
             GstMapInfo mapT;
             gst_buffer_map(rtspImage, &mapT, GST_MAP_READ);
-            memcpy((void *)mapT.data, m_imgShow->data, m_imgShow->u->size);
+            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
             gst_buffer_unmap(rtspImage , &mapT);
-
             //add to rtsp
             GstFrameCacheItem gstFrame;
             gstFrame.setIndex(*m_frameID);
@@ -520,14 +428,13 @@ void CVVideoProcess::doWork()
         }else if(!m_sharedEnable && m_recordEnable){
             GstBuffer *savingImage = gst_buffer_new();
             assert(savingImage != NULL);
-            GstMemory *gstMem = gst_allocator_alloc(NULL, m_imgShow->u->size, NULL);
+            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
             assert(gstMem != NULL);
             gst_buffer_append_memory(savingImage, gstMem);
             GstMapInfo mapT;
             gst_buffer_map(savingImage, &mapT, GST_MAP_READ);
-            memcpy((void *)mapT.data, m_imgShow->data, m_imgShow->u->size);
+            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
             gst_buffer_unmap(savingImage , &mapT);
-
             //add to saving
             GstFrameCacheItem gstFrameSaving;
             gstFrameSaving.setIndex(*m_frameID);

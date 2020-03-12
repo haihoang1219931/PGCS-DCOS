@@ -11,26 +11,24 @@
 #include "DetectedObjectsCacheItem.h"
 #include "GstFrameCacheItem.h"
 #include "ProcessImageCacheItem.h"
+class Cache;
 namespace rva
 {
     class Cache
     {
         public:
+
             explicit Cache() {}
 
             static rva::Cache* instance()
             {
-#ifdef GPU_PROCESS
-                if (nullptr == rva::Cache::m_instance)
+                if (nullptr == m_instance)
                 {
-                    Cache::m_instance = new rva::Cache();
-                    Cache::m_instance->init();
+                    m_instance = new rva::Cache();
+                    m_instance->init();
                 }
 
-                return Cache::m_instance;
-#else
-                return nullptr;
-#endif
+                return m_instance;
             }
 
 
@@ -86,87 +84,65 @@ namespace rva
 
             RollBuffer<Eye::SystemStatus>* getSystemStatusCache()
             {
-#ifdef GPU_PROCESS
                 if (nullptr != m_instance)
                 {
                     return m_rbSystem;
                 }
-#else
                 return nullptr;
-#endif
             }
 
             RollBuffer<Eye::MotionImage>* getMotionImageEOCache()
             {
-#ifdef GPU_PROCESS
                 if (nullptr != m_instance)
                 {
                     return m_rbIPCEO;
                 }
-
-#else
                 return nullptr;
-#endif
             }
 
             RollBuffer<Eye::MotionImage>* getMotionImageIRCache()
             {
-                #ifdef GPU_PROCESS
                 if (nullptr != m_instance)
                 {
                     return m_rbIPCIR;
                 }
-#else
                 return nullptr;
-#endif
             }
 
             RollBuffer<Eye::TrackResponse>* getEOTrackingCache()
             {
-                #ifdef GPU_PROCESS
                 if (nullptr != m_instance)
                 {
                     return m_rbTrackResEO;
                 }
-#else
                 return nullptr;
-#endif
             }
 
             RollBuffer<Eye::XPoint>* getEOSteeringCache()
             {
-                #ifdef GPU_PROCESS
                 if (nullptr != m_instance)
                 {
                     return m_rbXPointEO;
                 }
-#else
                 return nullptr;
-#endif
             }
 
             RollBuffer<Eye::TrackResponse>* getIRTrackingCache()
             {
-                #ifdef GPU_PROCESS
                 if (nullptr != m_instance)
                 {
                     return m_rbTrackResIR;
                 }
-#else
                 return nullptr;
-#endif
             }
 
             RollBuffer<Eye::XPoint>* getIRSteeringCache()
             {
-                #ifdef GPU_PROCESS
                 if (nullptr != m_instance)
                 {
                     return m_rbXPointIR;
                 }
-#else
                 return nullptr;
-#endif
             }
 
             RollBuffer_<DetectedObjectsCacheItem>* getDetectedObjectsCache()

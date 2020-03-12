@@ -41,14 +41,12 @@ void VRTSPServer::enough_data(GstElement *appsrc, guint unused, gpointer user_da
 
 GstFlowReturn VRTSPServer::need_data(GstElement *appsrc, guint unused, gpointer user_data)
 {
-    printf("\n====> run on need data");
+//    printf("\n====> run on need data");
     if (m_gstRTSPBuff->size() == 0) {
         return GstFlowReturn::GST_FLOW_CUSTOM_SUCCESS;
     }
 
     GstFrameCacheItem gstFrame = m_gstRTSPBuff->last();
-
-//    while ((gstFrame.getIndex() == 0) || (gstFrame.getIndex() == m_currID)) {
     while ((gstFrame.getIndex() == -1) || (gstFrame.getIndex() == 0)) {
         gstFrame = m_gstRTSPBuff->last();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -57,11 +55,8 @@ GstFlowReturn VRTSPServer::need_data(GstElement *appsrc, guint unused, gpointer 
     }
 
     m_currID = gstFrame.getIndex();
-    //    unsigned char * streamData = gstFrame.getImageData();
-    //    GstBuffer *gstBuffStream = gst_buffer_new_wrapped((gpointer) streamData, m_width*m_height*3/2);
-    //    GstBuffer *img_stream = gst_buffer_copy(gstBuffStream);
     GstBuffer *img_stream = gstFrame.getGstBuffer();
-    printf("\n===> RTSP Stream: %d", m_currID);
+//    printf("\n===> RTSP Stream: %d", m_currID);
     GstFlowReturn ret;
     img_stream->pts = static_cast<GstClockTime>(timestamp);
     img_stream->duration = gst_util_uint64_scale_int(1, GST_SECOND, m_fps);
@@ -83,15 +78,15 @@ void VRTSPServer::media_configure(GstRTSPMediaFactory *factory, GstRTSPMedia *me
 {
     Q_UNUSED(factory);
     Q_UNUSED(user_data);
-    printf("media_configure media = %p\r\n", media);
-    this->media = media;
+    printf("media_configure media = %p [%dx%d]-%d\r\n", media,m_width,m_height,m_fps);
+//    this->media = media;
     element = gst_rtsp_media_get_element(media);
-    appsrc = gst_bin_get_by_name_recurse_up(GST_BIN(element), "othersrc");
+    appsrc = gst_bin_get_by_name_recurse_up(GST_BIN(element), "mysrc");
     gst_util_set_object_arg(G_OBJECT(appsrc), "format", "time");
     /* configure the caps of the video */
     g_object_set(G_OBJECT(appsrc), "caps",
                  gst_caps_new_simple("video/x-raw",
-                                     "format", G_TYPE_STRING, "BGRA",
+                                     "format", G_TYPE_STRING, "I420",
                                      "width", G_TYPE_INT, m_width,
                                      "height", G_TYPE_INT, m_height,
                                      "framerate", GST_TYPE_FRACTION, m_fps, 1, NULL), NULL);
@@ -108,8 +103,8 @@ gboolean VRTSPServer::gstreamer_pipeline_operate()
     server = gst_rtsp_server_new();
     mounts = gst_rtsp_server_get_mount_points(server);
     factory = gst_rtsp_media_factory_new();
-    gst_rtsp_media_factory_set_launch(factory, "( appsrc name=othersrc ! videoconvert ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay name=pay0 pt=96 )");
-    //    gst_rtsp_media_factory_set_launch(factory, "( videotestsrc is-live=1 ! video/x-raw,format=BGRA,height=480,width=640,framerate=30/1 ! videoconvert ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay name=pay0 pt=96 )");
+    gst_rtsp_media_factory_set_launch(factory, "( appsrc name=mysrc ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )");
+//    gst_rtsp_media_factory_set_launch(factory, "( videotestsrc is-live=1 ! video/x-raw,width=1280,height=720,format=I420,framerate=30/1 ! x264enc ! rtph264pay name=pay0 pt=96 )");
     printf("gstreamer_pipeline_operate user_data %p\r\n", this);
     g_signal_connect(factory, "media-configure", (GCallback) wrap_media_configure, this);
     gst_rtsp_media_factory_set_shared(factory, TRUE);

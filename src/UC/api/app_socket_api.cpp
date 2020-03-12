@@ -27,8 +27,8 @@ enum class ServerMessage {
 
 const std::map<std::string, ServerMessage> mapMessage = {
     { "new_user_online", ServerMessage::NewUserOnline },
-    { "patron_request_join_room", ServerMessage::PcdRequestJoinRoom },
-    { "patron_request_share_video", ServerMessage::PcdRequestShareVideo },
+    { "pcd_request_join_room", ServerMessage::PcdRequestJoinRoom },
+    { "pcd_request_share_video", ServerMessage::PcdRequestShareVideo },
     { "update_room", ServerMessage::UpdateRoom },
     { "new_message", ServerMessage::NewMessage },
     { "add_to_room_response", ServerMessage::AddToRoomResponse },
@@ -127,7 +127,7 @@ void AppSocketApiImpl::createNewRoom(const QString &rtspLink, const QString &roo
 
 void AppSocketApiImpl::shareVideoToRoom() {
     Json::Value send_package;
-    send_package["mess"] = "shareVideoToAllPatronsInRoom";
+    send_package["mess"] = "shareVideoToAllPcdsInRoom";
     send_package["data"] = "";
     qDebug("%s", send_package.toStyledString().c_str());
     sendMessage("client_message", send_package.toStyledString());
@@ -135,7 +135,7 @@ void AppSocketApiImpl::shareVideoToRoom() {
 
 void AppSocketApiImpl::addPcdToRoom(const QString &pcdUid) {
     Json::Value send_package;
-    send_package["mess"] = "addPatronToRoom";
+    send_package["mess"] = "addPcdToRoom";
     send_package["data"]["pcd_uid"] = pcdUid.toStdString();
     qDebug("%s", send_package.toStyledString().c_str());
     sendMessage(send_package.toStyledString());
@@ -152,7 +152,7 @@ void AppSocketApiImpl::replyRequestJoinRoom(bool accepted, const QString &pcdUid
 
 void AppSocketApiImpl::requestOpenParticularPcdVideo(const QString &pcdUid) {
     Json::Value send_package;
-    send_package["mess"] = "fcsWantToViewVideoFromSinglePatron";
+    send_package["mess"] = "fcsWantToViewVideoFromSinglePcd";
     send_package["data"]["pcdUid"] = pcdUid.toStdString();
     qDebug("%s", send_package.toStyledString().c_str());
     sendMessage(send_package.toStyledString());
@@ -160,7 +160,7 @@ void AppSocketApiImpl::requestOpenParticularPcdVideo(const QString &pcdUid) {
 
 void AppSocketApiImpl::closePcdVideo(const QString &pcdUid) {
     Json::Value send_package;
-    send_package["mess"] = "fcsCloseVideoShareOfSinglePatron";
+    send_package["mess"] = "fcsCloseVideoShareOfSinglePcd";
     send_package["data"]["pcdUid"] = pcdUid.toStdString();
     qDebug("%s", send_package.toStyledString().c_str());
     sendMessage(send_package.toStyledString());
@@ -168,7 +168,7 @@ void AppSocketApiImpl::closePcdVideo(const QString &pcdUid) {
 
 void AppSocketApiImpl::sharePcdVideoToRoom(const QString &pcdUid) {
     Json::Value send_package;
-    send_package["mess"] = "sharePatronVideoToRoom";
+    send_package["mess"] = "sharePcdVideoToRoom";
     send_package["data"]["pcdUid"] = pcdUid.toStdString();
     qDebug("%s", send_package.toStyledString().c_str());
     sendMessage(send_package.toStyledString());
@@ -176,7 +176,7 @@ void AppSocketApiImpl::sharePcdVideoToRoom(const QString &pcdUid) {
 
 void AppSocketApiImpl::stopSharePcdVideoFromRoom(const QString &pcdUid) {
     Json::Value send_package;
-    send_package["mess"] = "stopSharePatronVideoFromRoom";
+    send_package["mess"] = "stopSharePcdVideoFromRoom";
     send_package["data"]["pcdUid"] = pcdUid.toStdString();
     qDebug("%s", send_package.toStyledString().c_str());
     sendMessage(send_package.toStyledString());
@@ -337,7 +337,7 @@ void AppSocketApiImpl::handleServerMessages(const sio::event &ev) {
             Q_EMIT newUserOnline(QString::fromStdString(jsonDataObj["data"]["uid"].toStyledString()), QString::fromStdString(jsonDataObj["data"]["name"].toStyledString()));
             break;
 
-        //---3. patron_request_join_room
+        //---3. pcd_request_join_room
         case ServerMessage::PcdRequestJoinRoom:
             while( !isQmlReady ) {
                 sleep(1);
@@ -345,7 +345,7 @@ void AppSocketApiImpl::handleServerMessages(const sio::event &ev) {
             Q_EMIT pcdRequestJoinRoom(QString::fromStdString(jsonDataObj["data"]["pcdUid"].toStyledString()));
             break;
 
-        //---4. patron_request_share_video
+        //---4. pcd_request_share_video
         case ServerMessage::PcdRequestShareVideo:
             while( !isQmlReady ) {
                 sleep(1);
@@ -411,14 +411,15 @@ void AppSocketApiImpl::onFailed() {
 void AppSocketApiImpl::onClosed(const sio::client::close_reason &reason) {
     qDebug("Socket connection on closed !!!");
     isConnected = false;
+    Q_EMIT networkCrash();
 }
 
 void AppSocketApiImpl::sendMessage(const std::string &cmd, const std::string &msg) {
-    sockInst->socket()->emit(cmd, msg);
+    sockInst->socket()->emit_(cmd, msg);
 }
 
 void AppSocketApiImpl::sendMessage(const std::string &msg) {
-    sockInst->socket()->emit("client_message", msg);
+    sockInst->socket()->emit_("client_message", msg);
 }
 
 Json::Value AppSocketApiImpl::parseData(const std::string &package) {

@@ -30,8 +30,10 @@ Rectangle {
     border.width: 1
     property alias waypointModeEnabled: rectWaypointMode.enabled
     property string degreeSymbol : "\u00B0"
+    property var lstCde: [
+        cdeLat,cdeLon]
     property var lstTxt: [
-        cdeLat,cdeLon,txtAGL,
+        txtAGL,
         txtParam1,txtParam2,txtParam3,txtParam4]
 
     signal waypointModeChanged(string waypointMode,
@@ -549,9 +551,13 @@ Rectangle {
     }
 
     function changeAllFocus(enable){
+        for(var i =0; i < lstCde.length; i++){
+            if(lstCde[i].focus !== enable)
+                lstCde[i].focus = enable;
+        }
         for(var i =0; i < lstTxt.length; i++){
-            if(lstTxt[i].focus !== enable)
-                lstTxt[i].focus = enable;
+            if(lstTxt[i].editting !== enable)
+                lstTxt[i].editting = enable;
         }
     }
 
@@ -626,6 +632,9 @@ Rectangle {
                 value: root.latitude
                 validatorValue: root.validatorLat
                 validatorValueDecimal: root.validatorLatDecimal
+                onValueChanged: {
+                    root.latitude = value;
+                }
             }
             CoordinateEditor{
                 id: cdeLon
@@ -636,6 +645,9 @@ Rectangle {
                 value: root.longitude
                 validatorValue: root.validatorLon
                 validatorValueDecimal: root.validatorLonDecimal
+                onValueChanged: {
+                    root.longitude = value;
+                }
             }
         }
         RowLayout {
@@ -648,26 +660,25 @@ Rectangle {
                 width: UIConstants.sRect * 6
                 Layout.fillHeight: true
                 enabled: false
-                text: focus?text:Number(root.agl+root.asl).toFixed(2)
+                text: Number(root.agl+root.asl).toFixed(2)
                 title: "AMSL"
             }
             QLabeledTextInput {
                 id: txtAGL
                 width: UIConstants.sRect * 6
                 Layout.fillHeight: true
-                text: focus?text:root.agl
+                text: editting?text:root.agl
                 title: "AGL"
                 validator: RegExpValidator { regExp: validatorAltitude }
                 onTextChanged: {
-                    if(focus){
-                        if(text != "" && isNaN(text)){
+                    if(editting){
+                        if(text != "" && !isNaN(text)){
                             var newValue = parseFloat(text);
                             root.agl = newValue;
                         }
                     }
                 }
             }
-
         }
 
         RowLayout {
@@ -685,12 +696,12 @@ Rectangle {
                     Layout.preferredWidth: parent.width
                     Layout.preferredHeight: UIConstants.sRect * 2
                     validator: RegExpValidator { regExp: root.validatorParam }
-                    text: focus?text:parseInt(root.param1)
+                    text: editting?text:parseInt(root.param1)
                     title: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM1"]["LABEL"]
                     enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM1"]["EDITABLE"]
                     onTextChanged: {
-                        if(focus){
-                            if(text != "" && isNaN(text)){
+                        if(editting){
+                            if(text != "" && !isNaN(text)){
                                 root.param1 = parseInt(text);
                             }
                         }
@@ -702,12 +713,12 @@ Rectangle {
                     Layout.preferredWidth: parent.width
                     Layout.preferredHeight: UIConstants.sRect * 2
                     validator: RegExpValidator { regExp: root.validatorParam }
-                    text: focus?text:parseInt(root.param3)
+                    text: editting?text:parseInt(root.param3)
                     title: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM3"]["LABEL"]
                     enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM3"]["EDITABLE"]
                     onTextChanged: {
-                        if(focus){
-                            if(text != "" && isNaN(text)){
+                        if(editting){
+                            if(text != "" && !isNaN(text)){
                                 root.param3 = parseInt(text);
                             }
                         }
@@ -724,12 +735,12 @@ Rectangle {
                     Layout.preferredWidth: parent.width
                     Layout.preferredHeight: UIConstants.sRect * 2
                     validator: RegExpValidator { regExp: root.validatorParam }
-                    text: focus?text:parseInt(root.param2)
+                    text: editting?text:parseInt(root.param2)
                     title: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM2"]["LABEL"]
                     enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM2"]["EDITABLE"]
                     onTextChanged: {
-                        if(focus){
-                            if(text != "" && isNaN(text)){
+                        if(editting){
+                            if(text != "" && !isNaN(text)){
                                 root.param2 = parseInt(text);
                             }
                         }
@@ -741,12 +752,12 @@ Rectangle {
                     Layout.preferredWidth: parent.width
                     Layout.preferredHeight: UIConstants.sRect * 2
                     validator: RegExpValidator { regExp: root.validatorParam }
-                    text: focus?text:parseInt(root.param4)
+                    text: editting?text:parseInt(root.param4)
                     title: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM4"]["LABEL"]
                     enabled: lstWaypointCommand[vehicleType][waypointModes[lstWaypointMode.currentIndex]]["PARAM4"]["EDITABLE"]
                     onTextChanged: {
-                        if(focus){
-                            if(text != "" && isNaN(text)){
+                        if(editting){
+                            if(text != "" && !isNaN(text)){
                                 root.param4 = parseInt(text);
                             }
                         }

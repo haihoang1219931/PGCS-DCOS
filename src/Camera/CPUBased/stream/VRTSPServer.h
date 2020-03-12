@@ -44,9 +44,9 @@ class VRTSPServer : public QThread
         void setStreamSize(int _width, int _height);
     public:
         std::string m_streamMount = "/stream";
-        int m_width = 1080;
+        int m_width = 1280;
         int m_height = 720;
-        int m_fps = 25;
+        int m_fps = 30;
         int m_currID = -1;
         bool m_stop = false;
         GstElement *element;

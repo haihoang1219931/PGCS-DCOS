@@ -5,7 +5,6 @@
 #include <QFile>
 #include <iostream>
 #include <fstream>
-#include "../Utils/filenameutils.h"
 
 class LogController : public QObject
 {

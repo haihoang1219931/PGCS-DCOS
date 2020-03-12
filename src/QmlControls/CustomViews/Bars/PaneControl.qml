@@ -94,7 +94,7 @@ Item{
         anchors.top: parent.top
         anchors.left: parent.left
         icon: UIConstants.iWindowStore
-        iconSize: 20
+        iconSize: UIConstants.sRect
         isSolid: false
         isShowRect: false
         visible: rootItem.state === "show"
@@ -110,7 +110,7 @@ Item{
         anchors.left: parent.left
         icon: UIConstants.iHide
         rotation: rootItem.state === "show"?0:180
-        iconSize: 20
+        iconSize: UIConstants.sRect
         isSolid: true
         isShowRect: false
         border.color: rootItem.state === "hide"?
@@ -196,7 +196,7 @@ Item{
                 Layout.preferredWidth: UIConstants.sRect*2
                 Layout.preferredHeight: UIConstants.sRect*2
                 icon: UIConstants.iShare
-                iconSize: 20
+                iconSize: UIConstants.sRect
                 isSolid: true
                 isShowRect: false
                 iconColor: camState.gcsShare?UIConstants.greenColor:UIConstants.textColor
@@ -210,7 +210,7 @@ Item{
                 Layout.preferredHeight: UIConstants.sRect*2
                 icon: UIConstants.iSensor
                 isAutoReturn: true
-                iconSize: 20
+                iconSize: UIConstants.sRect
                 isSolid: true
                 isShowRect: false
                 iconRotate: camState.sensorID === camState.sensorIDEO?0:180
@@ -226,7 +226,7 @@ Item{
                 isAutoReturn: true
                 isShowRect: false
                 isSolid: true
-                iconSize: 20
+                iconSize: UIConstants.sRect
                 onClicked: {
                     rootItem.gcsSnapshotClicked();
                 }
@@ -239,7 +239,7 @@ Item{
                 isAutoReturn: true
                 isShowRect: false
                 isSolid: true
-                iconSize: 20
+                iconSize: UIConstants.sRect
                 iconColor: camState.gcsStab?UIConstants.greenColor:UIConstants.textColor
                 onClicked: {
                     rootItem.gcsStabClicked();
@@ -253,7 +253,7 @@ Item{
                 isAutoReturn: true
                 isShowRect: false
                 isSolid: true
-                iconSize: 20
+                iconSize: UIConstants.sRect
                 iconColor: camState.gcsRecord?UIConstants.greenColor:UIConstants.textColor
                 onClicked: {
                     rootItem.gcsRecordClicked();
@@ -267,7 +267,7 @@ Item{
                 Layout.preferredWidth: UIConstants.sRect*2
                 Layout.preferredHeight: UIConstants.sRect*2
                 icon: UIConstants.iCompress
-                iconSize: 20
+                iconSize: UIConstants.sRect
                 isAutoReturn: true
                 isSolid: true
                 isShowRect: false
@@ -280,7 +280,7 @@ Item{
                 Layout.preferredWidth: UIConstants.sRect*2
                 Layout.preferredHeight: UIConstants.sRect*2
                 icon: UIConstants.iZoomIn
-                iconSize: 20
+                iconSize: UIConstants.sRect
                 isAutoReturn: true
                 isSolid: true
                 isShowRect: false
@@ -293,7 +293,7 @@ Item{
                 Layout.preferredWidth: UIConstants.sRect*2
                 Layout.preferredHeight: UIConstants.sRect*2
                 icon: UIConstants.iZoomOut
-                iconSize: 20
+                iconSize: UIConstants.sRect
                 isAutoReturn: true
                 isSolid: true
                 isShowRect: false

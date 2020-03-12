@@ -11,3 +11,6 @@ ParamsSelectDialog              1.0 ParamsSelectDialog.qml
 ParamsShowDialog                1.0 ParamsShowDialog.qml
 FileDialog                      1.0 FileDialog.qml
 MapDialog                       1.0 MapDialog.qml
+ObjectInformation               1.0 ObjectInformation.qml
+ObjectsOnMap                    1.0 ObjectsOnMap.qml
+ObjectsOnScreen                 1.0 ObjectsOnScreen.qml

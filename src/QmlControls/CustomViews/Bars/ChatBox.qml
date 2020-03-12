@@ -15,10 +15,10 @@ import io.qdt.dev   1.0
 //---------------- Component definition ---------------------------------------
 Rectangle {
     id: rootItem
-//    width: 20*15
-//    height: 20*20
-    width: 20 * 12
-    height: 20 * 22
+//    width: UIConstants.sRect * 15
+//    height: UIConstants.sRect * 20
+    width: UIConstants.sRect * 12
+    height: UIConstants.sRect * 18
     color: UIConstants.transparentBlue
     //    border.color: UIConstants.grayColor
     //    border.width: 1
@@ -45,13 +45,13 @@ Rectangle {
             }
             PropertyChanges{
                 target: rootItem
-                width: 20*12
-                height: 20*22
+                width: UIConstants.sRect * 12
+                height: UIConstants.sRect * 22
             }
             PropertyChanges{
                 target: rectHeader
-                width: 20*12
-                height: 20*2
+                width: UIConstants.sRect * 12
+                height: UIConstants.sRect * 2
                 color: UIConstants.bgAppColor
             }
             PropertyChanges{
@@ -75,13 +75,13 @@ Rectangle {
             }
             PropertyChanges{
                 target: rootItem
-                height: 20*2
-                width: 20*0
+                height: UIConstants.sRect * 2
+                width: UIConstants.sRect * 0
             }
             PropertyChanges{
                 target: rectHeader
-                height: 20*2
-                width: 20*0
+                height: UIConstants.sRect * 2
+                width: UIConstants.sRect * 0
                 //                color: UIConstants.transparentColor
             }
             PropertyChanges{
@@ -142,7 +142,7 @@ Rectangle {
 
     Rectangle {
         id: rectHeader
-        height: 20*2
+        height: UIConstants.sRect * 2
         color: UIConstants.bgAppColor
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -157,8 +157,8 @@ Rectangle {
             x: 262
             iconSize: 20
             isShowRect: false
-            width: 20*3/2
-            height: 20*3/2
+            width: UIConstants.sRect * 3/2
+            height: UIConstants.sRect * 3/2
             anchors.verticalCenter: parent.verticalCenter
             icon: UIConstants.iChatClose
             isSolid: true
@@ -318,8 +318,8 @@ Rectangle {
 
         FlatButtonIcon {
             id: sendButton
-            width: 30
-            height: 30
+            width: UIConstants.sRect
+            height: UIConstants.sRect
             anchors.right: parent.right
             anchors.rightMargin: 8
             anchors.bottom: parent.bottom

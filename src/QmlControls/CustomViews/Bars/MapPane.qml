@@ -924,7 +924,7 @@ Item {
                                                                fontSize: UIConstants.fontSize,
                                                                text: description,
                                                                size: wpFontSize,
-                                                               offsetY: - wpBoundSize/2 - wpFontSize / 2,
+                                                               offsetY: - wpBoundSize - wpFontSize,
                                                                verticalAlignment: Enums.VerticalAlignmentBottom
                                                            });
         compositeSymbol.symbols.append(symbol);
@@ -2442,6 +2442,10 @@ Item {
                                 altitude);
                     selectedMarker.attributes.replaceAttribute("latitude",locationWGS84['lat']);
                     selectedMarker.attributes.replaceAttribute("longitude",locationWGS84['lon']);
+                    var asl = elevationFinder.getAltitude(
+                                cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder,
+                                locationWGS84['lat'],locationWGS84['lon']);
+                    markerEditor.asl = asl;
                     markerEditor.changeCoordinate(markerCoordinate);
                 }
                 onPressAndHold: {
@@ -2504,6 +2508,7 @@ Item {
                 function changeState(){
                     if(selectedMarker!= undefined){
                         var altitude = 0;
+
                         var locationWGS84 = Conv.mercatorToLatLon(
                                     selectedMarker.geometry.extent.center.x,
                                     selectedMarker.geometry.extent.center.y);
@@ -2511,6 +2516,10 @@ Item {
                                     locationWGS84['lat'],
                                     locationWGS84['lon'],
                                     altitude);
+                        var asl = elevationFinder.getAltitude(
+                                    cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder,
+                                    locationWGS84['lat'],locationWGS84['lon']);
+                        markerEditor.asl = asl;
                         markerEditor.loadInfo(
                                     markerCoordinate,
                                     getMarkerType(selectedMarker),

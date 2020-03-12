@@ -225,7 +225,7 @@ void ITrack::train(cv::Mat &x, float learning_rate)
     if (!m_trackInited) {
         try {
             m_fftK = FFTTools::fftd(k);
-            printf("%s: fftK size: [%d x %d] \tm_params.Y size: [%d x %d]\n", __FUNCTION__, m_fftK.cols, m_fftK.rows, m_params.Y.cols, m_params.Y.rows);
+//            printf("%s: fftK size: [%d x %d] \tm_params.Y size: [%d x %d]\n", __FUNCTION__, m_fftK.cols, m_fftK.rows, m_params.Y.cols, m_params.Y.rows);
             alphaF = FFTTools::complexDivision(m_params.Y, m_fftK + m_params.lamda);
         } catch (std::exception &e) {
             printf("%s: Exception: complexDivision 1: %s\n", __FUNCTION__, e.what());
@@ -259,7 +259,7 @@ void ITrack::initTrack(cv::Mat &_image, cv::Rect _selRoi)
         float paddedW = m_objRoi.width * m_params.paddRatio;
         float paddedH = m_objRoi.height * m_params.paddRatio;
         m_params.scale = (paddedW > paddedH) ? (paddedW / TEMPLATE_SIZE) : (paddedH / TEMPLATE_SIZE);
-        printf("%s: m_params.scale: %f\n", __FUNCTION__, m_params.scale);
+//        printf("%s: m_params.scale: %f\n", __FUNCTION__, m_params.scale);
         m_params.tmplSize.width  = (int)(paddedW / m_params.scale);
         m_params.tmplSize.height = (int)(paddedH / m_params.scale);
 
@@ -276,18 +276,18 @@ void ITrack::initTrack(cv::Mat &_image, cv::Rect _selRoi)
         float   cx = m_objRoi.x + m_objRoi.width / 2.0f,
                 cy = m_objRoi.y + m_objRoi.height / 2.0f;
         cv::Mat initPatch = getPatch(_image, cx, cy, 1.0f, cv::Size(m_objRoi.width, m_objRoi.height));
-        printf("%s: initPatch size: [%d x %d]\n", __FUNCTION__, initPatch.cols, initPatch.rows);
+//        printf("%s: initPatch size: [%d x %d]\n", __FUNCTION__, initPatch.cols, initPatch.rows);
         m_tmpl = extractFeatures(initPatch);
         m_params.feaMapSize[0] = m_params.tmplSize.height / CELL_SIZE - 2;
         m_params.feaMapSize[1] = m_params.tmplSize.width / CELL_SIZE - 2;
         m_params.feaMapSize[2] = m_tmpl.rows;
-        printf("%s: tmplSize: [%d, %d]\n", __FUNCTION__, m_params.tmplSize.width, m_params.tmplSize.height);
-        printf("%s: m_params.feaMapSize: [%d, %d, %d]\n", __FUNCTION__, m_params.feaMapSize[0], m_params.feaMapSize[1], m_params.feaMapSize[2]);
+//        printf("%s: tmplSize: [%d, %d]\n", __FUNCTION__, m_params.tmplSize.width, m_params.tmplSize.height);
+//        printf("%s: m_params.feaMapSize: [%d, %d, %d]\n", __FUNCTION__, m_params.feaMapSize[0], m_params.feaMapSize[1], m_params.feaMapSize[2]);
         //----- Create filter
         createHannWindow(m_params.HannWin, m_params.feaMapSize, m_params.featureType);
         m_tmpl = m_params.HannWin.mul(m_tmpl);
         m_params.Y = createGaussianDistribution(m_params.feaMapSize[0], m_params.feaMapSize[1]);
-        printf("%s: m_params.Y = [%d x %d]\n", __FUNCTION__,  m_params.Y.cols, m_params.Y.rows);
+//        printf("%s: m_params.Y = [%d x %d]\n", __FUNCTION__,  m_params.Y.cols, m_params.Y.rows);
         m_params.Alpha = cv::Mat::zeros(m_params.feaMapSize[0], m_params.feaMapSize[1], CV_32FC2);
         m_fftK = cv::Mat::zeros(m_params.feaMapSize[0], m_params.feaMapSize[1], CV_32FC2);
         //----- Init training

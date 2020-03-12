@@ -331,7 +331,7 @@ class KFlow
         /*
          * Computes the NCC value for points from one frame to the other
          */
-        static void NCC(const cv::Mat &I,
+        static void ncc(const cv::Mat &I,
                         const cv::Mat &J,
                         vector<cv::Point2f> &ptsI,
                         vector<cv::Point2f> &ptsJ,

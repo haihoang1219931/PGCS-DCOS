@@ -28,6 +28,7 @@ Item{
     property alias title: txtTitle.text
     property alias text: txtInput.text
     property alias validator: txtInput.validator
+    property bool editting
     ColumnLayout{
         anchors.fill: parent
         spacing: 0
@@ -43,7 +44,6 @@ Item{
             font.family: UIConstants.appFont
         }
         Rectangle {
-
             Layout.preferredHeight: parent.height / 2
             Layout.fillWidth: true
             clip: true
@@ -63,6 +63,9 @@ Item{
                 anchors.leftMargin: 4
                 anchors.right: parent.right
                 anchors.rightMargin: 4
+                onCursorVisibleChanged: {
+                    editting = cursorVisible;
+                }
             }
         }
     }

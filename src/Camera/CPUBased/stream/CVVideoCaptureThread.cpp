@@ -50,7 +50,8 @@ CVVideoCaptureThread::CVVideoCaptureThread(QObject *parent) : QObject(parent)
     connect(this, SIGNAL(readyToRead()), this, SLOT(restart()));
     connect(m_process, SIGNAL(detectObject()), this, SLOT(objectDetect()));
     connect(m_process, SIGNAL(trackStateLost()), this, SLOT(slObjectLost()));
-    connect(m_process, SIGNAL(trackStateFound(int, int, int, int, int, int)), this, SLOT(slObjectFound(int, int, int, int, int, int)));
+    connect(m_process, SIGNAL(trackStateFound(int, double, double, double, double, double, double)), this,
+            SLOT(slDeterminedTrackObjected(int, double, double, double, double, double, double)));
     connect(m_process, SIGNAL(streamFrameSizeChanged(int, int)), this, SLOT(onStreamFrameSizeChanged(int, int)));
     //    connect(m_process,SIGNAL(objectSizeChange(float)),this,SLOT(doChangeZoom(float)));
     m_capture->m_imageQueue = &m_imageQueue;
@@ -139,8 +140,7 @@ CVVideoCaptureThread::~CVVideoCaptureThread()
 }
 void CVVideoCaptureThread::setVideo(QString value)
 {
-    printf("Set address: %s\r\n", value.toStdString().c_str());
-    m_capture->setSource(value.toStdString());
+    m_capture->setSource(value.toStdString() + " ! appsink name=mysink sync=true async=true");
 }
 void CVVideoCaptureThread::setAddress(QString _ip, int _port)
 {
@@ -148,6 +148,15 @@ void CVVideoCaptureThread::setAddress(QString _ip, int _port)
     m_capture->m_port = _port;
 }
 void CVVideoCaptureThread::start()
+{
+    //    m_captureThread->wait(100);
+    m_captureThread->start();
+    //    m_processThread->wait(100);
+    m_processThread->start();
+    //    m_recordThread->wait(100);
+    //    m_recordThread->start();
+}
+void CVVideoCaptureThread::play()
 {
     //    m_captureThread->wait(100);
     m_captureThread->start();
@@ -294,7 +303,9 @@ void CVVideoCaptureThread::killRecordThread()
 }
 void CVVideoCaptureThread::setTrack(int x, int y)
 {
-    m_process->setTrack(x, y);
+//    m_process->setTrack(x, y);
+
+
 }
 void CVVideoCaptureThread::setStab(bool enable)
 {
@@ -401,21 +412,8 @@ void CVVideoCaptureThread::doShowVideo()
             m_sourceSize.setHeight(m_imgShow.rows);
             Q_EMIT sourceSizeChanged(m_imgShow.cols, m_imgShow.rows);
         }
-
-        QVideoFrame m_videoFrame(
-            m_imgShow.rows * m_imgShow.cols * m_imgShow.channels(),
-            QSize(m_imgShow.cols, m_imgShow.rows),
-            m_imgShow.cols * m_imgShow.channels(),
-            VIDEO_OUTPUT_FORMAT);
-        m_videoFrame.map(QAbstractVideoBuffer::ReadOnly);
-        QImage img(m_videoFrame.bits(),
-                   m_videoFrame.width(),
-                   m_videoFrame.height(),
-                   m_videoFrame.bytesPerLine(),
-                   QVideoFrame::imageFormatFromPixelFormat(m_videoFrame.pixelFormat()));
         QImage tmp((uchar *)m_imgShow.data, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888);
         QVideoFrame output = QVideoFrame(tmp);
-        m_videoFrame.unmap();
 
         //        printf("show image[%dx%d]\r\n",m_imgShow.cols,m_imgShow.rows);
         if (!m_videoSurface->present(output)) {
@@ -442,37 +440,71 @@ void CVVideoCaptureThread::setObjectArea(int area)
     m_process->m_objectArea = area;
     m_process->m_detector->setMinObjArea((float)area);
 }
-void CVVideoCaptureThread::slObjectLost()
-{
-    Q_EMIT objectLost();
-}
 
-void CVVideoCaptureThread::slObjectFound(int x, int y, int width, int height, int trackWidth, int trackHeight)
-{
-    Q_EMIT objectFound(x, y, width, height, trackWidth, trackHeight);
-}
 void CVVideoCaptureThread::doChangeZoom(float zoomRate)
 {
     Q_EMIT needZoomChange(zoomRate);
 }
+void CVVideoCaptureThread::disableObjectDetect(){
 
+}
+void CVVideoCaptureThread::enableObjectDetect(){
 
+}
+void CVVideoCaptureThread::enVisualLock(){
+
+}
+void CVVideoCaptureThread::disVisualLock(){
+
+}
+void CVVideoCaptureThread::setDigitalStab(bool _en){
+    m_process->m_stabEnable = _en;
+}
+void CVVideoCaptureThread::setTrackAt(int _id, double _px, double _py, double _w, double _h)
+{
+
+    int x = static_cast<int>(_px/_w*m_sourceSize.width());
+    int y = static_cast<int>(_py/_h*m_sourceSize.height());
+    m_process->setTrack(x,y);
+    printf("%s at (%dx%d)\r\n",__func__,x,y);
+    removeTrackObjectInfo(0);
+    TrackObjectInfo *object = new TrackObjectInfo(m_sourceSize,QRect(x-20,y-20,40,40),"Object",20.975092,105.307680,0,0,"Track");
+    object->setIsSelected(true);
+    addTrackObjectInfo(object);
+}
 void CVVideoCaptureThread::setStreamMount(QString _streamMount)
 {
     m_vRTSPServer->setStreamMount(_streamMount.toStdString());
 }
-
+void CVVideoCaptureThread::slObjectLost(){
+    removeTrackObjectInfo(0);
+    Q_EMIT objectLost();
+}
+void CVVideoCaptureThread::slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h){
+    updateTrackObjectInfo("Object","RECT",QVariant(QRect(
+                                                       static_cast<int>(_px-_oW/2),
+                                                       static_cast<int>(_py-_oH/2),
+                                                       static_cast<int>(_oW),
+                                                       static_cast<int>(_oH)))
+                          );
+    updateTrackObjectInfo("Object","LATITUDE",QVariant(20.975092+_px/1000000));
+    updateTrackObjectInfo("Object","LONGIITUDE",QVariant(105.307680+_py/1000000));
+    updateTrackObjectInfo("Object","SPEED",QVariant(_py));
+    updateTrackObjectInfo("Object","ANGLE",QVariant(_px));
+    Q_EMIT determinedTrackObjected(_id,_px,_py,_oW, _oH, _w, _h);
+}
 void CVVideoCaptureThread::onStreamFrameSizeChanged(int width, int height)
 {
+    printf("%s [%dx%d]\r\n",__func__,width,height);
     m_vRTSPServer->setStreamSize(width, height);
     m_vSavingWorker->setStreamSize(width, height);
-    m_vSavingWorker->setSensorMode(m_sensorMode);
+//    m_vSavingWorker->setSensorMode(m_sensorMode);
 
     if (m_enStream) {
         m_vRTSPServer->start();
     }
 
-    if (m_enSaving) {
-        m_vSavingWorker->start();
-    }
+//    if (m_enSaving) {
+//        m_vSavingWorker->start();
+//    }
 }

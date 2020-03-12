@@ -106,6 +106,7 @@ Rectangle{
             x: 280
             y: 187
             icon: qsTr("Propeller 03")
+            iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
             height: UIConstants.sRect * 2
@@ -123,6 +124,7 @@ Rectangle{
             id: btnP4
             y: 168
             icon: qsTr("Propeller 04")
+            iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
             height: UIConstants.sRect * 2

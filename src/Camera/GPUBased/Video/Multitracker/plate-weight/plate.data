@@ -1,6 +1,0 @@
-classes= 2
-train  = /media/dat/05C830EB6380925C/data/huongnt-vehicle-DET/list-valid.txt
-valid = /media/dat/05C830EB6380925C/data/giapvn/listImage.txt
-names = /media/dat/05C830EB6380925C/data/huongnt-vehicle-DET/train/class.names
-backup = /media/dat/05C830EB6380925C/data/huongnt-vehicle-DET/train/backup
-

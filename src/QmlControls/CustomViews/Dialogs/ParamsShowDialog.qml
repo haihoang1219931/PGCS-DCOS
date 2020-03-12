@@ -70,7 +70,6 @@ Rectangle {
                     rectMinize.scale = 1;
                 }
                 onClicked: {
-                    console.log("Param clicked");
                     if(vehicle.propertiesShowCount > 0){
                         showContent =!showContent;
                         animParamsShow.start()

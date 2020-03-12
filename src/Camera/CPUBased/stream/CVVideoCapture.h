@@ -32,7 +32,7 @@
 #else
 
 #endif
-
+#define DEBUG
 #define LICENSE_DIR     "."
 #define TIMEOUT_MS      1000
 //#define SLEEP_TIME      25

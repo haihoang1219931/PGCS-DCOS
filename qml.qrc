@@ -35,8 +35,12 @@
         <file alias="CustomViews/Dialogs/LoiterRadiusEditor.qml">src/QmlControls/CustomViews/Dialogs/LoiterRadiusEditor.qml</file>
         <file alias="CustomViews/Dialogs/WaypointEditor.qml">src/QmlControls/CustomViews/Dialogs/WaypointEditor.qml</file>
         <file alias="CustomViews/Dialogs/FileDialog.qml">src/QmlControls/CustomViews/Dialogs/FileDialog.qml</file>
-        <file alias="CustomViews/Dialogs/MapDialog.qml">src/QmlControls/CustomViews/Dialogs/MapDialog.qml</file>        
+        <file alias="CustomViews/Dialogs/MapDialog.qml">src/QmlControls/CustomViews/Dialogs/MapDialog.qml</file>   
+        <file alias="CustomViews/Dialogs/ObjectInformation.qml">src/QmlControls/CustomViews/Dialogs/ObjectInformation.qml</file>   
+        <file alias="CustomViews/Dialogs/ObjectsOnMap.qml">src/QmlControls/CustomViews/Dialogs/ObjectsOnMap.qml</file>   
+        <file alias="CustomViews/Dialogs/ObjectsOnScreen.qml">src/QmlControls/CustomViews/Dialogs/ObjectsOnScreen.qml</file>                           
         <file alias="CustomViews/Dialogs/qmldir">src/QmlControls/CustomViews/Dialogs/qmldir</file>
+        <file alias="CustomViews/Bars/ListPlatesLog.qml">src/QmlControls/CustomViews/Bars/ListPlatesLog.qml</file>
         <file alias="CustomViews/Bars/MapControl.qml">src/QmlControls/CustomViews/Bars/MapControl.qml</file>
         <file alias="CustomViews/Bars/PopupInfo.qml">src/QmlControls/CustomViews/Bars/PopupInfo.qml</file>
         <file alias="CustomViews/Bars/ChatBox.qml">src/QmlControls/CustomViews/Bars/ChatBox.qml</file>
@@ -74,6 +78,9 @@
         <file alias="CustomViews/Components/QTextInput.qml">src/QmlControls/CustomViews/Components/QTextInput.qml</file>            
         <file alias="CustomViews/Components/ScrollBar.qml">src/QmlControls/CustomViews/Components/ScrollBar.qml</file>        
         <file alias="CustomViews/Components/QLabel.qml">src/QmlControls/CustomViews/Components/QLabel.qml</file>
+        <file alias="CustomViews/Components/FlatCorner.qml">src/QmlControls/CustomViews/Components/FlatCorner.qml</file>
+        <file alias="CustomViews/Components/FlatRectangle.qml">src/QmlControls/CustomViews/Components/FlatRectangle.qml</file>
+        <file alias="CustomViews/Components/ToastLabel.qml">src/QmlControls/CustomViews/Components/ToastLabel.qml</file>                        
         <file alias="CustomViews/Components/QLabeledTextInput.qml">src/QmlControls/CustomViews/Components/QLabeledTextInput.qml</file>                
         <file alias="CustomViews/Components/qmldir">src/QmlControls/CustomViews/Components/qmldir</file>
         <file alias="CustomViews/Advanced/AdvancedConfig.qml">src/QmlControls/CustomViews/Advanced/AdvancedConfig.qml</file>

@@ -1,7 +1,9 @@
 #ifndef DETECTEDOBJECTSCACHEITEM_H
 #define DETECTEDOBJECTSCACHEITEM_H
-#include "../GPUBased/Video/Multitracker/yolo_v2_class.hpp"
+
+#include "../Camera/GPUBased/OD/yolo_v2_class.hpp"
 #include "CacheItem.h"
+#include "gst/gst.h"
 #include <memory>
 
 namespace rva

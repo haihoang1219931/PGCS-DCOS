@@ -18,7 +18,7 @@ import UC       1.0
 Rectangle {
     id: rootItem
     width: UIConstants.sRect * 12
-    height: UIConstants.sRect * 24
+    height: UIConstants.sRect * 18
     color: "transparent"
     radius: UIConstants.rectRadius
     property bool showInfoDrones: true
@@ -52,14 +52,14 @@ Rectangle {
         anchors.topMargin: 0
         IconSVG{
             id: iconDroneOnline
-            width: 25
-            size: 25
+            width: height
+            size: UIConstants.sRect
             anchors.top: parent.top
-            anchors.topMargin: 7
+            anchors.topMargin: 2
             anchors.left: parent.left
-            anchors.leftMargin: 7
+            anchors.leftMargin: 2
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 7
+            anchors.bottomMargin: 2
             source: "qrc:/assets/images/icons/Quad.svg"
             color: "green"
         }
@@ -73,7 +73,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: 0
             anchors.left: parent.left
-            anchors.leftMargin: 46
+            anchors.leftMargin: UIConstants.sRect * 2
             anchors.top: parent.top
             anchors.topMargin: 0
             anchors.bottom: parent.bottom
@@ -113,7 +113,7 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 2
             color: "green"
-            iconSize: 25
+            iconSize: UIConstants.sRect
             icon:  UIConstants.iPatrolMan
         }
 
@@ -126,7 +126,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: 0
             anchors.left: parent.left
-            anchors.leftMargin: 46
+            anchors.leftMargin: UIConstants.sRect * 2
             anchors.top: parent.top
             anchors.topMargin: 0
             anchors.bottom: parent.bottom
@@ -163,7 +163,7 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 2
             color: "green"
-            iconSize: 25
+            iconSize: UIConstants.sRect
             icon:  UIConstants.iCenterCommander
         }
 
@@ -176,7 +176,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: 0
             anchors.left: parent.left
-            anchors.leftMargin: 46
+            anchors.leftMargin: UIConstants.sRect * 2
             anchors.top: parent.top
             anchors.topMargin: 0
             anchors.bottom: parent.bottom
@@ -198,10 +198,10 @@ Rectangle {
     }
     FlatButtonIcon {
         id: btnChatIcon
-        iconSize: 20
         isShowRect: false
-        width: 20*3/2
-        height: 20*3/2
+        width: UIConstants.sRect*3/2
+        height: UIConstants.sRect*3/2
+        iconSize: UIConstants.fontSize * 3 / 2
         icon: UIConstants.iChatIcon
         isSolid: true
         isAutoReturn: true

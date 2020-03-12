@@ -24,17 +24,20 @@ Rectangle {
     id: root
     //---------- properties
     color: UIConstants.transparentBlue
-    height: UIConstants.sRect * 11
-    width: UIConstants.sRect * 10
+    height: UIConstants.sRect * 14
+    width: UIConstants.sRect * 13
     radius: UIConstants.rectRadius
     border.color: "gray"
     border.width: 1
     property real latitude: 0
     property real longitude: 0
+    property real asl: 0
     property real agl: 0
     property var validatorAltitude: /^([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9])/
     property var validatorLat: /^([-]|)([0-9]|[1-8][0-9])(\.)([0-9][0-9][0-9][0-9][0-9][0-9][0-9])/
     property var validatorLon: /^([-]|)([0-9]|[1-9][0-9]|[1][0-7][0-9])(\.)([0-9][0-9][0-9][0-9][0-9][0-9][0-9])/
+    property var validatorLatDecimal: /^([-]|)([0-9]|[1-8][0-9])/
+    property var validatorLonDecimal: /^([-]|)([0-9]|[1-9][0-9]|[1][0-7][0-9])/
     property var markerSymbolLink: {
         "MARKER_DEFAULT":"qrc:/qmlimages/markers/FlagIcon.png",
         "MARKER_TANK":"qrc:/qmlimages/markers/TankIcon.png",
@@ -43,23 +46,29 @@ Rectangle {
         "MARKER_TARGET":"qrc:/qmlimages/markers/TargetIcon.png"
     }
     property var lstTxt: [
-        txtLat,txtLon,txtAlt]
+        txtAGL,txtAMSL]
+    property var cdeTxt: [
+        cdeLat,cdeLon]
     property int currentIndex: markerSelector.currentIndex
     signal markerIDChanged(var markerType,var iconSource)
     signal confirmClicked(var currentIndex, var coordinate)
     signal cancelClicked()
     signal textChanged(string newText)
     function changeAllFocus(enable){
+        for(var i =0; i < cdeTxt.length; i++){
+            if(cdeTxt[i].focus !== enable)
+                cdeTxt[i].focus = enable;
+        }
         for(var i =0; i < lstTxt.length; i++){
-            if(lstTxt[i].focus !== enable)
-                lstTxt[i].focus = enable;
+            if(lstTxt[i].editting !== enable)
+                lstTxt[i].editting = enable;
         }
     }
     function changeCoordinate(_coordinate){
         changeAllFocus(false);
-        txtLat.text = Number(_coordinate.latitude).toFixed(7).toString();
-        txtLon.text = Number(_coordinate.longitude).toFixed(7).toString();
-        txtAlt.text = Number(_coordinate.altitude).toFixed(2).toString();
+        root.latitude = _coordinate.latitude;
+        root.longitude = _coordinate.longitude;
+        root.agl = _coordinate.altitude;
     }
 
     function loadInfo(_coordinate,_type,text){
@@ -82,6 +91,10 @@ Rectangle {
             root.changeAllFocus(false);
         }
     }
+    MouseArea{
+        anchors.fill: parent
+        hoverEnabled: true
+    }
 
     Label {
         id: lblTitle
@@ -98,7 +111,7 @@ Rectangle {
 
     GridView{
         id: markerSelector
-        height: UIConstants.sRect * 2 + 4
+        height: UIConstants.sRect * 2
         anchors.topMargin: 8
         clip: true
         anchors.rightMargin: 8
@@ -109,9 +122,11 @@ Rectangle {
         cellWidth: UIConstants.sRect*2
         cellHeight: UIConstants.sRect*2
         highlight: Rectangle {
-            width: markerSelector.cellWidth - 2
-            height: markerSelector.cellHeight - 2
+            width: markerSelector.cellWidth
+            height: markerSelector.cellHeight
             color: "lightsteelblue";
+            border.color: UIConstants.transparentColor
+            border.width: 4
             radius: 5
         }
         Component {
@@ -146,157 +161,96 @@ Rectangle {
         delegate: contactsDelegate
     }
 
+    QTextInput {
+        id: txtMarkerText
+        height: UIConstants.sRect
+        horizontalAlignment: Text.AlignRight
+        anchors.top: markerSelector.bottom
+        anchors.topMargin: 8
+        anchors.right: parent.right
+        anchors.rightMargin: 8
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+        onTextChanged: {
+            root.textChanged(text)
+        }
+    }
+
     ColumnLayout{
         id: layoutGPS
-        height: UIConstants.sRect * 3
+        width: UIConstants.sRect * 12
+        height: UIConstants.sRect * 7
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.right: parent.right
         anchors.rightMargin: 8
-        anchors.top: rectMarkerText.bottom
+        anchors.top: txtMarkerText.bottom
         anchors.topMargin: 8
         spacing: 8
         RowLayout{
-            spacing: 0
-            Layout.preferredHeight: UIConstants.sRect
+            id: rlCoordinate
             Layout.preferredWidth: parent.width
-            Label {
-                id: lblLat
-                Layout.preferredWidth: UIConstants.sRect * 4
-                Layout.preferredHeight: UIConstants.sRect
-                text: qsTr("Latitude:")
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignLeft
-                color: UIConstants.textColor
-                font.pixelSize: UIConstants.fontSize
-                font.family: UIConstants.appFont
+            Layout.preferredHeight: UIConstants.sRect * 4
+            spacing: 16
+            CoordinateEditor{
+                id: cdeLat
+                Layout.fillHeight: true
+                width: UIConstants.sRect * 6
+                title: "Latitude"
+                directionLabel: "E"
+                value: root.latitude
+                validatorValue: root.validatorLat
+                validatorValueDecimal: root.validatorLatDecimal
+                onValueChanged: {
+                    root.latitude = value;
+                }
             }
-
-            Rectangle {
-                Layout.preferredHeight: UIConstants.sRect
-                Layout.preferredWidth: parent.width - UIConstants.sRect * 4
-                color: UIConstants.transparentColor
-                border.color: UIConstants.grayColor
-                border.width: 1
-                radius: UIConstants.rectRadius
-                TextInput {
-                    id: txtLat
-                    anchors.margins: UIConstants.rectRadius/2
-                    text: focus?text:Number(root.latitude).toFixed(7)
-                    anchors.fill: parent
-                    clip: true
-                    horizontalAlignment: Text.AlignLeft
-                    color: UIConstants.textColor
-                    font.pixelSize: UIConstants.fontSize
-                    font.family: UIConstants.appFont
-                    validator: RegExpValidator { regExp: validatorLat }
-                    onTextChanged: {
-                        if(focus){
-                            console.log("isNaN("+text+")"+isNaN(text));
-                            if(text === "" || isNaN(text)){
-                                root.latitude = 0;
-                            }else{
-                                var newValue = parseFloat(text);
-                                root.latitude = newValue;
-                            }
-                        }
-                    }
+            CoordinateEditor{
+                id: cdeLon
+                Layout.fillHeight: true
+                width: UIConstants.sRect * 6
+                title: "Longitude"
+                directionLabel: "N"
+                value: root.longitude
+                validatorValue: root.validatorLon
+                validatorValueDecimal: root.validatorLonDecimal
+                onValueChanged: {
+                    root.longitude = value;
                 }
             }
         }
-        RowLayout{
-            Layout.preferredHeight: UIConstants.sRect
+        RowLayout {
+            id: rlAltitude
             Layout.preferredWidth: parent.width
-            spacing: 0
-            Label {
-                id: lblLon
-                Layout.preferredWidth: UIConstants.sRect * 4
-                Layout.preferredHeight: UIConstants.sRect
-                text: qsTr("Longitude:")
-                verticalAlignment: Text.AlignVCenter
-                color: UIConstants.textColor
-                font.pixelSize: UIConstants.fontSize
-                font.family: UIConstants.appFont
+            Layout.preferredHeight: UIConstants.sRect * 2
+            spacing: 16
+            QLabeledTextInput {
+                id: txtAMSL
+                width: UIConstants.sRect * 6
+                Layout.fillHeight: true
+                enabled: false
+                text: Number(root.agl+root.asl).toFixed(2)
+                title: "AMSL"
             }
-
-            Rectangle {
-                Layout.preferredHeight: UIConstants.sRect
-                Layout.preferredWidth: parent.width - UIConstants.sRect * 4
-                color: UIConstants.transparentColor
-                border.color: UIConstants.grayColor
-                border.width: 1
-                radius: UIConstants.rectRadius
-                TextInput {
-                    id: txtLon
-                    anchors.fill: parent
-                    anchors.margins: UIConstants.rectRadius/2
-                    text: focus?text:Number(root.longitude).toFixed(7)
-                    clip: true
-                    horizontalAlignment: Text.AlignLeft
-                    color: UIConstants.textColor
-                    font.pixelSize: UIConstants.fontSize
-                    font.family: UIConstants.appFont
-                    validator: RegExpValidator { regExp: validatorLon }
-                    onTextChanged: {
-                        if(focus){
-                            if(text === "" || isNaN(text)){
-                                root.longitude = 0;
-                            }else{
-                                var newValue = parseFloat(text);
-                                root.longitude = newValue;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        RowLayout{
-            Layout.preferredHeight: UIConstants.sRect
-            Layout.preferredWidth: parent.width
-            spacing: 0
-            Label {
-                id: lblAlt
-                Layout.preferredWidth: UIConstants.sRect * 4
-                Layout.preferredHeight: UIConstants.sRect
-                color: UIConstants.textColor
-                text: qsTr("Altitude:")
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: UIConstants.fontSize
-                font.family: UIConstants.appFont
-            }
-
-            Rectangle {
-                Layout.preferredHeight: UIConstants.sRect
-                Layout.preferredWidth: parent.width - UIConstants.sRect * 4
-                color: UIConstants.transparentColor
-                border.color: UIConstants.grayColor
-                border.width: 1
-                radius: UIConstants.rectRadius
-                TextInput {
-                    id: txtAlt
-                    anchors.fill: parent
-                    anchors.margins: UIConstants.rectRadius/2
-                    text: focus?text:root.agl
-                    clip: true
-                    horizontalAlignment: Text.AlignLeft
-                    color: UIConstants.textColor
-                    font.pixelSize: UIConstants.fontSize
-                    font.family: UIConstants.appFont
-                    validator: RegExpValidator { regExp: validatorAltitude }
-                    onTextChanged: {
-                        if(focus){
-                            if(text === "" || isNaN(text)){
-                                root.agl = 0;
-                            }else{
-                                var newValue = parseFloat(text);
-                                root.agl = newValue;
-                            }
+            QLabeledTextInput {
+                id: txtAGL
+                width: UIConstants.sRect * 6
+                Layout.fillHeight: true
+                text: editting?text:root.agl
+                title: "AGL"
+                validator: RegExpValidator { regExp: validatorAltitude }
+                onTextChanged: {
+                    if(editting){
+                        if(text != "" && !isNaN(text)){
+                            var newValue = parseFloat(text);
+                            root.agl = newValue;
                         }
                     }
                 }
             }
         }
     }
+
 
     FlatButtonIcon{
         id: btnConfirm
@@ -313,14 +267,15 @@ Rectangle {
         radius: root.radius
         onClicked: {
             var coordinate = QtPositioning.coordinate(
-                        Number(txtLat.text).toFixed(7),
-                        Number(txtLon.text).toFixed(7),
-                        Number(txtAlt.text).toFixed(2)
+                        Number(cdeLat.value).toFixed(7),
+                        Number(cdeLon.value).toFixed(7),
+                        Number(txtAGL.text).toFixed(2)
                         )
             root.confirmClicked(markerSelector.currentIndex,coordinate);
             root.changeAllFocus(false);
         }
     }
+
     FlatButtonIcon{
         id: btnCancel
         x: 102
@@ -339,33 +294,6 @@ Rectangle {
         onClicked: {
             root.cancelClicked();
             root.changeAllFocus(false);
-        }
-    }
-    Rectangle {
-        id: rectMarkerText
-        height: UIConstants.sRect
-        color: UIConstants.transparentColor
-        border.color: UIConstants.grayColor
-        border.width: 1
-        radius: UIConstants.rectRadius
-        anchors.top: markerSelector.bottom
-        anchors.topMargin: 8
-        anchors.right: parent.right
-        anchors.rightMargin: 8
-        anchors.left: parent.left
-        anchors.leftMargin: 8
-        TextEdit {
-            id: txtMarkerText
-            anchors.fill: parent
-            anchors.margins: UIConstants.rectRadius/2
-            color: UIConstants.textColor
-            horizontalAlignment: Text.AlignRight
-            clip: true
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            onTextChanged: {
-                root.textChanged(text)
-            }
         }
     }
 }

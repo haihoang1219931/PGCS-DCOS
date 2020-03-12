@@ -11,7 +11,7 @@
 #include <QStorageInfo>
 #include <QDebug>
 #include <iostream>
-#include "../Utils/filenameutils.h"
+#include "../Files/FileControler.h"
 #ifdef __linux__
     //linux code goes here
     #include <sys/statvfs.h>

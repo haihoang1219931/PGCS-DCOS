@@ -21,7 +21,7 @@ void InitTracking::Init(cv::Mat original_img, cv::Point clicked_center, int defa
     } else {
         this->original_img = original_img;
     }
-
+    this->processed_img = this->original_img;
     this->default_size = default_size;
     this->clicked_center = clicked_center;
     foundObject = false;

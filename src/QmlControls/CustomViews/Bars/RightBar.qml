@@ -157,16 +157,13 @@ Rectangle {
                         camState.sensorID = camState.sensorIDEO;
                     }
                     console.log("Change sensor ID to ["+camState.sensorID+"]");
-                    if(VIDEO_DECODER){
+                    if(USE_VIDEO_CPU){
+                        var config = PCSConfig.getData();
                         if(camState.sensorID === "EO"){
-                            videoPane.player.setVideo(
-                                        "rtspsrc location=rtsp://192.168.0.103/z3-1.sdp latency=150 ! rtph265depay ! h265parse ! avdec_h265 ! "+
-                                        "appsink name=mysink sync=false async=false");
+                            videoPane.player.setVideo(config["CAM_STREAM_EO"]);
                             videoPane.player.start()
                         }else{
-                            videoPane.player.setVideo(
-                                        "rtspsrc location=rtsp://192.168.0.103/z3-2.sdp latency=150 ! rtph265depay ! h265parse ! avdec_h265 ! "+
-                                        "appsink name=mysink sync=false async=false");
+                            videoPane.player.setVideo(config["CAM_STREAM_IR"]);
                             videoPane.player.start()
                         }
                     }
@@ -208,7 +205,7 @@ Rectangle {
                 btnText: "Snapshot"
                 color: UIConstants.bgAppColor
                 onClicked: {
-                    if(VIDEO_DECODER){
+                    if(USE_VIDEO_CPU){
                         videoPane.player.capture();
                     }
                 }
@@ -249,7 +246,7 @@ Rectangle {
                 isOn: camState.gcsStab
                 onClicked: {
                     camState.gcsStab =! camState.gcsStab;
-                    if(VIDEO_DECODER){
+                    if(USE_VIDEO_CPU){
                         videoPane.player.setStab(camState.gcsStab)
                     }
                 }
@@ -267,7 +264,7 @@ Rectangle {
                     camState.gcsRecord=!camState.gcsRecord;
 
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
-                    if(VIDEO_DECODER){
+                    if(USE_VIDEO_CPU){
                         videoPane.player.setRecord(camState.gcsRecord);
                     }
                 }
@@ -401,7 +398,7 @@ Rectangle {
 //                btnText: "GCS\nStab"
 //                color: UIConstants.bgAppColor
 //                onClicked: {
-//            if(VIDEO_DECODER){
+//            if(USE_VIDEO_CPU){
 //                camState.digitalStab = !camState.digitalStab
 //                videoPane.player.setStab(camState.digitalStab);
 //            }

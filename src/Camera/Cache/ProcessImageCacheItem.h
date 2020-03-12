@@ -3,10 +3,11 @@
 
 #include "CacheItem.h"
 #include <opencv2/opencv.hpp>
-#ifdef GPU_PROCESS
+#ifdef USE_VIDEO_GPU
     #include <cuda.h>
     #include <cuda_runtime_api.h>
 #endif
+
 namespace rva
 {
     class ProcessImageCacheItem : public CacheItem
@@ -53,12 +54,56 @@ namespace rva
                 return m_imgSize;
             }
 
+            void setHostStabMatrix(float *_hStabMatrix)
+            {
+                m_hStabMat = _hStabMatrix;
+            }
+
+            float *getHostStabMatrix()
+            {
+                return m_hStabMat;
+            }
+
+            void setDeviceStabMatrix(float *_dStabMatrix)
+            {
+                m_dStabMat = _dStabMatrix;
+            }
+
+            float *getDeviceStabMatrix()
+            {
+                return m_dStabMat;
+            }
+
+            void setHostGMEMatrix(float *_hGMEMatrix)
+            {
+                m_hGMEMat = _hGMEMatrix;
+            }
+
+            float *getHostGMEMatrix()
+            {
+                return m_hGMEMat;
+            }
+
+            void setDeviceGMEMatrix(float *_dGMEMatrix)
+            {
+                m_dGMEMat = _dGMEMatrix;
+            }
+
+            float *getDeviceGMEMatrix()
+            {
+                return m_dGMEMat;
+            }
+
 
 
         private:
             unsigned char *m_dImage = nullptr;
             unsigned char *m_hImage = nullptr;
             cv::Size m_imgSize;
+            float *m_hStabMat = nullptr;
+            float *m_dStabMat = nullptr;
+            float *m_hGMEMat = nullptr;
+            float *m_dGMEMat = nullptr;
     };
 } // namespace rva
 
