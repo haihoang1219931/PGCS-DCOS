@@ -33,7 +33,7 @@ Rectangle {
             iconColor: UIConstants.textColor
             Layout.preferredHeight: parent.height / 3
             Layout.preferredWidth: parent.width
-            iconSize: 30
+            iconSize: UIConstants.sRect
             isSolid: true
             isAutoReturn: true
             isShowRect: false
@@ -56,7 +56,7 @@ Rectangle {
             iconColor: UIConstants.textColor
             Layout.preferredHeight: parent.height / 3
             Layout.preferredWidth: parent.width
-            iconSize: 20
+            iconSize: UIConstants.sRect
             isSolid: true
             isAutoReturn: true
             isShowRect: false
@@ -80,7 +80,7 @@ Rectangle {
             iconColor: UIConstants.textColor
             Layout.preferredHeight: parent.height / 3
             Layout.preferredWidth: parent.width
-            iconSize: 20
+            iconSize: UIConstants.sRect
             isSolid: true
             isAutoReturn: true
             isShowRect: false

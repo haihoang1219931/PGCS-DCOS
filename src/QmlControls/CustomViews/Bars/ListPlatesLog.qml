@@ -192,15 +192,17 @@ Rectangle {
                 font.pixelSize: UIConstants.fontSize
             }
         }
-        FlatButtonIcon {
+        FlatButtonText {
             id: btnReload
             anchors.left: rectSearch.right
             anchors.leftMargin: 8
             width: UIConstants.sRect * 4
             height: UIConstants.sRect
-            icon: qsTr("Read log")
-            iconColor: UIConstants.textColor
+            text: qsTr("Read log")
+            isAutoReturn: true
             color: UIConstants.transparentBlueDarker
+            border.color: UIConstants.grayColor
+            border.width: 1
             onClicked: {
                 lstPlateLog.model.clear();
                 plateLog.readLogFile("plates/plate_log.csv");

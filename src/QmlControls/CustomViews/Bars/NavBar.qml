@@ -366,7 +366,7 @@ Item {
             Rectangle{
                 id: rectLink
                 Layout.alignment: Qt.AlignVCenter
-                width: UIConstants.sRect * 2
+                width: UIConstants.sRect * 3
                 height: parent.height
 //                color: vehicle.link?"green":"red"
                 color: vehicle.link?"green":"red"

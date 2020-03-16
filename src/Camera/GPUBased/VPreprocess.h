@@ -11,7 +11,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <string.h>
-#include "../StabilizationLib/dando_02/stab_gcs_kiir.hpp"
+#include "stabilizer/dando_02/stab_gcs_kiir.hpp"
 using namespace rva;
 
 class VPreprocess : public QThread

@@ -14,8 +14,8 @@ import CustomViews.HUD 1.0
 //---------------- Component definition ---------------------------------------
 Item {
     id: rootItem
-    width: UIConstants.sRect*12
-    height: UIConstants.sRect*6
+    width: UIConstants.sRect*10
+    height: UIConstants.sRect*5
     Rectangle{
         anchors.fill: parent
         color: UIConstants.transparentBlue

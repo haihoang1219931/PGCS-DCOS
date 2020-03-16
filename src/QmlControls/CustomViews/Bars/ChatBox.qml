@@ -15,26 +15,15 @@ import io.qdt.dev   1.0
 //---------------- Component definition ---------------------------------------
 Rectangle {
     id: rootItem
-//    width: UIConstants.sRect * 15
-//    height: UIConstants.sRect * 20
     width: UIConstants.sRect * 12
     height: UIConstants.sRect * 18
     color: UIConstants.transparentBlue
-    //    border.color: UIConstants.grayColor
-    //    border.width: 1
-//    property var listTarget: ["ALL"]
+    radius: UIConstants.rectRadius
+    clip: true
     property bool isNewMessage: false
     property int receiverID: 0
     signal closeClicked()
-    function openChatTo(_receiverID){
-//        if(_receiverID >=0 && _receiverID < cbxTargets.count){
-//            cbxTargets.currentIndex = _receiverID;
-//            receiverID = _receiverID;
-//            input.clearBox();
-//        }
-    }
 
-    radius: 2
     state: "show"
     states: [
         State {
@@ -142,7 +131,7 @@ Rectangle {
 
     Rectangle {
         id: rectHeader
-        height: UIConstants.sRect * 2
+        height: UIConstants.sRect * 3/2
         color: UIConstants.bgAppColor
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -155,7 +144,7 @@ Rectangle {
         FlatButtonIcon {
             id: btnExit
             x: 262
-            iconSize: 20
+            iconSize: UIConstants.sRect
             isShowRect: false
             width: UIConstants.sRect * 3/2
             height: UIConstants.sRect * 3/2
@@ -256,7 +245,7 @@ Rectangle {
             font.pixelSize: UIConstants.fontSize
             color: UIConstants.textColor
             verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
+            horizontalAlignment: Text.AlignLeft
             anchors.right: parent.right
             anchors.rightMargin: 86
             anchors.left: parent.left
@@ -296,7 +285,7 @@ Rectangle {
             anchors.bottomMargin: 5
             anchors.leftMargin: 5
             anchors.left: parent.left
-            height: 30
+            height: UIConstants.sRect
             color: UIConstants.textColor
             wrapMode: TextArea.Wrap
             Layout.fillHeight: true
@@ -330,7 +319,7 @@ Rectangle {
             isShowRect: false
             border.width: 1
             border.color: UIConstants.grayLighterColor
-            iconSize: 20
+            iconSize: UIConstants.fontSize
             onClicked: {
                 UcApi.sendMsgToRoom(input.text)
                 rectChat.sendMessage(UcApi.getStationName());

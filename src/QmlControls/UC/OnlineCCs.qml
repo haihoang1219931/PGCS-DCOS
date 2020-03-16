@@ -10,7 +10,7 @@ Flickable {
     id: rootItem
     clip: true
     width: UIConstants.sRect * 12
-    height: UIConstants.sRect * 2
+    height: UIConstants.sRect * 3/2
     property var listRooms
     //[ {ipAddress: String, user_id: String, available: bool, ... }, {...}, {...} ]
     Rectangle{
@@ -25,7 +25,7 @@ Flickable {
 
         delegate: Rectangle {
             width: rootItem.width
-            height: UIConstants.sRect * 2
+            height: UIConstants.sRect * 3/2
 //            border.color: UIConstants.grayLighterColor
 //            border.width: 1
             color: UIConstants.transparentColor
@@ -33,7 +33,7 @@ Flickable {
             Text {
                 text: UIConstants.iCenterCommander
                 font.bold: true
-                font.pixelSize: 20
+                font.pixelSize: UIConstants.fontSize
                 color: UIConstants.greenColor
                 anchors {
                     left: parent.left;

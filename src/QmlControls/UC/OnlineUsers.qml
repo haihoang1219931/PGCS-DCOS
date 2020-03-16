@@ -28,7 +28,7 @@ Flickable {
 
         delegate: Rectangle {
             width: rootItem.width
-            height: UIConstants.sRect * 2
+            height: UIConstants.sRect * 3/2
             color: isSelected ? UIConstants.cSelectedColor : UIConstants.transparentColor
             Text {
                 text: UIConstants.iPatrolMan

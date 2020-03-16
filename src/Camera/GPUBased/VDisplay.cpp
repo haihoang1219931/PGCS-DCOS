@@ -21,16 +21,16 @@ VDisplay::VDisplay(QObject *_parent) : QObject(_parent)
             SLOT(onReceivedFrame()));
     connect(m_threadEODisplay, SIGNAL(started()), m_vDisplayWorker,
             SLOT(process()));
-    connect(m_vTrackWorker, SIGNAL(determinedTrackObjected(int, double, double, double, double, double, double)),
-            this, SIGNAL(determinedTrackObjected(int, double, double, double, double, double, double)));
+    connect(m_vTrackWorker, SIGNAL(determinedTrackObjected(int, double, double, double, double, double, double, double, double)),
+            this, SLOT(slDeterminedTrackObjected(int, double, double, double, double, double, double, double, double)));
     connect(m_vTrackWorker, SIGNAL(determinedPlateOnTracking(QString, QString)),
             this, SIGNAL(determinedPlateOnTracking(QString, QString)));
     connect(m_vTrackWorker, SIGNAL(objectLost()),
-            this, SIGNAL(objectLost()));
+            this, SIGNAL(slObjectLost()));
     init();
 }
 
-void VDisplay::resetVideoSource(QString _ip, int _port)
+void VDisplay::setVideo(QString _ip, int _port)
 {
     m_vFrameGrabber->setSource(_ip.toStdString(), _port);
     m_vFrameGrabber->restartPipeline();
@@ -51,13 +51,13 @@ VDisplay::~VDisplay()
 
 void VDisplay::init()
 {
-    std::string names_file   = "../Controller/Video/OD/yolo-setup/visdrone2019.names";
-    std::string cfg_file     = "../Controller/Video/OD/yolo-setup/yolov3-tiny_3l.cfg";
-    std::string weights_file = "../Controller/Video/OD/yolo-setup/yolov3-tiny_3l_last.weights";
-	std::string plate_cfg_file_click = "../Controller/Video/Clicktrack/yolo-setup/yolov3-tiny_512.cfg";
-	std::string plate_weights_file_click = "../Controller/Video/Clicktrack/yolo-setup/yolov3-tiny_best.weights";
-	std::string plate_cfg_search = "../Controller/Video/plateOCR/yolo-setup/yolov3-tiny.cfg";
-    std::string plate_weights_search = "../Controller/Video/plateOCR/yolo-setup/yolov3-tiny_best.weights";
+    std::string names_file   = "../GPUBased/OD/yolo-setup/visdrone2019.names";
+    std::string cfg_file     = "../GPUBased/OD/yolo-setup/yolov3-tiny_3l.cfg";
+    std::string weights_file = "../GPUBased/OD/yolo-setup/yolov3-tiny_3l_last.weights";
+    std::string plate_cfg_file_click = "../GPUBased/Clicktrack/yolo-setup/yolov3-tiny_512.cfg";
+    std::string plate_weights_file_click = "../GPUBased/Clicktrack/yolo-setup/yolov3-tiny_best.weights";
+    std::string plate_cfg_search = "../GPUBased/plateOCR/yolo-setup/yolov3-tiny.cfg";
+    std::string plate_weights_search = "../GPUBased/plateOCR/yolo-setup/yolov3-tiny_best.weights";
     m_detector = new Detector(cfg_file, weights_file);
     m_vODWorker->setDetector(m_detector);
 	m_clicktrackDetector = new Detector(plate_cfg_file_click, plate_weights_file_click);
@@ -72,7 +72,7 @@ void VDisplay::init()
 }
 
 
-void VDisplay::play()
+void VDisplay::start()
 {
     m_vFrameGrabber->start();
     m_vPreprocess->start();
@@ -123,23 +123,58 @@ QSize VDisplay::sourceSize()
     return m_sourceSize;
 }
 
-void VDisplay::onReceivedFrame(int _id, QVideoFrame _frame)
-{
-    m_id = _id;
-    m_videoSurface->present(_frame);
-}
 
+void VDisplay::slObjectLost(){
+    removeTrackObjectInfo(0);
+    Q_EMIT objectLost();
+}
+void VDisplay::slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h,
+                                         double _pxStab,double _pyStab){
+    updateTrackObjectInfo("Object","RECT",QVariant(QRect(
+                                                       static_cast<int>(_pxStab),
+                                                       static_cast<int>(_pyStab),
+                                                       static_cast<int>(_oW),
+                                                       static_cast<int>(_oH)))
+                          );
+    updateTrackObjectInfo("Object","LATITUDE",QVariant(20.975092+_px/1000000));
+    updateTrackObjectInfo("Object","LONGIITUDE",QVariant(105.307680+_py/1000000));
+    updateTrackObjectInfo("Object","SPEED",QVariant(_py));
+    updateTrackObjectInfo("Object","ANGLE",QVariant(_px));
+    Q_EMIT determinedTrackObjected(_id,_px,_py,_oW, _oH, _w, _h,_pxStab,_pyStab);
+}
+void VDisplay::onReceivedFrame(int _id, QVideoFrame frame)
+{
+    if(m_videoSurface!=nullptr){
+        m_id = _id;
+        if (m_sourceSize.width() != frame.width() ||
+            m_sourceSize.height() != frame.height()) {
+            m_sourceSize.setWidth(frame.width());
+            m_sourceSize.setHeight(frame.height());
+            Q_EMIT sourceSizeChanged(frame.width(),frame.height());
+        }
+        m_videoSurface->present(frame);
+
+    }
+}
 void VDisplay::onReceivedFrame()
 {
-    m_id = m_vDisplayWorker->m_currID;
-    QVideoFrame frame = QVideoFrame(
-                            QImage((uchar *)m_vDisplayWorker->m_imgShow.data,
-                                   m_vDisplayWorker->m_imgShow.cols,
-                                   m_vDisplayWorker->m_imgShow.rows, QImage::Format_RGBA8888));
-    frame.map(QAbstractVideoBuffer::ReadOnly);
-    m_videoSurface->present(frame);
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    frame.unmap();
+    if(m_videoSurface!=nullptr){
+        m_id = m_vDisplayWorker->m_currID;
+        QVideoFrame frame = QVideoFrame(
+                                QImage((uchar *)m_vDisplayWorker->m_imgShow.data,
+                                       m_vDisplayWorker->m_imgShow.cols,
+                                       m_vDisplayWorker->m_imgShow.rows, QImage::Format_RGBA8888));
+        frame.map(QAbstractVideoBuffer::ReadOnly);
+        if (m_sourceSize.width() != frame.width() ||
+            m_sourceSize.height() != frame.height()) {
+            m_sourceSize.setWidth(frame.width());
+            m_sourceSize.setHeight(frame.height());
+            Q_EMIT sourceSizeChanged(frame.width(), frame.height());
+        }
+        m_videoSurface->present(frame);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        frame.unmap();
+    }
 }
 
 void VDisplay::setVideoSource(QString _ip, int _port)
@@ -198,6 +233,13 @@ void VDisplay::setTrackAt(int _id, double _px, double _py, double _w, double _h)
     m_enTrack = true;
     m_enSteer = false;
     m_vTrackWorker->hasNewTrack(_id, _px, _py, _w, _h, false, m_vDisplayWorker->getDigitalStab());
+    int x = static_cast<int>(_px/_w*m_sourceSize.width());
+    int y = static_cast<int>(_py/_h*m_sourceSize.height());
+    printf("%s at (%dx%d)\r\n",__func__,x,y);
+    removeTrackObjectInfo(0);
+    TrackObjectInfo *object = new TrackObjectInfo(m_sourceSize,QRect(x-20,y-20,40,40),"Object",20.975092,105.307680,0,0,"Track");
+    object->setIsSelected(true);
+    addTrackObjectInfo(object);
 }
 
 void VDisplay::setVideoSavingState(bool _state)

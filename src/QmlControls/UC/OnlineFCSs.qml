@@ -10,7 +10,7 @@ Flickable {
     id: rootItem
     clip: true
     width: UIConstants.sRect * 12
-    height: UIConstants.sRect * 6
+    height: UIConstants.sRect * 3
     //[ {ipAddress: String, user_id: String, available: bool, ... }, {...}, {...} ]
     Rectangle{
         anchors.fill: parent
@@ -24,7 +24,7 @@ Flickable {
 
         delegate: Rectangle {
             width: rootItem.width
-            height: UIConstants.sRect * 2
+            height: UIConstants.sRect * 3/2
 //            border.color: UIConstants.grayLighterColor
 //            border.width: 1
             color: UIConstants.transparentColor

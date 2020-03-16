@@ -1,9 +1,8 @@
 QT += qml quick webengine multimedia widgets opengl network positioning sensors core gui serialport
 QT += quickcontrols2
-QT += widgets
 CONFIG += c++11 no_keywords console
+CONFIG -= app_bundle
 
-DEFINES += QT_DEPRECATED_WARNINGS
 
 RESOURCES += qml.qrc
 
@@ -24,9 +23,9 @@ CONFIG += use_ucapi
 
 CONFIG += use_camera_control
 
-#CONFIG += use_video_gpu
+CONFIG += use_video_gpu
 
-CONFIG += use_video_cpu
+#CONFIG += use_video_cpu
 
 QML_IMPORT_PATH += \
     $$PWD \
@@ -161,6 +160,9 @@ unix:!macx: LIBS += -LD:\usr\lib\x86_64-linux-gnu\
     -lgstvideo-1.0
 unix:!macx: INCLUDEPATH += /usr/local/include
 unix:!macx: DEPENDPATH += /usr/local/include
+# lib zbar
+CONFIG+=link_pkgconfig
+PKGCONFIG+=zbar
 SOURCES += \
     src/Camera/ControllerLib/Buffer/BufferOut.cpp \
     src/Camera/ControllerLib/Command/GeoCommands.cpp \
@@ -179,6 +181,7 @@ SOURCES += \
     src/Camera/ControllerLib/tcp/clientStuff.cpp \
     src/Camera/ControllerLib/tcp/gimbal_control.cpp \
     src/Camera/ControllerLib/EPTools/EPHucomTool.cpp \
+    src/Zbar/ZbarLibs.cpp \
     src/Camera/Cache/Cache.cpp
 
 HEADERS += \
@@ -258,83 +261,27 @@ HEADERS += \
     src/Camera/Cache/TrackObject.h \
     src/Camera/Cache/CacheItem.h \
     src/Camera/Cache/DetectedObjectsCacheItem.h \
-    src/Camera/Cache/FixedPinnedMemory.h \
-    src/Camera/Cache/FixHostMemory.h \
+    src/Camera/Cache/FixedMemory.h \
     src/Camera/Cache/GstFrameCacheItem.h \
     src/Camera/Cache/ProcessImageCacheItem.h \
-    src/Camera/GPUBased/Video/Multitracker/yolo_v2_class.hpp \
     src/Camera/ControllerLib/tcp/clientStuff.h \
     src/Camera/ControllerLib/tcp/gimbal_control.h \
     src/Camera/ControllerLib/EPTools/EPHucomTool.h \
-    src/Camera/ControllerLib/EPTools/EPSensorTool.h
+    src/Camera/ControllerLib/EPTools/EPSensorTool.h \
+    src/Zbar/ZbarLibs.h
 }
 
-# UC libs KURENTO
-use_ucapi{
-DEFINES += UC_API
-DEFINES += SIO_TLS
-QML_IMPORT_PATH += \
-    $$PWD/src/QmlControls/UC
-INCLUDEPATH += src/UC
-SOURCES += \
-    src/UC/UCDataModel.cpp \
-    src/UC/UCEventListener.cpp
-HEADERS += \
-    src/UC/UCDataModel.hpp \
-    src/UC/UCEventListener.hpp
 
-INCLUDEPATH += $$PWD/src/UC/sioclient/lib
-INCLUDEPATH += $$PWD/src/UC/boost1.62/include
-INCLUDEPATH += $$PWD/src/UC/openssl
-
-LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer -lcrypto -lssl
-LIBS += -pthread -lpthread
-
-SOURCES += \
-    src/UC/api/app_socket_api.cpp \
-    src/UC/json/jsoncpp.cpp \
-    src/UC/sioclient/src/internal/sio_client_impl.cpp \
-    src/UC/sioclient/src/internal/sio_packet.cpp \
-    src/UC/sioclient/src/sio_client.cpp \
-    src/UC/sioclient/src/sio_socket.cpp
-
-HEADERS += \
-    src/UC/api/app_socket_api.hpp \
-    src/UC/json/json-forwards.h \
-    src/UC/json/json.h \
-    src/UC/sioclient/src/internal/sio_client_impl.h \
-    src/UC/sioclient/src/internal/sio_packet.h \
-    src/UC/sioclient/src/sio_client.h \
-    src/UC/sioclient/src/sio_message.h \
-    src/UC/sioclient/src/sio_socket.h
-
-}
 # Image processing based GPU
 use_video_gpu{
 DEFINES += USE_VIDEO_GPU
-INCLUDEPATH += /usr/local/cuda-10.1/include
-INCLUDEPATH += /usr/local/cuda-10.1/targets/x86_64-linux/include
-
-# TensorFlow r1.14
-include(tensorflow_dependency.pri)
-# End TensorFlow
-
-LIBS += -LD:\usr\local\lib \
- -ldarknet
-
-DEFINES += GPU
-DEFINES += OPENCV
-DEFINES += DAT
-
-QMAKE_CC = gcc-7
-QMAKE_CXX = g++-7
-DEFINES += USE_VIDEO_GPU
-DEFINES += GPU
-DEFINES += OPENCV
-DEFINES += DAT
-# Cuda sources ===============
-CUDA_SOURCES += src/Camera/GPUBased/Video/Multitracker/plate_utils_kernel.cu \
-                src/Camera/GPUBased/Video/Cuda/ipcuda_image.cu
+# project build directories
+DESTDIR     = $$system(pwd)/build
+OBJECTS_DIR = $$DESTDIR
+# C++ flags
+QMAKE_CXXFLAGS_RELEASE =-O3
+# Cuda sources
+CUDA_SOURCES += src/Camera/GPUBased/Cuda/ipcuda_image.cu
 
 # Path to cuda toolkit install
 CUDA_DIR      = /usr/local/cuda-10.1
@@ -342,7 +289,7 @@ CUDA_DIR      = /usr/local/cuda-10.1
 INCLUDEPATH  += $$CUDA_DIR/include
 QMAKE_LIBDIR += $$CUDA_DIR/lib64     # Note I'm using a 64 bits Operating system
 # libs used in your code
-LIBS += -lcudart -lcuda
+LIBS += -lcudart -lcuda -lpthread
 # GPU architecture
 CUDA_ARCH     = sm_61                # Yeah! I've a new device. Adjust with your compute capability
 # Here are some NVCC flags I've always used by default.
@@ -363,50 +310,44 @@ cuda.depend_command = $$CUDA_DIR/bin/nvcc -O3 -M $$CUDA_INC $$NVCCFLAGS ${QMAKE_
 
 cuda.input = CUDA_SOURCES
 cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.o
-
 # Tell Qt that we want add more stuff to the Makefile
 QMAKE_EXTRA_COMPILERS += cuda
 
-LIBS += `pkg-config --libs opencv`
-LIBS += $$PWD/src/Camera/GPUBased/Video/Multitracker/libdarknet.so
-
 INCLUDEPATH += /usr/local/cuda-10.1/include
 INCLUDEPATH += /usr/local/cuda-10.1/targets/x86_64-linux/include
-#LIBS += -L"usr/lib/x86_64-linuxu/tegra" -lcuda
-#LIBS += -L"usr/local/cuda/lib64/libcudart.so"
-
-
-# End CUDA--------------------------
 
 # TensorFlow r1.14
-INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0
-INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/tensorflow
-INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/eigen_archive
-INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/protobuf_archive/src
-INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/bazel-genfiles
+#include(tensorflow_dependency.pri)
+INCLUDEPATH += /home/pgcs-01/installer/tensorflow/tensorflow-1.14.0
+INCLUDEPATH += /home/pgcs-01/installer/tensorflow/tensorflow-1.14.0/tensorflow
+INCLUDEPATH += /home/pgcs-01/installer/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/eigen_archive
+INCLUDEPATH += /home/pgcs-01/installer/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/protobuf_archive/src
+INCLUDEPATH += /home/pgcs-01/installer/tensorflow/tensorflow-1.14.0/bazel-genfiles
 
-LIBS += -L/home/pgcs-04/install/tensorflow/tensorflow-1.14.0/bazel-bin/tensorflow -ltensorflow_cc -ltensorflow_framework
+LIBS += -L/home/pgcs-01/installer/tensorflow/tensorflow-1.14.0/bazel-bin/tensorflow -ltensorflow_cc -ltensorflow_framework
+
+LIBS += `pkg-config --libs opencv`
 # End TensorFlow
+#LIBS += -LD:\usr\local\lib \
+# -ldarknet
 
-# GStreamer
-unix:!macx: DEPENDPATH += /usr/local/include
-unix:!macx: INCLUDEPATH += /usr/include/gstreamer-1.0
-unix:!macx: INCLUDEPATH += /usr/lib/x86_64-linux-gnu/gstreamer-1.0/include
-unix:!macx: INCLUDEPATH += /usr/include/glib-2.0
-unix:!macx: INCLUDEPATH += /usr/lib/x86_64-linux-gnu/glib-2.0/include
+#LIBS += -L/home/pgcs-01/Downloads/darknet-GPU_blob_click_updateLayers_I420 -ldarknet
+LIBS += /home/pgcs-01/Downloads/darknet-GPU_blob_click_updateLayers_I420/libdarknet.so
+message($$LIBS)
 
-unix:!macx: LIBS += -LD:\usr\lib\x86_64-linux-gnu\
- -lglib-2.0 \
- -lgstreamer-1.0 \
- -lgstapp-1.0 \
- -lgstrtsp-1.0 \
- -lgstrtspserver-1.0 \
- -lgobject-2.0 \
- -lgstvideo-1.0
-unix:!macx: INCLUDEPATH += /usr/local/include
-unix:!macx: DEPENDPATH += /usr/local/include
+DEFINES += GPU
+DEFINES += OPENCV
+DEFINES += DAT
 
 HEADERS += \
+    src/Camera/GPUBased/stabilizer/dando_02/stab_gcs_kiir.hpp \
+    src/Camera/GPUBased/tracker/dando/HTrack/ffttools.hpp \
+    src/Camera/GPUBased/tracker/dando/HTrack/fhog.hpp \
+    src/Camera/GPUBased/tracker/dando/HTrack/saliency.h \
+    src/Camera/GPUBased/tracker/dando/LME/lme.hpp \
+    src/Camera/GPUBased/tracker/dando/ITrack.hpp \
+    src/Camera/GPUBased/tracker/dando/Utilities.hpp \
+    src/Camera/GPUBased/tracker/mosse/tracker.h \
     src/Camera/GPUBased/VDisplay.h \
     src/Camera/GPUBased/VDisplayWorker.h \
     src/Camera/GPUBased/VFrameGrabber.h \
@@ -427,9 +368,18 @@ HEADERS += \
     src/Camera/GPUBased/VMOTWorker.h \
     src/Camera/GPUBased/VSearchWorker.h \
     src/Camera/GPUBased/plateOCR/PlateOCR.h \
-    src/Camera/GPUBased/plateOCR/PlateOCR.h
+    src/Camera/GPUBased/plateOCR/PlateOCR.h \
+    src/Camera/GPUBased/OD/yolo_v2_class.hpp
 
 SOURCES += \
+    src/Camera/GPUBased/stabilizer/dando_02/stab_gcs_kiir.cpp \
+    src/Camera/GPUBased/tracker/dando/HTrack/ffttools.cpp \
+    src/Camera/GPUBased/tracker/dando/HTrack/fhog.cpp \
+    src/Camera/GPUBased/tracker/dando/HTrack/saliency.cpp \
+    src/Camera/GPUBased/tracker/dando/LME/lme.cpp \
+    src/Camera/GPUBased/tracker/dando/ITrack.cpp \
+    src/Camera/GPUBased/tracker/dando/Utilities.cpp \
+    src/Camera/GPUBased/tracker/mosse/tracker.cpp \
     src/Camera/GPUBased/Clicktrack/clicktrack.cpp \
     src/Camera/GPUBased/Clicktrack/platedetector.cpp \
     src/Camera/GPUBased/Clicktrack/preprocessing.cpp \
@@ -450,17 +400,6 @@ SOURCES += \
     src/Camera/GPUBased/VSavingWorker.cpp \
     src/Camera/GPUBased/VRTSPServer.cpp
 DISTFILES += \
-    src/Camera/GPUBased/Multitracker/libdarknet.so \
-    src/Camera/GPUBased/Multitracker/plate-weight/yolov3-tiny_best.weights \
-    src/Camera/GPUBased/Multitracker/vehicle-weight/yolov3-tiny_3l_last.weights \
-    src/Camera/GPUBased/Multitracker/libdarknet.so \
-    src/Camera/GPUBased/Multitracker/plate-weight/class.names \
-    src/Camera/GPUBased/Multitracker/plate-weight/yolov3-tiny.cfg \
-    src/Camera/GPUBased/Multitracker/vehicle-weight/visdrone2019.names \
-    src/Camera/GPUBased/Multitracker/vehicle-weight/yolov3-tiny_3l.cfg \
-    src/Camera/GPUBased/Multitracker/plate_utils_kernel.cu \
-    src/Camera/GPUBased/Multitracker/plate-weight/plate.data \
-    src/Camera/GPUBased/Multitracker/vehicle-weight/visdrone2019.data \
     src/Camera/GPUBased/Cuda/ipcuda_image.cu \
     src/Camera/GPUBased/OD/yolo-setup/yolov3-tiny_3l_last.weights \
     src/Camera/GPUBased/OD/yolo-setup/yolov3-tiny_best.weights \
@@ -511,13 +450,13 @@ SOURCES += \
     src/Camera/CPUBased/detector/movingObject.cpp \
     src/Camera/CPUBased/recorder/gstsaver.cpp \
     src/Camera/CPUBased/recorder/gstutility.cpp \
-    src/Camera/CPUBased/stabilizer/dando_02/stab_gcs_kiir.cpp \
     src/Camera/CPUBased/stream/CVRecord.cpp \
     src/Camera/CPUBased/stream/CVVideoCapture.cpp \
     src/Camera/CPUBased/stream/CVVideoCaptureThread.cpp \
     src/Camera/CPUBased/stream/CVVideoProcess.cpp \
     src/Camera/CPUBased/stream/VRTSPServer.cpp \
     src/Camera/CPUBased/stream/VSavingWorker.cpp \
+    src/Camera/CPUBased/stabilizer/dando_02/stab_gcs_kiir.cpp \
     src/Camera/CPUBased/tracker/dando/LME/lme.cpp \
     src/Camera/CPUBased/tracker/dando/HTrack/ffttools.cpp \
     src/Camera/CPUBased/tracker/dando/HTrack/fhog.cpp \
@@ -549,7 +488,6 @@ HEADERS += \
     src/Camera/CPUBased/packet/Vector.h \
     src/Camera/CPUBased/recorder/gstsaver.hpp \
     src/Camera/CPUBased/recorder/gstutility.hpp \
-    src/Camera/CPUBased/stabilizer/dando_02/stab_gcs_kiir.hpp \
     src/Camera/CPUBased/stream/CVRecord.h \
     src/Camera/CPUBased/stream/CVVideoCapture.h \
     src/Camera/CPUBased/stream/CVVideoCaptureThread.h \
@@ -557,6 +495,7 @@ HEADERS += \
     src/Camera/CPUBased/stream/gstreamer_element.h \
     src/Camera/CPUBased/stream/VRTSPServer.h \
     src/Camera/CPUBased/stream/VSavingWorker.h \
+    src/Camera/CPUBased/stabilizer/dando_02/stab_gcs_kiir.hpp \
     src/Camera/CPUBased/tracker/dando/SKCF/gradient.h \
     src/Camera/CPUBased/tracker/dando/SKCF/skcf.h \
     src/Camera/CPUBased/tracker/dando/ITrack.hpp \
@@ -578,3 +517,43 @@ HEADERS += \
     src/Camera/CPUBased/tracker/dando/Utilities.hpp
 }
 
+# UC libs KURENTO
+use_ucapi{
+DEFINES += UC_API
+DEFINES += SIO_TLS
+QML_IMPORT_PATH += \
+    $$PWD/src/QmlControls/UC
+INCLUDEPATH += src/UC
+SOURCES += \
+    src/UC/UCDataModel.cpp \
+    src/UC/UCEventListener.cpp
+HEADERS += \
+    src/UC/UCDataModel.hpp \
+    src/UC/UCEventListener.hpp
+
+INCLUDEPATH += $$PWD/src/UC/sioclient/lib
+INCLUDEPATH += $$PWD/src/UC/boost1.62/include
+INCLUDEPATH += $$PWD/src/UC/openssl
+
+LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer -lcrypto -lssl
+LIBS += -pthread -lpthread
+
+SOURCES += \
+    src/UC/api/app_socket_api.cpp \
+    src/UC/json/jsoncpp.cpp \
+    src/UC/sioclient/src/internal/sio_client_impl.cpp \
+    src/UC/sioclient/src/internal/sio_packet.cpp \
+    src/UC/sioclient/src/sio_client.cpp \
+    src/UC/sioclient/src/sio_socket.cpp
+
+HEADERS += \
+    src/UC/api/app_socket_api.hpp \
+    src/UC/json/json-forwards.h \
+    src/UC/json/json.h \
+    src/UC/sioclient/src/internal/sio_client_impl.h \
+    src/UC/sioclient/src/internal/sio_packet.h \
+    src/UC/sioclient/src/sio_client.h \
+    src/UC/sioclient/src/sio_message.h \
+    src/UC/sioclient/src/sio_socket.h
+
+}

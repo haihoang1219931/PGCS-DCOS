@@ -25,13 +25,7 @@ class FixedMemory
 
             }
 #endif
-#ifdef USE_VIDEO_CPU
-            for (int i = 0; i < m_maxSize; i++) {
-                m_h_buffer[i] = (unsigned char *)malloc(m_imgSize);
-            }
         }
-#endif
-
         unsigned char *getHeadHost()
         {
             std::lock_guard<std::mutex> lock(m_mtx);

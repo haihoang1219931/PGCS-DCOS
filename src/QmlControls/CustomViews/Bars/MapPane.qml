@@ -575,8 +575,8 @@ Item {
     Rectangle{
         id: rectProfilePath
         z:200
-        width: 730
-        height: 280
+        width: UIConstants.sRect * 22
+        height: UIConstants.sRect * 9
         anchors.centerIn: parent
         visible: false
         color: UIConstants.transparentBlue
@@ -586,11 +586,12 @@ Item {
         ProfilePath{
             id: profilePath
             title: "Profile Path"
-            xName:"Distance (m)"
-            yName:"Altitude (m)"
+            xName: "Distance (m)"
+            yName: "Altitude (m)"
             fontSize: UIConstants.fontSize
             fontFamily: UIConstants.appFont
             anchors.fill: parent
+            anchors.margins: 4
         }
     }
 
@@ -1952,7 +1953,7 @@ Item {
                                                                        fontWidth: Enums.FontWeightBold,
                                                                        fontFamily: UIConstants.appFont,
                                                                        text: ""+parseInt(GeometryEngine.length(lineGeometry))+"m",
-                                                                       size: 10,
+                                                                       size: wpFontSize,
                                                                        haloColor: "white",
                                                                        haloWidth: 2,
                                                                        verticalAlignment: Enums.VerticalAlignmentBottom

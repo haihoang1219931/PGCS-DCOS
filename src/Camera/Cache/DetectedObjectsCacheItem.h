@@ -1,7 +1,9 @@
 #ifndef DETECTEDOBJECTSCACHEITEM_H
 #define DETECTEDOBJECTSCACHEITEM_H
 
-#include "../Camera/GPUBased/OD/yolo_v2_class.hpp"
+#ifdef USE_VIDEO_GPU
+    #include "../GPUBased/OD/yolo_v2_class.hpp"
+#endif
 #include "CacheItem.h"
 #include "gst/gst.h"
 #include <memory>

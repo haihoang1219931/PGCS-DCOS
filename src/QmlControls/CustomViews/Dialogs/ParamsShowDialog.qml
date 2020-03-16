@@ -31,7 +31,7 @@ Rectangle {
         id: animParamsShow
         target: root
         properties: "height"
-        to: !showContent ? UIConstants.sRect * 2 : UIConstants.sRect * 2 + listView.height
+        to: !showContent ? UIConstants.sRect * 3/2 : UIConstants.sRect * 3/2 + listView.height
         duration: 800
         easing.type: Easing.InOutBack
         running: false
@@ -42,7 +42,7 @@ Rectangle {
         focus: true
         Rectangle{
             id: rectMinize
-            height: UIConstants.sRect * 2 - 8
+            height: UIConstants.sRect * 3/2 - 8
             color:UIConstants.bgAppColor
             anchors.left: parent.left
             anchors.leftMargin: 8

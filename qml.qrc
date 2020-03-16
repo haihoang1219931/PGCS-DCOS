@@ -78,6 +78,7 @@
         <file alias="CustomViews/Components/QTextInput.qml">src/QmlControls/CustomViews/Components/QTextInput.qml</file>            
         <file alias="CustomViews/Components/ScrollBar.qml">src/QmlControls/CustomViews/Components/ScrollBar.qml</file>        
         <file alias="CustomViews/Components/QLabel.qml">src/QmlControls/CustomViews/Components/QLabel.qml</file>
+        <file alias="CustomViews/Components/FlatButtonText.qml">src/QmlControls/CustomViews/Components/FlatButtonText.qml</file>
         <file alias="CustomViews/Components/FlatCorner.qml">src/QmlControls/CustomViews/Components/FlatCorner.qml</file>
         <file alias="CustomViews/Components/FlatRectangle.qml">src/QmlControls/CustomViews/Components/FlatRectangle.qml</file>
         <file alias="CustomViews/Components/ToastLabel.qml">src/QmlControls/CustomViews/Components/ToastLabel.qml</file>                        

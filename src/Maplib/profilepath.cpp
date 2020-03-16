@@ -65,7 +65,7 @@ void ProfilePath::drawPlot(QPainter *painter)
     font.setItalic(false);
     painter->setFont(font);
     painter->drawText(qRound(Y_point.rx()-25),qRound(Y_point.ry()-10),_yName);//"Do cao(m)"
-    painter->drawText(QRectF(O_point.rx(), O_point.ry()+18, max_distance_point_X,20),Qt::AlignCenter,_xName);//"Khoang cach(m)"
+    painter->drawText(QRectF(O_point.rx(), O_point.ry() + _fontSize * 1.5 , max_distance_point_X,20),Qt::AlignCenter,_xName);//"Khoang cach(m)"
 
     //draw arrow
     const QPointF arrowpointX[3] = {
@@ -89,7 +89,7 @@ void ProfilePath::drawPlot(QPainter *painter)
     //set font
     changeFont(&font,_fontFamily,_fontSize);
     painter->setFont(font);
-
+    //draw axisX value
     for(int i=1 ;i<5; i++)
     {
         double y = max_altitude_point_Y*i/4;
@@ -102,13 +102,13 @@ void ProfilePath::drawPlot(QPainter *painter)
         painter->drawLine(p1,p2);
         //draw text
         QString y_text=QString("%1").arg(mMaxAltitude*i/4);
-        painter->drawText(QRectF(-40,y-10,35,14),Qt::AlignRight,y_text);
+        painter->drawText(QRectF(-_fontSize*4.25,y-_fontSize * 0.75,_fontSize*4,_fontSize),Qt::AlignRight,y_text);
         //draw grid
         changePen(&pen,"gray",1);
         painter->setPen(pen);
         painter->drawLine(p2,p3);
     }
-    //draw axisX value
+    //draw axisY value
     for(int i=1 ;i<6; i++)
     {
         double x = max_distance_point_X*i/5;
@@ -121,7 +121,7 @@ void ProfilePath::drawPlot(QPainter *painter)
         painter->drawLine(p1,p2);
         //draw text
         QString x_text=QString("%1").arg(mMaxDistance*i/5);
-        painter->drawText(QRectF(x-20,5,40,14),Qt::AlignCenter,x_text);
+        painter->drawText(QRectF(x-_fontSize*2,4,_fontSize*4,_fontSize),Qt::AlignCenter,x_text);
         //draw grid
         changePen(&pen,"gray",1);
         painter->setPen(pen);

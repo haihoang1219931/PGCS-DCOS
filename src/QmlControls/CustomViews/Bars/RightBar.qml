@@ -247,7 +247,7 @@ Rectangle {
                 onClicked: {
                     camState.gcsStab =! camState.gcsStab;
                     if(USE_VIDEO_CPU){
-                        videoPane.player.setStab(camState.gcsStab)
+                        videoPane.player.setDigitalStab(camState.gcsStab)
                     }
                 }
             }

@@ -22,6 +22,7 @@ QtObject {
     property string appFont:                        "monospace"
     property int rectRadius:                        5
     property color transparentRed:                  "#b3ff0000"
+    property color transparentGreen:                "#b300FF5e"
     property color transparentBlue:                 "#b334495e"
     property color transparentBlueDarker:           "#e334495e"
     property color transparentColor:                "transparent"

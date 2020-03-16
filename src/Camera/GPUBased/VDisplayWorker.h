@@ -1,15 +1,17 @@
 #ifndef VDISPLAYWORKER_H
 #define VDISPLAYWORKER_H
 
-#include "../../Cache/Cache.h"
-#include "../../Cache/ProcessImageCacheItem.h"
-#include "../../ControllerLib/Buffer/RollBuffer.h"
-#include "../../ControllerLib/Packet/Common_type.h"
-#include "../../Cache/FixedMemory.h"
+#include "../Cache/Cache.h"
+#include "../Cache/ProcessImageCacheItem.h"
+#include "../ControllerLib/Buffer/RollBuffer.h"
+#include "../ControllerLib/Packet/Common_type.h"
+#include "../Cache/FixedMemory.h"
 #include "../../Zbar/ZbarLibs.h"
 #include "Cuda/ipcuda_image.h"
 #include "../../Files/FileControler.h"
 #include "../../Files/PlateLog.h"
+#include "../Cache/Cache.h"
+#include "../Cache/TrackObject.h"
 #include <QObject>
 #include <QVideoFrame>
 #include <chrono>
@@ -24,7 +26,7 @@ using namespace rva;
 
 class VDisplayWorker : public QObject
 {
-    Q_OBJECT
+    Q_OBJECT    
     public:
         VDisplayWorker(QObject *_parent = 0);
         ~VDisplayWorker();

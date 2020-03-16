@@ -29,9 +29,8 @@
 #endif
 //--- GPU Process
 #ifdef USE_VIDEO_GPU
-    #include "src/Camera/GPUBased/Video/VDisplay.h"    
+    #include "src/Camera/GPUBased/VDisplay.h"
 #endif
-
 //--- Joystick
 #include "src/Joystick/JoystickLib/JoystickThreaded.h"
 
@@ -41,7 +40,6 @@
 #include "src/Setting/pcs.h"
 int main(int argc, char *argv[])
 {
-
     QGuiApplication app(argc, argv);
     app.setOrganizationName("qdt");
     app.setOrganizationDomain("qdt");
@@ -71,9 +69,9 @@ int main(int argc, char *argv[])
     FCSConfig trkConfig;
     trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
     engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);
+    qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
 #ifdef USE_VIDEO_CPU
     //--- Camera controller
-    qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
     qmlRegisterType<CVVideoCaptureThread>("io.qdt.dev", 1, 0, "Player");
     engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(true));
 #else
@@ -134,6 +132,7 @@ int main(int argc, char *argv[])
         return -1;
 
     return app.exec();
+//    return 0;
 }
 /*
 * Receive multicast
