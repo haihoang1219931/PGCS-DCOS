@@ -180,7 +180,6 @@ void VTrackWorker::run()
                         cv::Mat pointAfterStab = stabMatrix * pointBeforeStab ;
                         pxStab = pointAfterStab.at<float>(0,0);
                         pyStab = pointAfterStab.at<float>(0,1);
-
                     }
                     Q_EMIT determinedTrackObjected(m_currID, objectPosition.x, objectPosition.y,
                                                    objectPosition.width, objectPosition.height,
