@@ -26,12 +26,12 @@ CVVideoCaptureThread::CVVideoCaptureThread(QObject *parent) : QObject(parent)
     process.waitForFinished(-1); // will wait forever until finished
     std::string timestamp = Utils::get_time_stamp();
     m_logFile = m_logFolder + "/" + timestamp;
-    m_capture = new CVVideoCapture(0);
-    m_captureThread = new QThread(0);
-    m_process = new CVVideoProcess(0);
-    m_processThread = new QThread(0);
-    m_record = new CVRecord(0);
-    m_recordThread = new QThread(0);
+    m_capture = new CVVideoCapture(nullptr);
+    m_process = new CVVideoProcess(nullptr);
+    m_record = new CVRecord(nullptr);
+    m_captureThread = new QThread(nullptr);
+    m_recordThread = new QThread(nullptr);
+    m_processThread = new QThread(nullptr);
     m_mutexCapture = new QMutex();
     m_mutexProcess = new QMutex();
     m_vRTSPServer = new VRTSPServer;

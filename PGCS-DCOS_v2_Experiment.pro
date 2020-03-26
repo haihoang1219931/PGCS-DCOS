@@ -1,9 +1,6 @@
 QT += qml quick webengine multimedia widgets opengl network positioning sensors core gui serialport
 QT += quickcontrols2
 CONFIG += c++11 no_keywords console
-CONFIG -= app_bundle
-
-
 RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -147,7 +144,7 @@ INCLUDEPATH += $$PWD/src/UC/boost1.62/include
 INCLUDEPATH += $$PWD/src/UC/openssl
 
 LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer -lcrypto -lssl
-LIBS += -pthread -lpthread
+LIBS += -lpthread
 
 SOURCES += \
     src/UC/api/app_socket_api.cpp \

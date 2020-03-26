@@ -2,7 +2,7 @@
 #define VSEARCHWORKER_H
 
 #include "../Cache/Cache.h"
-#include "../Zbar/ZbarLibs.h"
+#include "../../Zbar/ZbarLibs.h"
 #include <QObject>
 #include <QThread>
 #include <chrono>

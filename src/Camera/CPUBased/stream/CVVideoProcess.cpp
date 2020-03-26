@@ -6,9 +6,9 @@ CVVideoProcess::CVVideoProcess(QObject *parent): QObject(parent)
     m_stabilizer->setMotionEstimnator(GOOD_FEATURE, RIGID_TRANSFORM);
     ClickTrackObj = new InitTracking();
     m_tracker = new ITrack(FEATURE_HOG, KERNEL_GAUSSIAN);
-    thresh_tracker = new ThresholdingTracker();
-    k_tracker = new KTrackers(KType::GAUSSIAN, KFeat::HLS, true);
-    m_detector = new MovingDetector(cv::Size(m_detectSize, m_detectSize));
+//    thresh_tracker = new ThresholdingTracker();
+//    k_tracker = new KTrackers(KType::GAUSSIAN, KFeat::HLS, true);
+//    m_detector = new MovingDetector(cv::Size(m_detectSize, m_detectSize));
     GlobalTrackInited = false;
 }
 CVVideoProcess::~CVVideoProcess()

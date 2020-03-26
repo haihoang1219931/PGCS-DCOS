@@ -4,7 +4,7 @@
 #include "../Cache/Cache.h"
 #include "../ControllerLib/Command/IPCCommands.h"
 #include "../ControllerLib/Packet/XPoint.h"
-#include "../Zbar/ZbarLibs.h"
+#include "../../Zbar/ZbarLibs.h"
 #include <QObject>
 #include <QThread>
 #include <chrono>
@@ -14,8 +14,8 @@
 #include <opencv2/highgui.hpp>
 #include <string.h>
 
-#include "../Files/FileControler.h"
-#include "../Files/PlateLog.h"
+#include "../../Files/FileControler.h"
+#include "../../Files/PlateLog.h"
 #include "tracker/dando/ITrack.hpp"
 #include "tracker/dando/Utilities.hpp"
 #include "tracker/dando/HTrack/saliency.h"

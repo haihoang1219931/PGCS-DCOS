@@ -2,7 +2,7 @@
 #define VPREPROCESS_H
 
 #include "../Cache/Cache.h"
-#include "../Zbar/ZbarLibs.h"
+#include "../../Zbar/ZbarLibs.h"
 #include "../Cache/FixedMemory.h"
 #include <QObject>
 #include <QThread>
