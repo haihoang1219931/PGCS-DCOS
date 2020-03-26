@@ -21,11 +21,11 @@ CONFIG += use_flight_control
 
 #CONFIG += use_ucapi
 
-#CONFIG += use_camera_control
+CONFIG += use_camera_control
 
 #CONFIG += use_video_gpu
 
-#CONFIG += use_video_cpu
+CONFIG += use_video_cpu
 
 QML_IMPORT_PATH += \
     $$PWD \
@@ -536,7 +536,7 @@ INCLUDEPATH += $$PWD/src/UC/boost1.62/include
 INCLUDEPATH += $$PWD/src/UC/openssl
 
 LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer -lcrypto -lssl
-LIBS += -pthread -lpthread
+LIBS += -lpthread
 
 SOURCES += \
     src/UC/api/app_socket_api.cpp \

@@ -15,7 +15,7 @@ namespace rva
         public:
             explicit DetectedObjectsCacheItem() {}
             explicit DetectedObjectsCacheItem(index_type _id) : CacheItem(_id) {}
-
+#ifdef USE_VIDEO_GPU
             DetectedObjectsCacheItem(const DetectedObjectsCacheItem &_e)
             {
                 m_id = _e.m_id;
@@ -44,6 +44,7 @@ namespace rva
 
         private:
             std::vector<bbox_t> m_listObj;
+#endif
     };
 } // namespace rva
 
