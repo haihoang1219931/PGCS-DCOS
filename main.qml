@@ -3,6 +3,7 @@ import QtQuick.Controls         2.4
 import QtQuick.Layouts          1.3
 import QtQuick.Controls         1.2 as OldControl
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Window 2.11
 import QtPositioning 5.2
 import CustomViews.Components   1.0
 import CustomViews.Bars         1.0
@@ -18,9 +19,9 @@ import UC 1.0
 ApplicationWindow {
     id: mainWindow
     visible: true
-    width: 1920
-    height: 1080
+    visibility: ApplicationWindow.FullScreen
     title: qsTr("DCOS - PGCSv0.1")
+
     function switchMapFull(){
         videoPane.x = paneControl.x;
         videoPane.y = paneControl.y;
@@ -776,11 +777,13 @@ ApplicationWindow {
                     }
                 }
                 function updateObjectsOnMap(){
-                    for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
-                        var object = videoPane.player.listTrackObjectInfos[id];
-                        var pointMapOnScreen =
-                                mapPane.convertLocationToScreen(object.latitude,object.longitude);
-                        objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
+                    if(videoPane.player !== undefined){
+                        for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
+                            var object = videoPane.player.listTrackObjectInfos[id];
+                            var pointMapOnScreen =
+                                    mapPane.convertLocationToScreen(object.latitude,object.longitude);
+                            objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
+                        }
                     }
                 }
 

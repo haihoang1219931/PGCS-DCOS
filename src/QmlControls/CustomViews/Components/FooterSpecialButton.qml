@@ -70,7 +70,7 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredHeight: parent.height/3
-                font.pixelSize: rootItem.fontSize * 2 / 3
+                font.pixelSize: rootItem.fontSize
                 font.bold: rootItem.fontBold
                 font.family: UIConstants.appFont
                 color: isEnable ? UIConstants.textFooterValueColor : UIConstants.textFooterValueColorDisable

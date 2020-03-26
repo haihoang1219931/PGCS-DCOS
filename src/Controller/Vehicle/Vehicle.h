@@ -346,27 +346,8 @@ public:
     Q_INVOKABLE void sendHomePosition(QGeoCoordinate location);
 
 public:
-    Q_INVOKABLE void activeProperty(QString name,bool active){
-        int propertiesShowCount = 0;
-        for(int i=0; i< _propertiesModel.size(); i++){
-            if(_propertiesModel[i]->name() == name){
-                _propertiesModel[i]->setSelected(active);
-            }
-            if(_propertiesModel[i]->selected())
-                propertiesShowCount ++;
-        }
-        setPropertiesShowCount(propertiesShowCount);
-    }
-    Q_INVOKABLE int countActiveProperties(){
-        int propertiesShowCount = 0;
-        for(int i=0; i< _propertiesModel.size(); i++){
-            if(_propertiesModel[i]->selected())
-                propertiesShowCount ++;
-        }
-        printf("%s propertiesShowCount = %d\r\n",__func__,propertiesShowCount);
-        setPropertiesShowCount(propertiesShowCount);
-    }
-
+    Q_INVOKABLE void activeProperty(QString name,bool active);
+    Q_INVOKABLE int countActiveProperties();
 public:
     Vehicle* uav();
     void setUav(Vehicle* uav);
@@ -577,6 +558,7 @@ private:
     QTimer                          _cameraLink;
     QTimer                          _mavParams;
     QTimer                          _mavHeartbeat;
+    int                             _countHeartBeat = 0;
     QList<MavCommandQueueEntry_t>   _mavCommandQueue;
     QTimer                          _mavCommandAckTimer;
     int                             _mavCommandRetryCount;

@@ -68,16 +68,17 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("FCSConfig", &fcsConfig);
     FCSConfig trkConfig;
     trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
-    engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);
-    qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
+    engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);    
 #ifdef USE_VIDEO_CPU
     //--- Camera controller
+    qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
     qmlRegisterType<CVVideoCaptureThread>("io.qdt.dev", 1, 0, "Player");
     engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(true));
 #else
     engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(false));
 #endif
 #ifdef USE_VIDEO_GPU
+    qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
     qmlRegisterType<VDisplay>("io.qdt.dev", 1, 0, "Player");
     engine.rootContext()->setContextProperty("USE_VIDEO_GPU", QVariant(true));
 #else

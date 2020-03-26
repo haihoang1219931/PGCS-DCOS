@@ -133,7 +133,7 @@ Rectangle {
         anchors.bottomMargin: 8
         anchors.top: btnLoadOnline.bottom
         anchors.right: parent.right
-        anchors.bottom: btnConfirm.top
+        anchors.bottom: btnCancel.top
         anchors.left: parent.left
         anchors.topMargin: 8
         clip: true
