@@ -128,6 +128,46 @@ HEADERS += \
     src/Controller/Params/Fact.h \
     src/Log/LogController.h
 }
+# UC libs KURENTO
+use_ucapi{
+DEFINES += UC_API
+DEFINES += SIO_TLS
+QML_IMPORT_PATH += \
+    $$PWD/src/QmlControls/UC
+INCLUDEPATH += src/UC
+SOURCES += \
+    src/UC/UCDataModel.cpp \
+    src/UC/UCEventListener.cpp
+HEADERS += \
+    src/UC/UCDataModel.hpp \
+    src/UC/UCEventListener.hpp
+
+INCLUDEPATH += $$PWD/src/UC/sioclient/lib
+INCLUDEPATH += $$PWD/src/UC/boost1.62/include
+INCLUDEPATH += $$PWD/src/UC/openssl
+
+LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer -lcrypto -lssl
+LIBS += -pthread -lpthread
+
+SOURCES += \
+    src/UC/api/app_socket_api.cpp \
+    src/UC/json/jsoncpp.cpp \
+    src/UC/sioclient/src/internal/sio_client_impl.cpp \
+    src/UC/sioclient/src/internal/sio_packet.cpp \
+    src/UC/sioclient/src/sio_client.cpp \
+    src/UC/sioclient/src/sio_socket.cpp
+
+HEADERS += \
+    src/UC/api/app_socket_api.hpp \
+    src/UC/json/json-forwards.h \
+    src/UC/json/json.h \
+    src/UC/sioclient/src/internal/sio_client_impl.h \
+    src/UC/sioclient/src/internal/sio_packet.h \
+    src/UC/sioclient/src/sio_client.h \
+    src/UC/sioclient/src/sio_message.h \
+    src/UC/sioclient/src/sio_socket.h
+
+}
 # Control camera
 use_camera_control{
 DEFINES += CAMERA_CONTROL
@@ -318,13 +358,13 @@ INCLUDEPATH += /usr/local/cuda-10.1/targets/x86_64-linux/include
 
 # TensorFlow r1.14
 #include(tensorflow_dependency.pri)
-INCLUDEPATH += /home/pgcs-01/installer/tensorflow/tensorflow-1.14.0
-INCLUDEPATH += /home/pgcs-01/installer/tensorflow/tensorflow-1.14.0/tensorflow
-INCLUDEPATH += /home/pgcs-01/installer/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/eigen_archive
-INCLUDEPATH += /home/pgcs-01/installer/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/protobuf_archive/src
-INCLUDEPATH += /home/pgcs-01/installer/tensorflow/tensorflow-1.14.0/bazel-genfiles
+INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0
+INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/tensorflow
+INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/eigen_archive
+INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/protobuf_archive/src
+INCLUDEPATH += /home/pgcs-01/install/tensorflow/tensorflow-1.14.0/bazel-genfiles
 
-LIBS += -L/home/pgcs-01/installer/tensorflow/tensorflow-1.14.0/bazel-bin/tensorflow -ltensorflow_cc -ltensorflow_framework
+LIBS += -L/home/pgcs-01/install/tensorflow/tensorflow-1.14.0/bazel-bin/tensorflow -ltensorflow_cc -ltensorflow_framework
 
 LIBS += `pkg-config --libs opencv`
 # End TensorFlow
@@ -517,43 +557,4 @@ HEADERS += \
     src/Camera/CPUBased/tracker/dando/Utilities.hpp
 }
 
-# UC libs KURENTO
-use_ucapi{
-DEFINES += UC_API
-DEFINES += SIO_TLS
-QML_IMPORT_PATH += \
-    $$PWD/src/QmlControls/UC
-INCLUDEPATH += src/UC
-SOURCES += \
-    src/UC/UCDataModel.cpp \
-    src/UC/UCEventListener.cpp
-HEADERS += \
-    src/UC/UCDataModel.hpp \
-    src/UC/UCEventListener.hpp
 
-INCLUDEPATH += $$PWD/src/UC/sioclient/lib
-INCLUDEPATH += $$PWD/src/UC/boost1.62/include
-INCLUDEPATH += $$PWD/src/UC/openssl
-
-LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer -lcrypto -lssl
-LIBS += -pthread -lpthread
-
-SOURCES += \
-    src/UC/api/app_socket_api.cpp \
-    src/UC/json/jsoncpp.cpp \
-    src/UC/sioclient/src/internal/sio_client_impl.cpp \
-    src/UC/sioclient/src/internal/sio_packet.cpp \
-    src/UC/sioclient/src/sio_client.cpp \
-    src/UC/sioclient/src/sio_socket.cpp
-
-HEADERS += \
-    src/UC/api/app_socket_api.hpp \
-    src/UC/json/json-forwards.h \
-    src/UC/json/json.h \
-    src/UC/sioclient/src/internal/sio_client_impl.h \
-    src/UC/sioclient/src/internal/sio_packet.h \
-    src/UC/sioclient/src/sio_client.h \
-    src/UC/sioclient/src/sio_message.h \
-    src/UC/sioclient/src/sio_socket.h
-
-}
