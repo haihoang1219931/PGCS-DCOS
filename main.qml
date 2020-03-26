@@ -1,6 +1,8 @@
 import QtQuick                  2.11
 import QtQuick.Controls         2.4
 import QtQuick.Layouts          1.3
+import QtQuick.Controls         1.2 as OldControl
+import QtQuick.Controls.Styles 1.4
 import QtPositioning 5.2
 import CustomViews.Components   1.0
 import CustomViews.Bars         1.0
@@ -19,6 +21,20 @@ ApplicationWindow {
     width: 1920
     height: 1080
     title: qsTr("DCOS - PGCSv0.1")
+    function switchMapFull(){
+        videoPane.x = paneControl.x;
+        videoPane.y = paneControl.y;
+        videoPane.width = paneControl.width;
+        videoPane.height = paneControl.height;
+        videoPane.z = 2;
+        mapPane.x = rectMap.x;
+        mapPane.y = rectMap.y;
+        mapPane.width = rectMap.width;
+        mapPane.height = rectMap.height;
+        mapPane.z = 1;
+        UIConstants.layoutMaxPane = UIConstants.layoutMaxPaneMap;
+    }
+
     function switchVideoMap(onResize){
         if(onResize){
             if(videoPane.z < mapPane.z){
@@ -530,7 +546,9 @@ ApplicationWindow {
                 }else {
                     stkMainRect.currentIndex = 0;
                 }
-
+                if(seq === 0){
+                    mainWindow.switchMapFull();
+                }
             }else if(seq === 3){
                 if(!navbar._isPayloadActive){
                     rightBar.hideRightBar();
@@ -627,21 +645,23 @@ ApplicationWindow {
                 title: "Minor params"
                 z:6
                 vehicle: vehicle
+                width: hud.width
                 anchors {
                     bottom: parent.bottom;
                     bottomMargin: 5;
                     right: rightBar.left;
-                    rightMargin: UIConstants.sRect
+                    rightMargin: 8
                 }
             }
             VideoPane{
                 id: videoPane
-                visible: CAMERA_CONTROL
+                visible: paneControl.visible
                 width: paneControl.width
                 height: paneControl.height
                 x: paneControl.x
                 y: paneControl.y
                 z: 2
+                camState: camState
                 ObjectsOnScreen{
                     anchors.fill: parent
                     player: videoPane.player
@@ -650,7 +670,7 @@ ApplicationWindow {
             }
             PaneControl{
                 id: paneControl
-                anchors {bottom: parent.bottom; bottomMargin: UIConstants.sRect; left: parent.left; leftMargin: UIConstants.sRect}
+                anchors {bottom: parent.bottom; bottomMargin: 8; left: parent.left; leftMargin: 8}
                 z: 5
                 visible: UIConstants.monitorMode === UIConstants.monitorModeFlight && CAMERA_CONTROL
                 layoutMax: UIConstants.layoutMaxPane
@@ -681,7 +701,7 @@ ApplicationWindow {
                         camState.sensorID = camState.sensorIDEO;
                     }
                     console.log("Change sensor ID to ["+camState.sensorID+"]");
-                    if(USE_VIDEO_CPU){
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         if(camState.sensorID === camState.sensorIDEO){
                             var config = PCSConfig.getData();
                             videoPane.player.setVideo(config["CAM_STREAM_EO"]);
@@ -699,28 +719,28 @@ ApplicationWindow {
 //                    }
                 }
                 onGcsSnapshotClicked: {
-                    if(USE_VIDEO_CPU){
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         videoPane.player.capture();
                     }
                 }
                 onGcsStabClicked: {
                     camState.gcsStab =! camState.gcsStab;
-                    if(USE_VIDEO_CPU){
-                        videoPane.player.setStab(camState.gcsStab)
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
+                        videoPane.player.setDigitalStab(camState.gcsStab)
                     }
                 }
 
                 onGcsRecordClicked: {
                     camState.gcsRecord=!camState.gcsRecord;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
-                    if(USE_VIDEO_CPU){
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         videoPane.player.setRecord(camState.gcsRecord);
                     }
                 }
                 onGcsShareClicked: {
                     camState.gcsShare=!camState.gcsShare;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
-                    if(USE_VIDEO_CPU){
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         videoPane.player.setShare(camState.gcsShare);
                     }
                 }
@@ -827,20 +847,21 @@ ApplicationWindow {
 
             HUD{
                 id: hud
-                anchors {right: rightBar.left; top: parent.top;topMargin: UIConstants.sRect * 2; rightMargin: UIConstants.sRect }
+                anchors {right: rightBar.left; top: parent.top;topMargin: UIConstants.sRect + 8; rightMargin: 8 }
                 z: 5
                 visible: UIConstants.monitorMode === UIConstants.monitorModeFlight
             }
             StackLayout{
                 id: popUpInfo
+
                 clip: true
                 visible: UIConstants.monitorMode === UIConstants.monitorModeFlight && UC_API
-                width: UIConstants.sRect * 12
-                height: UIConstants.sRect * 18
+                width: hud.width
+                height: UIConstants.sRect * 10 * 3 / 2
                 anchors.top: hud.bottom
-                anchors.topMargin: UIConstants.sRect/2
+                anchors.topMargin: 8
                 anchors.right: rightBar.left
-                anchors.rightMargin: UIConstants.sRect
+                anchors.rightMargin: 8
                 property bool show: true
                 currentIndex: 0
                 z: 5
@@ -876,7 +897,7 @@ ApplicationWindow {
                 id: animPopup
                 target: popUpInfo
                 properties: "anchors.rightMargin"
-                to: popUpInfo.show ? UIConstants.sRect :-UIConstants.sRect * 12
+                to: popUpInfo.show ? 8 :-popUpInfo.width
                 duration: 800
                 easing.type: Easing.InOutBack
                 running: false
@@ -938,8 +959,8 @@ ApplicationWindow {
                 id: mapControl
                 anchors.left: parent.left
                 anchors.top: parent.top
-                anchors.leftMargin: UIConstants.sRect
-                anchors.topMargin: UIConstants.sRect*2
+                anchors.leftMargin: 8
+                anchors.topMargin: UIConstants.sRect + 8
                 width: UIConstants.sRect*2.5
                 height: UIConstants.sRect*2.5*3
                 visible: UIConstants.layoutMaxPane === UIConstants.layoutMaxPaneMap
@@ -954,29 +975,25 @@ ApplicationWindow {
                     mapPane.zoomOut();
                 }
             }
-            Rectangle{
+            FlatButtonText{
+                id: chkLog
                 visible: mapControl.visible
                 width: UIConstants.sRect * 2.5
                 height: UIConstants.sRect + 8
-                color: UIConstants.transparentBlue
+                color: !checked?UIConstants.transparentBlue:UIConstants.transparentGreen
                 anchors.left: parent.left
-                anchors.leftMargin: UIConstants.sRect
+                anchors.leftMargin: 8
                 anchors.top: mapControl.bottom
                 anchors.topMargin: 8
                 border.color: UIConstants.grayColor
                 border.width: 1
                 radius: UIConstants.rectRadius
                 z: 8
-                CheckBox {
-                    id: chkLog
-                    anchors.fill: parent
-                    text: "<font color=\"white\">"+"OCR"+"</font>"
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.top: parent.top
-                    anchors.topMargin: 4
-                    anchors.left: parent.left
-                    anchors.leftMargin: 4
-                    checked: false
+                text: "OCR"
+                textColor: UIConstants.textColor
+                property bool checked: false
+                onClicked: {
+                    checked = !checked;
                 }
             }
         }
@@ -1659,7 +1676,7 @@ ApplicationWindow {
         visible: stkMainRect.currentIndex == 1 && CAMERA_CONTROL
         radius: UIConstants.rectRadius
         anchors.bottom: footerBar.top
-        anchors.bottomMargin: UIConstants.sRect
+        anchors.bottomMargin: 8
         anchors.horizontalCenter: parent.horizontalCenter
         property bool show: true
         z:7
@@ -1671,7 +1688,7 @@ ApplicationWindow {
             id: animCameraControl
             target: rectCameraControl
             properties: "anchors.bottomMargin"
-            to: rectCameraControl.show ? UIConstants.sRect : - UIConstants.sRect * 6
+            to: rectCameraControl.show ? 8 : - rectCameraControl.height
             duration: 800
             easing.type: Easing.InOutBack
             running: false

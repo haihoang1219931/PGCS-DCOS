@@ -10,7 +10,7 @@ VDisplayWorker::~VDisplayWorker() {}
 void VDisplayWorker::init()
 {
     m_currID = 0;
-    std::string names_file = "../Controller/Video/OD/yolo-setup/visdrone2019.names";
+    std::string names_file = "../GPUBased/OD/yolo-setup/visdrone2019.names";
     m_objName = this->objects_names_from_file(names_file);
 }
 

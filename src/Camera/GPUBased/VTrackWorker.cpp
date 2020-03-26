@@ -171,9 +171,20 @@ void VTrackWorker::run()
                     }
 
 //                    printf("\n====> DO TRACK [%d, %d, %d, %d]", objectPosition.x, objectPosition.y, objectPosition.width, objectPosition.height);
+                    double pxStab = objectPosition.x;
+                    double pyStab = objectPosition.y;
+                    if(m_enStab){
+                        cv::Mat pointBeforeStab(3, 1, CV_32F, cv::Scalar::all(0));
+                        pointBeforeStab.at<float>(0,0) = objectPosition.x;
+                        pointBeforeStab.at<float>(1,0) = objectPosition.y;
+                        cv::Mat pointAfterStab = stabMatrix * pointBeforeStab ;
+                        pxStab = pointAfterStab.at<float>(0,0);
+                        pyStab = pointAfterStab.at<float>(0,1);
+                    }
                     Q_EMIT determinedTrackObjected(m_currID, objectPosition.x, objectPosition.y,
                                                    objectPosition.width, objectPosition.height,
-                                                   imgSize.width, imgSize.height);
+                                                   imgSize.width, imgSize.height,pxStab,pyStab);
+
                     // TODO : Detect Plate
 //                    // check if objectPosition is inside proccImg
                     if (    (objectPosition.x > 0)

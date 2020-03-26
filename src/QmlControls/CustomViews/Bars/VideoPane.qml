@@ -18,10 +18,44 @@ Flickable{
     width: UIConstants.sRect*19
     height: UIConstants.sRect*13   
     clip: true
+    property var camState
+    property real iPan: 0.0
+    property real cPan: 0.0
+    property real dPanOld: 0.0
+    property real panRate: 0.0
+    property real uPan: 0.0
+
+    property real kpPan: 45.0
+    property real kiPan: 1.0
+    property real kdPan: 0.05
+
+    property real iTilt: 0.0
+    property real cTilt: 0.0
+    property real dTiltOld: 0.0
+    property real tiltRate: 0.0
+    property real uTilt: 0.0
+
+    property real kpTilt: 50.0
+    property real kiTilt: 5.0
+    property real kdTilt: 0.05
     property bool isVideoOn: false
-    property var player
+    property var player: player
     function searchByClass(selectedList){
         player.searchByClass(selectedList)
+    }
+    function resetTrackParam(){
+        iPan = 0.0
+        cPan = 0.0
+        dPanOld = 0.0
+        panRate = 0.0
+        uPan = 0.0
+
+        iTilt = 0.0
+        cTilt = 0.0
+        dTiltOld = 0.0
+        tiltRate = 0.0
+        uTilt = 0.0
+        console.log("\nreset track")
     }
     Rectangle{
         anchors.fill: parent
@@ -34,20 +68,84 @@ Flickable{
     Label{
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        text: rootItem.width > 200?"NO VIDEO":"NO\nVIDEO"
+        text: rootItem.width > UIConstants.sRect * 8?"NO VIDEO":"NO\nVIDEO"
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         color: UIConstants.textColor
         font.family: UIConstants.appFont
         font.bold: true
-        font.pixelSize: 20
+        font.pixelSize: UIConstants.fontSize * 2
         visible: !rootItem.isVideoOn
     }
+    Player {
+        id: player
+        plateLog: listPlateLog.plateLog
+        onDeterminedTrackObjected: {
+//            console.log("ObjectTrack==> [" + _id + ", " + _px + ", " + _py + ", " + _w + ", " + _h + ", " + _oW + ", " + _oH + "]" + "["+ camState.hfov +"]");
+            var px = (_px + _oW/2) - _w/2
+            var py = (_py + _oH/2) - _h/2
+            var hfov = camState.hfov;
 
+            if(hfov > 0.0963){
+                var focalLength = _w / 2 / Math.tan(hfov/2)
+
+                var deltaPan = Math.atan(-px/focalLength) * 180.0 / Math.PI
+    //            if(deltaPan > 10)deltaPan = 10
+    //            else if(deltaPan < -10)deltaPan = -10
+                iPan+=deltaPan/30.0
+                cPan+=(panRate - uPan)/30.0
+                var dPan = (deltaPan - dPanOld) * 30
+                uPan = kpPan * deltaPan + kiPan * iPan + kdPan * dPan
+                dPanOld = deltaPan
+
+                if(uPan > 1023){
+                    console.log("\n limit pan")
+                    panRate = 1023
+                }
+                else if (uPan < -1023){
+                    console.log("\n limit pan")
+                    panRate = -1023
+                }
+                else panRate = uPan
+
+                var deltaTilt = Math.atan(-py/focalLength) * 180.0 / Math.PI
+    //            if(deltaTilt > 10)deltaTilt = 10
+    //            else if(deltaTilt < -10)deltaTilt = -10
+                iTilt+=deltaTilt/30.0
+                cTilt+=(tiltRate - uTilt)/30.0
+                var dTilt = (deltaTilt - dTiltOld) * 30
+                uTilt = kpTilt * deltaTilt + kiTilt * iTilt + kdTilt * dTilt
+                dTiltOld = deltaTilt
+
+                if(uTilt > 1023){
+                    console.log("\n limit tilt")
+                    tiltRate = 1023
+                }
+                else if (uTilt < -1023){
+                    console.log("\n limit tilt")
+                    tiltRate = -1023
+                }
+                else tiltRate = uTilt
+
+                if(gimbalNetwork.isGimbalConnected){
+                    gimbalNetwork.ipcCommands.gimbalControl(0, panRate, tiltRate);
+    //                console.log("rate ===> " + px + " | " + py);
+                }
+            }
+        }
+        onObjectLost: {
+            if(gimbalNetwork.isGimbalConnected){
+                camState.changeLockMode("FREE");
+                hud.changeLockMode("LOCK_FREE");
+                gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0);
+            }
+        }
+    }
     Connections{
         target: player
         onDeterminedTrackObjected: {
-            gimbalNetwork.ipcCommands.setClickPoint(_id, _px, _py, _w, _h, _oW, _oH);
+            if(gimbalNetwork.isGimbalConnected)
+                gimbalNetwork.ipcCommands.setClickPoint(_id, _px, _py, _w, _h, _oW, _oH);
         }
 
         onDeterminedPlateOnTracking: {
@@ -59,6 +157,7 @@ Flickable{
         anchors.fill: parent
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
+        source: player
     }
 
     MouseArea{
@@ -135,23 +234,6 @@ Flickable{
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-        }
-    }
-
-    Component.onCompleted: {
-        if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-            var component = Qt.createQmlObject('import io.qdt.dev 1.0;
-                                    Player {
-                                        id: player
-                                        enStream: true
-                                        enSaving: true
-                                        sensorMode: 0
-                                    }',
-                                               rootItem,
-                                               "dynamicSnipet1");
-            rootItem.player = component;
-            console.log("Player component="+rootItem.player);
-            videoOutput.source = rootItem.player;
         }
     }
 }

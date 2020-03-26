@@ -14,12 +14,11 @@
 #include <opencv2/highgui.hpp>
 #include <string.h>
 
-#include "../Utils/filenameutils.h"
 #include "../Files/FileControler.h"
 #include "../Files/PlateLog.h"
-#include "../tracker/dando/ITrack.hpp"
-#include "../tracker/dando/Utilities.hpp"
-#include "../tracker/dando/HTrack/saliency.h"
+#include "tracker/dando/ITrack.hpp"
+#include "tracker/dando/Utilities.hpp"
+#include "tracker/dando/HTrack/saliency.h"
 
 // plate detection
 #include "Clicktrack/clicktrack.h"
@@ -52,7 +51,8 @@ class VTrackWorker : public QThread
                                 const int _centerY, cv::Scalar _color);
 
     Q_SIGNALS:
-        void determinedTrackObjected(int _id, double _px, double _py, double _w, double _h, double _oW, double _oH);
+        void determinedTrackObjected(int _id, double _px, double _py, double _w, double _h, double _oW, double _oH,
+                                     double _pxStab,double _pyStab);
         void objectLost();
         void determinedPlateOnTracking(QString _imgPath, QString _plateID);
     private:

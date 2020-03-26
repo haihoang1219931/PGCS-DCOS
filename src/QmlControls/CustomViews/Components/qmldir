@@ -29,3 +29,4 @@ QLabeledTextInput               1.0 QLabeledTextInput.qml
 FlatCorner                      1.0 FlatCorner.qml
 FlatRectangle                   1.0 FlatRectangle.qml
 ToastLabel                      1.0 ToastLabel.qml
+FlatButtonText			1.0 FlatButtonText.qml		

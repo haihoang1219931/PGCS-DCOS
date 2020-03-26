@@ -18,9 +18,10 @@ import UC       1.0
 Rectangle {
     id: rootItem
     width: UIConstants.sRect * 12
-    height: UIConstants.sRect * 18
+    height: UIConstants.sRect * 10 * 3 /2
     color: "transparent"
     radius: UIConstants.rectRadius
+    clip: true
     property bool showInfoDrones: true
     property bool showInfoPMCC: true
     property int fontSize: 15
@@ -42,7 +43,7 @@ Rectangle {
 
     Rectangle {
         id: rectHeaderDrones
-        height: UIConstants.sRect*2
+        height: UIConstants.sRect*3/2
         color: UIConstants.bgAppColor
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -85,7 +86,7 @@ Rectangle {
     OnlineFCSs{
         id: lstDroneInfo
 //        interactive: false
-        height: UIConstants.sRect * 4
+        height: UIConstants.sRect * 3
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.left: parent.left
@@ -95,7 +96,7 @@ Rectangle {
     }
     Rectangle {
         id: rectHeaderPM
-        height: UIConstants.sRect*2
+        height: UIConstants.sRect*3/2
         color: UIConstants.bgAppColor
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -145,7 +146,7 @@ Rectangle {
     }
     Rectangle {
         id: rectHeaderCC
-        height: UIConstants.sRect*2
+        height: UIConstants.sRect*3/2
         color: UIConstants.bgAppColor
         anchors.right: parent.right
         anchors.rightMargin: 0
@@ -188,7 +189,7 @@ Rectangle {
     OnlineCCs{
         id: lstCCInfo
         anchors.top: rectHeaderCC.bottom
-        height: UIConstants.sRect * 2
+        height: UIConstants.sRect * 3/2
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.left: parent.left

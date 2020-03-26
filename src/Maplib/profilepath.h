@@ -51,6 +51,8 @@ public:
     void setFontSize(int value){
         if(_fontSize != value){
             _fontSize = value;
+            AxisXoffset = _fontSize * 3;
+            AxisYoffset = _fontSize * 3;
             Q_EMIT fontSizeChanged();
         }
     }
@@ -86,8 +88,8 @@ private:
     QString _yName;
     int _fontSize;
     QString _fontFamily;
-    int const AxisXoffset = 45;
-    int const AxisYoffset = 50;
+    int AxisXoffset = 45;
+    int AxisYoffset = 50;
 
     int mMaxAltitude=0;
     int mMinAltitude=0;
