@@ -175,7 +175,6 @@ Flickable{
             rootItem.player = component;
             rootItem.player.plateLog = listPlateLog.plateLog;
             rootItem.player.determinedTrackObjected.connect( function (_id,_px,_py,_oW,_oH,_w,_h){
-    //            console.log("ObjectTrack==> [" + _id + ", " + _px + ", " + _py + ", " + _w + ", " + _h + ", " + _oW + ", " + _oH + "]" + "["+ camState.hfov +"]");
                 var px = (_px + _oW/2) - _w/2
                 var py = (_py + _oH/2) - _h/2
                 var hfov = camState.hfov;
