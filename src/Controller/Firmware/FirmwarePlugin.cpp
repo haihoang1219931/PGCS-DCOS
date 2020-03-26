@@ -3,52 +3,104 @@
 #include "../Vehicle/Vehicle.h"
 FirmwarePlugin::FirmwarePlugin(QObject *parent) : QObject(parent)
 {
-    _listParamShow.append(new Fact(false,"AirSpeed","0","m"));
-    _listParamShow.append(new Fact(false,"AltHome","0","m"));
-    _listParamShow.append(new Fact(false,"AltitudeAGL","0","m"));
-    _listParamShow.append(new Fact(false,"AltitudeAMSL","0","m"));
-    _listParamShow.append(new Fact(false,"ClimbSpeed","0","m"));
-    _listParamShow.append(new Fact(false,"Current","0","m"));
-    _listParamShow.append(new Fact(false,"Current2","0","m"));
-    _listParamShow.append(new Fact(false,"DisttoWP","0","m"));
-    _listParamShow.append(new Fact(false,"EkfCompass","0",""));
-    _listParamShow.append(new Fact(false,"EkfPosH","0",""));
-    _listParamShow.append(new Fact(false,"EkfPosV","0",""));
-    _listParamShow.append(new Fact(false,"EkfVel","0",""));
-    _listParamShow.append(new Fact(false,"GPSHdop","0","m"));
-    _listParamShow.append(new Fact(false,"GPSSatCount","0","m"));
-    _listParamShow.append(new Fact(false,"GroundLevel","0","m"));
-    _listParamShow.append(new Fact(false,"GroundSpeed","0","m"));
-    _listParamShow.append(new Fact(false,"LatHome","0","deg"));
-    _listParamShow.append(new Fact(false,"LongHome","0","deg"));
-    _listParamShow.append(new Fact(false,"Latitude","0","deg"));
-    _listParamShow.append(new Fact(false,"Longitude","0","deg"));
-    _listParamShow.append(new Fact(true,"PitchDeg","0","m"));
-    _listParamShow.append(new Fact(true,"PMU_IBatA","0","m"));
-    _listParamShow.append(new Fact(true,"PMU_IBatB","0","m"));
-    _listParamShow.append(new Fact(true,"PMU_Rpm","0","m"));
-    _listParamShow.append(new Fact(true,"PMU_Temp","0","m"));
-    _listParamShow.append(new Fact(true,"PMU_vBatt12S","0","m"));
-    _listParamShow.append(new Fact(true,"PMU_vBatA","0","m"));
-    _listParamShow.append(new Fact(true,"PMU_vBatB","0","m"));
-    _listParamShow.append(new Fact(false,"PTU_Alt","0","m"));
-    _listParamShow.append(new Fact(false,"PTU_Heading","0","m"));
-    _listParamShow.append(new Fact(false,"PTU_Press","0","m"));
-    _listParamShow.append(new Fact(false,"PTU_RSSI","0","m"));
-    _listParamShow.append(new Fact(false,"PTU_Temperature","0","m"));
-    _listParamShow.append(new Fact(false,"RollDeg","0","m"));
-    _listParamShow.append(new Fact(false,"RPM1","0","m"));
-    _listParamShow.append(new Fact(false,"RPM2","0","m"));
-    _listParamShow.append(new Fact(false,"Sonarrange","0","m"));
-    _listParamShow.append(new Fact(false,"TargetAlt","0","m"));
-    _listParamShow.append(new Fact(false,"VibeX","0",""));
-    _listParamShow.append(new Fact(false,"VibeY","0",""));
-    _listParamShow.append(new Fact(false,"VibeZ","0",""));
-    _listParamShow.append(new Fact(false,"Voltage","0","V"));
-    _listParamShow.append(new Fact(false,"Voltage2","0","V"));
-    _listParamShow.append(new Fact(false,"WindHeading","0","Deg"));
-    _listParamShow.append(new Fact(false,"WindSpeed","0","km/h"));
-    _listParamShow.append(new Fact(false,"YawDeg","0","Deg"));
+    loadFromFile("conf/Properties.conf");
+}
+void FirmwarePlugin::loadFromFile(QString fileName){
+    if(_listParamShow.size() != 0){
+        _listParamShow.clear();
+    }
+    XMLDocument m_doc;
+    XMLError res = m_doc.LoadFile(fileName.toStdString().c_str());
+    if(res == XML_SUCCESS){
+        XMLElement * pElement = m_doc.FirstChildElement("ArrayOfProperties");
+        XMLElement * pListElement = pElement->FirstChildElement("Property");
+        //int i = 0;
+        while(pListElement!= nullptr){
+            //printf("item %d\r\n",i);
+
+            XMLElement * pSelected = pListElement->FirstChildElement("Selected");
+            XMLElement * pName = pListElement->FirstChildElement("Name");
+            XMLElement * pUnit = pListElement->FirstChildElement("Unit");
+            Fact *tmp = new Fact(QString::fromLocal8Bit(pSelected->GetText()).contains("true"),
+                                 QString::fromLocal8Bit(pName->GetText()),
+                                 "0",
+                                 QString::fromLocal8Bit(pUnit->GetText()));
+            pListElement = pListElement->NextSiblingElement("Property");
+            //i++;
+            _listParamShow.append(tmp);
+        }
+    }
+    if(_listParamShow.size() == 0){
+        _listParamShow.append(new Fact(false,"AirSpeed","0","m"));
+        _listParamShow.append(new Fact(false,"AltHome","0","m"));
+        _listParamShow.append(new Fact(false,"AltitudeAGL","0","m"));
+        _listParamShow.append(new Fact(false,"AltitudeAMSL","0","m"));
+        _listParamShow.append(new Fact(false,"ClimbSpeed","0","m"));
+        _listParamShow.append(new Fact(false,"Current","0","m"));
+        _listParamShow.append(new Fact(false,"Current2","0","m"));
+        _listParamShow.append(new Fact(false,"DisttoWP","0","m"));
+        _listParamShow.append(new Fact(false,"EkfCompass","0",""));
+        _listParamShow.append(new Fact(false,"EkfPosH","0",""));
+        _listParamShow.append(new Fact(false,"EkfPosV","0",""));
+        _listParamShow.append(new Fact(false,"EkfVel","0",""));
+        _listParamShow.append(new Fact(false,"GPSHdop","0","m"));
+        _listParamShow.append(new Fact(false,"GPSSatCount","0","m"));
+        _listParamShow.append(new Fact(false,"GroundLevel","0","m"));
+        _listParamShow.append(new Fact(false,"GroundSpeed","0","m"));
+        _listParamShow.append(new Fact(false,"LatHome","0","deg"));
+        _listParamShow.append(new Fact(false,"LongHome","0","deg"));
+        _listParamShow.append(new Fact(false,"Latitude","0","deg"));
+        _listParamShow.append(new Fact(false,"Longitude","0","deg"));
+        _listParamShow.append(new Fact(true,"PitchDeg","0","m"));
+        _listParamShow.append(new Fact(true,"PMU_IBatA","0","m"));
+        _listParamShow.append(new Fact(true,"PMU_IBatB","0","m"));
+        _listParamShow.append(new Fact(true,"PMU_Rpm","0","m"));
+        _listParamShow.append(new Fact(true,"PMU_Temp","0","m"));
+        _listParamShow.append(new Fact(true,"PMU_vBatt12S","0","m"));
+        _listParamShow.append(new Fact(true,"PMU_vBatA","0","m"));
+        _listParamShow.append(new Fact(true,"PMU_vBatB","0","m"));
+        _listParamShow.append(new Fact(false,"PTU_Alt","0","m"));
+        _listParamShow.append(new Fact(false,"PTU_Heading","0","m"));
+        _listParamShow.append(new Fact(false,"PTU_Press","0","m"));
+        _listParamShow.append(new Fact(false,"PTU_RSSI","0","m"));
+        _listParamShow.append(new Fact(false,"PTU_Temperature","0","m"));
+        _listParamShow.append(new Fact(false,"RollDeg","0","m"));
+        _listParamShow.append(new Fact(false,"RPM1","0","m"));
+        _listParamShow.append(new Fact(false,"RPM2","0","m"));
+        _listParamShow.append(new Fact(false,"Sonarrange","0","m"));
+        _listParamShow.append(new Fact(false,"TargetAlt","0","m"));
+        _listParamShow.append(new Fact(false,"VibeX","0",""));
+        _listParamShow.append(new Fact(false,"VibeY","0",""));
+        _listParamShow.append(new Fact(false,"VibeZ","0",""));
+        _listParamShow.append(new Fact(false,"Voltage","0","V"));
+        _listParamShow.append(new Fact(false,"Voltage2","0","V"));
+        _listParamShow.append(new Fact(false,"WindHeading","0","Deg"));
+        _listParamShow.append(new Fact(false,"WindSpeed","0","km/h"));
+        _listParamShow.append(new Fact(false,"YawDeg","0","Deg"));
+        saveToFile("conf/Properties.conf",_listParamShow);
+    }
+}
+void FirmwarePlugin::saveToFile(QString fileName,QList<Fact*> _listParamShow){
+    if(fileName.contains(".conf")){
+        XMLDocument xmlDoc;
+        XMLNode * pRoot = xmlDoc.NewElement("ArrayOfProperties");
+        xmlDoc.InsertFirstChild(pRoot);
+        for(int i=0; i< _listParamShow.size(); i++){
+            Fact *tmp = _listParamShow[i];
+            XMLElement * pElement = xmlDoc.NewElement("Property");
+            XMLElement * pSelected = xmlDoc.NewElement("Selected");
+            pSelected->SetText(tmp->selected()?"true":"false");
+            pElement->InsertEndChild(pSelected);
+            XMLElement * pName = xmlDoc.NewElement("Name");
+            pName->SetText(tmp->name().toStdString().c_str());
+            pElement->InsertEndChild(pName);
+            XMLElement * pUnit = xmlDoc.NewElement("Unit");
+            pUnit->SetText(tmp->unit().toStdString().c_str());
+            pElement->InsertEndChild(pUnit);
+            pRoot->InsertEndChild(pElement);
+        }
+        XMLError eResult = xmlDoc.SaveFile(fileName.toStdString().c_str());
+    }
 }
 QList<Fact*> FirmwarePlugin::listParamsShow(){
     return _listParamShow;

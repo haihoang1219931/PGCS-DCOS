@@ -776,11 +776,13 @@ ApplicationWindow {
                     }
                 }
                 function updateObjectsOnMap(){
-                    for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
-                        var object = videoPane.player.listTrackObjectInfos[id];
-                        var pointMapOnScreen =
-                                mapPane.convertLocationToScreen(object.latitude,object.longitude);
-                        objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
+                    if(videoPane.player !== undefined){
+                        for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
+                            var object = videoPane.player.listTrackObjectInfos[id];
+                            var pointMapOnScreen =
+                                    mapPane.convertLocationToScreen(object.latitude,object.longitude);
+                            objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
+                        }
                     }
                 }
 

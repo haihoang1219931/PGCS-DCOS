@@ -47,8 +47,8 @@ Rectangle {
 
         FlatButtonIcon{
             id: btnConfirm
-            height: UIConstants.sRect * 1
-            width: UIConstants.sRect * 2
+            height: UIConstants.sRect * 2
+            width: UIConstants.sRect * 4
             icon: UIConstants.iChecked
             isSolid: true
             color: "green"
@@ -64,10 +64,8 @@ Rectangle {
         }
         FlatButtonIcon{
             id: btnCancel
-            x: 102
-            y: 192
-            height: UIConstants.sRect * 1
-            width: UIConstants.sRect * 2
+            height: UIConstants.sRect * 2
+            width: UIConstants.sRect * 4
             icon: UIConstants.iMouse
             isSolid: true
             color: "red"

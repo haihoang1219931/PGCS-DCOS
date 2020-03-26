@@ -45,7 +45,6 @@ bool QuadPlaneFirmware::flightModeID(QString flightMode,int* base_mode,int* cust
     return containFlightMode;
 }
 void QuadPlaneFirmware::initializeVehicle(Vehicle* vehicle){
-    printf("QuadPlaneFirmware %s\r\n",__func__);
     vehicle->requestDataStream(MAV_DATA_STREAM_RAW_SENSORS,     2);
     vehicle->requestDataStream(MAV_DATA_STREAM_EXTENDED_STATUS, 2);
     vehicle->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS,     2);

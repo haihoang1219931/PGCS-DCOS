@@ -32,7 +32,7 @@ Rectangle {
     property real maxValue: 3000
     property real currentValue: 150
     property real stepValue: 5
-    property var validatorValue: /^([1-9][0-9]|[1-3][0-9][0-9]|[400])/
+    property var validatorValue: /^([1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9])/
     signal confirmClicked()
     signal cancelClicked()
     MouseArea{
@@ -67,7 +67,7 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: sldBar.bottom
         anchors.topMargin: 8
-        Label {
+        TextInput {
             id: txtCurrentValue
             anchors.fill: parent
             anchors.margins: UIConstants.rectRadius/2
@@ -79,11 +79,15 @@ Rectangle {
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont
             anchors.topMargin: 3
-//            validator: RegExpValidator { regExp: validatorValue }
-            enabled: false
+            validator: RegExpValidator { regExp: validatorValue }
             onTextChanged: {
                 if(focus){
-                    root.currentValue = Number(text).toFixed(0);
+                    if(txtCurrentValue.text != "" &&
+                        !isNaN(txtCurrentValue.text) &&
+                        Number(txtCurrentValue.text) >= minValue &&
+                        Number(txtCurrentValue.text) <= maxValue){
+                        root.currentValue = Number(text).toFixed(0);
+                    }
                 }
             }
         }
@@ -96,13 +100,17 @@ Rectangle {
         width: UIConstants.sRect * 4
         icon: UIConstants.iChecked
         isSolid: true
-        color: "green"
+        color: isEnable?"green":"gray"
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 8
         isAutoReturn: true
         radius: root.radius
+        isEnable: txtCurrentValue.text != "" &&
+                  !isNaN(txtCurrentValue.text) &&
+                  Number(txtCurrentValue.text) >= minValue &&
+                  Number(txtCurrentValue.text) <= maxValue
         onClicked: {
             root.confirmClicked();
             root.visible = false;

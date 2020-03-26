@@ -29,7 +29,7 @@ QString ArduCopterFirmware::flightMode(int flightModeId)
     if (m_mapFlightMode.contains(flightModeId)) {
         return m_mapFlightMode[flightModeId];
     } else
-        return "flightModeUNDEFINED";
+        return "UNDEFINED";
 }
 bool ArduCopterFirmware::flightModeID(QString flightMode, int *base_mode, int *custom_mode)
 {
@@ -69,7 +69,6 @@ void ArduCopterFirmware::sendHomePosition(Vehicle* vehicle,QGeoCoordinate locati
 }
 void ArduCopterFirmware::initializeVehicle(Vehicle *vehicle)
 {
-    printf("ArduCopterFirmware %s\r\n", __func__);
     vehicle->requestDataStream(MAV_DATA_STREAM_RAW_SENSORS,     2);
     vehicle->requestDataStream(MAV_DATA_STREAM_EXTENDED_STATUS, 2);
     vehicle->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS,     2);

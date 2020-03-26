@@ -203,6 +203,7 @@ class CVVideoCaptureThread : public QObject
         void objectDetected();
         void trackInitSuccess(bool success, int _x, int _y, int _width, int _height);
         void plateLogChanged();
+        void determinedPlateOnTracking(QString _imgPath, QString _plateID);
 public Q_SLOTS:
         void setTrackType(QString trackType)
         {

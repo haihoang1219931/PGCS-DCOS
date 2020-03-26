@@ -21,6 +21,8 @@ public:
         OrbitModeCapability =               1 << 3, ///< Vehicle supports orbit mode
         TakeoffVehicleCapability =          1 << 4, ///< Vehicle supports guided takeoff
     } FirmwareCapabilities;
+    virtual void loadFromFile(QString fileName);
+    virtual void saveToFile(QString fileName,QList<Fact*> _listParamShow);
     virtual QList<Fact*> listParamsShow();
     /// Returns the list of available flight modes. Flight modes can be different in normal/advanced ui mode.
     /// Call will be made again if advanced mode changes.

@@ -23,7 +23,7 @@ Rectangle {
     signal clicked(string type,string func)
     signal died()
     width: UIConstants.sRect * 12
-    height: UIConstants.sRect + listView.height
+    height: UIConstants.sRect * 3/2 + listView.height
     function setFocus(enable){
         rectangle.focus = enable
     }
@@ -101,7 +101,7 @@ Rectangle {
                 width: listView.width
                 Label {
                     id: lblName
-                    width: UIConstants.sRect * 5
+                    width: UIConstants.sRect * 4
                     height: UIConstants.sRect
                     text: name
                     anchors.verticalCenter: parent.verticalCenter

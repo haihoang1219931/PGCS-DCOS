@@ -85,7 +85,6 @@ void Vehicle::setCommunication(IOFlightController *com)
     connect(m_paramsController, SIGNAL(missingParametersChanged(bool)),
             this, SLOT(_startPlanRequest(void)));
 
-
     if (m_firmwarePlugin != nullptr)
         m_firmwarePlugin->initializeVehicle(this);
 
@@ -313,6 +312,30 @@ void Vehicle::sendHomePosition(QGeoCoordinate location){
         m_com->getInterface()->writeBytesSafe((char*)buffer,len);
     }
 }
+void Vehicle::activeProperty(QString name,bool active){
+    int propertiesShowCount = 0;
+    for(int i=0; i< _propertiesModel.size(); i++){
+        if(_propertiesModel[i]->name() == name){
+            _propertiesModel[i]->setSelected(active);
+        }
+        if(_propertiesModel[i]->selected())
+            propertiesShowCount ++;
+    }
+    setPropertiesShowCount(propertiesShowCount);
+    if(m_firmwarePlugin != nullptr){
+        m_firmwarePlugin->saveToFile(QString("conf/Properties.conf"),_propertiesModel);
+    }
+}
+int Vehicle::countActiveProperties(){
+    int propertiesShowCount = 0;
+    for(int i=0; i< _propertiesModel.size(); i++){
+        if(_propertiesModel[i]->selected())
+            propertiesShowCount ++;
+    }
+    printf("%s propertiesShowCount = %d\r\n",__func__,propertiesShowCount);
+    setPropertiesShowCount(propertiesShowCount);
+}
+
 void Vehicle::_loadDefaultParamsShow(){
     printf("%s\r\n",__func__);
     if(m_firmwarePlugin != nullptr){
@@ -614,7 +637,7 @@ void Vehicle::_mavlinkMessageReceived(mavlink_message_t message)
     Q_EMIT mavlinkMessageReceived(message);
 }
 void Vehicle::_sendGCSHeartbeat(void)
-{
+{    
     mavlink_message_t msg;
     uint16_t len;
     mavlink_msg_heartbeat_pack_chan(
@@ -630,6 +653,12 @@ void Vehicle::_sendGCSHeartbeat(void)
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
     len = mavlink_msg_to_send_buffer(buffer, &msg);
     m_com->m_linkInterface->writeBytesSafe((const char *)(buffer), len);
+    _countHeartBeat ++;
+    if(_countHeartBeat >=8 ){
+        if (m_firmwarePlugin != nullptr)
+            m_firmwarePlugin->initializeVehicle(this);
+        _countHeartBeat = 0;
+    }
 }
 void Vehicle::_checkCameraLink(void){
 //    printf("_cameraLink last vs recv [%d - %d]\r\n",_cameraLinkLast,_linkHeartbeatRecv);

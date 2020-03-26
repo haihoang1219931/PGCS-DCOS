@@ -19,11 +19,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 CONFIG += use_flight_control
 
-CONFIG += use_ucapi
+#CONFIG += use_ucapi
 
-CONFIG += use_camera_control
+#CONFIG += use_camera_control
 
-CONFIG += use_video_gpu
+#CONFIG += use_video_gpu
 
 #CONFIG += use_video_cpu
 
@@ -160,9 +160,7 @@ unix:!macx: LIBS += -LD:\usr\lib\x86_64-linux-gnu\
     -lgstvideo-1.0
 unix:!macx: INCLUDEPATH += /usr/local/include
 unix:!macx: DEPENDPATH += /usr/local/include
-# lib zbar
-CONFIG+=link_pkgconfig
-PKGCONFIG+=zbar
+
 SOURCES += \
     src/Camera/ControllerLib/Buffer/BufferOut.cpp \
     src/Camera/ControllerLib/Command/GeoCommands.cpp \
@@ -181,7 +179,6 @@ SOURCES += \
     src/Camera/ControllerLib/tcp/clientStuff.cpp \
     src/Camera/ControllerLib/tcp/gimbal_control.cpp \
     src/Camera/ControllerLib/EPTools/EPHucomTool.cpp \
-    src/Zbar/ZbarLibs.cpp \
     src/Camera/Cache/Cache.cpp
 
 HEADERS += \
@@ -267,8 +264,7 @@ HEADERS += \
     src/Camera/ControllerLib/tcp/clientStuff.h \
     src/Camera/ControllerLib/tcp/gimbal_control.h \
     src/Camera/ControllerLib/EPTools/EPHucomTool.h \
-    src/Camera/ControllerLib/EPTools/EPSensorTool.h \
-    src/Zbar/ZbarLibs.h
+    src/Camera/ControllerLib/EPTools/EPSensorTool.h
 }
 
 
@@ -338,8 +334,11 @@ message($$LIBS)
 DEFINES += GPU
 DEFINES += OPENCV
 DEFINES += DAT
-
+# lib zbar
+CONFIG+=link_pkgconfig
+PKGCONFIG+=zbar
 HEADERS += \
+    src/Zbar/ZbarLibs.h \
     src/Camera/GPUBased/stabilizer/dando_02/stab_gcs_kiir.hpp \
     src/Camera/GPUBased/tracker/dando/HTrack/ffttools.hpp \
     src/Camera/GPUBased/tracker/dando/HTrack/fhog.hpp \
@@ -372,6 +371,7 @@ HEADERS += \
     src/Camera/GPUBased/OD/yolo_v2_class.hpp
 
 SOURCES += \
+    src/Zbar/ZbarLibs.cpp \
     src/Camera/GPUBased/stabilizer/dando_02/stab_gcs_kiir.cpp \
     src/Camera/GPUBased/tracker/dando/HTrack/ffttools.cpp \
     src/Camera/GPUBased/tracker/dando/HTrack/fhog.cpp \

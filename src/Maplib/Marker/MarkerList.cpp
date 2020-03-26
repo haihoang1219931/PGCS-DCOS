@@ -26,31 +26,32 @@ void MarkerList::insertMarker(Marker* _marker){
     m_listmarker.push_back(_marker);
 }
 void MarkerList::saveMarkers(QString _fileName){
-    XMLDocument xmlDoc;
-    XMLNode * pRoot = xmlDoc.NewElement("ArrayOfMarkerBase");
-    xmlDoc.InsertFirstChild(pRoot);
-    for(unsigned int i=0; i< m_listmarker.size(); i++){
-        Marker *tmp = m_listmarker[i];
-        XMLElement * pElement = xmlDoc.NewElement("MarkerBase");
-        XMLElement * pLat = xmlDoc.NewElement("Latitude");
-        pLat->SetText(tmp->m_Latitude.c_str());
-        pElement->InsertEndChild(pLat);
-        XMLElement * pLon = xmlDoc.NewElement("Longitude");
-        pLon->SetText(tmp->m_Longtitude.c_str());
-        pElement->InsertEndChild(pLon);
-        XMLElement * pDes = xmlDoc.NewElement("Description");
-        pDes->SetText(tmp->m_Description.c_str());
-        pElement->InsertEndChild(pDes);
-        XMLElement * pEle = xmlDoc.NewElement("Elevation");
-        pEle->SetText(tmp->m_Elevation.c_str());
-        pElement->InsertEndChild(pEle);
-        XMLElement * pTyp = xmlDoc.NewElement("MarkerType");
-        pTyp->SetText(tmp->m_MarkerType.c_str());
-        pElement->InsertEndChild(pTyp);
-        pRoot->InsertEndChild(pElement);
+    if(m_listmarker.size() > 0){
+        XMLDocument xmlDoc;
+        XMLNode * pRoot = xmlDoc.NewElement("ArrayOfMarkerBase");
+        xmlDoc.InsertFirstChild(pRoot);
+        for(unsigned int i=0; i< m_listmarker.size(); i++){
+            Marker *tmp = m_listmarker[i];
+            XMLElement * pElement = xmlDoc.NewElement("MarkerBase");
+            XMLElement * pLat = xmlDoc.NewElement("Latitude");
+            pLat->SetText(tmp->m_Latitude.c_str());
+            pElement->InsertEndChild(pLat);
+            XMLElement * pLon = xmlDoc.NewElement("Longitude");
+            pLon->SetText(tmp->m_Longtitude.c_str());
+            pElement->InsertEndChild(pLon);
+            XMLElement * pDes = xmlDoc.NewElement("Description");
+            pDes->SetText(tmp->m_Description.c_str());
+            pElement->InsertEndChild(pDes);
+            XMLElement * pEle = xmlDoc.NewElement("Elevation");
+            pEle->SetText(tmp->m_Elevation.c_str());
+            pElement->InsertEndChild(pEle);
+            XMLElement * pTyp = xmlDoc.NewElement("MarkerType");
+            pTyp->SetText(tmp->m_MarkerType.c_str());
+            pElement->InsertEndChild(pTyp);
+            pRoot->InsertEndChild(pElement);
+        }
+        XMLError eResult = xmlDoc.SaveFile(_fileName.toStdString().c_str());
     }
-
-    XMLError eResult = xmlDoc.SaveFile(_fileName.toStdString().c_str());
 }
 void MarkerList::loadMarkers(QString _fileName){
     if(m_listmarker.size() != 0){
