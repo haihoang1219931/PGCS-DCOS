@@ -33,7 +33,7 @@ Flickable {
             Text {
                 text: UIConstants.iCenterCommander
                 font.bold: true
-                font.pixelSize: 20
+                font.pixelSize: UIConstants.fontSize
                 color: UIConstants.greenColor
                 anchors {
                     left: parent.left;
