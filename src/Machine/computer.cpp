@@ -122,12 +122,12 @@ void COMPUTER_INFO::quitApplication(){
 void COMPUTER_INFO::restartComputer(){
     printf("%s\r\n",__func__);
     QProcess process;
-    process.startDetached("/bin/bash \"/bin/echo 1 | sudo -S reboot\"");
+    process.startDetached("/bin/sh \"/bin/echo 1 | sudo -S reboot\"");
 }
 void COMPUTER_INFO::shutdownComputer(){
     printf("%s\r\n",__func__);
     QProcess process;
-    process.startDetached("/bin/bash \"/bin/echo 1 | sudo -S shutdown -P now\"");
+    process.startDetached("/bin/sh \"/bin/echo 1 | sudo -S shutdown -P now\"");
 }
 void COMPUTER_INFO::openFolder(QString folder){
     QString cmd = QString("nautilus ") + folder;
