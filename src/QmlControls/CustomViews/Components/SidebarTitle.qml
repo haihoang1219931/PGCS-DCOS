@@ -40,7 +40,7 @@ Rectangle {
     Text {
         id: iconList
         text: UIConstants.iList
-        font{ bold: true; pixelSize: UIConstants.fontSize; family: ExternalFontLoader.solidFont }
+        font{ bold: true; pixelSize: UIConstants.fontSize * 3 / 2 ; family: ExternalFontLoader.solidFont }
         x: parent.width * 1 / 5
         anchors.verticalCenter: parent.verticalCenter
         color: UIConstants.textColor

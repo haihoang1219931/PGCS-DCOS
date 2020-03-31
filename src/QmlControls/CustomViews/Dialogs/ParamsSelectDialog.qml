@@ -31,27 +31,10 @@ Rectangle {
         id: rectangle
         anchors.fill: parent
         hoverEnabled: true
-        focus: true
-        Keys.onPressed: {
-            console.log("Key pressed "+event.key);
-            console.log("Qt.Key_Return "+Qt.Key_Return);
-            console.log("Qt.Key_Escape "+Qt.Key_Escape);
-            if(event.key === Qt.Key_Return){
-                console.log("Yes");
-                btnConfirm.state = "Pressed";
-                root.clicked(root.type,"DIALOG_OK");
-                root.destroy(1000);
-            }else if(event.key === Qt.Key_Escape){
-                console.log("No");
-                btnCancel.state = "Pressed";
-                root.clicked(root.type,"DIALOG_CANCEL");
-                root.destroy();
-            }
-        }
         FlatButtonIcon{
             id: btnCancel
-            height: UIConstants.sRect
-            width: UIConstants.sRect
+            height: UIConstants.sRect * 2
+            width: UIConstants.sRect * 2
             icon: UIConstants.iMouse
             isSolid: true
             color: "red"
@@ -61,16 +44,16 @@ Rectangle {
             anchors.topMargin: 8
             anchors.right: parent.right
             anchors.rightMargin: 8
-            onClicked: {
+            onPressed: {
+                console.log("pressed");
                 root.clicked(root.type,"DIALOG_CANCEL");
-                root.destroy();
             }
         }
         GridView {
             id: gridView
             clip: true
-            anchors.top: parent.top
-            anchors.topMargin: 44
+            anchors.top: btnCancel.bottom
+            anchors.topMargin: 8
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 8
             anchors.right: parent.right
@@ -127,7 +110,7 @@ Rectangle {
 
         Label {
             id: txtDialog
-            height: 30
+            height: btnCancel.height
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont
             color: UIConstants.textColor
@@ -146,8 +129,3 @@ Rectangle {
         setFocus(true)
     }
 }
-
-/*##^## Designer {
-    D{i:3;anchors_width:60;anchors_x:580;anchors_y:8}
-}
- ##^##*/

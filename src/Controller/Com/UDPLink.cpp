@@ -111,6 +111,7 @@ void UDPLink::closeConnection()
 
     if (shouldEmit)
     {
+        udpSocket->close();
         status = false;
         Q_EMIT statusChanged(status);
         disconnect(udpSocket, SIGNAL(connected()), this, SLOT(connected()));

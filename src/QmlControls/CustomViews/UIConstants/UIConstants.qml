@@ -213,6 +213,8 @@ QtObject {
     readonly property string iTracker:              "\uf519"
     readonly property string iAvianex:              "\uf374"
     readonly property string iAddWaypoint:          "\uf055"
+    readonly property string iPowerOff:             "\uf011"
+    readonly property string iClose:                "\uf00d"
     //------- Marker
     readonly property string iMouse:                "\uf00d"
     readonly property string iAddMarker:            "\uf0fe"

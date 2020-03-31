@@ -1008,6 +1008,51 @@ ApplicationWindow {
                 anchors.fill: parent
                 anchors.bottomMargin: -footerBar.height
                 vehicle: vehicle
+                onClicked: {
+                    if(!footerBar.isShowConfirm){
+                        if(func === "QUIT_APP"){
+                            var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
+                            var confirmDialogObj = compo.createObject(parent,{
+                                "title":"Are you sure to want to \n close application",
+                                "type": "CONFIRM",
+                                "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                "z":200});
+                            confirmDialogObj.clicked.connect(function (type,func){
+                                if(func === "DIALOG_OK"){
+                                    confirmDialogObj.destroy();
+                                    compo.destroy();
+                                    footerBar.isShowConfirm = false;
+                                    computer.quitApplication();
+                                }else if(func === "DIALOG_CANCEL"){
+                                    confirmDialogObj.destroy();
+                                    compo.destroy();
+                                    footerBar.isShowConfirm = false;
+                                }
+                            });
+                        }else if(func === "QUIT_COM"){
+                            var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
+                            var confirmDialogObj = compo.createObject(parent,{
+                                "title":"Are you sure to want to \n turn off computer",
+                                "type": "CONFIRM",
+                                "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                "z":200});
+                            confirmDialogObj.clicked.connect(function (type,func){
+                                if(func === "DIALOG_OK"){
+                                    confirmDialogObj.destroy();
+                                    compo.destroy();
+                                    footerBar.isShowConfirm = false;
+                                    computer.shutdownComputer();
+                                }else if(func === "DIALOG_CANCEL"){
+                                    confirmDialogObj.destroy();
+                                    compo.destroy();
+                                    footerBar.isShowConfirm = false;
+                                }
+                            });
+                        }
+                    }
+                }
             }
         }
     }

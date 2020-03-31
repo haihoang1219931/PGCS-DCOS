@@ -115,18 +115,19 @@ void COMPUTER_INFO::restartApplication(){
         QCoreApplication::quit();
 }
 void COMPUTER_INFO::quitApplication(){
-    //QProcess::
+    printf("%s\r\n",__func__);
+    QGuiApplication::quit();
 }
 
 void COMPUTER_INFO::restartComputer(){
     printf("restartComputer\r\n");
     QProcess process;
-    process.startDetached("reboot");
+    process.startDetached("echo 1 | sudo -S reboot");
 }
 void COMPUTER_INFO::shutdownComputer(){
-    printf("shutdownComputer\r\n");
+    printf("%s\r\n",__func__);
     QProcess process;
-    process.startDetached("shutdown -P now");
+    process.startDetached("echo 1 | sudo -S shutdown -P now");
 }
 void COMPUTER_INFO::openFolder(QString folder){
     QString cmd = QString("nautilus ") + folder;

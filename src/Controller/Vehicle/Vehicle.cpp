@@ -666,6 +666,11 @@ void Vehicle::_checkCameraLink(void){
         setLink(false);
         _cameraLinkLast = 0;
         _linkHeartbeatRecv = 0;
+        if(m_uav == nullptr && m_com != nullptr){
+            printf("Reconnect link to UAV\r\n");
+            m_com->disConnectLink();
+            m_com->connectLink();
+        }
     }else{
 
         setLink(true);

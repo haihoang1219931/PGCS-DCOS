@@ -24,6 +24,7 @@ Rectangle {
     width: 1376
     height: 768
     property var vehicle
+    signal clicked(string type, string func)
     CustomViews.SidebarTitle {
         id: sidebarTitle
         width: UIConstants.sRect * 9
@@ -52,7 +53,8 @@ Rectangle {
     //            ListElement{name: "Theme"; icon: UIConstants.iWindowStore}
                 ListElement{id_: 0; btnText_: "Joystick"; icon_: "\uf11b"}
                 ListElement{id_: 1; btnText_: "Theme"; icon_: "\uf2d2"}
-                ListElement{id_: 2; btnText_: "Parametes"; icon_: "\uf2d2"}
+                ListElement{id_: 2; btnText_: "Parametes"; icon_: "\uf03c"}
+                ListElement{id_: 3; btnText_: "Application"; icon_: "\uf109"}
             }
             delegate: Item {
                 width: lstItem.width
@@ -78,7 +80,7 @@ Rectangle {
                         Label {
                             id: iconSide
                             text: icon_
-                            font { pixelSize: 18; bold: true;family: ExternalFontLoader.solidFont }
+                            font { pixelSize: UIConstants.fontSize * 3 / 2; bold: true;family: ExternalFontLoader.solidFont }
                             color: textSide.color
                             anchors.centerIn: parent
                         }
@@ -172,6 +174,27 @@ Rectangle {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 vehicle: rootItem.vehicle
+            }
+        }
+        Item{
+            CustomViews.SidebarTitle {
+                id: sdbApplication
+                height: UIConstants.sRect * 2
+                anchors.left: parent.left
+                anchors.right: parent.right
+                title: "Application config"
+                iconType: "\uf197"
+                xPosition: 20
+            }
+            AppConfig{
+                id: appConfig
+                anchors.top: sdbApplication.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                onClicked: {
+                    rootItem.clicked(type,action);
+                }
             }
         }
     }

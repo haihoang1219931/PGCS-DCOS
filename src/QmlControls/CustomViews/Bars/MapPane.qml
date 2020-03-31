@@ -2807,6 +2807,8 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: 99
             color: UIConstants.textColor
+            font.family: UIConstants.appFont
+            font.pixelSize: UIConstants.fontSize
         }
 
         Label {

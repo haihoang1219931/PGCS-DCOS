@@ -131,7 +131,8 @@
         <file alias="CustomViews/Configs/JoystickConfig.qml">src/QmlControls/CustomViews/Configs/JoystickConfig.qml</file>
         <file alias="CustomViews/Configs/PageConfig.qml">src/QmlControls/CustomViews/Configs/PageConfig.qml</file>
         <file alias="CustomViews/Configs/ThemeConfig.qml">src/QmlControls/CustomViews/Configs/ThemeConfig.qml</file>
-        <file alias="CustomViews/Configs/ParamsConfig.qml">src/QmlControls/CustomViews/Configs/ParamsConfig.qml</file>        
+        <file alias="CustomViews/Configs/ParamsConfig.qml">src/QmlControls/CustomViews/Configs/ParamsConfig.qml</file>
+        <file alias="CustomViews/Configs/AppConfig.qml">src/QmlControls/CustomViews/Configs/AppConfig.qml</file>        
         <file alias="CustomViews/Configs/qmldir">src/QmlControls/CustomViews/Configs/qmldir</file>
         <file alias="CustomViews/ToolBar/GPSIndicator.qml">src/QmlControls/CustomViews/ToolBar/GPSIndicator.qml</file>
         <file alias="CustomViews/ToolBar/SignalIndicator.qml">src/QmlControls/CustomViews/ToolBar/SignalIndicator.qml</file>

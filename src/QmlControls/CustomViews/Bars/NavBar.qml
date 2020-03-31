@@ -106,11 +106,11 @@ Item {
             toastFlightControler.rejectButtonAppearance = false;
             toastFlightControler.toastContent = "Load full param return "+(!missingParameters);
             toastFlightControler.show();
+            if(!missingParameters){
+                rectParamLoading.width = 0;
+            }
         }
         onLoadProgressChanged:{
-            if(!rectParamLoading.visible){
-                rectParamLoading.visible = true;
-            }
             rectParamLoading.width = rootItem.width*value;
         }
     }
@@ -756,6 +756,7 @@ Item {
             onUploadMissionDone:{
                 rectParamLoading.width = 0;
             }
+
         }
     }
 

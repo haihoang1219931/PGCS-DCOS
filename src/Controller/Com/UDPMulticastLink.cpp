@@ -17,15 +17,19 @@ UDPMulticastLink::~UDPMulticastLink(){
 }
 void UDPMulticastLink::connect2host()
 {
-    printf("UDPMulticastLink::connect2host\r\n");
+    printf("UDPMulticastLink::%s\r\n",__func__);
     udpSend->connectToHost(host, static_cast<unsigned short>(port));
-    udpRecv->bind(QHostAddress::AnyIPv4, static_cast<quint16>(multicastPort),
-                    QUdpSocket::ShareAddress);
-    udpRecv->joinMulticastGroup(QHostAddress(multicastAddress));
-    connect(udpRecv, SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(udpSend, SIGNAL(connected()), this, SLOT(connected()));
     connect(udpSend, SIGNAL(disconnected()), this, SLOT(disconnected()));
-
+    printf("UDPMulticastLink::%s ready to bind\r\n",__func__);
+    if(udpRecv->bind(QHostAddress::AnyIPv4, static_cast<quint16>(multicastPort),
+                     QUdpSocket::ShareAddress)){
+        printf("Binding success\r\n");
+    }else{
+        printf("Binding failed\r\n");
+    }
+    udpRecv->joinMulticastGroup(QHostAddress(multicastAddress));
+    connect(udpRecv, SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
 void UDPMulticastLink::setAddress(QString _multicastAddress, int _multicastPort,
                                   QString _host,int _port){    
@@ -100,8 +104,9 @@ void UDPMulticastLink::readyRead()
 
 void UDPMulticastLink::closeConnection()
 {
+    printf("UDPMulticastLink::%s\r\n",__func__);
     udpSend->close();
-    udpSend->close();
+    udpRecv->close();
     status = false;
     Q_EMIT statusChanged(status);
     disconnect(udpSend, SIGNAL(connected()), this, SLOT(connected()));

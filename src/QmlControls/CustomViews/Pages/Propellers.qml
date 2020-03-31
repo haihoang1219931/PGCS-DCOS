@@ -92,6 +92,7 @@ Rectangle{
             width: UIConstants.sRect * 6
             height: UIConstants.sRect * 2
             isAutoReturn: true
+            border.width: 2
             anchors.top: parent.top
             anchors.topMargin: 8
             anchors.right: parent.right
@@ -111,6 +112,7 @@ Rectangle{
             width: UIConstants.sRect * 6
             height: UIConstants.sRect * 2
             isAutoReturn: true
+            border.width: 2
             anchors.right: parent.right
             anchors.rightMargin: 8
             anchors.bottom: parent.bottom
@@ -129,6 +131,7 @@ Rectangle{
             width: UIConstants.sRect * 6
             height: UIConstants.sRect * 2
             isAutoReturn: true
+            border.width: 2
             anchors.left: parent.left
             anchors.leftMargin: 8
             anchors.bottom: parent.bottom
