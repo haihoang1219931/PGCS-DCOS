@@ -189,7 +189,7 @@ Item {
         SignalIndicator{
             id: btnLinkStatus
             anchors.right: btnMessage.left
-            anchors.rightMargin: 30
+            anchors.rightMargin: UIConstants.sRect * 3 / 2
             anchors.top: parent.top
             anchors.topMargin: 5
             height: parent.height
@@ -200,7 +200,7 @@ Item {
         MessageIndicator{
             id: btnMessage
             anchors.right: btnSignal.left
-            anchors.rightMargin: 20
+            anchors.rightMargin: UIConstants.sRect
             anchors.top: parent.top
             anchors.topMargin: 5
             height: parent.height
@@ -219,7 +219,7 @@ Item {
         GPSIndicator{
             id: btnSignal
             anchors.right: btnParams.left
-            anchors.rightMargin: 35
+            anchors.rightMargin: UIConstants.sRect * 3 / 2
             anchors.top: parent.top
             anchors.topMargin: 5
             height: parent.height

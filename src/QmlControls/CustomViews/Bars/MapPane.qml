@@ -967,7 +967,9 @@ Item {
             var symbol = ArcGISRuntimeEnvironment.createObject("PictureMarkerSymbol",{
                url: vehicleSymbolUrl,
                opacity: opacity,
-               angle: vehicleHeading
+               angle: vehicleHeading,
+               width: wpBoundSize * 1.5,
+               height: wpBoundSize * 1.5
             });
             uavGraphic.symbol = symbol;
         }
@@ -2348,8 +2350,8 @@ Item {
                 symbol: PictureMarkerSymbol{
                     url: vehicleSymbolLink["MAV_TYPE_GENERIC"]
                     opacity: 1
-                    width: wpBoundSize * 2
-                    height: wpBoundSize * 2
+                    width: wpBoundSize * 1.5
+                    height: wpBoundSize * 1.5
                 }
             }
             Graphic{

@@ -52,7 +52,7 @@ Rectangle {
             model: ListModel{
     //            ListElement{name: "Theme"; icon: UIConstants.iWindowStore}
                 ListElement{id_: 0; btnText_: "Joystick"; icon_: "\uf11b"}
-                ListElement{id_: 1; btnText_: "Theme"; icon_: "\uf2d2"}
+                ListElement{id_: 1; btnText_: "Screen monitor"; icon_: "\uf2d2"}
                 ListElement{id_: 2; btnText_: "Parametes"; icon_: "\uf03c"}
                 ListElement{id_: 3; btnText_: "Application"; icon_: "\uf109"}
             }
@@ -146,7 +146,7 @@ Rectangle {
                 height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
-                title: "Theme Configuration"
+                title: "Screen Monitor Information"
                 iconType: "\uf197"
                 xPosition: 20
             }

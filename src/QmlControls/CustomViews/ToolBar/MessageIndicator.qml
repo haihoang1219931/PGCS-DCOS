@@ -64,7 +64,7 @@ Item {
         height:                     UIConstants.sRect * 10
         anchors.horizontalCenter:   parent.horizontalCenter
         anchors.top:                parent.top
-        anchors.topMargin:          UIConstants.sRect * 2 + UIConstants.defaultFontPixelHeight
+        anchors.topMargin:          UIConstants.sRect * 3
         radius:                     UIConstants.rectRadius
         color:                      UIConstants.transparentBlue
         border.color:               UIConstants.grayColor
@@ -86,11 +86,14 @@ Item {
             model: vehicle.uas.messages
             delegate: TextEdit {
                 id:             messageText
+                width: parent.width
                 readOnly:       true
                 textFormat:     TextEdit.RichText
+                wrapMode: TextEdit.Wrap
                 color:          formatedColor
                 text:           formatedText
                 font.pixelSize: UIConstants.fontSize
+                font.family: UIConstants.appFont
             }
             onCountChanged:{
                 console.log("On count changed")
@@ -102,13 +105,14 @@ Item {
             anchors.margins:    UIConstants.defaultFontPixelHeight * 0.5
             anchors.top:        parent.top
             anchors.right:      parent.right
-            width:              UIConstants.isMobile ? UIConstants.defaultFontPixelHeight * 1.5 : UIConstants.defaultFontPixelHeight
+            width:              UIConstants.isMobile ?
+                                    UIConstants.defaultFontPixelHeight * 1.5 : UIConstants.defaultFontPixelHeight * 2
             height:             width
             icon: UIConstants.iChatClose
             isSolid:            true
             isShowRect:         false
             smooth:             true
-            iconSize: UIConstants.fontSize
+            iconSize: height
             MouseArea {
                 anchors.fill:       parent
                 anchors.margins:    UIConstants.isMobile ? -UIConstants.defaultFontPixelHeight : 0
@@ -122,13 +126,13 @@ Item {
             anchors.bottom:     parent.bottom
             anchors.right:      parent.right
             anchors.margins:    UIConstants.defaultFontPixelHeight * 0.5
-            height:             UIConstants.isMobile ? UIConstants.defaultFontPixelHeight * 1.5 : UIConstants.defaultFontPixelHeight
+            height:             UIConstants.isMobile ? UIConstants.defaultFontPixelHeight * 1.5 : UIConstants.defaultFontPixelHeight *2
             width:              height
             icon: UIConstants.iTrash
             isSolid:            true
             isShowRect:         false
             smooth:             true
-            iconSize: UIConstants.fontSize
+            iconSize: height
             MouseArea {
                 anchors.fill:   parent
                 onClicked: {

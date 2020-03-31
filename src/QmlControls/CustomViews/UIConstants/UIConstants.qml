@@ -154,7 +154,7 @@ QtObject {
     readonly property color greenColor:            "green"
     readonly property color activeNav:             "#222f3e"
     property int defaultFontPixelWidth:             5
-    property int defaultFontPixelHeight:            16
+    property int defaultFontPixelHeight:            UIConstants.fontSize
     property int defaultTextWidth:                  UIConstants.fontSize / 2
     property int defaultTextHeight:                 16
     property int defaultFontPointSize:              8

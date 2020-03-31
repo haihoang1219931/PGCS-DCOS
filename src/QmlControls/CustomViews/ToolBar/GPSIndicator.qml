@@ -36,7 +36,7 @@ Item {
         width: UIConstants.sRect * 12
         height: UIConstants.sRect * 6
         anchors.top: parent.top
-        anchors.topMargin: UIConstants.sRect * 2 + UIConstants.defaultFontPixelHeight
+        anchors.topMargin: UIConstants.sRect * 3
         visible: showIndicator
         anchors.horizontalCenter: parent.horizontalCenter
         Rectangle {

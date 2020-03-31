@@ -980,7 +980,7 @@ ApplicationWindow {
             }
             FlatButtonText{
                 id: chkLog
-                visible: mapControl.visible
+                visible: mapControl.visible && (USE_VIDEO_CPU || USE_VIDEO_GPU)
                 width: UIConstants.sRect * 2.5
                 height: UIConstants.sRect + 8
                 color: !checked?UIConstants.transparentBlue:UIConstants.transparentGreen
@@ -1588,57 +1588,6 @@ ApplicationWindow {
     onHeightChanged: {
         mainWindow.switchVideoMap(true)
     }
-    ListView{
-        id: listPlate
-        width: 100
-        anchors.top: navbar.bottom
-        anchors.topMargin: 40
-        anchors.left: parent.left
-        anchors.leftMargin: 100
-        anchors.bottom: footerBar.top
-        anchors.bottomMargin: 8
-        visible: false
-        z:8
-        function add(src,plate){
-            model.append({"src":"file://"+src,"plate":plate});
-        }
-        function clear(){
-            model.clear();
-        }
-        function remove(index){
-            model.remove(index);
-        }
-        model: ListModel{
-        }
-
-        spacing: 5
-        delegate: Item{
-            id: item1
-            width: 100
-            height: 100
-
-            Image{
-                id: img
-                anchors.fill: parent
-                source: src
-            }
-            Rectangle{
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                height: 20
-                color: "green"
-                Label{
-                    id: lbl
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: plate
-                    color: "white"
-                }
-            }
-        }
-    }
     CameraStateManager{
         id: camState
     }
@@ -1951,7 +1900,7 @@ ApplicationWindow {
         id: listPlateLog
         x: parent.width/2-width/2
         y: parent.height/2-height/2
-        visible: chkLog.checked
+        visible: chkLog.checked && (USE_VIDEO_CPU || USE_VIDEO_GPU)
         z: 8
     }
     Timer{
