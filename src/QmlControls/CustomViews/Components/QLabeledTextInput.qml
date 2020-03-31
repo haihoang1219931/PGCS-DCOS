@@ -29,6 +29,10 @@ Item{
     property alias text: txtInput.text
     property alias validator: txtInput.validator
     property bool editting
+    function changeFocus(focus){
+        txtInput.focus = false;
+    }
+
     ColumnLayout{
         anchors.fill: parent
         spacing: 0

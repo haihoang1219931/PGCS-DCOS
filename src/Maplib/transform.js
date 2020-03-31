@@ -4,7 +4,14 @@ function mercatorToLatLon(mercX, mercY) {
     var lon    = mercX / shift * 180.0;
     var lat    = mercY / shift * 180.0;
     lat = 180.0 / Math.PI * (2 * Math.atan(Math.exp(lat * Math.PI / 180.0)) - Math.PI / 2.0);
-
+    while(lon > 180)
+        lon-=360;
+    while(lon < -180)
+        lon+=360;
+    while(lat > 90)
+        lat-=180;
+    while(lat < -90)
+        lat+=180;
     return { 'lon': lon, 'lat': lat };
 }
 function latlongToMercator(lat,lon){

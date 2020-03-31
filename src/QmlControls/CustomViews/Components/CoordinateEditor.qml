@@ -23,7 +23,8 @@ Item {
     id: root
     width: UIConstants.sRect * 6
     height: UIConstants.sRect * 4.5
-    property string directionLabel: "E"
+    property var arrayDirLabel: ["E","W"]
+    property var directionLabel: value > 0?arrayDirLabel[0]:arrayDirLabel[1]
     property string title: "Coordinate"
     property var validatorValue: /^([-]|)([0-9]|[1-8][0-9])(\.)([0-9][0-9][0-9][0-9][0-9][0-9][0-9])/
     property var validatorValueDecimal: /^([-]|)([0-9]|[1-9][0-9]|[1][0-7][0-9])/
@@ -31,30 +32,94 @@ Item {
     property var validatorValueSecond: /^([0-9]|[1-5][0-9])/
     property var validatorValueMinuteFloat: /^([0-9]|[1-5][0-9])(\.)([0-9][0-9][0-9])/
     property real value: 0
+    property bool isEdittingMDS: false
     property var lstTxt: [
         txtValue,txtValueD1,txtValueM1,txtValueS1,txtValueD2,txtValueM2]
-    onFocusChanged: {
-        changeAllFocus(focus);
-    }
     function changeAllFocus(enable){
+//        console.log("Change all focus to "+enable +" "+value+" on "+directionLabel);
+        isEdittingMDS = enable;
         for(var i =0; i < lstTxt.length; i++){
             if(lstTxt[i].focus !== enable)
                 lstTxt[i].focus = enable;
         }
+
     }
-    function updateValueDMS(){
-        value = Number(
-            parseFloat(txtValueD1.text) +
-            parseFloat(txtValueM1.text)/60 +
-            parseFloat(txtValueS1.text)/3600).toFixed(7);
+    function updateValueDMS(type){
+        var lastValue = value;
+        if(type === "D" &&
+                (txtValueM1.text === "" || txtValueS1.text === "")){
+            isEdittingMDS = false;
+            value = lastValue;
+            isEdittingMDS = true;
+        }
+        if(type === "D" &&
+                (txtValueD1.text === "" || txtValueS1.text === "")){
+            isEdittingMDS = false;
+            value = lastValue;
+            isEdittingMDS = true;
+        }
+        if(type === "D" &&
+                (txtValueM1.text === "" || txtValueD1.text === "")){
+            isEdittingMDS = false;
+            value = lastValue;
+            isEdittingMDS = true;
+        }
+
+//        if(txtValueD1.text === ""){
+//            value = lastValue;
+//        }
+//        if(txtValueM1.text === ""){
+//            value = lastValue;
+//        }
+//        if(txtValueS1.text === ""){
+//            value = lastValue;
+//        }
+        if(txtValueD1.text !== "" &&
+           txtValueM1.text !== "" &&
+           txtValueS1.text !== ""){
+            value = (directionLabel === arrayDirLabel[0]?1:-1 )* Number(
+                parseFloat(txtValueD1.text) +
+                parseFloat(txtValueM1.text)/60 +
+                parseFloat(txtValueS1.text)/3600).toFixed(7);
+        }
     }
-    function updateValueDM(){
-        value = Number(
-            parseFloat(txtValueD2.text) +
-            parseFloat(txtValueM2.text)/60).toFixed(7);
+    function updateValueDM(type){
+        var lastValue = value;
+        if(txtValueD2.text === ""){
+            value = lastValue;
+        }
+        if(txtValueM2.text === ""){
+            value = lastValue;
+        }
+        if(txtValueD2.text !== "" &&
+           txtValueM2.text !== ""){
+            value = (directionLabel === arrayDirLabel[0]?1:-1 )* Number(
+                parseFloat(txtValueD2.text) +
+                parseFloat(txtValueM2.text)/60).toFixed(7);
+        }
     }
     function updateValue(){
-        value = Number(txtValue.text).toFixed(7);
+        value = (directionLabel === arrayDirLabel[0]?1:-1 )* Number(txtValue.text).toFixed(7);
+    }
+
+    function ddToDMS(deg){
+        var convertDeg = Math.abs(deg)
+        var d = Math.floor(convertDeg);
+        var minfloat = (convertDeg-d)*60;
+        var m = Math.floor(minfloat);
+        var secfloat = (minfloat-m)*60;
+        var s = Math.round(secfloat);
+        // After rounding, the seconds might become 60. These two
+        // if-tests are not necessary if no rounding is done.
+        if (s==60) {
+         m++;
+         s=0;
+        }
+        if (m==60) {
+         d++;
+         m=0;
+        }
+        return {"D":Math.abs(d),"M":m,"S":s,"MS":Number(m+s/60).toFixed(3),"DMS":Number(convertDeg).toFixed(7)}
     }
 
     Label{
@@ -84,6 +149,13 @@ Item {
                 Layout.preferredWidth: UIConstants.sRect
                 Layout.preferredHeight: UIConstants.sRect
                 text: directionLabel
+                MouseArea{
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: {
+                        root.value = -root.value;
+                    }
+                }
             }
             Label{
                 Layout.preferredWidth: UIConstants.sRect/4
@@ -101,9 +173,10 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: UIConstants.sRect
                 validator: RegExpValidator { regExp: root.validatorValue }
-                text: focus?text:Number(root.value).toFixed(7)
+                text: focus?text:ddToDMS(root.value)["DMS"]
                 onTextChanged: {
                     if(focus){
+                        isEdittingMDS = false;
                         if(text != "" && !isNaN(text)){
                             updateValue()
                         }
@@ -119,6 +192,13 @@ Item {
                 Layout.preferredWidth: UIConstants.sRect
                 Layout.preferredHeight: UIConstants.sRect
                 text: directionLabel
+                MouseArea{
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: {
+                        root.value = -root.value;
+                    }
+                }
             }
             Label{
                 Layout.preferredWidth: UIConstants.sRect/4
@@ -136,18 +216,13 @@ Item {
                 Layout.preferredWidth:  UIConstants.sRect
                 Layout.preferredHeight: UIConstants.sRect
                 validator: RegExpValidator { regExp: root.validatorValueSecond }
-                text: focus?text:parseInt(
-                                      (Math.abs(
-                                           (root.value-parseInt(root.value))*60)-Math.floor(
-                                                  Math.abs(
-                                                      (root.value-parseInt(root.value))*60)
-                                                  )
-                                              )*60
-                                        )
+                text: (focus || isEdittingMDS) ?text:ddToDMS(root.value)["S"]
                 onTextChanged: {
                     if(focus){
+                        isEdittingMDS = true;
+//                        console.log("txtValueS1 isEdittingMDS = "+isEdittingMDS);
                         if(text != "" && !isNaN(text)){
-                            updateValueDMS()
+                            updateValueDMS("S")
                         }
                     }
                 }
@@ -168,15 +243,13 @@ Item {
                 Layout.preferredWidth:  UIConstants.sRect
                 Layout.preferredHeight: UIConstants.sRect
                 validator: RegExpValidator { regExp: root.validatorValueMinute }
-                text: focus?text:Math.round(Math.floor(
-                                             Math.abs(
-                                                 (root.value-parseInt(root.value))*60)
-                                             )
-                                         )
+                text: (focus || isEdittingMDS) ?text:ddToDMS(root.value)["M"]
                 onTextChanged: {
                     if(focus){
-                        if(text != "" && !isNaN(text)){
-                            updateValueDMS()
+                        isEdittingMDS = true;
+//                        console.log("txtValueM1 isEdittingMDS = "+isEdittingMDS);
+                        if(text != "" && !isNaN(text)){                            
+                            updateValueDMS("M")
                         }
                     }
                 }
@@ -196,11 +269,11 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: UIConstants.sRect
                 validator: RegExpValidator { regExp: root.validatorValueDecimal }
-                text: focus?text:parseInt(root.value)
+                text: focus?text:ddToDMS(root.value)["D"]
                 onTextChanged: {
                     if(focus){
                         if(text != "" && !isNaN(text)){
-                            updateValueDMS()
+                            updateValueDMS("D")
                         }
                     }
                 }
@@ -214,6 +287,13 @@ Item {
                 Layout.preferredWidth: UIConstants.sRect
                 Layout.preferredHeight: UIConstants.sRect
                 text: directionLabel
+                MouseArea{
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: {
+                        root.value = -root.value;
+                    }
+                }
             }
             Label{
                 Layout.preferredWidth: UIConstants.sRect/4
@@ -231,11 +311,12 @@ Item {
                 Layout.preferredWidth:  UIConstants.sRect*2 + UIConstants.sRect/4 + parent.spacing *2
                 Layout.preferredHeight: UIConstants.sRect
                 validator: RegExpValidator { regExp: root.validatorValueMinuteFloat }
-                text: focus?text:Number((root.value-parseInt(root.value))*60).toFixed(3);
+                text: focus?text:ddToDMS(root.value)["MS"];
                 onTextChanged: {
                     if(focus){
+                        isEdittingMDS = false;
                         if(text != "" && !isNaN(text)){
-                            updateValueDM()
+                            updateValueDM("MS")
                         }
                     }
                 }
@@ -255,11 +336,12 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: UIConstants.sRect
                 validator: RegExpValidator { regExp: root.validatorValueDecimal }
-                text: focus?text:parseInt(root.value)
+                text: focus?text:ddToDMS(root.value)["D"]
                 onTextChanged: {
                     if(focus){
                         if(text != "" && !isNaN(text)){
-                            updateValueDM()
+                            isEdittingMDS = false;
+                            updateValueDM("D")
                         }
                     }
                 }

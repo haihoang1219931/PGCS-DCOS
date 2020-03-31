@@ -56,12 +56,12 @@ void TCPLink::loadConfig(Config* config){
     setAddress(host,port);
 }
 void TCPLink::sendData(vector<unsigned char>  msg){
-    if(tcpSocket->isValid()){
+    if(tcpSocket->isValid() && tcpSocket->isOpen()){
         tcpSocket->write((const char*)msg.data(),(qint64)msg.size());
     }
 }
 void TCPLink::writeBytesSafe(const char *bytes, int length){
-    if(tcpSocket->isValid()){
+    if(tcpSocket->isValid() && tcpSocket->isOpen()){
         tcpSocket->write(bytes,length);
     }
 }
@@ -83,7 +83,7 @@ void TCPLink::readyRead()
 
 void TCPLink::closeConnection()
 {
-    printf("TCPLINK %s tcpSocket->state()=[%d]\r\n",__func__,tcpSocket->state());
+//    printf("TCPLINK %s tcpSocket->state()=[%d]\r\n",__func__,tcpSocket->state());
     bool shouldEmit = false;
     switch (tcpSocket->state())
     {
@@ -99,6 +99,7 @@ void TCPLink::closeConnection()
             tcpSocket->abort();
     }
 
+    tcpSocket->close();
     if (shouldEmit)
     {
         status = false;

@@ -552,12 +552,11 @@ Rectangle {
 
     function changeAllFocus(enable){
         for(var i =0; i < lstCde.length; i++){
-            if(lstCde[i].focus !== enable)
-                lstCde[i].focus = enable;
+            lstCde[i].changeAllFocus(enable)
         }
         for(var i =0; i < lstTxt.length; i++){
-            if(lstTxt[i].editting !== enable)
-                lstTxt[i].editting = enable;
+            lstTxt[i].editting = enable;
+            lstTxt[i].changeFocus(enable);
         }
     }
 
@@ -570,6 +569,8 @@ Rectangle {
         root.latitude = Number(_coordinate.latitude).toFixed(7);
         root.longitude = Number(_coordinate.longitude).toFixed(7);
         root.agl = Number(_coordinate.altitude).toFixed(2);
+        cdeLat.value = root.latitude;
+        cdeLon.value = root.longitude;
     }
     function loadInfo(_coordinate,command,param1,param2,param3,param4){
         changeCoordinate(_coordinate);
@@ -628,8 +629,7 @@ Rectangle {
                 Layout.fillHeight: true
                 width: UIConstants.sRect * 6
                 title: "Latitude"
-                directionLabel: "E"
-                value: root.latitude
+                arrayDirLabel: ["E","W"]
                 validatorValue: root.validatorLat
                 validatorValueDecimal: root.validatorLatDecimal
                 onValueChanged: {
@@ -641,8 +641,7 @@ Rectangle {
                 Layout.fillHeight: true
                 width: UIConstants.sRect * 6
                 title: "Longitude"
-                directionLabel: "N"
-                value: root.longitude
+                arrayDirLabel: ["N","S"]
                 validatorValue: root.validatorLon
                 validatorValueDecimal: root.validatorLonDecimal
                 onValueChanged: {

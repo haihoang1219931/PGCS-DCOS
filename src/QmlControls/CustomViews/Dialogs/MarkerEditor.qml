@@ -197,7 +197,7 @@ Rectangle {
                 Layout.fillHeight: true
                 width: UIConstants.sRect * 6
                 title: "Latitude"
-                directionLabel: "E"
+                arrayDirLabel: ["E","W"]
                 value: root.latitude
                 validatorValue: root.validatorLat
                 validatorValueDecimal: root.validatorLatDecimal
@@ -210,7 +210,7 @@ Rectangle {
                 Layout.fillHeight: true
                 width: UIConstants.sRect * 6
                 title: "Longitude"
-                directionLabel: "N"
+                arrayDirLabel: ["N","S"]
                 value: root.longitude
                 validatorValue: root.validatorLon
                 validatorValueDecimal: root.validatorLonDecimal

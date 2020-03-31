@@ -187,7 +187,7 @@ public:
     bool gpsSignal(){ return _gpsFixedType > 1;}
     bool link(){ return _link;}
     void setLink(bool link){
-        printf("Link to %s change to %s\r\n",m_uav==nullptr?"UAV":"Tracker", link?"ON":"OFF");
+//        printf("Link to %s change to %s\r\n",m_uav==nullptr?"UAV":"Tracker", link?"ON":"OFF");
         if(_link != link){
             _link = link;
             Q_EMIT linkChanged();

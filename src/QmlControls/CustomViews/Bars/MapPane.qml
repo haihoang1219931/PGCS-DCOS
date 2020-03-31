@@ -997,7 +997,7 @@ Item {
     }
     function createWPSymbol(index,position,command,
                             param1,param2,param3,param4){
-        console.log("createWPSymbol ["+index+"]"+"-"+command+"params["+param1+","+param2+","+param3+","+param4+"]");
+        console.log("createWPSymbol ["+index+"]"+"-["+command+"] "+position+" params["+param1+","+param2+","+param3+","+param4+"]");
         var compositeSymbol = ArcGISRuntimeEnvironment.createObject("CompositeSymbol",{
                                                                         });
         var symbol = ArcGISRuntimeEnvironment.createObject("SimpleMarkerSymbol",{
@@ -1173,7 +1173,11 @@ Item {
         mapOverlayWaypoints.graphics.append(wpGraphic);
     }
     function addWP(index){
+
         console.log("Before add wp["+index+"]mapOverlayWaypoints.graphics.count = "+mapOverlayWaypoints.graphics.count);
+//        if(mouseBuilder.geometry.extent === null ||
+//           mouseBuilder.geometry.extent.center === null )
+//            return;
         isMapSync = false;
         // add Waypoint
         listWaypoint.push(index);
@@ -1186,6 +1190,7 @@ Item {
         var alt = 50;
         var pointLatlon = Conv.mercatorToLatLon(mouseBuilder.geometry.extent.center.x,
                                                 mouseBuilder.geometry.extent.center.y);
+        console.log("pointLatlon("+pointLatlon['lat']+","+pointLatlon['lon']+")");
         var wpIcon = createWPGraphic(index,
                                     QtPositioning.coordinate(pointLatlon['lat'],
                                                              pointLatlon['lon'],
@@ -1508,7 +1513,6 @@ Item {
                     rectDragWP.y = mouseOnMap.y - rectDragWP.height/2;
                     mapView.setViewpointCenter(selectedWP.geometry.extent.center);
                     foundWP = true;
-                    break;
                 }else if(wp.attributes.attributeValue("id") !== waypointID){
                     if(wp.attributes.attributeValue("mode") !== "current")
                         changeModeWP(wp,wp.attributes.attributeValue("id"),"normal");
@@ -1844,22 +1848,24 @@ Item {
                     graphicItem.attributes.attributeValue("type") === "WP"){
 //                console.log("graphic["+graphicItem.attributes.attributeValue("id")+"] command "+
 //                            graphicItem.attributes.attributeValue("command"));
-                var wpLatLon =  Conv.mercatorToLatLon(graphicItem.geometry.extent.center.x,
-                                                      graphicItem.geometry.extent.center.y)
-                var missionItem = myComponent.createObject(rootItem);
+                if(graphicItem.geometry.extent!== null){
+                    var wpLatLon =  Conv.mercatorToLatLon(graphicItem.geometry.extent.center.x,
+                                                          graphicItem.geometry.extent.center.y)
+                    var missionItem = myComponent.createObject(rootItem);
 
-                missionItem.frame = graphicItem.attributes.attributeValue("id") === 0?0:3;
-//                console.log("getCurrentListWaypoint ["+graphicItem.attributes.attributeValue("id")+"]command "+graphicItem.attributes.attributeValue("command"));
-                missionItem.command = graphicItem.attributes.attributeValue("command");
-                missionItem.param1 = graphicItem.attributes.attributeValue("param1");
-                missionItem.param2 = graphicItem.attributes.attributeValue("param2");
-                missionItem.param3 = graphicItem.attributes.attributeValue("param3");
-                missionItem.param4 = graphicItem.attributes.attributeValue("param4");
-                missionItem.param5 = graphicItem.attributes.attributeValue("latitude");
-                missionItem.param6 = graphicItem.attributes.attributeValue("longitude");
-                missionItem.param7 = graphicItem.attributes.attributeValue("altitude");
-                missionItem.sequence = graphicItem.attributes.attributeValue("id");
-                currentListWaypoint.push(missionItem)
+                    missionItem.frame = graphicItem.attributes.attributeValue("id") === 0?0:3;
+    //                console.log("getCurrentListWaypoint ["+graphicItem.attributes.attributeValue("id")+"]command "+graphicItem.attributes.attributeValue("command"));
+                    missionItem.command = graphicItem.attributes.attributeValue("command");
+                    missionItem.param1 = graphicItem.attributes.attributeValue("param1");
+                    missionItem.param2 = graphicItem.attributes.attributeValue("param2");
+                    missionItem.param3 = graphicItem.attributes.attributeValue("param3");
+                    missionItem.param4 = graphicItem.attributes.attributeValue("param4");
+                    missionItem.param5 = graphicItem.attributes.attributeValue("latitude");
+                    missionItem.param6 = graphicItem.attributes.attributeValue("longitude");
+                    missionItem.param7 = graphicItem.attributes.attributeValue("altitude");
+                    missionItem.sequence = graphicItem.attributes.attributeValue("id");
+                    currentListWaypoint.push(missionItem)
+                }
             }
         }
 
