@@ -275,6 +275,14 @@ void Vehicle::_mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t tota
         Q_EMIT mavlinkStatusChanged();
     }
 }
+Fact* Vehicle::getProperties(QString name){
+    for(int i=0; i< _propertiesModel.size(); i++){
+        if(_propertiesModel[i]->name() == name){
+            return _propertiesModel[i];
+        }
+    }
+    return new Fact();
+}
 void Vehicle::motorTest(int motor, int percent)
 {
     if (m_firmwarePlugin != nullptr) {

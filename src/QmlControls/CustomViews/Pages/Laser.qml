@@ -125,7 +125,7 @@ Rectangle{
 
             Label {
                 id: label2
-                text:  (vehicle?Number(vehicle.altitudeRelative).toFixed(1).toString():"0") + " m/s"
+                text:  (vehicle?Number(vehicle.getProperties("Sonarrange").value).toFixed(1).toString():"0") + " " + vehicle.getProperties("Sonarrange").unit
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize
                 font.family: UIConstants.appFont

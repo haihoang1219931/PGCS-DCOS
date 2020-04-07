@@ -112,7 +112,7 @@ Rectangle{
         Rectangle {
             id: rectangle2
             x: 130
-            width: 152
+            width: UIConstants.sRect * 5
             color: "#00000000"
             radius: 20
             anchors.right: parent.right

@@ -440,6 +440,7 @@ public:
     void _sendNextQueuedMavCommand(void);
     void setHomeAltitude(float homeAltitude){ _homeAltitude = homeAltitude;}
     void _setParamValue(QString name,QString value,QString unit,bool notify = false);
+
 Q_SIGNALS:
     // forward signal to other component
     void missingParametersChanged(bool missingParameters);
@@ -529,7 +530,7 @@ public Q_SLOTS:
     void requestDataStream(int messageID, int hz, int enable = 1);
     void _startPlanRequest(void);
     void _mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t totalReceived, uint64_t totalLoss, float lossPercent);
-
+    Fact* getProperties(QString name);
 public:
     IOFlightController* m_com = nullptr;
     FirmwarePlugin*      m_firmwarePlugin = nullptr;

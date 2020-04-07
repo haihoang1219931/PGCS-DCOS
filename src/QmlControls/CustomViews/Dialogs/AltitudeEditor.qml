@@ -25,7 +25,7 @@ Rectangle {
     color: UIConstants.transparentBlue
     radius: UIConstants.rectRadius
     width: UIConstants.sRect * 14
-    height: UIConstants.sRect * 15/2
+    height: UIConstants.sRect * 6
     border.color: "gray"
     border.width: 1
     property real minValue: 150
@@ -198,6 +198,10 @@ Rectangle {
         anchors.leftMargin: 8
         icon: UIConstants.iRemoveMarker
         onClicked: {
+            if(txtCurrentValue.focus){
+                txtCurrentValue.focus = false;
+            }
+
             if(root.currentValue - root.stepValue >= (root.stepValue+root.minValue)){
                 root.currentValue -= root.stepValue;
             }
@@ -221,6 +225,9 @@ Rectangle {
         anchors.rightMargin: 8
         icon: UIConstants.iAddMarker
         onClicked: {
+            if(txtCurrentValue.focus){
+                txtCurrentValue.focus = false;
+            }
             if(root.currentValue + root.stepValue <= (root.maxValue - root.stepValue)){
                 root.currentValue += root.stepValue;
             }

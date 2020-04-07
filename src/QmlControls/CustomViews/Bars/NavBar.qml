@@ -23,7 +23,7 @@ import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
 import CustomViews.ToolBar 1.0
 import CustomViews.Dialogs 1.0
-//import QGroundControl 1.0
+
 import "qrc:/Maplib/transform.js" as Conv
 //---------------- Component definition ---------------------------------------
 Item {
@@ -328,7 +328,8 @@ Item {
                     setButtonNormal();
                     rootItem.changeTabFocus(idxBefore);
                     rootItem.itemNavChoosed(idxBefore);
-                    rootItem._showParams = true;
+                    if(idxBefore != 1)
+                        rootItem._showParams = true;
                 }else{
                     setButtonActive();
                     rootItem.changeTabFocus(idx);

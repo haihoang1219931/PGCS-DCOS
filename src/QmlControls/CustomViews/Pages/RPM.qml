@@ -92,7 +92,7 @@ Rectangle{
         id: rectangle1
         x: 200
         y: 60
-        width: UIConstants.sRect * 10
+        width: UIConstants.sRect * 14
         height: UIConstants.sRect * 2
         color: "#00000000"
         anchors.horizontalCenterOffset: 0
@@ -115,7 +115,7 @@ Rectangle{
         Rectangle {
             id: rectangle2
             x: 130
-            width: 152
+            width: UIConstants.sRect * 6
             color: "#00000000"
             radius: 20
             anchors.right: parent.right

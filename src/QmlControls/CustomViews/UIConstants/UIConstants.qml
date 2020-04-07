@@ -12,13 +12,13 @@
 
 pragma Singleton
 import QtQuick 2.0
-
+import QtQuick.Window 2.11
 QtObject {
     //---------------------- Size of smallest rect  --------------------
-    property int sRect:                    34
+    property int sRect:                    Screen.pixelDensity*5.5
     //------------------------------ App Font --------------------------
     property bool isMobile:                         false
-    property int fontSize:                          20
+    property int fontSize:                          Screen.pixelDensity*3.5
     property string appFont:                        "monospace"
     property int rectRadius:                        5
     property color transparentRed:                  "#b3ff0000"
@@ -163,6 +163,8 @@ QtObject {
     //------------------ Fonts -----------------------------------
     readonly property string fontComicSans:         "Comic Sans MS"
     readonly property string fontMonospace:         "Monospace"
+    readonly property string iWindowsMaximize:      "\uf20d"
+    readonly property string iWindowsMinimize:      "\uf2d2"
     readonly property string iPayload:              "\uf03d"
     readonly property string iInternet:             "\uf1eb"
     readonly property string iGPS:                  "\uf276"

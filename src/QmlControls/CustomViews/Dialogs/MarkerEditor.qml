@@ -24,8 +24,8 @@ Rectangle {
     id: root
     //---------- properties
     color: UIConstants.transparentBlue
-    height: UIConstants.sRect * 14
-    width: UIConstants.sRect * 13
+    height: UIConstants.sRect * 14.5
+    width: UIConstants.sRect * 13+8
     radius: UIConstants.rectRadius
     border.color: "gray"
     border.width: 1
@@ -56,8 +56,7 @@ Rectangle {
     signal textChanged(string newText)
     function changeAllFocus(enable){
         for(var i =0; i < cdeTxt.length; i++){
-            if(cdeTxt[i].focus !== enable)
-                cdeTxt[i].focus = enable;
+            cdeTxt[i].changeAllFocus(enable);
         }
         for(var i =0; i < lstTxt.length; i++){
             if(lstTxt[i].editting !== enable)

@@ -25,7 +25,7 @@ Rectangle {
     color: UIConstants.transparentBlue
     radius: UIConstants.rectRadius
     width: UIConstants.sRect * 19
-    height: UIConstants.sRect * 14.5
+    height: UIConstants.sRect * 15
     border.color: "gray"
     border.width: 1
     property alias waypointModeEnabled: rectWaypointMode.enabled

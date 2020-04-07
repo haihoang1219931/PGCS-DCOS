@@ -39,6 +39,40 @@ Rectangle {
                 Layout.preferredHeight: UIConstants.sRect * 2
                 width: UIConstants.sRect * 2
                 height: width
+                icon: mainWindow.visibility === ApplicationWindow.FullScreen?
+                          UIConstants.iWindowsMinimize:UIConstants.iWindowStore
+                isSolid: true
+                isShowRect: false
+                iconSize: UIConstants.sRect*3/2 - 5
+                iconColor: UIConstants.textColor
+                color: UIConstants.transparentBlue
+                radius: UIConstants.rectRadius
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                isAutoReturn: true
+                onClicked: {
+                    if(mainWindow.visibility === ApplicationWindow.FullScreen)
+                        mainWindow.visibility = ApplicationWindow.Maximized;
+                    else
+                        mainWindow.visibility = ApplicationWindow.FullScreen;
+                }
+            }
+            Label{
+                font.family: UIConstants.appFont
+                font.pixelSize: UIConstants.fontSize
+                text: mainWindow.visibility === ApplicationWindow.FullScreen?
+                          "Minize windows":"Full windows"
+                color: UIConstants.textColor
+            }
+        }
+        RowLayout{
+            Layout.preferredHeight: UIConstants.sRect * 2
+            Layout.fillWidth: true
+            layoutDirection: Qt.RightToLeft
+            FlatButtonIcon{
+                Layout.preferredWidth: UIConstants.sRect * 2
+                Layout.preferredHeight: UIConstants.sRect * 2
+                width: UIConstants.sRect * 2
+                height: width
                 icon: UIConstants.iClose
                 isSolid: true
                 isShowRect: false
