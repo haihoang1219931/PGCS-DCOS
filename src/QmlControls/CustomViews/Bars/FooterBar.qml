@@ -446,6 +446,7 @@ Item {
                             id: lblAMSL
                             anchors.bottom: parent.bottom
                             anchors.left: parent.left
+                            anchors.bottomMargin: 5
                             color: UIConstants.textColor
                             text: "AMSL:\n"+(vehicle?Math.round(vehicle.altitudeAMSL).toString():"--")+" m"
                             font.pixelSize: UIConstants.fontSize - 2
@@ -468,6 +469,7 @@ Item {
                             id: lblAGL
                             anchors.bottom: parent.bottom
                             anchors.left: parent.left
+                            anchors.bottomMargin: 5
                             color: UIConstants.textColor
                             text: "AGL:\n"+(vehicle?Number(vehicle.altitudeRelative).toFixed(2).toString():"--")+" m"
                             font.pixelSize: UIConstants.fontSize - 2

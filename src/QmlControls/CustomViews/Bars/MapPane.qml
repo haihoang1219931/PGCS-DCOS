@@ -1930,8 +1930,13 @@ Item {
     // distance line
     function createDistanceLine(point1,point2){
         var listGraphics = [];
-
         var angle = -Math.atan((point1.y-point2.y)/(point1.x-point2.x))*180/Math.PI;
+        var distanceResult = GeometryEngine.distanceGeodetic(point1,point2,Enums.LinearUnitIdMeters,
+                                                             Enums.AngularUnitIdDegrees     ,
+                                                             Enums.GeodeticCurveTypeNormalSection);
+        console.log("distanceResult.distance = "+distanceResult.distance)
+        console.log("distanceResult.azimuth1 = "+distanceResult.azimuth1)
+        console.log("distanceResult.azimuth2 = "+distanceResult.azimuth2)
         var headSymbol = ArcGISRuntimeEnvironment.createObject("SimpleMarkerSymbol",{
                                                                    //antiAlias : true,
                                                                    style: Enums.SimpleMarkerSymbolStyleCircle,
@@ -1960,7 +1965,9 @@ Item {
                                                                        color: "black",
                                                                        fontWidth: Enums.FontWeightBold,
                                                                        fontFamily: UIConstants.appFont,
-                                                                       text: ""+parseInt(GeometryEngine.length(lineGeometry))+"m",
+                                                                       text: Number(distanceResult.azimuth1 > 0?
+                                                                                        distanceResult.azimuth1:
+                                                                                        distanceResult.azimuth1 + 360).toFixed(2) + UIConstants.degreeSymbol+" "+parseInt(GeometryEngine.length(lineGeometry))+"m",
                                                                        size: wpFontSize,
                                                                        haloColor: "white",
                                                                        haloWidth: 2,
@@ -2187,9 +2194,13 @@ Item {
     MapView {
         id: mapView
         anchors.fill: parent
-        wrapAroundMode: Enums.WrapAroundModeEnabledWhenSupported
+        wrapAroundMode: Enums.WrapAroundModeEnabledWhenSupported        
+        rotationByPinchingEnabled: false
         Keys.onPressed: {
-            if(event.key === Qt.Key_S){
+            if(event.key === Qt.Key_A || event.key === Qt.Key_D){
+//                console.log("event.key === Qt.Key_A || event.key === Qt.Key_D");
+                mapView.setViewpointRotation(0);
+            }else if(event.key === Qt.Key_S){
                 focusOnUAV();
             }else if(event.key === Qt.Key_M){
                 focusAllObject();
@@ -2225,17 +2236,10 @@ Item {
         }
         Map {
             id: map
-            Point{
-
-            }
-
             BasemapImagery {
                id: basemap
             }
             spatialReference: SpatialReference.createWebMercator()
-//            onLoadErrorChanged: {
-//                mapView.map
-//            }
         }
         GraphicsOverlay {
             id: mapOverlayMouse

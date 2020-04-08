@@ -88,8 +88,6 @@ void ParamsController::_waitingParamTimeout(void){
                 _waitingParamTimeoutTimer.stop();
             }else{
                 _totalLoopParamFail++;
-
-
                 _initialRequestMissingParams();
             }
         }else{
