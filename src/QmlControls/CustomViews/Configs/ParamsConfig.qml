@@ -108,14 +108,14 @@ Rectangle {
                 anchors.rightMargin: 2
                 anchors.left: lblName.right
 //                anchors.right: lblUnit.left
-                width: UIConstants.sRect*5
+                width: UIConstants.sRect*7
                 anchors.bottom: parent.bottom
                 anchors.top: parent.top
                 anchors.leftMargin: 2
 
                 TextInput {
                     id: lblValue
-                    text: value
+                    text: focus?text:value
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignLeft
                     anchors.fill: parent
@@ -139,28 +139,42 @@ Rectangle {
 //                        if(focus) isEditing = focus;
 //                    }
 
-                    Keys.onReturnPressed: {
-                        vehicle.paramsController._writeParameterRaw(lblName.text,lblValue.text);
-//                        isEditing = false;
-                        focus = false;
-                    }
+//                    Keys.onReturnPressed: {
+//                        vehicle.paramsController._writeParameterRaw(lblName.text,lblValue.text);
+////                        isEditing = false;
+//                        focus = false;
+//                    }
                 }
             }
 
             Label {
                 id: lblUnit
-                width: 20
-                height: 17
+                width: UIConstants.sRect * 2
+                height: UIConstants.sRect - 4
                 text: unit
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize
                 font.family: UIConstants.appFont
-                anchors.right: parent.right
-                anchors.rightMargin: 8
+                anchors.left: rectValue.right
+                anchors.leftMargin: 8
                 anchors.verticalCenter: parent.verticalCenter
                 horizontalAlignment: Text.AlignLeft
             }
-
+            FlatButtonText{
+                isAutoReturn: true
+                width: UIConstants.sRect * 3
+                height: UIConstants.sRect - 4
+                anchors.left: lblUnit.left
+                anchors.leftMargin: 8
+                anchors.verticalCenter: parent.verticalCenter
+                color: isEnable?UIConstants.greenColor:UIConstants.grayColor
+                text: "Save"
+                isEnable: lblValue.text != value
+                onClicked: {
+                    vehicle.paramsController._writeParameterRaw(lblName.text,lblValue.text);
+                    lblValue.focus = false;
+                }
+            }
 
         }
     }

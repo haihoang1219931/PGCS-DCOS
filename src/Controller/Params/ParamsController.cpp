@@ -244,7 +244,8 @@ void ParamsController::_handleParamRequest(mavlink_message_t msg)
             }else if(_vehicle->m_firmwarePlugin != nullptr &&
                      paramID == _vehicle->m_firmwarePlugin->airSpeedParamName()){
                 _vehicle->setParamAirSpeed(static_cast<float>(rawValue.param_value)/100);
-            }else if(paramID == "WP_LOITER_RAD"){
+            }else if(_vehicle->m_firmwarePlugin != nullptr &&
+                     paramID == _vehicle->m_firmwarePlugin->loiterRadiusParamName()){
                 _vehicle->setParamLoiterRadius(static_cast<float>(rawValue.param_value));
             }
             ParamTypeVal param = QPair<QString,mavlink_param_value_t>(paramID,rawValue);
@@ -295,7 +296,8 @@ void ParamsController::_handleParamRequest(mavlink_message_t msg)
         }else if(_vehicle->m_firmwarePlugin != nullptr &&
                  paramID == _vehicle->m_firmwarePlugin->airSpeedParamName()){
             _vehicle->setParamAirSpeed(static_cast<float>(rawValue.param_value)/100);
-        }else if(paramID == "WP_LOITER_RAD"){
+        }else if(_vehicle->m_firmwarePlugin != nullptr &&
+                 paramID == _vehicle->m_firmwarePlugin->loiterRadiusParamName()){
             _vehicle->setParamLoiterRadius(static_cast<float>(rawValue.param_value));
         }
         _vehicle->_setParamValue(paramID,

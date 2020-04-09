@@ -111,6 +111,9 @@ QString FirmwarePlugin::rtlAltParamName(){
 QString FirmwarePlugin::airSpeedParamName(){
     return m_airSpeedParamName;
 }
+QString FirmwarePlugin::loiterRadiusParamName(){
+    return m_loiterRadiusParamName;
+}
 QString FirmwarePlugin::flightMode(int flightModeId){
     Q_UNUSED(flightModeId);
     return "UNDEFINED";

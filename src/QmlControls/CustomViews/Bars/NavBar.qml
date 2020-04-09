@@ -287,6 +287,7 @@ Item {
             isSolid: true
             z: navbarWrapper.z + 1
             icon: UIConstants.iPayload
+            iconColor: isEnable ? UIConstants.textColor : UIConstants.grayColor
             iconSize: UIConstants.sRect*3/2 - 5
             idx: 3
             isEnable: !btnSystemConfig.isPressed && CAMERA_CONTROL
@@ -722,7 +723,7 @@ Item {
                         width: parent.width*1.5
                         height: 20*model.length
                         model: _listFlightMode
-                        visible: dialogShow === "FLIGHT_MODES"
+                        visible: dialogShow === "FLIGHT_MODES" && vehicle.landed
                         enabled: !footerBar.isShowConfirm
                         color: UIConstants.transparentBlue
                         orientation: ListView.Vertical

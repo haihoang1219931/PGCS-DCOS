@@ -4,6 +4,7 @@ QuadPlaneFirmware::QuadPlaneFirmware(FirmwarePlugin *parent) : FirmwarePlugin(pa
 {
     m_rtlAltParamName = "ALT_HOLD_RTL";
     m_airSpeedParamName = "TRIM_ARSPD_CM";
+    m_loiterRadiusParamName = "WP_LOITER_RAD";
     m_mapFlightMode.insert(MANUAL,         "Manual");
     m_mapFlightMode.insert(CIRCLE,         "Circle");
     m_mapFlightMode.insert(STABILIZE,      "Stabilize");

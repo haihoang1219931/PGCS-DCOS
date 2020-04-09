@@ -83,7 +83,10 @@ Rectangle {
 //            validator: RegExpValidator { regExp: validatorValue }
             enabled: false
             onTextChanged: {
-                if(focus){
+                if(txtCurrentValue.text != "" &&
+                    !isNaN(txtCurrentValue.text) &&
+                    Number(txtCurrentValue.text) >= minValue &&
+                    Number(txtCurrentValue.text) <= maxValue){
                     root.currentValue = Number(text).toFixed(0);
                 }
             }
@@ -104,6 +107,11 @@ Rectangle {
         anchors.bottomMargin: 8
         isAutoReturn: true
         radius: root.radius
+        isEnable: txtCurrentValue.text != "" &&
+                  !isNaN(txtCurrentValue.text) &&
+                  Number(txtCurrentValue.text) >= minValue &&
+                  Number(txtCurrentValue.text) <= maxValue
+
         onClicked: {
             root.confirmClicked();
             root.visible = false;
@@ -141,8 +149,12 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         value: pressed?value:(currentValue-minValue)/(maxValue-minValue)
         onValueChanged: {
-            if(pressed)
+            if(pressed){
                 root.currentValue = value*(maxValue-minValue)+minValue;
+                if(txtCurrentValue.focus){
+                    txtCurrentValue.focus = false;
+                }
+            }
         }
     }
 
@@ -191,6 +203,9 @@ Rectangle {
         anchors.leftMargin: 8
         icon: UIConstants.iRemoveMarker
         onClicked: {
+            if(txtCurrentValue.focus){
+                txtCurrentValue.focus = false;
+            }
             if(root.currentValue - root.stepValue >= (root.stepValue+root.minValue)){
                 root.currentValue -= root.stepValue;
             }
@@ -214,6 +229,9 @@ Rectangle {
         anchors.rightMargin: 8
         icon: UIConstants.iAddMarker
         onClicked: {
+            if(txtCurrentValue.focus){
+                txtCurrentValue.focus = false;
+            }
             if(root.currentValue + root.stepValue <= (root.maxValue - root.stepValue)){
                 root.currentValue += root.stepValue;
             }

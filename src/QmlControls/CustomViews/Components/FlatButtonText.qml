@@ -45,7 +45,8 @@ Rectangle {
     signal pressed()
     signal released()
     //--- Button background
-
+    scale: isEnable?(isPressed?0.9:1):0.9
+    opacity: isEnable?(isPressed?0.5:1):0.9
     Label{
         id: lblText
         anchors.horizontalCenter: parent.horizontalCenter
@@ -55,7 +56,6 @@ Rectangle {
         font.family: UIConstants.appFont
         font.pixelSize: UIConstants.fontSize
         color: textColor
-        scale: isPressed?0.9:1
     }
 
     MouseArea {

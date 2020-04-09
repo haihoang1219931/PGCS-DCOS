@@ -2488,6 +2488,8 @@ Item {
                                 altitude);
                     selectedMarker.attributes.replaceAttribute("latitude",locationWGS84['lat']);
                     selectedMarker.attributes.replaceAttribute("longitude",locationWGS84['lon']);
+                    selectedMarker.attributes.replaceAttribute("latitude_prev",locationWGS84['lat']);
+                    selectedMarker.attributes.replaceAttribute("longitude_prev",locationWGS84['lon']);
                     var asl = elevationFinder.getAltitude(
                                 cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder,
                                 locationWGS84['lat'],locationWGS84['lon']);

@@ -1347,7 +1347,7 @@ ApplicationWindow {
                     var maxValue = 36;
                     if(vehicle.vehicleType === 2 || vehicle.vehicleType == 14){
                         minValue = 0;
-                        maxValue = 36;
+                        maxValue = 45;
                     }else {
                         minValue = 85;
                         maxValue = 110;

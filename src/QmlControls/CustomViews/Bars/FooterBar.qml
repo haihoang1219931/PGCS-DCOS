@@ -397,10 +397,21 @@ Item {
                                         planController.missionItems.length > sequence
                                         ){
                                     if(sequence !== rootItem.waypointIDSetProperty){
-                                        rootItem.setFlightAltitudeTarget(
-                                            sequence,
-                                            planController.missionItems[sequence].param7);
+                                        if(sequence > 0){
+                                            rootItem.setFlightAltitudeTarget(
+                                                sequence,
+                                                planController.missionItems[sequence].param7);
+                                        }else{
+                                            rootItem.setFlightAltitudeTarget(
+                                                sequence,
+                                                vehicle.homePosition.altitude);
+                                        }
                                     }else {
+                                        if(sequence === 0){
+                                            rootItem.setFlightAltitudeTarget(
+                                                sequence,
+                                                vehicle.homePosition.altitude);
+                                        }
                                     }
                                 }
                             }
@@ -681,7 +692,7 @@ Item {
                                 Layout.preferredWidth: parent.height
                                 Layout.preferredHeight: parent.height
                                 icon: !isClockWise?UIConstants.iCircleClockWise:UIConstants.iCircleCounterClock
-                                btnText: "Loiter\nDirection"
+                                btnText: "Loiter\nDir"
                                 isEnable: btnLoiter.isOn
                                 onClicked: {
                                     isClockWise = !isClockWise;
