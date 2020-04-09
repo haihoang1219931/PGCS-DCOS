@@ -67,19 +67,19 @@ ListView {
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
-                onEntered: {
-                    rectBound.opacity = 1;
-                }
-                onExited: {
-                    rectBound.opacity = 0.6;
-                }
-                onPressed: {
-                    rectBound.opacity = 1;
-                }
+//                onEntered: {
+//                    rectBound.opacity = 1;
+//                }
+//                onExited: {
+//                    rectBound.opacity = 0.6;
+//                }
+//                onPressed: {
+//                    rectBound.opacity = 1;
+//                }
 
-                onReleased: {
-                    rectBound.opacity = 0.6;
-                }
+//                onReleased: {
+//                    rectBound.opacity = 0.6;
+//                }
 
                 onClicked: {
 //                    console.log("Subnav model["+currentIndex+"] = "+rootItem.model[currentIndex]);
@@ -87,6 +87,7 @@ ListView {
                     rootItem.currentIndex = index;
                     rootItem.listViewClicked(txt.text);
                     rootItem.choosedItem = txt.text;
+//                    rectBound.opacity = 1;
                 }
             }
         }
