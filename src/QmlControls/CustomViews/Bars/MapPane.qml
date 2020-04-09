@@ -29,6 +29,7 @@ Item {
     clip: true
     property bool isMapSync: false
     property bool mousePressed: false
+    property int mouseButton: 0
     property bool ctrlPress: false
     property string mapName: "Layers.tpk"
     property string mapHeightFolder: "ElevationData-H1"
@@ -2406,6 +2407,46 @@ Item {
 
             }
             updateMouseOnMap();
+            console.log("Mouse pressed changed "+ mouse.button);
+            mouseButton = mouse.button;
+        }
+        onMouseReleased: {
+            if(mouseButton === Qt.RightButton && startLine.length > 0){
+                startLine = [];
+            }
+            mouseButton = 0;
+        }
+
+        onMousePositionChanged: {
+            if(UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint){
+                rootItem.mapMoved();
+                updateMouseOnMap()
+            }else if(UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeMeasure){
+
+            }
+            if(mouseButton === Qt.RightButton){
+                var pointEnd = ArcGISRuntimeEnvironment.createObject("Point", {
+                                                                              x: mouse.mapPoint.x,
+                                                                              y: mouse.mapPoint.y,
+                                                                              spatialReference: SpatialReference.createWebMercator()
+                                                                          });
+                if(startLine.length > 0){
+                    var pointStart = startLine[0];
+                    var lineGraphics = createDistanceLine(pointStart,pointEnd);
+                    var numGraphic = mapOverlayDistance.graphics.count;
+                    deleteMarker(mapOverlayDistance.graphics,"distance",lineID);
+                    for(var i = 0; i < lineGraphics.length; i++){
+                        lineGraphics[i].attributes.insertAttribute("id",lineID);
+                        lineGraphics[i].attributes.insertAttribute("type","distance");
+                        mapOverlayDistance.graphics.append(lineGraphics[i]);
+                    }
+                }else{
+                    if(startLine.length == 0){
+                        startLine.push(pointEnd);
+                        lineID ++;
+                    }
+                }
+            }
         }
         onMapScaleChanged: {
 
@@ -2415,17 +2456,9 @@ Item {
             // update do jump wp
             updateWPDoJump();
         }
-        onMousePressedAndHeld: {
-            timerPressAndHold.start()
-        }
-
-        onMousePositionChanged: {
-            if(UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint){
-                rootItem.mapMoved();
-                updateMouseOnMap()
-            }else if(UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeMeasure){
-            }
-        }
+//        onMousePressedAndHeld: {
+//            timerPressAndHold.start()
+//        }
         Rectangle{
             id: rectDragMarker
             x: 100

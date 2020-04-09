@@ -357,6 +357,9 @@ void Vehicle::_loadDefaultParamsShow(){
     }
 }
 void Vehicle::_setPropertyValue(QString name,QString value,QString unit){
+    if(name == ""){
+        return;
+    }
     bool paramExist = false;
     int propertiesShowCount = 0;
     for(int i=0; i< _propertiesModel.size(); i++){
@@ -645,7 +648,7 @@ void Vehicle::_mavlinkMessageReceived(mavlink_message_t message)
     Q_EMIT mavlinkMessageReceived(message);
 }
 void Vehicle::_sendGCSHeartbeat(void)
-{    
+{
     mavlink_message_t msg;
     uint16_t len;
     mavlink_msg_heartbeat_pack_chan(

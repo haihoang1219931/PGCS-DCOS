@@ -501,13 +501,13 @@ Q_SIGNALS:
     void vehicleUIDChanged();
     void messageSecurityChanged();
     /// Used internally to move sendMessage call to main thread
-    void _sendMessageOnLinkOnThread(IOFlightController* link, mavlink_message_t message);    
+    void _sendMessageOnLinkOnThread(IOFlightController* link, mavlink_message_t message);
     void textMessageReceived(int uasid, int componentid, int severity, QString text);
     void unhealthySensorsChanged(void);
     void sensorsPresentBitsChanged  (int sensorsPresentBits);
     void sensorsEnabledBitsChanged  (int sensorsEnabledBits);
     void sensorsHealthBitsChanged   (int sensorsHealthBits);
-    void mavlinkStatusChanged();    
+    void mavlinkStatusChanged();
     void vehicleTypeChanged();
     void paramAirSpeedChanged();
     void paramLoiterRadiusChanged();
@@ -716,4 +716,3 @@ private:
 };
 
 #endif // VEHICLE_H
-void _missionLoadComplete(void);

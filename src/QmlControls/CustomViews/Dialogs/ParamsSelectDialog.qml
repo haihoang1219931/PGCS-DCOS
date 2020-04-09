@@ -62,7 +62,7 @@ Rectangle {
             anchors.leftMargin: 8
             cellWidth: UIConstants.sRect * 7
             cellHeight: UIConstants.sRect * 3 / 2
-            model: vehicle.propertiesModel
+
             layoutDirection: Qt.LeftToRight
             flow: GridView.FlowTopToBottom
             delegate: Item {
@@ -102,7 +102,8 @@ Rectangle {
 
                     checked: selected
                     onPressedChanged: {
-                        vehicle.activeProperty(name,checked);
+                        if(vehicle !== null)
+                            vehicle.activeProperty(name,checked);
                     }
                 }
             }
@@ -126,6 +127,8 @@ Rectangle {
     }
     Component.onCompleted: {
         console.log("Set Focus true");
-        setFocus(true)
+        setFocus(true);
+        if(vehicle !== null)
+            gridView.model = vehicle.propertiesModel;
     }
 }

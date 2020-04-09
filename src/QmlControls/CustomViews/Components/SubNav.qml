@@ -30,6 +30,7 @@ ListView {
     property int prevIndex
     signal listViewClicked(string choosedItem)
     property color color: UIConstants.transparentColor
+    clip: true
     function setCurrentText(text){
 //        console.log("SubNav flightmodes.length = "+model.length);
         for(var index=0; index< model.length; index++){
@@ -41,9 +42,10 @@ ListView {
         }
     }
     model:[]
+
     delegate: Item {
         width: parent.width
-        height: 20
+        height: UIConstants.sRect
         Rectangle {
             id: rectBound
             anchors.fill: parent
@@ -69,6 +71,13 @@ ListView {
                     rectBound.opacity = 1;
                 }
                 onExited: {
+                    rectBound.opacity = 0.6;
+                }
+                onPressed: {
+                    rectBound.opacity = 1;
+                }
+
+                onReleased: {
                     rectBound.opacity = 0.6;
                 }
 

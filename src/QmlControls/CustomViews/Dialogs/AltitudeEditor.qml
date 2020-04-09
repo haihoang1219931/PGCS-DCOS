@@ -148,8 +148,12 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         value: pressed?value:(currentValue-minValue)/(maxValue-minValue)
         onValueChanged: {
-            if(pressed)
+            if(pressed){
                 root.currentValue = value*(maxValue-minValue)+minValue;
+                if(txtCurrentValue.focus){
+                    txtCurrentValue.focus = false;
+                }
+            }
         }
     }
 

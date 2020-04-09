@@ -1,6 +1,8 @@
 QT += qml quick webengine multimedia widgets opengl network positioning sensors core gui serialport
 QT += quickcontrols2
+QT += widgets
 CONFIG += c++11 no_keywords console
+
 RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model

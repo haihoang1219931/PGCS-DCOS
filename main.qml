@@ -564,19 +564,7 @@ ApplicationWindow {
         }
         onDoShowParamsSelect:{
             if(show){
-                var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ParamsSelectDialog.qml");
-                var confirmDialogObj = compo.createObject(parent,{
-                    "title":"Select minor params to show",
-                    "type": "CONFIRM",
-                    "vehicle": vehicle,
-                    "x":parent.width / 2 - UIConstants.sRect * 50 / 2,
-                    "y":parent.height / 2 - UIConstants.sRect * 24 / 2,
-                    "z":200});
-                confirmDialogObj.clicked.connect(function (type,func){
-                    navbar.dialogShow = "";
-                    confirmDialogObj.destroy();
-                    compo.destroy();
-                });
+                paramsSelectPanel.visible = true;
             }
         }
         onDoSwitchPlaneMode: {
@@ -654,6 +642,21 @@ ApplicationWindow {
                     rightMargin: 8
                 }
             }
+            ParamsSelectDialog{
+                id: paramsSelectPanel
+                visible: false
+                title:"Select minor params to show"
+                type: "CONFIRM"
+                vehicle: vehicle
+                x:parent.width / 2 - UIConstants.sRect * 50 / 2
+                y:parent.height / 2 - UIConstants.sRect * 24 / 2
+                z:200
+                onClicked: {
+                    paramsSelectPanel.visible = false;
+                     navbar.dialogShow = "";
+                }
+            }
+
             VideoPane{
                 id: videoPane
                 visible: paneControl.visible
