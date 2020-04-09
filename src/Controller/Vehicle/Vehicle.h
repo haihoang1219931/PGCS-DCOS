@@ -84,6 +84,7 @@ class Vehicle : public QObject
     Q_PROPERTY(float                paramLoiterRadius           READ paramLoiterRadius      WRITE setParamLoiterRadius      NOTIFY paramLoiterRadiusChanged)
     Q_PROPERTY(int                  rssi                        READ rssi                                           NOTIFY rssiChanged)
     Q_PROPERTY(float                pressABS                    READ pressABS                                       NOTIFY pressABSChanged)
+    Q_PROPERTY(float                sonarRange                  READ sonarRange                                     NOTIFY sonarRangeChanged)
     Q_PROPERTY(int                  temperature                 READ temperature                                    NOTIFY temperatureChanged)
     Q_PROPERTY( QQmlListProperty<Fact> propertiesModel          READ propertiesModel                                     NOTIFY propertiesModelChanged)
     Q_PROPERTY(int                  propertiesShowCount         READ propertiesShowCount    WRITE setPropertiesShowCount    NOTIFY propertiesShowCountChanged)
@@ -264,6 +265,7 @@ public:
     float       mavlinkLossPercent      () { return _mavlinkLossPercent; }      /// Running loss rate
     int rssi(){ return _telemetryLRSSI; }
     float pressABS(){ return _pressABS; }
+    float sonarRange(){ return _sonarRange; }
     int temperature(){ return _temperature; }
 public:
     /// Command vehicle to change loiter time
@@ -514,6 +516,7 @@ Q_SIGNALS:
     void paramChanged(QString name);
     void rssiChanged();
     void pressABSChanged();
+    void sonarRangeChanged();
     void temperatureChanged();
     void propertiesModelChanged();
     void propertiesShowCountChanged();
@@ -530,7 +533,6 @@ public Q_SLOTS:
     void requestDataStream(int messageID, int hz, int enable = 1);
     void _startPlanRequest(void);
     void _mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t totalReceived, uint64_t totalLoss, float lossPercent);
-    Fact* getProperties(QString name);
 public:
     IOFlightController* m_com = nullptr;
     FirmwarePlugin*      m_firmwarePlugin = nullptr;
@@ -689,7 +691,7 @@ private:
     int             _countGPS  = 0;
     QString         _lockGPS;
     QString         _messageSecurity = "MSG_INFO";
-
+    float           _sonarRange = 0;
     int             _cameraLinkLast = 0;
     int             _linkHeartbeatRecv = 0;
     int             _id = 1;                    ///< Mavlink system id

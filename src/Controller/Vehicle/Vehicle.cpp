@@ -275,14 +275,6 @@ void Vehicle::_mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t tota
         Q_EMIT mavlinkStatusChanged();
     }
 }
-Fact* Vehicle::getProperties(QString name){
-    for(int i=0; i< _propertiesModel.size(); i++){
-        if(_propertiesModel[i]->name() == name){
-            return _propertiesModel[i];
-        }
-    }
-    return new Fact();
-}
 void Vehicle::motorTest(int motor, int percent)
 {
     if (m_firmwarePlugin != nullptr) {
@@ -1520,6 +1512,8 @@ void Vehicle::_handleRangeFinder(mavlink_message_t &message)
 #endif
     mavlink_rangefinder_t range;
     mavlink_msg_rangefinder_decode(&message, &range);
+    _sonarRange = range.distance;
+    Q_EMIT sonarRangeChanged();
     _setPropertyValue("Sonarrange",QString::fromStdString(std::to_string(range.distance)),"m");
 }
 void Vehicle::_handleWindCov(mavlink_message_t &message)
