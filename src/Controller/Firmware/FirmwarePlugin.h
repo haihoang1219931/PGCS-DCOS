@@ -36,6 +36,7 @@ public:
     /// Returns the list of available flight modes. Flight modes can be different in normal/advanced ui mode.
     /// Call will be made again if advanced mode changes.
     virtual QStringList flightModes();
+    virtual QStringList flightModesOnAir();
     /// Used to determine whether a vehicle has a gimbal.
     ///     @param[out] rollSupported Gimbal supports roll
     ///     @param[out] pitchSupported Gimbal supports pitch
@@ -159,6 +160,7 @@ public:
     QString m_airSpeedParamName;
     QString m_loiterRadiusParamName;
     QMap<int,QString> m_mapFlightMode;
+    QMap<int,QString> m_mapFlightModeOnAir;
     QList<Fact*> _listParamShow;
 };
 

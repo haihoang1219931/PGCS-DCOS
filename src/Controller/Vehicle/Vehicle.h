@@ -36,6 +36,7 @@ class Vehicle : public QObject
     Q_PROPERTY(PlanController*      planController              READ planController     WRITE setPlanController)
     Q_PROPERTY(ParamsController*    paramsController            READ paramsController   WRITE setParamsController)
     Q_PROPERTY(QStringList          flightModes                 READ flightModes                                    NOTIFY flightModesChanged)
+    Q_PROPERTY(QStringList          flightModesOnAir            READ flightModesOnAir                               NOTIFY flightModesOnAirChanged)
     Q_PROPERTY(QString              flightMode                  READ flightMode         WRITE setFlightMode         NOTIFY flightModeChanged)
     Q_PROPERTY(bool                 armed                       READ armed                                          NOTIFY armedChanged)
     Q_PROPERTY(bool                 landed                      READ landed                                         NOTIFY landedChanged)
@@ -367,6 +368,7 @@ public:
 
     bool flightModeSetAvailable(void);
     QStringList flightModes(void);
+    QStringList flightModesOnAir(void);
     QString flightMode(void);
     void setFlightMode(const QString& flightMode);
 
@@ -453,7 +455,8 @@ Q_SIGNALS:
     void armedChanged(bool armed);
     void landedChanged();
     void flightModeChanged(const QString& flightMode);
-    void flightModesChanged         (void);
+    void flightModesChanged(void);
+    void flightModesOnAirChanged(void);
     void coordinateChanged(const QGeoCoordinate& position);
     void homePositionReceivedChanged();
     //// Communication count

@@ -24,6 +24,10 @@ QuadPlaneFirmware::QuadPlaneFirmware(FirmwarePlugin *parent) : FirmwarePlugin(pa
     m_mapFlightMode.insert(QLOITER,        "QuadPlane Loiter");
     m_mapFlightMode.insert(QLAND,          "QuadPlane Land");
     m_mapFlightMode.insert(QRTL,           "QuadPlane RTL");
+
+    m_mapFlightModeOnAir.insert(MANUAL,         "Manual");
+    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
+    m_mapFlightModeOnAir.insert(QHOVER,         "QuadPlane Hover");
 }
 QString QuadPlaneFirmware::flightMode(int flightModeId){
     if(m_mapFlightMode.contains(flightModeId)) {
@@ -55,9 +59,6 @@ void QuadPlaneFirmware::initializeVehicle(Vehicle* vehicle){
     vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA2,          10);
     vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA3,          10);
 //    Q_UNUSED(vehicle);
-}
-QStringList QuadPlaneFirmware::flightModes(){
-    return m_mapFlightMode.values();
 }
 QString QuadPlaneFirmware::gotoFlightMode(void) const
 {

@@ -32,13 +32,22 @@ ListView {
     property color color: UIConstants.transparentColor
     clip: true
     function setCurrentText(text){
-//        console.log("SubNav flightmodes.length = "+model.length);
+        var foundText = false;
+//        console.log("SubNav looking "+text+" flightmodes.length = "+model.length);
         for(var index=0; index< model.length; index++){
 //            console.log("model["+index+"] = "+model[index]);
             if(model[index] === text){
+                if(prevItem !== ""){
+                    prevItem = text;
+                }
                 currentIndex = index;
+                foundText = true;
                 break;
             }
+        }
+//        console.log("foundText = "+foundText);
+        if(!foundText){
+            currentIndex = -1;
         }
     }
     model:[]
@@ -82,8 +91,10 @@ ListView {
 //                }
 
                 onClicked: {
-//                    console.log("Subnav model["+currentIndex+"] = "+rootItem.model[currentIndex]);
-                    prevItem = rootItem.model[currentIndex];
+                    console.log("Subnav model["+currentIndex+"] = "+rootItem.model[currentIndex]);
+                    if(currentIndex >=0 && currentIndex < rootItem.model.length){
+                        prevItem = rootItem.model[currentIndex];
+                    }
                     rootItem.currentIndex = index;
                     rootItem.listViewClicked(txt.text);
                     rootItem.choosedItem = txt.text;

@@ -36,7 +36,6 @@ Item {
     property bool   _communicationLost:   true
     property int    _batteryPercent:       20
     property bool   _isMessageImportant:    false
-    property var    _listFlightMode: ["AUTO","RTL","LOITER","MANUAL","GUIDED"]
     property int    _flightTime: 0 // second
     property int    _second: 0
     property int    _minute: 0
@@ -88,13 +87,30 @@ Item {
     }
 
     function setFlightModes(flightmodes){
-        _listFlightMode = flightmodes;
+        if(lstFlightMode.model.length !== flightmodes.length){
+            lstFlightMode.model = flightmodes;
+            lstFlightMode.prevItem = "";
+        }
+        if(lstFlightMode.prevItem !== vehicle.flightMode && !lstFlightMode.visible){
+            setFlightMode(vehicle.flightMode);
+        }
     }
     Connections{
         target: vehicle
+        onLandedChanged:{
+            if(vehicle.landed){
+                setFlightModes(vehicle.flightModes);
+            }else{
+                setFlightModes(vehicle.flightModesOnAir);
+            }
+        }
         onFlightModesChanged:{
-//            console.log("List flight mode update");
-            setFlightModes(vehicle.flightModes);
+            console.log("List flight mode update");
+            if(vehicle.landed){
+                setFlightModes(vehicle.flightModes);
+            }else{
+                setFlightModes(vehicle.flightModesOnAir);
+            }
         }
         onFlightModeChanged:{
             console.log("flightmode change to "+flightMode);
@@ -676,7 +692,8 @@ Item {
                         color: UIConstants.textColor
                         font.pixelSize: UIConstants.fontSize
                         font.family: UIConstants.appFont
-                        text: lstFlightMode.model.length > 0? lstFlightMode.model[lstFlightMode.currentIndex]:"UNDEFINED"
+//                        text: lstFlightMode.model.length > 0? lstFlightMode.model[lstFlightMode.currentIndex]:"UNDEFINED"
+                        text: vehicle.flightMode
                         anchors.fill: parent
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignHCenter
@@ -686,8 +703,7 @@ Item {
                         onClicked: {
                             if(dialogShow !== "FLIGHT_MODES"){
                                 dialogShow = "FLIGHT_MODES";
-                                lstFlightMode.setCurrentText(lstFlightMode.prevItem);
-//                                lstFlightMode.prevIndex = lstFlightMode.currentIndex;
+//                                lstFlightMode.setCurrentText(lstFlightMode.prevItem);
                             }else{
                                 dialogShow = "";
                             }
@@ -721,15 +737,12 @@ Item {
                         anchors.top: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: parent.width*1.5
-                        height: 20*model.length
-                        model: _listFlightMode
-                        visible: dialogShow === "FLIGHT_MODES" && vehicle.landed
+                        height: UIConstants.sRect*model.length
+                        visible: dialogShow === "FLIGHT_MODES"
                         enabled: !footerBar.isShowConfirm
                         color: UIConstants.transparentBlue
                         orientation: ListView.Vertical
                         layoutDirection: Qt.LeftToRight
-//                        property var compo
-//                        property var confirmDialogObj
                         onListViewClicked: {
                             rootItem.doSwitchPlaneMode(prevItem,choosedItem);
                         }

@@ -23,7 +23,7 @@ void FirmwarePlugin::loadFromFile(QString fileName){
             XMLElement * pUnit = pListElement->FirstChildElement("Unit");
             Fact *tmp = new Fact(QString::fromLocal8Bit(pSelected->GetText()).contains("true"),
                                  QString::fromLocal8Bit(pName->GetText()),
-                                 "0",
+                                 "",
                                  QString::fromLocal8Bit(pUnit->GetText()));
             pListElement = pListElement->NextSiblingElement("Property");
             //i++;
@@ -47,6 +47,7 @@ void FirmwarePlugin::loadFromFile(QString fileName){
         _listParamShow.append(new Fact(false,"GPSSatCount","0","m"));
         _listParamShow.append(new Fact(false,"GroundLevel","0","m"));
         _listParamShow.append(new Fact(false,"GroundSpeed","0","m"));
+        _listParamShow.append(new Fact(false,"Landed","False",""));
         _listParamShow.append(new Fact(false,"LatHome","0","deg"));
         _listParamShow.append(new Fact(false,"LongHome","0","deg"));
         _listParamShow.append(new Fact(false,"Latitude","0","deg"));
@@ -129,8 +130,10 @@ void FirmwarePlugin::initializeVehicle(Vehicle* vehicle)
     Q_UNUSED(vehicle);
 }
 QStringList FirmwarePlugin::flightModes(){
-    QStringList result;
-    return result;
+    return m_mapFlightMode.values();
+}
+QStringList FirmwarePlugin::flightModesOnAir(){
+    return m_mapFlightModeOnAir.values();
 }
 QString FirmwarePlugin::gotoFlightMode(void) const
 {

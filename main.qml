@@ -593,10 +593,6 @@ ApplicationWindow {
                 });
             }
         }
-
-        Component.onCompleted: {
-            navbar.setFlightModes(vehicle.flightModes)
-        }
     }
 
     //------------ Body

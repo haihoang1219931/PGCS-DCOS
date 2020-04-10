@@ -104,6 +104,7 @@ Rectangle{
             width: 59
             height: 16
             text: qsTr("Altitude:")
+            verticalAlignment: Text.AlignVCenter
             color: UIConstants.textColor
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont

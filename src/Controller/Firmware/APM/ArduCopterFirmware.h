@@ -38,7 +38,6 @@ public:
     explicit ArduCopterFirmware(FirmwarePlugin *parent = nullptr);
     QString flightMode(int flightModeId) override;
     bool flightModeID(QString flightMode,int* base_mode,int* custom_mode) override;
-    QStringList flightModes() override;
     void sendHomePosition(Vehicle* vehicle,QGeoCoordinate location) override;
     void initializeVehicle(Vehicle* vehicle) override;
     /// Returns the flight mode which the vehicle will be in if it is performing a goto location

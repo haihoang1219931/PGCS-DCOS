@@ -14,7 +14,7 @@ import CustomViews.HUD 1.0
 //---------------- Component definition ---------------------------------------
 Item {
     id: rootItem
-    width: UIConstants.sRect*10
+    width: UIConstants.sRect*10.5
     height: UIConstants.sRect*5
     Rectangle{
         anchors.fill: parent
@@ -44,12 +44,12 @@ Item {
 //    }
     QGCAttitudeWidget{
         id: rectAHRS
-//        height: parent.height-10
+        height: parent.height-10
         anchors.left: parent.left
         anchors.leftMargin: 5
         anchors.verticalCenter: parent.verticalCenter
-//        width: parent.width / 2-10
-        size: parent.width / 2-10
+        width: parent.height-10
+//        size: parent.width / 2-10
     }
     QGCCompassWidget{
         id: rectNavigator
@@ -59,7 +59,6 @@ Item {
         anchors.rightMargin: 5
         anchors.verticalCenterOffset: 0
         anchors.verticalCenter: parent.verticalCenter
-        width: parent.width / 2-10
-//        source: "qrc:/assets/images/navigator.png"
+        width: parent.height-10
     }
 }

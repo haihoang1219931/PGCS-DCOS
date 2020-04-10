@@ -40,7 +40,6 @@ public:
     QString flightMode(int flightModeId) override;
     bool flightModeID(QString flightMode,int* base_mode,int* custom_mode) override;
     void initializeVehicle(Vehicle* vehicle) override;
-    QStringList flightModes() override;
     /// Returns the flight mode which the vehicle will be in if it is performing a goto location
     QString gotoFlightMode(void) const override;
     /// Sets base_mode and custom_mode to specified flight mode.

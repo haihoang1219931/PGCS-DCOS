@@ -104,6 +104,7 @@ Rectangle{
             width: 92
             height: 16
             text: qsTr("Engine speed")
+            verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
             anchors.leftMargin: 8
             anchors.verticalCenter: parent.verticalCenter

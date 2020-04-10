@@ -11,6 +11,7 @@ Vehicle::Vehicle(QObject *parent) : QObject(parent)
     m_firmwarePlugin = m_firmwarePluginManager->firmwarePluginForAutopilot(_firmwareType, static_cast<MAV_TYPE>(_vehicleType));
     _loadDefaultParamsShow();
     Q_EMIT flightModesChanged();
+    Q_EMIT flightModesOnAirChanged();
     _mavHeartbeat.setInterval(1000);
     _mavHeartbeat.setSingleShot(false);
     connect(&_mavHeartbeat, SIGNAL(timeout()), this, SLOT(_sendGCSHeartbeat()));
@@ -783,8 +784,9 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
 //        printf("heartbeat.autopilot=%d\r\n",heartbeat.autopilot);
 //        printf("heartbeat.mavlink_version=%d\r\n",heartbeat.mavlink_version);
 
-    if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID &&
-        (heartbeat.base_mode != _base_mode || heartbeat.custom_mode != _custom_mode)) {
+    if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID
+        && (heartbeat.base_mode != _base_mode || heartbeat.custom_mode != _custom_mode)
+            ) {
         bool newArmed = heartbeat.base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY;
         _updateArmed(newArmed);
         _base_mode = heartbeat.base_mode;
@@ -795,7 +797,7 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
     if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID) {
         //        printf("_handleHeartbeat\r\n");
 
-        if(_landed != ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY))
+//        if(_landed != ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY))
         {
             _landed = ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY);
             _setPropertyValue("Landed",((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY)?"True":"False","");
@@ -819,8 +821,8 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
                 m_firmwarePlugin = newFimware;
                 m_firmwarePlugin->initializeVehicle(this);
                 m_paramsController->refreshAllParameters();
-
                 Q_EMIT flightModesChanged();
+                Q_EMIT flightModesOnAirChanged();
                 flightModeChanged(flightMode());
             }
         }
@@ -1566,6 +1568,13 @@ QStringList Vehicle::flightModes(void)
 {
     if (m_firmwarePlugin != nullptr) {
         return m_firmwarePlugin->flightModes();
+    } else
+        return QStringList();
+}
+QStringList Vehicle::flightModesOnAir(void)
+{
+    if (m_firmwarePlugin != nullptr) {
+        return m_firmwarePlugin->flightModesOnAir();
     } else
         return QStringList();
 }

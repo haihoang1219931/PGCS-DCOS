@@ -23,6 +23,9 @@ ArduCopterFirmware::ArduCopterFirmware(FirmwarePlugin *parent) : FirmwarePlugin(
     m_mapFlightMode.insert(AVOID_ADSB, "Avoid ADSB");
     m_mapFlightMode.insert(GUIDED_NOGPS, "Guided No GPS");
     m_mapFlightMode.insert(SAFE_RTL, "Smart RTL");
+
+    m_mapFlightModeOnAir.insert(STABILIZE, "Stabilize");
+    m_mapFlightModeOnAir.insert(LOITER,    "Loiter");
 }
 QString ArduCopterFirmware::flightMode(int flightModeId)
 {
@@ -48,10 +51,6 @@ bool ArduCopterFirmware::flightModeID(QString flightMode, int *base_mode, int *c
     }
 
     return containFlightMode;
-}
-QStringList ArduCopterFirmware::flightModes()
-{
-    return m_mapFlightMode.values();
 }
 void ArduCopterFirmware::sendHomePosition(Vehicle* vehicle,QGeoCoordinate location){
     mavlink_home_position_t homePosition;
