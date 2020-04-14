@@ -700,6 +700,7 @@ Item {
                     }
                     MouseArea{
                         anchors.fill: parent
+                        enabled: lstFlightMode.model.length > 0
                         onClicked: {
                             if(dialogShow !== "FLIGHT_MODES"){
                                 dialogShow = "FLIGHT_MODES";
