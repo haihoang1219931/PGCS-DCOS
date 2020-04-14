@@ -161,6 +161,7 @@ public:
     QString m_loiterRadiusParamName;
     QMap<int,QString> m_mapFlightMode;
     QMap<int,QString> m_mapFlightModeOnAir;
+    QMap<int,QString> m_mapFlightModeOnGround;
     QList<Fact*> _listParamShow;
 };
 

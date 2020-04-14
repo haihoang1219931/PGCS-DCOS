@@ -25,9 +25,11 @@ QuadPlaneFirmware::QuadPlaneFirmware(FirmwarePlugin *parent) : FirmwarePlugin(pa
     m_mapFlightMode.insert(QLAND,          "QuadPlane Land");
     m_mapFlightMode.insert(QRTL,           "QuadPlane RTL");
 
-    m_mapFlightModeOnAir.insert(MANUAL,         "Manual");
-    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
-    m_mapFlightModeOnAir.insert(QHOVER,         "QuadPlane Hover");
+    m_mapFlightModeOnGround.insert(MANUAL,         "Manual");
+
+//    m_mapFlightModeOnAir.insert(MANUAL,         "Manual");
+//    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
+//    m_mapFlightModeOnAir.insert(QHOVER,         "QuadPlane Hover");
 }
 QString QuadPlaneFirmware::flightMode(int flightModeId){
     if(m_mapFlightMode.contains(flightModeId)) {

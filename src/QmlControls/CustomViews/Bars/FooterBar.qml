@@ -566,18 +566,18 @@ Item {
                             rootItem.doFlyAction(1);
                         }
                     }
-                    FooterButton {
-                        id: btnFlightGuided
-                        Layout.preferredWidth: parent.height
-                        Layout.preferredHeight: parent.height
-                        Layout.alignment: Qt.AlignTop
-                        icon: UIConstants.iManual
-                        btnText: "Guided"
-                        isEnable: vehicle.link
-                        onClicked: {
-                            rootItem.doFlyAction(2);
-                        }
-                    }
+//                    FooterButton {
+//                        id: btnFlightGuided
+//                        Layout.preferredWidth: parent.height
+//                        Layout.preferredHeight: parent.height
+//                        Layout.alignment: Qt.AlignTop
+//                        icon: UIConstants.iManual
+//                        btnText: "Guided"
+//                        isEnable: vehicle.link
+//                        onClicked: {
+//                            rootItem.doFlyAction(2);
+//                        }
+//                    }
                 }
 
                 RowLayout {

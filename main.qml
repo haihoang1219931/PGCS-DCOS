@@ -1314,7 +1314,7 @@ ApplicationWindow {
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/AltitudeEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
                         "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 15 / 4,
+                        "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
                         "z":200,
                         "minValue": minValue,
                         "maxValue": maxValue,
@@ -1351,7 +1351,7 @@ ApplicationWindow {
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/SpeedEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
                         "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 15 / 4,
+                        "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
                         "z":200,
                         "minValue": minValue,
                         "maxValue": maxValue,
@@ -1379,7 +1379,7 @@ ApplicationWindow {
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/LoiterRadiusEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
                         "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 15 / 4,
+                        "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
                         "z":200,
                         "currentValue": vehicle.paramLoiterRadius});
                     confirmDialogObj.confirmClicked.connect(function (){

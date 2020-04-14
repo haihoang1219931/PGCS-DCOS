@@ -30,7 +30,8 @@ void FirmwarePlugin::loadFromFile(QString fileName){
             _listParamShow.append(tmp);
         }
     }
-    if(_listParamShow.size() == 0){
+    if(_listParamShow.size() <  37){
+        _listParamShow.clear();
         _listParamShow.append(new Fact(false,"AirSpeed","0","m"));
         _listParamShow.append(new Fact(false,"AltHome","0","m"));
         _listParamShow.append(new Fact(false,"AltitudeAGL","0","m"));
@@ -130,7 +131,7 @@ void FirmwarePlugin::initializeVehicle(Vehicle* vehicle)
     Q_UNUSED(vehicle);
 }
 QStringList FirmwarePlugin::flightModes(){
-    return m_mapFlightMode.values();
+    return m_mapFlightModeOnGround.values();
 }
 QStringList FirmwarePlugin::flightModesOnAir(){
     return m_mapFlightModeOnAir.values();

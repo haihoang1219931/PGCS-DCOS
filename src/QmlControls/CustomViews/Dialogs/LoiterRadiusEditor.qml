@@ -25,7 +25,7 @@ Rectangle {
     color: UIConstants.transparentBlue
     radius: UIConstants.rectRadius
     width: UIConstants.sRect * 14
-    height: UIConstants.sRect * 15/2
+    height: UIConstants.sRect * 18 / 2
     border.color: "gray"
     border.width: 1
     property real minValue: 150
@@ -39,13 +39,12 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
     }
-
     Label {
         id: label
         x: 8
         width: 264
         height: 25
-        text: qsTr("Loiter radius editor")
+        text: qsTr("Altitude editor")
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: 8
@@ -68,7 +67,7 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: sldBar.bottom
         anchors.topMargin: 8
-        Label {
+        TextInput {
             id: txtCurrentValue
             anchors.fill: parent
             anchors.margins: UIConstants.rectRadius/2
@@ -80,14 +79,15 @@ Rectangle {
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont
             anchors.topMargin: 3
-//            validator: RegExpValidator { regExp: validatorValue }
-            enabled: false
+            validator: RegExpValidator { regExp: validatorValue }
             onTextChanged: {
-                if(txtCurrentValue.text != "" &&
-                    !isNaN(txtCurrentValue.text) &&
-                    Number(txtCurrentValue.text) >= minValue &&
-                    Number(txtCurrentValue.text) <= maxValue){
-                    root.currentValue = Number(text).toFixed(0);
+                if(focus){
+                    if(txtCurrentValue.text != "" &&
+                        !isNaN(txtCurrentValue.text) &&
+                        Number(txtCurrentValue.text) >= minValue &&
+                        Number(txtCurrentValue.text) <= maxValue){
+                        root.currentValue = Number(text).toFixed(0);
+                    }
                 }
             }
         }
@@ -100,7 +100,7 @@ Rectangle {
         width: UIConstants.sRect * 4
         icon: UIConstants.iChecked
         isSolid: true
-        color: "green"
+        color: isEnable?"green":"gray"
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.bottom: parent.bottom
@@ -111,7 +111,6 @@ Rectangle {
                   !isNaN(txtCurrentValue.text) &&
                   Number(txtCurrentValue.text) >= minValue &&
                   Number(txtCurrentValue.text) <= maxValue
-
         onClicked: {
             root.confirmClicked();
             root.visible = false;
@@ -206,6 +205,7 @@ Rectangle {
             if(txtCurrentValue.focus){
                 txtCurrentValue.focus = false;
             }
+
             if(root.currentValue - root.stepValue >= (root.stepValue+root.minValue)){
                 root.currentValue -= root.stepValue;
             }
