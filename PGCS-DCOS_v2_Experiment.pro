@@ -122,7 +122,6 @@ HEADERS += \
     src/Machine/computer.hpp \
     src/Machine/ConnectionChecking.h \
     src/Machine/ConnectionThread.h \
-    src/Utils/filenameutils.h \
     src/Maplib/profilepath.h \
     src/Controller/Params/Fact.h \
     src/Log/LogController.h

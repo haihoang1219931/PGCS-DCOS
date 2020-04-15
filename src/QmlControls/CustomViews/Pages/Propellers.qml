@@ -66,17 +66,17 @@ Rectangle{
 
         FlatButtonIcon {
             id: btnP1
-            icon: qsTr("Propeller 01")
+            icon: qsTr("Propeller A")
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
             height: UIConstants.sRect * 2
+            anchors.right: parent.right
+            anchors.rightMargin: 8
             isAutoReturn: true
             border.width: 2
             anchors.top: parent.top
             anchors.topMargin: 8
-            anchors.left: parent.left
-            anchors.leftMargin: 8
 
             onClicked: {
                 vehicle.motorTest(1,8)
@@ -86,15 +86,15 @@ Rectangle{
         FlatButtonIcon {
             id: btnP2
             x: 280
-            icon: qsTr("Propeller 02")
+            icon: qsTr("Propeller B")
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
             height: UIConstants.sRect * 2
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 8
             isAutoReturn: true
             border.width: 2
-            anchors.top: parent.top
-            anchors.topMargin: 8
             anchors.right: parent.right
             anchors.rightMargin: 8
             onClicked: {
@@ -104,17 +104,16 @@ Rectangle{
 
         FlatButtonIcon {
             id: btnP3
-            x: 280
             y: 187
-            icon: qsTr("Propeller 03")
+            icon: qsTr("Propeller C")
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
             height: UIConstants.sRect * 2
+            anchors.left: parent.left
+            anchors.leftMargin: 8
             isAutoReturn: true
             border.width: 2
-            anchors.right: parent.right
-            anchors.rightMargin: 8
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 8
             onClicked: {
@@ -124,18 +123,17 @@ Rectangle{
 
         FlatButtonIcon {
             id: btnP4
-            y: 168
-            icon: qsTr("Propeller 04")
+            icon: qsTr("Propeller D")
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
             height: UIConstants.sRect * 2
+            anchors.top: parent.top
+            anchors.topMargin: 8
             isAutoReturn: true
             border.width: 2
             anchors.left: parent.left
             anchors.leftMargin: 8
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 8
             onClicked: {
                 vehicle.motorTest(4,8)
             }
@@ -143,3 +141,8 @@ Rectangle{
     }
 
 }
+
+/*##^## Designer {
+    D{i:6;anchors_x:280}D{i:7;anchors_y:168}
+}
+ ##^##*/

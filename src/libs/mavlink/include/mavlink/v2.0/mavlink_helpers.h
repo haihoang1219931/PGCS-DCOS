@@ -732,6 +732,11 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		const mavlink_msg_entry_t *e = mavlink_get_msg_entry(rxmsg->msgid);
 		uint8_t crc_extra = e?e->crc_extra:0;
 		mavlink_update_checksum(rxmsg, crc_extra);
+
+//                if(rxmsg->msgid == 225)
+//                {
+//                    crc_extra = 128;
+//                }
 		if (c != (rxmsg->checksum & 0xFF)) {
 			status->parse_state = MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
 		} else {

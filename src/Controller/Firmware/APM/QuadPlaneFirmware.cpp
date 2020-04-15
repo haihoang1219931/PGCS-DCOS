@@ -205,7 +205,7 @@ int QuadPlaneFirmware::versionCompare(int major, int minor, int patch){
 void QuadPlaneFirmware::motorTest(Vehicle* vehicle,int motor, int percent){
     Q_UNUSED(motor);
     Q_UNUSED(percent);
-    vehicle->sendMavCommand(vehicle->defaultComponentId(), MAV_CMD_DO_MOTOR_TEST, true, motor, MOTOR_TEST_THROTTLE_PERCENT, percent, 2, 0, MOTOR_TEST_ORDER_BOARD);
+    vehicle->sendMavCommand(vehicle->defaultComponentId(), MAV_CMD_DO_MOTOR_TEST, true, motor, MOTOR_TEST_THROTTLE_PERCENT, percent, 1, 0, MOTOR_TEST_ORDER_BOARD);
 
 }
 void QuadPlaneFirmware::setHomeHere(Vehicle* vehicle,float lat, float lon, float alt){
