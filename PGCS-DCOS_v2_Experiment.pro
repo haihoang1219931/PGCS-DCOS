@@ -18,18 +18,29 @@ CONFIG += use_flight_control
 
 #CONFIG += use_ucapi
 
-CONFIG += use_camera_control
+#CONFIG += use_camera_control
 
 #CONFIG += use_video_gpu
 
-CONFIG += use_video_cpu
+#CONFIG += use_video_cpu
 
+CONFIG += use_binhnt79
 QML_IMPORT_PATH += \
     $$PWD \
     $$PWD/src/QmlControls \
     $$PWD/src/Controller
 SOURCES += \
     main.cpp
+
+use_binhnt79{
+SOURCES += \
+    src/Controller/Com/Socket.cpp \
+    src/Controller/Com/xplaneConnect.c   
+
+HEADERS += \
+    src/Controller/Com/Socket.h \
+    src/Controller/Com/xplaneConnect.h    
+}
 
 # Flight controller
 use_flight_control{

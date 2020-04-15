@@ -21,7 +21,19 @@ Vehicle::Vehicle(QObject *parent) : QObject(parent)
     _mavCommandAckTimer.setInterval(_highLatencyLink ? _mavCommandAckTimeoutMSecsHighLatency : _mavCommandAckTimeoutMSecs);
     connect(&_mavCommandAckTimer, &QTimer::timeout, this, &Vehicle::_sendMavCommandAgain);
     m_paramsController = new ParamsController(this);
-    //    m_paramsController->_vehicle = this;
+    //    Binh edit
+    socket_in.bind("0.0.0.0", bind_port);
+    if (!connected)
+    {
+        // we now know the IP X-Plane is using
+        uint16_t port;
+        socket_in.last_recv_address(xplane_ip, port);
+        socket_out.connect(xplane_ip, xplane_port);
+        connected = true;
+        printf("Connected to %s:%u\n", xplane_ip, (unsigned)xplane_port);
+    }
+    _send_dref("sim/operation/override/override_planepath[0]", 1);
+    //    Binh end
 }
 Vehicle::~Vehicle()
 {
@@ -1204,11 +1216,27 @@ void Vehicle::_handleGlobalPositionInt(mavlink_message_t &message)
     Q_EMIT altitudeAMSLChanged();
     if(m_uav!=nullptr){
         m_uav->_setPropertyValue("PTU_Alt",QString::fromStdString(std::to_string(globalPositionInt.relative_alt)),"m");
-    }
+    }    
 #ifdef DEBUG_FUNC
     printf("%s altitude:%f\r\n", __func__, static_cast<float>(globalPositionInt.relative_alt) / 1000.0f);
 #endif
 }
+// Binh edit
+/*
+  send DREF to X-Plane via UDP
+*/
+void Vehicle::_send_dref(const char *name, float value)
+{
+    struct PACKED {
+        uint8_t  marker[5] { 'D', 'R', 'E', 'F', '0' };
+        float value;
+        char name[500];
+    } d {};
+    d.value = value;
+    strcpy(d.name, name);
+    socket_out.send(&d, sizeof(d));        
+}
+// Binh end
 void Vehicle::_handleAltitude(mavlink_message_t &message)
 {
 #ifdef DEBUG_FUNC
@@ -1336,6 +1364,42 @@ void Vehicle::_handleAttitude(mavlink_message_t &message)
     _setPropertyValue("Pitch",QString::fromStdString(std::to_string(_pitch)),"deg");
     _setPropertyValue("Yaw",QString::fromStdString(std::to_string(_heading)),"deg");
     //    _handleAttitudeWorker(attitude.roll, attitude.pitch, attitude.yaw);
+    // Binh edit        
+    // Set Location/Orientation (sendPOSI)
+	// Set Up Position Array
+	double POSI[9] = { 0.0 };
+	POSI[0] = _latGPS;     // Lat
+	POSI[1] = _lonGPS; // Lon
+	POSI[2] = _altitudeAMSL;       // Alt
+	POSI[3] = _pitch;          // Pitch
+	POSI[4] = _roll;          // Roll
+	POSI[5] = _heading;          // Heading
+	POSI[6] = 1;          // Gear
+	// Set position of the player aircraft
+	sendPOSI(sock, POSI, 7, 0);
+
+    // Set Rates (sendDATA)
+	float data[2][9] = { 0 };
+	// Initialize data values to -998 to not overwrite values.
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 9; j++)
+		{
+			data[i][j] = -999;
+		}
+	}
+	// Set up Data Array (first item in row is item number (example: 20=position)
+	data[0][0] = 18; // Alpha
+	data[0][3] = _heading;  // horizontal path = heading
+	data[0][4] = _pitch;    // vertical path = pitch
+
+	data[1][0] = 3;  //Velocity	
+	data[1][7] = _airSpeed / 1.94384449;    // mps to knot
+	data[1][8] = _groundSpeed / 1.94384449;
+
+	sendDATA(sock, data, 3);
+
+    // Binh end    
 }
 void Vehicle::_handleAttitudeTarget(mavlink_message_t &message)
 {

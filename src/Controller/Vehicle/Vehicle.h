@@ -21,6 +21,13 @@
 //#define DEBUG
 //#define DEBUG_FUNC
 //#define DEBUG_MESSAGE_RECV
+
+// Binh edit
+#include "../Com/Socket.h"
+#include "../Com/xplaneConnect.h"
+// used to pack structures
+#define PACKED __attribute__((__packed__))
+// Binh end
 class UAS;
 class ParamsController;
 class PlanController;
@@ -264,7 +271,7 @@ public:
     float       mavlinkLossPercent      () { return _mavlinkLossPercent; }      /// Running loss rate
     int rssi(){ return _telemetryLRSSI; }
     float pressABS(){ return _pressABS; }
-    int temperature(){ return _temperature; }
+    int temperature(){ return _temperature; }    
 public:
     /// Command vehicle to change loiter time
     Q_INVOKABLE void commandLoiterRadius(float radius);
@@ -712,6 +719,17 @@ private:
     QMap<QString,int> _paramsMap;
     int _propertiesShowCount = 0;
     bool _requestPlanAfterParams = false;
+    // Binh edit
+    const char *xplane_ip = "127.0.0.1";
+    uint16_t xplane_port = 49000;
+    uint16_t bind_port = 49005;    
+	XPCSocket sock = openUDP(xplane_ip);
+    // udp socket, input and output
+    SocketAPM socket_in{true};
+    SocketAPM socket_out{true};
+    bool connected = false;
+    void _send_dref(const char *name, float value);
+    // Binh end
 };
 
 #endif // VEHICLE_H
