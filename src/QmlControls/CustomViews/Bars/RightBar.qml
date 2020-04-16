@@ -107,6 +107,8 @@ Rectangle {
     "MAP_REMOVE": ["Remove\nmarker","Xóa\nnhãn"],
     "MAP_CLEAR": ["Clear\nmarkers","Xóa tất\ncả nhãn"],
     "MAP_EDIT": ["Edit\nmarker","Sửa\nnhãn"],
+    // image processing
+    "GCS_DETECT": ["Object\ndetect","Phat\nhien"],
     // advance tab
     "ADVANCED":["Advanced","Nâng cao"],
     "BACK":["Back","Trở lại"],
@@ -157,7 +159,7 @@ Rectangle {
                         camState.sensorID = camState.sensorIDEO;
                     }
                     console.log("Change sensor ID to ["+camState.sensorID+"]");
-                    if(USE_VIDEO_CPU){
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         var config = PCSConfig.getData();
                         if(camState.sensorID === "EO"){
                             videoPane.player.setVideo(config["CAM_STREAM_EO"]);
@@ -205,7 +207,7 @@ Rectangle {
                 btnText: "Snapshot"
                 color: UIConstants.bgAppColor
                 onClicked: {
-                    if(USE_VIDEO_CPU){
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         videoPane.player.capture();
                     }
                 }
@@ -246,7 +248,7 @@ Rectangle {
                 isOn: camState.gcsStab
                 onClicked: {
                     camState.gcsStab =! camState.gcsStab;
-                    if(USE_VIDEO_CPU){
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         videoPane.player.setDigitalStab(camState.gcsStab)
                     }
                 }
@@ -264,8 +266,42 @@ Rectangle {
                     camState.gcsRecord=!camState.gcsRecord;
 
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
-                    if(USE_VIDEO_CPU){
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         videoPane.player.setRecord(camState.gcsRecord);
+                    }
+                }
+            }
+            SwitchFlatButton {
+                id: btnGCSObjectDetect
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iCar
+                btnText: "Object\ndetect"
+                color: UIConstants.bgAppColor
+                isSync: true
+                isOn: camState.gcsOD
+                onClicked: {
+                    camState.gcsOD=!camState.gcsOD;
+//                    console.log("setVideoSavingState to "+camState.gcsRecord)
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
+                        videoPane.player.setObjectDetect(camState.gcsOD);
+                    }
+                }
+            }
+            SwitchFlatButton {
+                id: btnGCSLineDetect
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iBolt
+                btnText: "Power\nlines"
+                color: UIConstants.bgAppColor
+                isSync: true
+                isOn: camState.gcsPD
+                onClicked: {
+                    camState.gcsPD=!camState.gcsPD;
+//                    console.log("setVideoSavingState to "+camState.gcsRecord)
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
+                        videoPane.player.setPowerLineDetect(camState.gcsPD);
                     }
                 }
             }

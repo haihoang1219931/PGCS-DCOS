@@ -40,10 +40,14 @@
 #include "src/Setting/pcs.h"
 int main(int argc, char *argv[])
 {
+#ifdef UC_API
+    QtWebEngine::initialize();
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+#endif
     QGuiApplication app(argc, argv);
     app.setOrganizationName("qdt");
     app.setOrganizationDomain("qdt");
-    QtWebEngine::initialize();
+
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");
     //--- Flight controller

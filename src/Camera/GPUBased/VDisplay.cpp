@@ -8,7 +8,7 @@ VDisplay::VDisplay(QObject *_parent) : QObject(_parent)
     m_vPreprocess = new VPreprocess;
     m_vODWorker = new VODWorker;
     m_vMOTWorker = new VMOTWorker;
-	m_vSearchWorker = new VSearchWorker;
+    m_vSearchWorker = new VSearchWorker;
     m_vTrackWorker = new VTrackWorker;
     m_vRTSPServer = new VRTSPServer;
     m_vSavingWorker = new VSavingWorker("EO");
@@ -26,8 +26,8 @@ VDisplay::VDisplay(QObject *_parent) : QObject(_parent)
     connect(m_vTrackWorker, SIGNAL(determinedPlateOnTracking(QString, QString)),
             this, SIGNAL(determinedPlateOnTracking(QString, QString)));
     connect(m_vTrackWorker, SIGNAL(objectLost()),
-            this, SIGNAL(slObjectLost()));
-    init();
+            this, SLOT(slObjectLost()));
+
 }
 
 void VDisplay::setVideo(QString _ip, int _port)
@@ -44,7 +44,7 @@ VDisplay::~VDisplay()
     m_vSavingWorker->deleteLater();
     m_vODWorker->deleteLater();
     m_vMOTWorker->deleteLater();
-	m_vSearchWorker->deleteLater();
+    m_vSearchWorker->deleteLater();
     m_vTrackWorker->deleteLater();
     m_vPreprocess->deleteLater();
 }
@@ -60,11 +60,11 @@ void VDisplay::init()
     std::string plate_weights_search = "../GPUBased/plateOCR/yolo-setup/yolov3-tiny_best.weights";
     m_detector = new Detector(cfg_file, weights_file);
     m_vODWorker->setDetector(m_detector);
-	m_clicktrackDetector = new Detector(plate_cfg_file_click, plate_weights_file_click);
+    m_clicktrackDetector = new Detector(plate_cfg_file_click, plate_weights_file_click);
     m_vTrackWorker->setClicktrackDetector(m_clicktrackDetector);
 
-	m_searchDetector = new Detector(plate_cfg_search, plate_weights_search);
-	m_vSearchWorker->setPlateDetector(m_searchDetector);
+    m_searchDetector = new Detector(plate_cfg_search, plate_weights_search);
+    m_vSearchWorker->setPlateDetector(m_searchDetector);
 
     m_OCR = new OCR();
     m_vTrackWorker->setOCR(m_OCR);
@@ -74,6 +74,7 @@ void VDisplay::init()
 
 void VDisplay::start()
 {
+    init();
     m_vFrameGrabber->start();
     m_vPreprocess->start();
     m_vODWorker->start();
@@ -100,24 +101,26 @@ void VDisplay::setVideoSurface(QAbstractVideoSurface *_videoSurface)
 {
     printf("setVideoSurface");
 
-    if (m_videoSurface != _videoSurface && m_videoSurface &&
-        m_videoSurface->isActive()) {
-        m_videoSurface->stop();
+    if (m_videoSurface != _videoSurface) {
+        m_videoSurface = _videoSurface;
+        update();
     }
-
-    m_videoSurface = _videoSurface;
-
+}
+void VDisplay::update()
+{
+    printf("Update video surface\r\n");
     if (m_videoSurface) {
-        if (!m_videoSurface->start(
-                QVideoSurfaceFormat(QSize(), VIDEO_OUTPUT_FORMAT))) {
-            printf("Could not start QAbstractVideoSurface, error: %d",
-                   m_videoSurface->error());
+        if (m_videoSurface->isActive()) {
+            m_videoSurface->stop();
+        }
+
+        if (!m_videoSurface->start(QVideoSurfaceFormat(QSize(), VIDEO_OUTPUT_FORMAT))) {
+            printf("Could not start QAbstractVideoSurface, error: %d", m_videoSurface->error());
         } else {
             printf("Start QAbstractVideoSurface done\r\n");
         }
     }
 }
-
 QSize VDisplay::sourceSize()
 {
     return m_sourceSize;
@@ -147,10 +150,14 @@ void VDisplay::onReceivedFrame(int _id, QVideoFrame frame)
     if(m_videoSurface!=nullptr){
         m_id = _id;
         if (m_sourceSize.width() != frame.width() ||
-            m_sourceSize.height() != frame.height()) {
+                m_sourceSize.height() != frame.height()) {
             m_sourceSize.setWidth(frame.width());
             m_sourceSize.setHeight(frame.height());
             Q_EMIT sourceSizeChanged(frame.width(),frame.height());
+        }
+        if(m_updateVideoSurface){
+            update();
+            m_updateVideoSurface = false;
         }
         m_videoSurface->present(frame);
 
@@ -160,28 +167,57 @@ void VDisplay::onReceivedFrame()
 {
     if(m_videoSurface!=nullptr){
         m_id = m_vDisplayWorker->m_currID;
+        if(m_updateVideoSurface){
+            update();
+            m_updateVideoSurface = false;
+        }
         QVideoFrame frame = QVideoFrame(
-                                QImage((uchar *)m_vDisplayWorker->m_imgShow.data,
-                                       m_vDisplayWorker->m_imgShow.cols,
-                                       m_vDisplayWorker->m_imgShow.rows, QImage::Format_RGBA8888));
+                    QImage((uchar *)m_vDisplayWorker->m_imgShow.data,
+                           m_vDisplayWorker->m_imgShow.cols,
+                           m_vDisplayWorker->m_imgShow.rows, QImage::Format_RGBA8888));
         frame.map(QAbstractVideoBuffer::ReadOnly);
         if (m_sourceSize.width() != frame.width() ||
-            m_sourceSize.height() != frame.height()) {
+                m_sourceSize.height() != frame.height()) {
             m_sourceSize.setWidth(frame.width());
             m_sourceSize.setHeight(frame.height());
             Q_EMIT sourceSizeChanged(frame.width(), frame.height());
         }
+
         m_videoSurface->present(frame);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         frame.unmap();
     }
 }
-
+void VDisplay::updateVideoSurface(){
+    m_updateVideoSurface = true;
+}
 void VDisplay::setVideoSource(QString _ip, int _port)
 {
     m_vFrameGrabber->setSource(_ip.toStdString(), _port);
 }
-
+void VDisplay::setObjectDetect(bool enable){
+    if(enable){
+        std::vector<int> classIDs;
+        for (int i = 0; i < 12; i++) {
+            classIDs.push_back(i);
+        }
+        m_vDisplayWorker->setListObjClassID(classIDs);
+        m_enOD = true;
+        m_vODWorker->enableOD();
+        m_vMOTWorker->enableMOT();
+        // this line should be remove in the final product
+        m_vSearchWorker->enableSearch();
+    }else{
+        m_enOD = false;
+        m_vODWorker->disableOD();
+        m_vMOTWorker->disableMOT();
+        // this line should be remove in the final product
+        m_vSearchWorker->disableSearch();
+    }
+}
+void VDisplay::setPowerLineDetect(bool enable){
+    m_enPD = enable;
+}
 void VDisplay::searchByClass(QVariantList _classList)
 {
     std::vector<int> classIDs;
@@ -189,7 +225,7 @@ void VDisplay::searchByClass(QVariantList _classList)
     if (_classList.size() == 0) {
         m_vODWorker->disableOD();
         m_vMOTWorker->disableMOT();
-		m_vSearchWorker->disableSearch();
+        m_vSearchWorker->disableSearch();
     }
 
     for (int i = 0; i < _classList.size(); i++) {
@@ -200,7 +236,7 @@ void VDisplay::searchByClass(QVariantList _classList)
     m_enOD = true;
     m_vODWorker->enableOD();
     m_vMOTWorker->enableMOT();
-	m_vSearchWorker->enableSearch();
+    m_vSearchWorker->enableSearch();
 }
 
 void VDisplay::disableObjectDetect()
@@ -208,8 +244,8 @@ void VDisplay::disableObjectDetect()
     m_enOD = false;
     m_vODWorker->disableOD();
     m_vMOTWorker->disableMOT();
-	// this line should be remove in the final product
-	m_vSearchWorker->disableSearch();
+    // this line should be remove in the final product
+    m_vSearchWorker->disableSearch();
 }
 
 void VDisplay::enableObjectDetect()
@@ -224,8 +260,8 @@ void VDisplay::enableObjectDetect()
     m_enOD = true;
     m_vODWorker->enableOD();
     m_vMOTWorker->enableMOT();
-	// this line should be remove in the final product
-	m_vSearchWorker->enableSearch();
+    // this line should be remove in the final product
+    m_vSearchWorker->enableSearch();
 }
 
 void VDisplay::setTrackAt(int _id, double _px, double _py, double _w, double _h)
@@ -279,7 +315,7 @@ void VDisplay::stop()
     m_vFrameGrabber->stopPipeline();
     m_vSavingWorker->stopPipeline();
     m_vODWorker->stop();
-	m_vSearchWorker->stop();
+    m_vSearchWorker->stop();
     m_vMOTWorker->stop();
     m_vTrackWorker->stop();
     m_vPreprocess->stop();

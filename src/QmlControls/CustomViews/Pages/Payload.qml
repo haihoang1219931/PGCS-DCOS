@@ -34,7 +34,6 @@ Rectangle{
     property real dPan: 1
     property real dTilt: 1
     property real alpha: 0.2
-    property string degreeSymbol : "\u00B0";
     property bool bold: false
     Label {
         id: lblTitle1
@@ -221,7 +220,7 @@ Rectangle{
                 width: 100
                 height: 16
                 color: drawColor
-                text: Number(pan).toFixed(1).toString()+degreeSymbol
+                text: Number(pan).toFixed(1).toString()+UIConstants.degreeSymbol
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
             }
@@ -233,7 +232,7 @@ Rectangle{
                 width: 100
                 height: 16
                 color: drawColor
-                text: Number(tilt).toFixed(1).toString()+degreeSymbol
+                text: Number(tilt).toFixed(1).toString()+UIConstants.degreeSymbol
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
             }
@@ -342,8 +341,8 @@ Rectangle{
             }
         }
 
-
     }
+
 }
 
 /*##^## Designer {

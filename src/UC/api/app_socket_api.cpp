@@ -22,7 +22,8 @@ enum class ServerMessage {
     NewMessage,
     AddToRoomResponse,
     PcdSharingStatus,
-    ReloadWebEngineView
+    ReloadWebEngineView,
+    MediaError
 };
 
 const std::map<std::string, ServerMessage> mapMessage = {
@@ -33,7 +34,8 @@ const std::map<std::string, ServerMessage> mapMessage = {
     { "new_message", ServerMessage::NewMessage },
     { "add_to_room_response", ServerMessage::AddToRoomResponse },
     { "pcd_video_sharing_status", ServerMessage::PcdSharingStatus },
-    { "reload_web_engine_view", ServerMessage::ReloadWebEngineView }
+    { "reload_web_engine_view", ServerMessage::ReloadWebEngineView },
+    { "media_error", ServerMessage::MediaError }
 };
 
 AppSocketApi* AppSocketApi::inst = nullptr;
@@ -105,6 +107,7 @@ AppSocketApiImpl::AppSocketApiImpl(const QString& serverIp, const int& serverPor
     sockInst->set_socket_open_listener(std::bind(&AppSocketApiImpl::onConnected, this, _1));
     sockInst->set_close_listener(std::bind(&AppSocketApiImpl::onClosed, this, _1));
     sockInst->set_fail_listener(std::bind(&AppSocketApiImpl::onFailed, this));
+    listenSeverSignal();
 }
 
 AppSocketApiImpl::~AppSocketApiImpl() {
@@ -385,6 +388,12 @@ void AppSocketApiImpl::handleServerMessages(const sio::event &ev) {
             }
             Q_EMIT shouldReloadWebEngineView(jsonDataObj["data"]["redoAction"].asInt(), QString::fromStdString(jsonDataObj["data"]["redoData"].toStyledString()));
             break;
+        case ServerMessage::MediaError:
+            while( !isQmlReady ) {
+                sleep(1);
+            }
+            Q_EMIT mediaError(QString::fromStdString(jsonDataObj["data"]["sourceUid"].toStyledString()), jsonDataObj["data"]["type"].asInt());
+            break;
 
         default:
             qDebug("Server message not found/invalid !!!");
@@ -400,7 +409,6 @@ void AppSocketApiImpl::onConnected(const std::string &nsp) {
     doAuthentication();
     sleep(1);
     _createNewRoom();
-    listenSeverSignal();
     Q_EMIT connectedToServer();
 }
 

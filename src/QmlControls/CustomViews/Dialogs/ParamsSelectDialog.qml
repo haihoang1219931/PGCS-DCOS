@@ -31,24 +31,7 @@ Rectangle {
         id: rectangle
         anchors.fill: parent
         hoverEnabled: true
-        FlatButtonIcon{
-            id: btnCancel
-            height: UIConstants.sRect * 2
-            width: UIConstants.sRect * 2
-            icon: UIConstants.iMouse
-            isSolid: true
-            color: "red"
-            isAutoReturn: true
-            radius: root.radius
-            anchors.top: parent.top
-            anchors.topMargin: 8
-            anchors.right: parent.right
-            anchors.rightMargin: 8
-            onPressed: {
-                console.log("pressed");
-                root.clicked(root.type,"DIALOG_CANCEL");
-            }
-        }
+
         GridView {
             id: gridView
             clip: true
@@ -108,21 +91,38 @@ Rectangle {
                 }
             }
         }
-
-        Label {
-            id: txtDialog
-            height: btnCancel.height
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            color: UIConstants.textColor
-            anchors.top: parent.top
-            anchors.topMargin: 8
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            anchors.right: btnCancel.left
-            anchors.rightMargin: 8
-            anchors.left: parent.left
-            anchors.leftMargin: 8
+    }
+    Label {
+        id: txtDialog
+        height: btnCancel.height
+        font.pixelSize: UIConstants.fontSize
+        font.family: UIConstants.appFont
+        color: UIConstants.textColor
+        anchors.top: parent.top
+        anchors.topMargin: 8
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+        anchors.right: btnCancel.left
+        anchors.rightMargin: 8
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+    }
+    FlatButtonIcon{
+        id: btnCancel
+        height: UIConstants.sRect * 2
+        width: UIConstants.sRect * 2
+        icon: UIConstants.iMouse
+        isSolid: true
+        color: "red"
+        isAutoReturn: true
+        radius: root.radius
+        anchors.top: parent.top
+        anchors.topMargin: 8
+        anchors.right: parent.right
+        anchors.rightMargin: 8
+        onClicked: {
+            console.log("pressed");
+            root.clicked(root.type,"DIALOG_CANCEL");
         }
     }
     Component.onCompleted: {

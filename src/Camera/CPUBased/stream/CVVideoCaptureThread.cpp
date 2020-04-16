@@ -382,10 +382,12 @@ QSize CVVideoCaptureThread::sourceSize()
 {
     return m_sourceSize;
 }
+void CVVideoCaptureThread::updateVideoSurface(){
+    m_updateVideoSurface = true;
+}
 void CVVideoCaptureThread::update()
 {
     printf("Update video surface\r\n");
-
     if (m_videoSurface) {
         if (m_videoSurface->isActive()) {
             m_videoSurface->stop();
@@ -412,12 +414,18 @@ void CVVideoCaptureThread::doShowVideo()
             m_sourceSize.setHeight(m_imgShow.rows);
             Q_EMIT sourceSizeChanged(m_imgShow.cols, m_imgShow.rows);
         }
+        if(m_updateVideoSurface){
+            update();
+            m_updateVideoSurface = false;
+        }
         QImage tmp((uchar *)m_imgShow.data, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888);
         QVideoFrame output = QVideoFrame(tmp);
 
-        //        printf("show image[%dx%d]\r\n",m_imgShow.cols,m_imgShow.rows);
+        printf("show image[%dx%d]\r\n",m_imgShow.cols,m_imgShow.rows);
         if (!m_videoSurface->present(output)) {
+            printf("Show failed\r\n");
         } else {
+            printf("Show success\r\n");
         }
     }
 }
@@ -504,7 +512,7 @@ void CVVideoCaptureThread::onStreamFrameSizeChanged(int width, int height)
         m_vRTSPServer->start();
     }
 
-//    if (m_enSaving) {
-//        m_vSavingWorker->start();
-//    }
+    if (m_enSaving) {
+        m_vSavingWorker->start();
+    }
 }

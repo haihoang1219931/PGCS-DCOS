@@ -238,6 +238,11 @@ class AppSocketApi : public QObject {
          */
         void networkCrash();
 
+        /**
+         * @brief mediaError
+         * @param sourceUid - Uid of user who has some error while accessing media.
+         */
+        void mediaError(const QString& sourceUid, const int& errorType);
     public Q_SLOTS:
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         //          List signals that you use to send request to server. The data flow is from you -> server in reverse with
