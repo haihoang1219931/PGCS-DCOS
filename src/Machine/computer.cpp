@@ -109,9 +109,9 @@ void COMPUTER_INFO::setSystemTime(){
 }
 
 void COMPUTER_INFO::restartApplication(){
-    QStringList args = QApplication::arguments();
+    QStringList args = QGuiApplication::arguments();
     args.removeFirst();
-    QProcess::startDetached(QApplication::applicationFilePath(),args);
+    QProcess::startDetached(QGuiApplication::applicationFilePath(),args);
         QCoreApplication::quit();
 }
 void COMPUTER_INFO::quitApplication(){

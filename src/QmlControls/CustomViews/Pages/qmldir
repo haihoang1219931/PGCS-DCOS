@@ -9,3 +9,4 @@ Pitot           1.0 Pitot.qml
 Propellers      1.0 Propellers.qml      
 RPM             1.0 RPM.qml
 Success         1.0 Success.qml
+Payload         1.0 Payload.qml

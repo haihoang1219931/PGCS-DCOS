@@ -11,6 +11,7 @@
 #include "src/Maplib/Elevation.h"
 #include "src/Maplib/Marker/MarkerList.h"
 #include "src/Machine/computer.hpp"
+#include "src/Camera/VideoDisplay/ImageItem.h"
 //----Model
 #include "src/Maplib/profilepath.h"
 #ifdef CAMERA_CONTROL
@@ -40,10 +41,14 @@
 #include "src/Setting/pcs.h"
 int main(int argc, char *argv[])
 {
+#ifdef UC_API
+    QtWebEngine::initialize();
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+#endif
     QGuiApplication app(argc, argv);
     app.setOrganizationName("qdt");
     app.setOrganizationDomain("qdt");
-    QtWebEngine::initialize();
+
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");
     //--- Flight controller
@@ -69,6 +74,7 @@ int main(int argc, char *argv[])
     FCSConfig trkConfig;
     trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
     engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);    
+    qmlRegisterType<ImageItem>("io.qdt.dev", 1, 0, "ImageItem");
 #ifdef USE_VIDEO_CPU
     //--- Camera controller
     qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");

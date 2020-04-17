@@ -50,6 +50,7 @@ namespace UC
             Q_PROPERTY(QString uid READ uid WRITE setUid NOTIFY uidChanged);
             Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged);
             Q_PROPERTY(bool isSelected READ isSelected WRITE setIsSelected NOTIFY isSelectedChanged);
+            Q_PROPERTY(bool warning READ warning WRITE setWarning NOTIFY warningChanged);
             Q_PROPERTY(bool connectionState READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged);
 
             User(const QString &_ipAddress, const QString &_userId,
@@ -194,6 +195,15 @@ namespace UC
                 Q_EMIT isSelectedChanged();
             }
 
+            bool warning() {
+                return m_warning;
+            }
+
+            void setWarning(bool val) {
+                m_warning = val;
+                Q_EMIT warningChanged(val);
+            }
+
         Q_SIGNALS:
             void ipAddressChanged(QString ipAddress);
             void userIdChanged(QString userId);
@@ -207,6 +217,7 @@ namespace UC
             void nameChanged(QString name);
             void isSelectedChanged();
             void connectionStateChanged();
+            void warningChanged(bool val);
         private:
             QString m_ipAddress;
             QString m_userId;
@@ -220,6 +231,7 @@ namespace UC
             QString m_name;
             bool m_isSelected = false;
             bool m_connectionState = true;
+            bool m_warning = false;
     };
 
     class Room : public QObject
@@ -282,7 +294,8 @@ namespace UC
                 UID = 8,
                 NAME = 9,
                 SELECTED = 10,
-                CONNECTION_STATE = 11
+                CONNECTION_STATE = 11,
+                WARNING = 12
             };
             Q_ENUMS(Attribute)
 

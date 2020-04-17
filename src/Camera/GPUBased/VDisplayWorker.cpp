@@ -2,6 +2,7 @@
 
 VDisplayWorker::VDisplayWorker(QObject *_parent) : QObject(_parent)
 {
+    qRegisterMetaType< cv::Mat >("cv::Mat");
     init();
 }
 
@@ -89,6 +90,9 @@ void VDisplayWorker::process()
         }
 
         memcpy(h_BRGAImage, m_imgShow.data, imgSize.width * imgSize.height * 4);
+        frame = QVideoFrame(QImage((uchar *)h_BRGAImage, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888));
+        Q_EMIT receivedFrame(m_currID, frame);
+        Q_EMIT readyDrawOnViewerID(m_imgShow,0);
         // Adding video saving and rtsp
         GstBuffer *gstBuffRTSP = gst_buffer_new();
         assert(gstBuffRTSP != NULL);
@@ -112,8 +116,7 @@ void VDisplayWorker::process()
         }
 
         //        frame = QVideoFrame(QImage((uchar *)m_imgShow.data, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888));
-        frame = QVideoFrame(QImage((uchar *)h_BRGAImage, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888));
-        Q_EMIT receivedFrame(m_currID, frame);
+
         //        Q_EMIT receivedFrame();
         //-----------------------------
         fixedMemBRGA.notifyAddOne();
@@ -256,7 +259,7 @@ void VDisplayWorker::drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t
     cv::Mat tmpImg = _img.clone();
     for (auto b : _listObj) {
         cv::Rect rectObject = cv::Rect(b.x, b.y, b.w, b.h);
-        cv::rectangle(_img, rectObject, cv::Scalar(255, 0, 0), 2);
+        cv::rectangle(_img, rectObject, cv::Scalar(255, 0, 0,255), 2);
         {
             std::string obj_name;
             std::string string_id(b.track_info.stringinfo);
@@ -274,8 +277,8 @@ void VDisplayWorker::drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t
                 cv::Rect rectName(cv::Point2f(std::max((int)b.x - 1, 0), std::max((int)b.y - 35, 0)),
                                     cv::Point2f(std::min((int)b.x + max_width, _img.cols - 1), std::min((int)b.y, _img.rows - 1)));
                 cv::rectangle(_img,rectName,
-                              cv::Scalar(255, 255, 255), CV_FILLED, 8, 0);
-                putText(_img, obj_name, cv::Point2f(b.x, b.y - 16), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.2, cv::Scalar(0, 0, 0), 2);
+                              cv::Scalar(255, 255, 255,255), CV_FILLED, 8, 0);
+                cv::putText(_img, obj_name, cv::Point2f(b.x, b.y - 16), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.2, cv::Scalar(0, 0, 0,255), 2);
 //                printf("obj_name = %s\r\n",obj_name.c_str());
 
                 QString qstrObjName = QString::fromStdString(obj_name);

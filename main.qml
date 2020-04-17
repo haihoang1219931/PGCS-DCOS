@@ -16,6 +16,7 @@ import CustomViews.Dialogs      1.0
 // Flight Controller & Payload Controller
 import io.qdt.dev               1.0
 import UC 1.0
+
 ApplicationWindow {
     id: mainWindow
     visible: true
@@ -619,7 +620,7 @@ ApplicationWindow {
                 anchors {
                     bottom: parent.bottom;
                     top: parent.top ;
-                    topMargin: 30
+                    topMargin: UIConstants.sRect
                     right: parent.right;
                     rightMargin: navbar._isPayloadActive?0:-width;}
                 z: 6
@@ -644,13 +645,20 @@ ApplicationWindow {
                 title:"Select minor params to show"
                 type: "CONFIRM"
                 vehicle: vehicle
-                x:parent.width / 2 - UIConstants.sRect * 50 / 2
-                y:parent.height / 2 - UIConstants.sRect * 24 / 2
-                z:200
+                x:parent.width / 2 - width / 2
+                y:parent.height / 2 - height / 2
+                z:9
                 onClicked: {
                     paramsSelectPanel.visible = false;
                      navbar.dialogShow = "";
                 }
+            }
+            ListPlatesLog{
+                id: listPlateLog
+                x: parent.width/2-width/2
+                y: parent.height/2-height/2
+                visible: paneControl.visible && chkLog.checked && (USE_VIDEO_CPU || USE_VIDEO_GPU)
+                z: 8
             }
 
             VideoPane{
@@ -1589,6 +1597,26 @@ ApplicationWindow {
     }
     CameraStateManager{
         id: camState
+        Timer{
+            id: timerLoadVideo
+            interval: 100
+            repeat: false
+            onTriggered: {
+                if(camState.gcsExportVideo){
+                    var compo = Qt.createComponent("qrc:/CustomViews/Bars/VideoExternal.qml");
+                    var confirmDialogObj = compo.createObject(parent,{
+                        "x":parent.width / 2 - UIConstants.sRect * 19 / 2,
+                        "y":parent.height / 2 - UIConstants.sRect * 13 / 2,
+                        "camState": camState,
+                        "player": videoPane.player});
+                }
+            }
+        }
+
+        onGcsExportVideoChanged: {
+            console.log("Export video = "+gcsExportVideo);
+            timerLoadVideo.start();
+        }
     }
     Timer{
         id: timerRequestData
@@ -1664,244 +1692,238 @@ ApplicationWindow {
             }
         }
     }
-    Rectangle {
-        id: rectCameraControl
-        width: UIConstants.sRect * 13
-        height: UIConstants.sRect * 6
-        color: UIConstants.transparentBlue
-        visible: stkMainRect.currentIndex == 1 && CAMERA_CONTROL
-        radius: UIConstants.rectRadius
-        anchors.bottom: footerBar.top
-        anchors.bottomMargin: 8
-        anchors.horizontalCenter: parent.horizontalCenter
-        property bool show: true
-        z:7
-        MouseArea{
-            anchors.fill: parent
-            hoverEnabled: true
-        }
-        PropertyAnimation{
-            id: animCameraControl
-            target: rectCameraControl
-            properties: "anchors.bottomMargin"
-            to: rectCameraControl.show ? 8 : - rectCameraControl.height
-            duration: 800
-            easing.type: Easing.InOutBack
-            running: false
-        }
-        PropertyAnimation{
-            id: animShowCameraControl
-            target: btnShowCameraControl
-            properties: "iconRotate"
-            to: rectCameraControl.show ? 0 : 180
-            duration: 800
-            easing.type: Easing.InExpo
-            running: false
-            onStopped: {
-                animCameraControl.start()
-            }
-        }
-        Canvas{
-            width: UIConstants.sRect * 3
-            height: UIConstants.sRect
-            anchors.horizontalCenter: rectCameraControl.horizontalCenter
-            anchors.bottom: rectCameraControl.top
-            anchors.bottomMargin: 0
-            onPaint: {
-                var ctx = getContext("2d");
-                var drawColor = UIConstants.transparentBlue;
-                ctx.strokeStyle = drawColor;
-                ctx.fillStyle = drawColor;
-                ctx.beginPath();
-                ctx.moveTo(0,height);
-                ctx.lineTo(width,height);
-                ctx.lineTo(width*5/6,0);
-                ctx.lineTo(width*1/6,0);
-                ctx.closePath();
-                ctx.fill();
-            }
-            FlatButtonIcon{
-                id: btnShowCameraControl
-                width: parent.height
-                height: parent.width
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                iconSize: UIConstants.fontSize * 2
-                icon: UIConstants.iChevronDown
-                isAutoReturn: true
-                isShowRect: false
-                isSolid: true
-                onClicked: {
-                    rectCameraControl.show = !rectCameraControl.show;
-                    animShowCameraControl.start();
-                }
-            }
-        }
+//    Rectangle {
+//        id: rectCameraControl
+//        width: UIConstants.sRect * 13
+//        height: UIConstants.sRect * 6
+//        color: UIConstants.transparentBlue
+//        visible: stkMainRect.currentIndex == 1 && CAMERA_CONTROL
+//        radius: UIConstants.rectRadius
+//        anchors.bottom: footerBar.top
+//        anchors.bottomMargin: 8
+//        anchors.horizontalCenter: parent.horizontalCenter
+//        property bool show: true
+//        z:7
+//        MouseArea{
+//            anchors.fill: parent
+//            hoverEnabled: true
+//        }
+//        PropertyAnimation{
+//            id: animCameraControl
+//            target: rectCameraControl
+//            properties: "anchors.bottomMargin"
+//            to: rectCameraControl.show ? 8 : - rectCameraControl.height
+//            duration: 800
+//            easing.type: Easing.InOutBack
+//            running: false
+//        }
+//        PropertyAnimation{
+//            id: animShowCameraControl
+//            target: btnShowCameraControl
+//            properties: "iconRotate"
+//            to: rectCameraControl.show ? 0 : 180
+//            duration: 800
+//            easing.type: Easing.InExpo
+//            running: false
+//            onStopped: {
+//                animCameraControl.start()
+//            }
+//        }
+//        Canvas{
+//            width: UIConstants.sRect * 3
+//            height: UIConstants.sRect
+//            anchors.horizontalCenter: rectCameraControl.horizontalCenter
+//            anchors.bottom: rectCameraControl.top
+//            anchors.bottomMargin: 0
+//            onPaint: {
+//                var ctx = getContext("2d");
+//                var drawColor = UIConstants.transparentBlue;
+//                ctx.strokeStyle = drawColor;
+//                ctx.fillStyle = drawColor;
+//                ctx.beginPath();
+//                ctx.moveTo(0,height);
+//                ctx.lineTo(width,height);
+//                ctx.lineTo(width*5/6,0);
+//                ctx.lineTo(width*1/6,0);
+//                ctx.closePath();
+//                ctx.fill();
+//            }
+//            FlatButtonIcon{
+//                id: btnShowCameraControl
+//                width: parent.height
+//                height: parent.width
+//                anchors.verticalCenter: parent.verticalCenter
+//                anchors.horizontalCenter: parent.horizontalCenter
+//                iconSize: UIConstants.fontSize * 2
+//                icon: UIConstants.iChevronDown
+//                isAutoReturn: true
+//                isShowRect: false
+//                isSolid: true
+//                onClicked: {
+//                    rectCameraControl.show = !rectCameraControl.show;
+//                    animShowCameraControl.start();
+//                }
+//            }
+//        }
 
 
-        FlatButtonIcon{
-            id: btnDown
-            x: 70
-            y: 107
-            width: UIConstants.sRect*2
-            height: UIConstants.sRect*2
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 8
-            anchors.horizontalCenterOffset: 0
-            icon: UIConstants.iChevronDown
-            isSolid: true
-            isAutoReturn: true
-            isShowRect: false
-            anchors.horizontalCenter: parent.horizontalCenter
-            onPressed: {
-//                console.log("Pressed");
-                if(gimbalNetwork.isGimbalConnected)
-                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, camState.invertTilt*(-1023)*camState.hfov/Math.PI*camState.alphaSpeed)
-            }
-            onReleased: {
-//                console.log("Released");
-                if(gimbalNetwork.isGimbalConnected)
-                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
-            }
-        }
+//        FlatButtonIcon{
+//            id: btnDown
+//            x: 70
+//            y: 107
+//            width: UIConstants.sRect*2
+//            height: UIConstants.sRect*2
+//            anchors.bottom: parent.bottom
+//            anchors.bottomMargin: 8
+//            anchors.horizontalCenterOffset: 0
+//            icon: UIConstants.iChevronDown
+//            isSolid: true
+//            isAutoReturn: true
+//            isShowRect: false
+//            anchors.horizontalCenter: parent.horizontalCenter
+//            onPressed: {
+////                console.log("Pressed");
+//                if(gimbalNetwork.isGimbalConnected)
+//                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, camState.invertTilt*(-1023)*camState.hfov/Math.PI*camState.alphaSpeed)
+//            }
+//            onReleased: {
+////                console.log("Released");
+//                if(gimbalNetwork.isGimbalConnected)
+//                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
+//            }
+//        }
 
-        FlatButtonIcon{
-            id: btnUp
-            x: 70
-            y: 8
-            width: UIConstants.sRect*2
-            height: UIConstants.sRect*2
-            anchors.horizontalCenterOffset: 0
-            icon: UIConstants.iChevronDown
-            rotation: 180
-            isAutoReturn: true
-            isShowRect: false
-            isSolid: true
-            anchors.horizontalCenter: parent.horizontalCenter
-            onPressed: {
-//                console.log("Pressed");
-                if(gimbalNetwork.isGimbalConnected)
-                    gimbalNetwork.ipcCommands.gimbalControl(0,0, camState.invertTilt*1023*camState.hfov/Math.PI*camState.alphaSpeed)
-            }
-            onReleased: {
-//                console.log("Released");
-                if(gimbalNetwork.isGimbalConnected)
-                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
-            }
-        }
+//        FlatButtonIcon{
+//            id: btnUp
+//            x: 70
+//            y: 8
+//            width: UIConstants.sRect*2
+//            height: UIConstants.sRect*2
+//            anchors.horizontalCenterOffset: 0
+//            icon: UIConstants.iChevronDown
+//            rotation: 180
+//            isAutoReturn: true
+//            isShowRect: false
+//            isSolid: true
+//            anchors.horizontalCenter: parent.horizontalCenter
+//            onPressed: {
+////                console.log("Pressed");
+//                if(gimbalNetwork.isGimbalConnected)
+//                    gimbalNetwork.ipcCommands.gimbalControl(0,0, camState.invertTilt*1023*camState.hfov/Math.PI*camState.alphaSpeed)
+//            }
+//            onReleased: {
+////                console.log("Released");
+//                if(gimbalNetwork.isGimbalConnected)
+//                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
+//            }
+//        }
 
-        FlatButtonIcon{
-            id: btnRight
-            x: 107
-            y: 70
-            width: UIConstants.sRect*2
-            height: UIConstants.sRect*2
-            anchors.right: parent.right
-            anchors.rightMargin: 8
-            anchors.verticalCenterOffset: 0
-            icon: UIConstants.iChevronDown
-            rotation: -90
-            isAutoReturn: true
-            isShowRect: false
-            isSolid: true
-            anchors.verticalCenter: parent.verticalCenter
-            onPressed: {
-//                console.log("Pressed");
-                if(gimbalNetwork.isGimbalConnected)
-                    gimbalNetwork.ipcCommands.gimbalControl(0, camState.invertPan*(-1023)*camState.hfov/Math.PI*camState.alphaSpeed, 0)
-            }
-            onReleased: {
-//                console.log("Released");
-                if(gimbalNetwork.isGimbalConnected)
-                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
-            }
-        }
+//        FlatButtonIcon{
+//            id: btnRight
+//            x: 107
+//            y: 70
+//            width: UIConstants.sRect*2
+//            height: UIConstants.sRect*2
+//            anchors.right: parent.right
+//            anchors.rightMargin: 8
+//            anchors.verticalCenterOffset: 0
+//            icon: UIConstants.iChevronDown
+//            rotation: -90
+//            isAutoReturn: true
+//            isShowRect: false
+//            isSolid: true
+//            anchors.verticalCenter: parent.verticalCenter
+//            onPressed: {
+////                console.log("Pressed");
+//                if(gimbalNetwork.isGimbalConnected)
+//                    gimbalNetwork.ipcCommands.gimbalControl(0, camState.invertPan*(-1023)*camState.hfov/Math.PI*camState.alphaSpeed, 0)
+//            }
+//            onReleased: {
+////                console.log("Released");
+//                if(gimbalNetwork.isGimbalConnected)
+//                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
+//            }
+//        }
 
-        FlatButtonIcon{
-            id: btnLeft
-            y: 70
-            width: UIConstants.sRect*2
-            height: UIConstants.sRect*2
-            anchors.left: parent.left
-            anchors.leftMargin: 8
-            icon: UIConstants.iChevronDown
-            rotation: 90
-            isAutoReturn: true
-            isShowRect: false
-            isSolid: true
-            anchors.verticalCenter: parent.verticalCenter
-            onPressed: {
-//                console.log("Pressed");
-                if(gimbalNetwork.isGimbalConnected)
-                    gimbalNetwork.ipcCommands.gimbalControl(0, camState.invertPan*1023*camState.hfov/Math.PI*camState.alphaSpeed, 0)
-            }
-            onReleased: {
-//                console.log("Released");
-                if(gimbalNetwork.isGimbalConnected)
-                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
-            }
-        }
+//        FlatButtonIcon{
+//            id: btnLeft
+//            y: 70
+//            width: UIConstants.sRect*2
+//            height: UIConstants.sRect*2
+//            anchors.left: parent.left
+//            anchors.leftMargin: 8
+//            icon: UIConstants.iChevronDown
+//            rotation: 90
+//            isAutoReturn: true
+//            isShowRect: false
+//            isSolid: true
+//            anchors.verticalCenter: parent.verticalCenter
+//            onPressed: {
+////                console.log("Pressed");
+//                if(gimbalNetwork.isGimbalConnected)
+//                    gimbalNetwork.ipcCommands.gimbalControl(0, camState.invertPan*1023*camState.hfov/Math.PI*camState.alphaSpeed, 0)
+//            }
+//            onReleased: {
+////                console.log("Released");
+//                if(gimbalNetwork.isGimbalConnected)
+//                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
+//            }
+//        }
 
-        FlatButtonIcon{
-            id: btnZoomIn
-            y: 70
-            width: UIConstants.sRect*2
-            height: UIConstants.sRect*2
-            anchors.verticalCenterOffset: 0
-            anchors.left: btnLeft.right
-            anchors.leftMargin: 14
-            icon: UIConstants.iZoomIn
-            isAutoReturn: true
-            isShowRect: false
-            isSolid: true
-            iconColor: camState.sensorID === camState.sensorIDEO?UIConstants.textColor:UIConstants.grayColor
-            isEnable: camState.sensorID === camState.sensorIDEO
-            anchors.verticalCenter: parent.verticalCenter
-            onPressed: {
-                if(gimbalNetwork.isSensorConnected)
-                    gimbalNetwork.ipcCommands.treronZoomIn()
-            }
-            onReleased: {
-                if(gimbalNetwork.isSensorConnected)
-                    gimbalNetwork.ipcCommands.treronZoomStop()
-            }
-        }
+//        FlatButtonIcon{
+//            id: btnZoomIn
+//            y: 70
+//            width: UIConstants.sRect*2
+//            height: UIConstants.sRect*2
+//            anchors.verticalCenterOffset: 0
+//            anchors.left: btnLeft.right
+//            anchors.leftMargin: 14
+//            icon: UIConstants.iZoomIn
+//            isAutoReturn: true
+//            isShowRect: false
+//            isSolid: true
+//            iconColor: camState.sensorID === camState.sensorIDEO?UIConstants.textColor:UIConstants.grayColor
+//            isEnable: camState.sensorID === camState.sensorIDEO
+//            anchors.verticalCenter: parent.verticalCenter
+//            onPressed: {
+//                if(gimbalNetwork.isSensorConnected)
+//                    gimbalNetwork.ipcCommands.treronZoomIn()
+//            }
+//            onReleased: {
+//                if(gimbalNetwork.isSensorConnected)
+//                    gimbalNetwork.ipcCommands.treronZoomStop()
+//            }
+//        }
 
-        FlatButtonIcon{
-            id: btnZoomOut
-            x: 147
-            y: 70
-            width: UIConstants.sRect*2
-            height: UIConstants.sRect*2
-            anchors.right: btnRight.left
-            anchors.rightMargin: 14
-            anchors.verticalCenterOffset: 0
-            icon: UIConstants.iZoomOut
-            isAutoReturn: true
-            isShowRect: false
-            isSolid: true
-            iconColor: camState.sensorID === camState.sensorIDEO?UIConstants.textColor:UIConstants.grayColor
-            isEnable: camState.sensorID === camState.sensorIDEO
-            anchors.verticalCenter: parent.verticalCenter
-            onPressed: {
-                if(gimbalNetwork.isSensorConnected)
-                    gimbalNetwork.ipcCommands.treronZoomOut()
-            }
-            onReleased: {
-                if(gimbalNetwork.isSensorConnected)
-                    gimbalNetwork.ipcCommands.treronZoomStop()
-            }
-        }
-    }
+//        FlatButtonIcon{
+//            id: btnZoomOut
+//            x: 147
+//            y: 70
+//            width: UIConstants.sRect*2
+//            height: UIConstants.sRect*2
+//            anchors.right: btnRight.left
+//            anchors.rightMargin: 14
+//            anchors.verticalCenterOffset: 0
+//            icon: UIConstants.iZoomOut
+//            isAutoReturn: true
+//            isShowRect: false
+//            isSolid: true
+//            iconColor: camState.sensorID === camState.sensorIDEO?UIConstants.textColor:UIConstants.grayColor
+//            isEnable: camState.sensorID === camState.sensorIDEO
+//            anchors.verticalCenter: parent.verticalCenter
+//            onPressed: {
+//                if(gimbalNetwork.isSensorConnected)
+//                    gimbalNetwork.ipcCommands.treronZoomOut()
+//            }
+//            onReleased: {
+//                if(gimbalNetwork.isSensorConnected)
+//                    gimbalNetwork.ipcCommands.treronZoomStop()
+//            }
+//        }
+//    }
 
 
-    ListPlatesLog{
-        id: listPlateLog
-        x: parent.width/2-width/2
-        y: parent.height/2-height/2
-        visible: chkLog.checked && (USE_VIDEO_CPU || USE_VIDEO_GPU)
-        z: 8
-    }
+
     Timer{
         id: timerStart
         repeat: false

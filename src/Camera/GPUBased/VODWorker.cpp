@@ -44,6 +44,7 @@ void VODWorker::run()
         d_imageData = processImgItem.getDeviceImage();
         h_imageData = processImgItem.getHostImage();
         imgSize = processImgItem.getImageSize();
+
         proccImg = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
         cv::Mat grayImage = cv::Mat(imgSize.height, imgSize.width, CV_8UC1, h_imageData);
         //        cv::imwrite("img/i420_" + std::to_string(m_currID) + ".png", proccImg);
@@ -58,12 +59,14 @@ void VODWorker::run()
         // drop detection
 //        if (m_currID % 2 == 0)
         cudaDeviceSynchronize();
+        if(imgSize.width > 0 && imgSize.height >0){
             detection_boxes = m_detector->gpu_detect_I420(input, imgSize.width, imgSize.height, 0.2f, false);
-        // TODO: send detection results
-        DetectedObjectsCacheItem detectedObjsItem;
-        detectedObjsItem.setIndex(m_currID);
-        detectedObjsItem.setDetectedObjects(detection_boxes);
-        m_rbDetectedObjs->add(detectedObjsItem);
+            // TODO: send detection results
+            DetectedObjectsCacheItem detectedObjsItem;
+            detectedObjsItem.setIndex(m_currID);
+            detectedObjsItem.setDetectedObjects(detection_boxes);
+            m_rbDetectedObjs->add(detectedObjsItem);
+        }
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
 //        sleepTime = (long)(33333 - timeSpan.count());

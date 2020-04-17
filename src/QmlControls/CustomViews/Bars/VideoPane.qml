@@ -3,7 +3,6 @@ import QtQuick.Window 2.2
 import QtQuick 2.6
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
-import QtGraphicalEffects 1.0
 import QtMultimedia 5.5
 import QtQuick 2.0
 
@@ -13,7 +12,7 @@ import CustomViews.UIConstants  1.0
 //import QGroundControl 1.0
 import io.qdt.dev               1.0
 //---------------- Component definition ---------------------------------------
-Flickable{
+Item{
     id: rootItem
     width: UIConstants.sRect*19
     height: UIConstants.sRect*13   
@@ -39,7 +38,7 @@ Flickable{
     property real kiTilt: 5.0
     property real kdTilt: 0.05
     property bool isVideoOn: false
-    property var player
+    property var player: undefined
     function searchByClass(selectedList){
         player.searchByClass(selectedList)
     }
@@ -84,9 +83,14 @@ Flickable{
     VideoOutput {
         id: videoOutput
         anchors.fill: parent
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        source: player
+        onWidthChanged: {
+            if(player !== undefined)
+                player.updateVideoSurface(width,height);
+        }
+        onHeightChanged: {
+            if(player !== undefined)
+                player.updateVideoSurface(width,height);
+        }
     }
 
     MouseArea{
@@ -94,7 +98,8 @@ Flickable{
         hoverEnabled: true
         anchors.fill: parent
         onClicked: {
-            player.setTrackAt(player.frameID , mouseX, mouseY, width, height)
+            if(player !== undefined)
+                player.setTrackAt(player.frameID , mouseX, mouseY, width, height)
             //            console.log("Clicked New Track " + player.frameID + " - [" +mouseX+", "+mouseY+", "+width+", "+height+"]");
         }
 

@@ -69,6 +69,9 @@ Item {
     property bool gimbalStab: false
     property bool gcsStab: true
     property bool gcsRecord: true
+    property bool gcsOD: false
+    property bool gcsPD: false
+    property bool gcsExportVideo: false
     property bool gcsShare: true
     property bool objDetect: false
     // hud of gcs

@@ -172,13 +172,8 @@ void CVVideoProcess::doWork()
          *      MINHBQ6: DETECT MOVING OBJECT TO TRACK
          * ============================================================
          */
-        cv::Mat grayFramePrev = grayFrame.clone();
         cv::cvtColor(m_imgStab, grayFrame, cv::COLOR_RGB2GRAY);
         auto start = chrono::high_resolution_clock::now();
-
-        if (grayFramePrev.rows < m_trackSize | grayFramePrev.cols < m_trackSize) {
-            continue;
-        }
 
         if (m_sensorTrack == "IR") {
             ClickTrackObj->UpdateMovingObject(m_imgStab);
@@ -376,11 +371,7 @@ void CVVideoProcess::doWork()
             //            m_mutexProcess->unlock();
         }
 
-        if ((m_streamWidth != m_imgShow->cols) || (m_streamHeight != m_imgShow->rows)) {
-            m_streamHeight = m_imgShow->rows;
-            m_streamWidth = m_imgShow->cols;
-            Q_EMIT streamFrameSizeChanged(m_streamWidth, m_streamHeight);
-        }
+
 //        printf("m_imgShow S[%dx%d] C[%d] D[%d]\r\n",
 //               m_imgShow->cols,m_imgShow->rows,m_imgShow->channels(),m_imgShow->depth());
         // draw text
@@ -388,61 +379,61 @@ void CVVideoProcess::doWork()
 //        cv::putText(*m_imgShow, "HKVT-Viettel", cv::Point(70, 30), CV_FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(200, 200, 250), 1, CV_AA);
 
         //
-        cv::Mat _imgOtherFunc;
-        cv::cvtColor(*m_imgShow, _imgOtherFunc, CV_BGRA2YUV_I420);
-        if(m_sharedEnable && m_recordEnable){
-            GstBuffer *rtspImage = gst_buffer_new();
-            assert(rtspImage != NULL);
-            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
-            assert(gstMem != NULL);
-            gst_buffer_append_memory(rtspImage, gstMem);
-            GstMapInfo mapT;
-            gst_buffer_map(rtspImage, &mapT, GST_MAP_READ);
-            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
-            gst_buffer_unmap(rtspImage , &mapT);
-            //add to rtsp
-            GstFrameCacheItem gstFrame;
-            gstFrame.setIndex(*m_frameID);
-            gstFrame.setGstBuffer(rtspImage);
-            m_gstRTSPBuff->add(gstFrame);
-            //add to saving
-            GstFrameCacheItem gstFrameSaving;
-            gstFrameSaving.setIndex(*m_frameID);
-            gstFrameSaving.setGstBuffer(gst_buffer_copy(rtspImage));
-            m_buffVideoSaving->add(gstFrameSaving);
-        }else if(m_sharedEnable && !m_recordEnable){
-            GstBuffer *rtspImage = gst_buffer_new();
-            assert(rtspImage != NULL);
-            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
-            assert(gstMem != NULL);
-            gst_buffer_append_memory(rtspImage, gstMem);
-            GstMapInfo mapT;
-            gst_buffer_map(rtspImage, &mapT, GST_MAP_READ);
-            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
-            gst_buffer_unmap(rtspImage , &mapT);
-            //add to rtsp
-            GstFrameCacheItem gstFrame;
-            gstFrame.setIndex(*m_frameID);
-            gstFrame.setGstBuffer(rtspImage);
-            m_gstRTSPBuff->add(gstFrame);
-        }else if(!m_sharedEnable && m_recordEnable){
-            GstBuffer *savingImage = gst_buffer_new();
-            assert(savingImage != NULL);
-            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
-            assert(gstMem != NULL);
-            gst_buffer_append_memory(savingImage, gstMem);
-            GstMapInfo mapT;
-            gst_buffer_map(savingImage, &mapT, GST_MAP_READ);
-            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
-            gst_buffer_unmap(savingImage , &mapT);
-            //add to saving
-            GstFrameCacheItem gstFrameSaving;
-            gstFrameSaving.setIndex(*m_frameID);
-            gstFrameSaving.setGstBuffer(savingImage);
-            m_buffVideoSaving->add(gstFrameSaving);
-        }else{
+//        cv::Mat _imgOtherFunc;
+//        cv::cvtColor(*m_imgShow, _imgOtherFunc, CV_BGRA2YUV_I420);
+//        if(m_sharedEnable && m_recordEnable){
+//            GstBuffer *rtspImage = gst_buffer_new();
+//            assert(rtspImage != NULL);
+//            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
+//            assert(gstMem != NULL);
+//            gst_buffer_append_memory(rtspImage, gstMem);
+//            GstMapInfo mapT;
+//            gst_buffer_map(rtspImage, &mapT, GST_MAP_READ);
+//            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
+//            gst_buffer_unmap(rtspImage , &mapT);
+//            //add to rtsp
+//            GstFrameCacheItem gstFrame;
+//            gstFrame.setIndex(*m_frameID);
+//            gstFrame.setGstBuffer(rtspImage);
+//            m_gstRTSPBuff->add(gstFrame);
+//            //add to saving
+//            GstFrameCacheItem gstFrameSaving;
+//            gstFrameSaving.setIndex(*m_frameID);
+//            gstFrameSaving.setGstBuffer(gst_buffer_copy(rtspImage));
+//            m_buffVideoSaving->add(gstFrameSaving);
+//        }else if(m_sharedEnable && !m_recordEnable){
+//            GstBuffer *rtspImage = gst_buffer_new();
+//            assert(rtspImage != NULL);
+//            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
+//            assert(gstMem != NULL);
+//            gst_buffer_append_memory(rtspImage, gstMem);
+//            GstMapInfo mapT;
+//            gst_buffer_map(rtspImage, &mapT, GST_MAP_READ);
+//            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
+//            gst_buffer_unmap(rtspImage , &mapT);
+//            //add to rtsp
+//            GstFrameCacheItem gstFrame;
+//            gstFrame.setIndex(*m_frameID);
+//            gstFrame.setGstBuffer(rtspImage);
+//            m_gstRTSPBuff->add(gstFrame);
+//        }else if(!m_sharedEnable && m_recordEnable){
+//            GstBuffer *savingImage = gst_buffer_new();
+//            assert(savingImage != NULL);
+//            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
+//            assert(gstMem != NULL);
+//            gst_buffer_append_memory(savingImage, gstMem);
+//            GstMapInfo mapT;
+//            gst_buffer_map(savingImage, &mapT, GST_MAP_READ);
+//            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
+//            gst_buffer_unmap(savingImage , &mapT);
+//            //add to saving
+//            GstFrameCacheItem gstFrameSaving;
+//            gstFrameSaving.setIndex(*m_frameID);
+//            gstFrameSaving.setGstBuffer(savingImage);
+//            m_buffVideoSaving->add(gstFrameSaving);
+//        }else{
 
-        }
+//        }
 
         auto endShow = chrono::high_resolution_clock::now();
         auto elapsedShow = chrono::duration_cast<chrono::milliseconds>(endShow - startShow);

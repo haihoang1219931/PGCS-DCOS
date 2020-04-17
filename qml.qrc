@@ -48,6 +48,7 @@
         <file alias="CustomViews/Bars/HUD.qml">src/QmlControls/CustomViews/Bars/HUD.qml</file>
         <file alias="CustomViews/Bars/MapPane.qml">src/QmlControls/CustomViews/Bars/MapPane.qml</file>
         <file alias="CustomViews/Bars/VideoPane.qml">src/QmlControls/CustomViews/Bars/VideoPane.qml</file>
+        <file alias="CustomViews/Bars/VideoExternal.qml">src/QmlControls/CustomViews/Bars/VideoExternal.qml</file>
         <file alias="CustomViews/Bars/PaneControl.qml">src/QmlControls/CustomViews/Bars/PaneControl.qml</file>
         <file alias="CustomViews/Bars/FooterBar.qml">src/QmlControls/CustomViews/Bars/FooterBar.qml</file>
         <file alias="CustomViews/Bars/NavBar.qml">src/QmlControls/CustomViews/Bars/NavBar.qml</file>

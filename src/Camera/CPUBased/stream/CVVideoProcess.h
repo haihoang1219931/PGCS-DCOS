@@ -67,9 +67,9 @@ class  CVVideoProcess : public QObject
         float m_irFOV = 0;
         float m_eoFOV = 0;
         bool m_stop = false;
-        bool m_usingIPC = true;
+        bool m_usingIPC = false;
         bool m_trackEnable = true;
-        bool m_stabEnable = true;
+        bool m_stabEnable = false;
         bool m_recordEnable = true;
         bool m_sharedEnable = true;
         bool m_setTrack = false;

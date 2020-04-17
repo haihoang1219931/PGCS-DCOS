@@ -200,6 +200,8 @@ QtObject {
     readonly property string iZoomIn:               "\uf00e"
     readonly property string iZoomOut:              "\uf010"
     readonly property string iLockGeo:              "\uf689"
+    readonly property string iCar:                  "\uf1b9"
+    readonly property string iBolt:                 "\uf0e7"
     readonly property color  btnDefaultColor:       "#40739e"
     readonly property string iFlag:                 "\uf024"
     readonly property string iBatteryThreeQuaters:  "\uf241"
@@ -256,6 +258,7 @@ QtObject {
     readonly property string iInvertTilt:           "\uf338"
     readonly property string iVideoConfig:          "\uf1de"
     readonly property string iAdvanced:             "\uf085"
+    readonly property string iDisplay:              "\uf26c"
     readonly property string iBack:                 "\uf3e5"
     readonly property string iEnabled:              "\uf111"
     //------- sharing button

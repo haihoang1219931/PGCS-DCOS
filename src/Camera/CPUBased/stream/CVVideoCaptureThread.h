@@ -163,6 +163,8 @@ class CVVideoCaptureThread : public QObject
         }
 
     public:
+        Q_INVOKABLE void setObjectDetect(bool enable){}
+        Q_INVOKABLE void setPowerLineDetect(bool enable){}
         Q_INVOKABLE void start();
         Q_INVOKABLE void play();
         Q_INVOKABLE void stop();
@@ -205,6 +207,7 @@ class CVVideoCaptureThread : public QObject
         void plateLogChanged();
         void determinedPlateOnTracking(QString _imgPath, QString _plateID);
 public Q_SLOTS:
+        void updateVideoSurface(int width = -1, int height = -1);
         void setTrackType(QString trackType)
         {
             m_process->setTrackType(trackType);
@@ -232,7 +235,8 @@ public:
         CVRecord *m_record = NULL;
         QMutex *m_mutexCapture;
         QMutex *m_mutexProcess;
-        //    auto startTotal;
+        //    auto startTotal
+        bool m_updateVideoSurface = false;
         bool m_captureStopped = false;
         bool m_processStopped = false;
         bool m_recordStopped = false;
@@ -247,7 +251,7 @@ public:
         VSavingWorker *m_vSavingWorker;
         RollBuffer_<GstFrameCacheItem> *m_gstRTSPBuff;
         RollBuffer_<GstFrameCacheItem> *m_buffVideoSaving;
-        bool m_enStream = true;
+        bool m_enStream = false;
         bool m_enSaving = false;
         int m_sensorMode = -1;
         int m_id;
