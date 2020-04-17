@@ -620,7 +620,7 @@ ApplicationWindow {
                 anchors {
                     bottom: parent.bottom;
                     top: parent.top ;
-                    topMargin: 30
+                    topMargin: UIConstants.sRect
                     right: parent.right;
                     rightMargin: navbar._isPayloadActive?0:-width;}
                 z: 6
@@ -684,7 +684,6 @@ ApplicationWindow {
                 layoutMax: UIConstants.layoutMaxPane
                 onSwitchClicked: {
                     mainWindow.switchVideoMap(false)
-                    videoPane.player.updateVideoSurface();
                 }
                 onMinimizeClicked: {
                     if(videoPane.z > mapPane.z){
@@ -1598,6 +1597,26 @@ ApplicationWindow {
     }
     CameraStateManager{
         id: camState
+        Timer{
+            id: timerLoadVideo
+            interval: 100
+            repeat: false
+            onTriggered: {
+                if(camState.gcsExportVideo){
+                    var compo = Qt.createComponent("qrc:/CustomViews/Bars/VideoExternal.qml");
+                    var confirmDialogObj = compo.createObject(parent,{
+                        "x":parent.width / 2 - UIConstants.sRect * 19 / 2,
+                        "y":parent.height / 2 - UIConstants.sRect * 13 / 2,
+                        "camState": camState,
+                        "player": videoPane.player});
+                }
+            }
+        }
+
+        onGcsExportVideoChanged: {
+            console.log("Export video = "+gcsExportVideo);
+            timerLoadVideo.start();
+        }
     }
     Timer{
         id: timerRequestData

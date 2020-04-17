@@ -382,7 +382,7 @@ QSize CVVideoCaptureThread::sourceSize()
 {
     return m_sourceSize;
 }
-void CVVideoCaptureThread::updateVideoSurface(){
+void CVVideoCaptureThread::updateVideoSurface(int width, int height){
     m_updateVideoSurface = true;
 }
 void CVVideoCaptureThread::update()

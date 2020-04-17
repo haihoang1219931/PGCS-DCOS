@@ -258,6 +258,7 @@ QtObject {
     readonly property string iInvertTilt:           "\uf338"
     readonly property string iVideoConfig:          "\uf1de"
     readonly property string iAdvanced:             "\uf085"
+    readonly property string iDisplay:              "\uf26c"
     readonly property string iBack:                 "\uf3e5"
     readonly property string iEnabled:              "\uf111"
     //------- sharing button

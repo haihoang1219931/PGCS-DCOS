@@ -1,6 +1,5 @@
-QT += qml quick webengine multimedia widgets opengl network positioning sensors core gui serialport
+QT += qml quick webengine multimedia network positioning sensors core gui serialport
 QT += quickcontrols2
-QT += widgets
 CONFIG += c++11 no_keywords console
 
 RESOURCES += qml.qrc
@@ -31,7 +30,8 @@ QML_IMPORT_PATH += \
     $$PWD/src/QmlControls \
     $$PWD/src/Controller
 SOURCES += \
-    main.cpp
+    main.cpp \
+    src/Camera/VideoDisplay/ImageItem.cpp
 
 # Flight controller
 use_flight_control{
@@ -556,4 +556,7 @@ HEADERS += \
     src/Camera/CPUBased/tracker/dando/ITrack.hpp \
     src/Camera/CPUBased/tracker/dando/Utilities.hpp
 }
+
+HEADERS += \
+    src/Camera/VideoDisplay/ImageItem.h
 

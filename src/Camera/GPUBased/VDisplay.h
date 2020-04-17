@@ -18,6 +18,7 @@
 #include <QVariant>
 #include "OD/yolo_v2_class.hpp"
 #include "Clicktrack/recognition.h"
+#include "../VideoDisplay/ImageItem.h"
 #include "../../Camera/Cache/TrackObject.h"
 
 class VDisplay : public QObject
@@ -122,6 +123,7 @@ class VDisplay : public QObject
             return m_enSteer;
         }
         void update();
+        QMap<int,bool>  freezeMap(){ return m_freezeMap; }
     Q_SIGNALS:
         void listTrackObjectInfosChanged();
         void determinedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h,
@@ -136,9 +138,12 @@ class VDisplay : public QObject
         void slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h,
                                        double _pxStab,double _pyStab);
         void slObjectLost();
+        void drawOnViewerID(cv::Mat img, int viewerID);
     public:
         Q_INVOKABLE void start();
-        Q_INVOKABLE void updateVideoSurface();
+        Q_INVOKABLE int addSubViewer(ImageItem *viewer);
+        Q_INVOKABLE void removeSubViewer(int viewerID);
+        Q_INVOKABLE void updateVideoSurface(int width = -1, int height = -1);
         Q_INVOKABLE void setObjectDetect(bool enable);
         Q_INVOKABLE void setPowerLineDetect(bool enable);
         Q_INVOKABLE void setVideoSource(QString _ip, int _port);
@@ -161,6 +166,12 @@ class VDisplay : public QObject
         const QVideoFrame::PixelFormat VIDEO_OUTPUT_FORMAT =
             QVideoFrame::PixelFormat::Format_RGB32;
         QAbstractVideoSurface *m_videoSurface = nullptr;
+        // === sub viewer
+        QList<ImageItem*> m_listSubViewer;
+        QMutex imageDataMutex[10];
+        unsigned char imageData[10][34041600];
+        QMap<int,bool> m_freezeMap;
+        // sub viewer ===
         QSize m_sourceSize;
         QThread *m_threadEODisplay;
         VDisplayWorker *m_vDisplayWorker;
@@ -173,6 +184,9 @@ class VDisplay : public QObject
         VSavingWorker *m_vSavingWorker;
         VRTSPServer *m_vRTSPServer;
         bool m_updateVideoSurface = false;
+        int m_updateCount = 0;
+        int m_updateMax = 2;
+        QSize m_videoSurfaceSize;
         int m_id;
 
         // OD

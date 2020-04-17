@@ -131,6 +131,7 @@ Rectangle {
         btnEditMarker.isPressed = false;
     }
 
+
     //-------------------- Childrems
     StackLayout {
         id: rightBarStack
@@ -376,16 +377,20 @@ Rectangle {
             spacing: rootItem.spacing
             height: parent.height
             width: parent.width
-//            SwitchFlatButton {
-//                id: btnGimbalStab
-//                Layout.preferredWidth: parent.width
-//                Layout.preferredHeight: parent.width
-//                icon: UIConstants.iGimbalStab
-//                btnText: "Gimbal\nStab"
-//                color: UIConstants.bgAppColor
-//                onClicked: {
-//                }
-//            }
+            SwitchFlatButton {
+                id: btnVideoExternal
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iDisplay
+                btnText: "Export\nvideo"
+                color: UIConstants.bgAppColor
+                isSync: true
+                isOn: camState.gcsExportVideo
+                onClicked: {
+                    if(!camState.gcsExportVide)
+                        camState.gcsExportVideo = true;
+                }
+            }
 
 //            SwitchFlatButton {
 //                id: btnVisualLock

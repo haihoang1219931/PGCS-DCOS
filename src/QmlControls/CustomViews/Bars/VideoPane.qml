@@ -83,15 +83,13 @@ Item{
     VideoOutput {
         id: videoOutput
         anchors.fill: parent
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
         onWidthChanged: {
             if(player !== undefined)
-                player.updateVideoSurface();
+                player.updateVideoSurface(width,height);
         }
         onHeightChanged: {
             if(player !== undefined)
-                player.updateVideoSurface();
+                player.updateVideoSurface(width,height);
         }
     }
 

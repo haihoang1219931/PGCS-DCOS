@@ -23,7 +23,7 @@
 
 using namespace Eye;
 using namespace rva;
-
+Q_DECLARE_METATYPE(cv::Mat)
 class VDisplayWorker : public QObject
 {
     Q_OBJECT    
@@ -42,6 +42,7 @@ class VDisplayWorker : public QObject
     Q_SIGNALS:
         void receivedFrame(int _id, QVideoFrame _frame);
         void receivedFrame();
+        void readyDrawOnViewerID(cv::Mat img, int viewerID);
         void finished();
         void error(QString _err);
 

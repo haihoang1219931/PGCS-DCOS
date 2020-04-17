@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QProcess>
 #include <QTimer>
-#include <QApplication>
 #include <QDir>
+#include <QGuiApplication>
 #include <QFileSystemWatcher>
 #include <QFileInfoList>
 #include <QStorageInfo>

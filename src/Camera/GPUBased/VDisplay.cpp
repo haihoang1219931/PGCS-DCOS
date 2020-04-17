@@ -27,7 +27,10 @@ VDisplay::VDisplay(QObject *_parent) : QObject(_parent)
             this, SIGNAL(determinedPlateOnTracking(QString, QString)));
     connect(m_vTrackWorker, SIGNAL(objectLost()),
             this, SLOT(slObjectLost()));
-
+    connect(m_vDisplayWorker,&VDisplayWorker::readyDrawOnViewerID,this,&VDisplay::drawOnViewerID);
+    m_videoSurfaceSize.setWidth(-1);
+    m_videoSurfaceSize.setHeight(-1);
+    init();
 }
 
 void VDisplay::setVideo(QString _ip, int _port)
@@ -71,10 +74,22 @@ void VDisplay::init()
     m_vSearchWorker->setOCR(m_OCR);
 }
 
-
+int VDisplay::addSubViewer(ImageItem *viewer){
+    printf("%s[%d] %p\r\n",__func__,m_listSubViewer.size(),viewer);
+    this->freezeMap()[m_listSubViewer.size()] = true;
+    m_listSubViewer.append(viewer);
+    return m_listSubViewer.size() -1;
+}
+void VDisplay::removeSubViewer(int viewerID){
+     printf("%s[%d] %d\r\n",__func__,m_listSubViewer.size(),viewerID);
+    if(viewerID >= 0 && viewerID < m_listSubViewer.size()){
+        this->freezeMap().remove(viewerID);
+        m_listSubViewer.removeAt(viewerID);
+    }
+}
 void VDisplay::start()
 {
-    init();
+
     m_vFrameGrabber->start();
     m_vPreprocess->start();
     m_vODWorker->start();
@@ -108,13 +123,14 @@ void VDisplay::setVideoSurface(QAbstractVideoSurface *_videoSurface)
 }
 void VDisplay::update()
 {
-    printf("Update video surface\r\n");
+    printf("Update video surface(%d,%d)\r\n",
+           m_videoSurfaceSize.width(),
+           m_videoSurfaceSize.height());
     if (m_videoSurface) {
         if (m_videoSurface->isActive()) {
             m_videoSurface->stop();
         }
-
-        if (!m_videoSurface->start(QVideoSurfaceFormat(QSize(), VIDEO_OUTPUT_FORMAT))) {
+        if (!m_videoSurface->start(QVideoSurfaceFormat(m_videoSurfaceSize, VIDEO_OUTPUT_FORMAT))) {
             printf("Could not start QAbstractVideoSurface, error: %d", m_videoSurface->error());
         } else {
             printf("Start QAbstractVideoSurface done\r\n");
@@ -156,8 +172,11 @@ void VDisplay::onReceivedFrame(int _id, QVideoFrame frame)
             Q_EMIT sourceSizeChanged(frame.width(),frame.height());
         }
         if(m_updateVideoSurface){
-            update();
-            m_updateVideoSurface = false;
+            if(m_updateCount < m_updateMax){
+                update();
+                m_updateCount ++;
+            }else
+                m_updateVideoSurface = false;
         }
         m_videoSurface->present(frame);
 
@@ -168,8 +187,11 @@ void VDisplay::onReceivedFrame()
     if(m_videoSurface!=nullptr){
         m_id = m_vDisplayWorker->m_currID;
         if(m_updateVideoSurface){
-            update();
-            m_updateVideoSurface = false;
+            if(m_updateCount < m_updateMax){
+                update();
+                m_updateCount ++;
+            }else
+                m_updateVideoSurface = false;
         }
         QVideoFrame frame = QVideoFrame(
                     QImage((uchar *)m_vDisplayWorker->m_imgShow.data,
@@ -188,8 +210,11 @@ void VDisplay::onReceivedFrame()
         frame.unmap();
     }
 }
-void VDisplay::updateVideoSurface(){
+void VDisplay::updateVideoSurface(int width, int height){
+    m_updateCount = 0;
     m_updateVideoSurface = true;
+    m_videoSurfaceSize.setWidth(width);
+    m_videoSurfaceSize.setHeight(height);
 }
 void VDisplay::setVideoSource(QString _ip, int _port)
 {
@@ -325,4 +350,34 @@ void VDisplay::stop()
 void VDisplay::changeTrackSize(int _val)
 {
     m_vTrackWorker->changeTrackSize(_val);
+}
+void VDisplay::drawOnViewerID(cv::Mat img, int viewerID){
+    if(viewerID >=0 && viewerID < m_listSubViewer.size()){
+        ImageItem* tmpViewer = m_listSubViewer[viewerID];
+        if(tmpViewer != nullptr){
+            if(viewerID == 0){
+                if(m_sourceSize.width() != img.cols ||
+                        m_sourceSize.height() != img.rows){
+                    m_sourceSize.setWidth(img.cols);
+                    m_sourceSize.setHeight(img.rows);
+//                    sourceSizeChanged(img.cols,img.rows);
+                }
+            }
+            cv::Mat imgDraw;
+            cv::Mat imgResize;
+            cv::resize(img,imgResize,cv::Size(tmpViewer->boundingRect().width(),tmpViewer->boundingRect().height()));
+
+            if(imgResize.channels() == 3){
+                cv::cvtColor(imgResize,imgDraw,cv::COLOR_BGR2RGBA);
+            }else if(imgResize.channels() == 4){
+                cv::cvtColor(imgResize,imgDraw,cv::COLOR_RGBA2BGRA);
+            }
+            imageDataMutex[viewerID].lock();
+            memcpy(imageData[viewerID],imgDraw.data,imgDraw.cols*imgDraw.rows*4);
+            QImage tmp((uchar*)imageData[viewerID], imgDraw.cols, imgDraw.rows, QImage::Format_RGBA8888);
+            tmpViewer->setImage(tmp);
+            imageDataMutex[viewerID].unlock();
+        }else{
+        }
+    }
 }

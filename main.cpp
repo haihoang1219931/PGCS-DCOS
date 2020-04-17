@@ -11,6 +11,7 @@
 #include "src/Maplib/Elevation.h"
 #include "src/Maplib/Marker/MarkerList.h"
 #include "src/Machine/computer.hpp"
+#include "src/Camera/VideoDisplay/ImageItem.h"
 //----Model
 #include "src/Maplib/profilepath.h"
 #ifdef CAMERA_CONTROL
@@ -73,6 +74,7 @@ int main(int argc, char *argv[])
     FCSConfig trkConfig;
     trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
     engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);    
+    qmlRegisterType<ImageItem>("io.qdt.dev", 1, 0, "ImageItem");
 #ifdef USE_VIDEO_CPU
     //--- Camera controller
     qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");

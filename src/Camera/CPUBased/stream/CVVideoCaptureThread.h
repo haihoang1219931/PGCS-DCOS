@@ -207,7 +207,7 @@ class CVVideoCaptureThread : public QObject
         void plateLogChanged();
         void determinedPlateOnTracking(QString _imgPath, QString _plateID);
 public Q_SLOTS:
-        void updateVideoSurface();
+        void updateVideoSurface(int width = -1, int height = -1);
         void setTrackType(QString trackType)
         {
             m_process->setTrackType(trackType);
