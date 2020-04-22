@@ -1,7 +1,7 @@
 #include "Vehicle.h"
-
 #include "../Firmware/FirmwarePluginManager.h"
 #include "../Firmware/FirmwarePlugin.h"
+#include "../../Joystick/JoystickLib/JoystickThreaded.h"
 Vehicle::Vehicle(QObject *parent) : QObject(parent)
 {
 

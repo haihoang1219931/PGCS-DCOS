@@ -17,7 +17,6 @@
 #include "../UAS/UAS.h"
 #include "../Com/QGCMAVLink.h"
 #include <ardupilotmega/ardupilotmega.h>
-#include "../../Joystick/JoystickLib/JoystickThreaded.h"
 //#define DEBUG
 //#define DEBUG_FUNC
 //#define DEBUG_MESSAGE_RECV
@@ -27,7 +26,7 @@ class PlanController;
 class IOFlightController;
 class FirmwarePlugin;
 class FirmwarePluginManager;
-
+class JoystickThreaded;
 class Vehicle : public QObject
 {
     Q_OBJECT
