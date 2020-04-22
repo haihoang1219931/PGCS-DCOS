@@ -24,8 +24,8 @@ Flickable {
     width: 1280
     height: 768
     clip: true
-    contentWidth: width
-    contentHeight: 1000
+    contentWidth: 1000
+    contentHeight: 600
     property var mapAxisKeys: ["Unused","Yaw","Throttle","Roll","Pitch"]
     property var mapAxis: {"Unused":-1,"Roll":2,"Pitch":3,"Yaw":0,"Throttle":1}
     property var mapButtonKeys: ["Unused","Stabilize","Loiter","Auto","PIC/CIC"]

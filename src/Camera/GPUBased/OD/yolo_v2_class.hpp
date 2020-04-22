@@ -25,6 +25,7 @@ struct track_info_t {
 	std::string stringinfo;
 	int age;
 	float prob;
+	bool found = false;
 };
 
 
