@@ -246,6 +246,7 @@ void JoystickThreaded::changeAxisValue(int axisID, float value){
     if(axisID < m_axes.size()){
 //        qDebug("axisStateChanged %d value to %f\n", axisID, value);
         m_axesTemp[axisID]->setValue(value);
+        m_axes[axisID]->setValue(value);
         Q_EMIT axisValueChanged(axisID,value);
     }
 }

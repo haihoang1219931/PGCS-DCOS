@@ -28,8 +28,8 @@ Flickable {
     contentHeight: 1000
     property var mapAxisKeys: ["Unused","Yaw","Throttle","Roll","Pitch"]
     property var mapAxis: {"Unused":-1,"Roll":2,"Pitch":3,"Yaw":0,"Throttle":1}
-    property var mapButtonKeys: ["Unused","Stabilize","Loiter","Auto","PIC/CIC"]
-    property var mapButton: {"Unused":-1,"Stabilize":0,"Loiter":1,"Auto":2,"PIC/CIC":3}
+    property var mapButtonKeys: ["Unused","Stabilize","Loiter","Auto","PIC/CIC","CIC/PIC"]
+    property var mapButton: {"Unused":-1,"Stabilize":0,"Loiter":1,"Auto":2,"PIC/CIC":3,"CIC/PIC":4}
     Row{
         anchors.top: parent.top
         anchors.topMargin: UIConstants.sRect
