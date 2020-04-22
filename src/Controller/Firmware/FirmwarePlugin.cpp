@@ -1,9 +1,12 @@
 #include "FirmwarePlugin.h"
 #include "../Params/Fact.h"
 #include "../Vehicle/Vehicle.h"
-FirmwarePlugin::FirmwarePlugin(QObject *parent) : QObject(parent)
-{
+FirmwarePlugin::FirmwarePlugin(Vehicle* vehicle){
+    setVehicle(vehicle);
     loadFromFile("conf/Properties.conf");
+}
+void FirmwarePlugin::setVehicle(Vehicle *vehicle){
+    m_vehicle = vehicle;
 }
 void FirmwarePlugin::loadFromFile(QString fileName){
     if(_listParamShow.size() != 0){
@@ -126,44 +129,50 @@ bool FirmwarePlugin::flightModeID(QString flightMode,int* base_mode,int* custom_
     Q_UNUSED(custom_mode);
     return false;
 }
-void FirmwarePlugin::initializeVehicle(Vehicle* vehicle)
+void FirmwarePlugin::initializeVehicle()
 {
-    Q_UNUSED(vehicle);
 }
 QStringList FirmwarePlugin::flightModes(){
+    return m_mapFlightMode.values();
+}
+QStringList FirmwarePlugin::flightModesOnGround(){
     return m_mapFlightModeOnGround.values();
 }
 QStringList FirmwarePlugin::flightModesOnAir(){
     return m_mapFlightModeOnAir.values();
 }
-QString FirmwarePlugin::gotoFlightMode(void) const
+QString FirmwarePlugin::gotoFlightMode() const
 {
     return QStringLiteral("Guided");
 }
-bool FirmwarePlugin::hasGimbal(Vehicle* vehicle, bool& rollSupported, bool& pitchSupported, bool& yawSupported)
+bool FirmwarePlugin::hasGimbal( bool& rollSupported, bool& pitchSupported, bool& yawSupported)
 {
-    Q_UNUSED(vehicle);
+
     rollSupported = false;
     pitchSupported = false;
     yawSupported = false;
     return false;
 }
-bool FirmwarePlugin::isVtol(const Vehicle* vehicle) const
+bool FirmwarePlugin::isVtol() const
 {
-    switch (vehicle->vehicleType()) {
-    case MAV_TYPE_VTOL_DUOROTOR:
-    case MAV_TYPE_VTOL_QUADROTOR:
-    case MAV_TYPE_VTOL_TILTROTOR:
-    case MAV_TYPE_VTOL_RESERVED2:
-    case MAV_TYPE_VTOL_RESERVED3:
-    case MAV_TYPE_VTOL_RESERVED4:
-    case MAV_TYPE_VTOL_RESERVED5:
-        return true;
-    default:
-        return false;
+    if(m_vehicle!= nullptr){
+        switch (m_vehicle->vehicleType()) {
+        case MAV_TYPE_VTOL_DUOROTOR:
+        case MAV_TYPE_VTOL_QUADROTOR:
+        case MAV_TYPE_VTOL_TILTROTOR:
+        case MAV_TYPE_VTOL_RESERVED2:
+        case MAV_TYPE_VTOL_RESERVED3:
+        case MAV_TYPE_VTOL_RESERVED4:
+        case MAV_TYPE_VTOL_RESERVED5:
+            return true;
+        default:
+            return false;
+        }
     }
+    else
+        return false;
 }
-void FirmwarePlugin::sendHomePosition(Vehicle* vehicle,QGeoCoordinate location){
+void FirmwarePlugin::sendHomePosition(QGeoCoordinate location){
 
 }
 bool FirmwarePlugin::setFlightMode(const QString& flightMode, uint8_t* base_mode, uint32_t* custom_mode)
@@ -177,42 +186,42 @@ bool FirmwarePlugin::setFlightMode(const QString& flightMode, uint8_t* base_mode
     return false;
 }
 
-bool FirmwarePlugin::iscommand(const Vehicle* vehicle) const
+bool FirmwarePlugin::iscommand() const
 {
     // Not supported by generic vehicle
-    Q_UNUSED(vehicle);
+
     return false;
 }
 
-void FirmwarePlugin::setcommand(Vehicle* vehicle, bool command)
+void FirmwarePlugin::setcommand( bool command)
 {
-    Q_UNUSED(vehicle);
+
     Q_UNUSED(command);
 }
 
-void FirmwarePlugin::pauseVehicle(Vehicle* vehicle)
+void FirmwarePlugin::pauseVehicle()
 {
     // Not supported by generic vehicle
-    Q_UNUSED(vehicle);
+
 }
-void FirmwarePlugin::commandRTL(void)
+void FirmwarePlugin::commandRTL()
 {
 
 }
-void FirmwarePlugin::commandLand(void){
+void FirmwarePlugin::commandLand(){
 
 }
 
-void FirmwarePlugin::commandTakeoff(Vehicle* vehicle,double altitudeRelative){
-    Q_UNUSED(vehicle);
+void FirmwarePlugin::commandTakeoff(double altitudeRelative){
+
     Q_UNUSED(altitudeRelative);
 }
 
-double FirmwarePlugin::minimumTakeoffAltitude(void){
+double FirmwarePlugin::minimumTakeoffAltitude(){
     return 0;
 }
 
-void FirmwarePlugin::commandGotoLocation(Vehicle *vehicle,const QGeoCoordinate& gotoCoord){
+void FirmwarePlugin::commandGotoLocation(const QGeoCoordinate& gotoCoord){
     Q_UNUSED(gotoCoord);
 }
 
@@ -220,28 +229,24 @@ void FirmwarePlugin::commandChangeAltitude(double altitudeChange){
     Q_UNUSED(altitudeChange);
 }
 
-void FirmwarePlugin::commandSetAltitude(Vehicle *vehicle,double newAltitude){
-    Q_UNUSED(vehicle);
+void FirmwarePlugin::commandSetAltitude(double newAltitude){
+
     Q_UNUSED(newAltitude);
 }
 
-void FirmwarePlugin::commandChangeSpeed(Vehicle* vehicle,double speedChange){
-    Q_UNUSED(vehicle);
+void FirmwarePlugin::commandChangeSpeed(double speedChange){
+
     Q_UNUSED(speedChange);
 }
 
 void FirmwarePlugin::commandOrbit(const QGeoCoordinate& centerCoord,
-                                     double radius, double amslAltitude){
+                                  double radius, double amslAltitude){
     Q_UNUSED(centerCoord);
     Q_UNUSED(radius);
     Q_UNUSED(amslAltitude);
 }
 
-void FirmwarePlugin::pauseVehicle(void){
-
-}
-
-void FirmwarePlugin::emergencyStop(void){
+void FirmwarePlugin::emergencyStop(){
 
 }
 
@@ -249,12 +254,12 @@ void FirmwarePlugin::abortLanding(double climbOutAltitude){
     Q_UNUSED(climbOutAltitude);
 }
 
-void FirmwarePlugin::startMission(Vehicle* vehicle){
-    Q_UNUSED(vehicle);
+void FirmwarePlugin::startMission(){
+
 }
 
-void FirmwarePlugin::setCurrentMissionSequence(Vehicle* vehicle, int seq){
-    Q_UNUSED(vehicle);
+void FirmwarePlugin::setCurrentMissionSequence( int seq){
+
     Q_UNUSED(seq);
 }
 
@@ -266,7 +271,7 @@ void FirmwarePlugin::clearMessages(){
 
 }
 
-void FirmwarePlugin::triggerCamera(void){
+void FirmwarePlugin::triggerCamera(){
 
 }
 void FirmwarePlugin::sendPlan(QString planFile){
@@ -287,13 +292,17 @@ int FirmwarePlugin::versionCompare(int major, int minor, int patch){
     return 0;
 }
 
-void FirmwarePlugin::motorTest(Vehicle* vehicle,int motor, int percent){
-    Q_UNUSED(vehicle);
+void FirmwarePlugin::motorTest(int motor, int percent){
+
     Q_UNUSED(motor);
     Q_UNUSED(percent);
 }
-void FirmwarePlugin::setHomeHere(Vehicle* vehicle,float lat, float lon, float alt){
-    Q_UNUSED(vehicle);
+void FirmwarePlugin::handleJSButton(int id, bool clicked){
+    Q_UNUSED(id);
+    Q_UNUSED(clicked);
+}
+void FirmwarePlugin::setHomeHere(float lat, float lon, float alt){
+
     Q_UNUSED(lat);
     Q_UNUSED(lon);
     Q_UNUSED(alt);

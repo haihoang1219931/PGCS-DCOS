@@ -8,7 +8,7 @@ Vehicle::Vehicle(QObject *parent) : QObject(parent)
     _defaultComponentId = MAV_COMP_ID_ALL;
     m_uas = new UAS();
     m_firmwarePluginManager = new FirmwarePluginManager();
-    m_firmwarePlugin = m_firmwarePluginManager->firmwarePluginForAutopilot(_firmwareType, static_cast<MAV_TYPE>(_vehicleType));
+    m_firmwarePlugin = m_firmwarePluginManager->firmwarePluginForAutopilot(this,_firmwareType, static_cast<MAV_TYPE>(_vehicleType));
     _loadDefaultParamsShow();
     Q_EMIT flightModesChanged();
     Q_EMIT flightModesOnAirChanged();
@@ -34,7 +34,12 @@ void Vehicle::setUav(Vehicle* uav){
     if(uav != nullptr){
         m_uav = uav;
     }
-
+}
+JoystickThreaded* Vehicle::joystick(){
+    return m_joystick;
+}
+void Vehicle::setJoystick(JoystickThreaded* joystick){
+    m_joystick = joystick;
 }
 ParamsController *Vehicle::paramsController()
 {
@@ -87,7 +92,7 @@ void Vehicle::setCommunication(IOFlightController *com)
             this, SLOT(_startPlanRequest(void)));
 
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->initializeVehicle(this);
+        m_firmwarePlugin->initializeVehicle();
 
     _mavHeartbeat.start();
     _cameraLink.start();
@@ -113,7 +118,7 @@ void Vehicle::commandLand(void)
 void Vehicle::commandTakeoff(double altitudeRelative)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->commandTakeoff(this, altitudeRelative);
+        m_firmwarePlugin->commandTakeoff(altitudeRelative);
 }
 
 double Vehicle::minimumTakeoffAltitude(void)
@@ -125,7 +130,7 @@ double Vehicle::minimumTakeoffAltitude(void)
 void Vehicle::commandGotoLocation(const QGeoCoordinate &gotoCoord)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->commandGotoLocation(this,gotoCoord);
+        m_firmwarePlugin->commandGotoLocation(gotoCoord);
 }
 
 void Vehicle::commandChangeAltitude(double altitudeChange)
@@ -137,13 +142,13 @@ void Vehicle::commandChangeAltitude(double altitudeChange)
 void Vehicle::commandSetAltitude(double newAltitude)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->commandSetAltitude(this,newAltitude);
+        m_firmwarePlugin->commandSetAltitude(newAltitude);
 }
 
 void Vehicle::commandChangeSpeed(double speedChange)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->commandChangeSpeed(this,speedChange);
+        m_firmwarePlugin->commandChangeSpeed(speedChange);
 }
 
 void Vehicle::commandOrbit(const QGeoCoordinate &centerCoord, double radius, double amslAltitude)
@@ -173,13 +178,13 @@ void Vehicle::abortLanding(double climbOutAltitude)
 void Vehicle::startMission(void)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->startMission(this);
+        m_firmwarePlugin->startMission();
 }
 
 void Vehicle::setCurrentMissionSequence(int seq)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->setCurrentMissionSequence(this, seq);
+        m_firmwarePlugin->setCurrentMissionSequence(seq);
 }
 
 void Vehicle::rebootVehicle()
@@ -279,13 +284,13 @@ void Vehicle::_mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t tota
 void Vehicle::motorTest(int motor, int percent)
 {
     if (m_firmwarePlugin != nullptr) {
-        m_firmwarePlugin->motorTest(this, motor, percent);
+        m_firmwarePlugin->motorTest(motor, percent);
     }
 }
 void Vehicle::setHomeLocation(float lat, float lon){
     if(m_firmwarePlugin != nullptr){
         if(m_planController->m_missionItems.size() > 0)
-            m_firmwarePlugin->setHomeHere(this, lat, lon, _homeAltitude);
+            m_firmwarePlugin->setHomeHere(lat, lon, _homeAltitude);
     }
 }
 void Vehicle::setAltitudeRTL(float alt){
@@ -660,7 +665,7 @@ void Vehicle::_sendGCSHeartbeat(void)
     _countHeartBeat ++;
     if(_countHeartBeat >=8 ){
         if (m_firmwarePlugin != nullptr)
-            m_firmwarePlugin->initializeVehicle(this);
+            m_firmwarePlugin->initializeVehicle();
         _countHeartBeat = 0;
     }
 }
@@ -813,14 +818,14 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
             printf("Change firmware plugin to _vehicleType=%d\r\n", _vehicleType);
             FirmwarePlugin *newFimware =
                         m_firmwarePluginManager->firmwarePluginForAutopilot(
-                        _firmwareType, static_cast<MAV_TYPE>(heartbeat.type));
+                        this,_firmwareType, static_cast<MAV_TYPE>(heartbeat.type));
             if (newFimware != nullptr) {
                 if (m_firmwarePlugin != nullptr)
                     delete m_firmwarePlugin;
-
                 m_firmwarePlugin = newFimware;
-                m_firmwarePlugin->initializeVehicle(this);
+                m_firmwarePlugin->initializeVehicle();
                 m_paramsController->refreshAllParameters();
+//                _loadDefaultParamsShow();
                 Q_EMIT flightModesChanged();
                 Q_EMIT flightModesOnAirChanged();
                 flightModeChanged(flightMode());
@@ -1568,6 +1573,13 @@ QStringList Vehicle::flightModes(void)
 {
     if (m_firmwarePlugin != nullptr) {
         return m_firmwarePlugin->flightModes();
+    } else
+        return QStringList();
+}
+QStringList Vehicle::flightModesOnGround(void)
+{
+    if (m_firmwarePlugin != nullptr) {
+        return m_firmwarePlugin->flightModesOnGround();
     } else
         return QStringList();
 }

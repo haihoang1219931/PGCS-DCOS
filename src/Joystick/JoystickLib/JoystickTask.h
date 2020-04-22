@@ -9,8 +9,12 @@
 #include <QMutex>
 #include <QObject>
 #include <QWaitCondition>
+#include <QStringList>
+#include <QVariant>
 #include <unistd.h>
-
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
 class JoystickTask : public QObject
 {
         Q_OBJECT
@@ -33,10 +37,11 @@ class JoystickTask : public QObject
     public Q_SLOTS:
         void pause(bool _pause);
         void doWork();
-
+        QStringList getListJoystick();
+        QVariant getJoystickInfo(QString jsFile);
     public:
         Joystick m_joystick;
-        QString m_joyID;
+        QString m_joyID = "/dev/input/js0";
         float m_pan;
         float m_tilt;
         int m_zoom;

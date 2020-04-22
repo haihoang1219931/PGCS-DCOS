@@ -99,7 +99,7 @@ Item {
         target: vehicle
         onLandedChanged:{
             if(vehicle.landed){
-                setFlightModes(vehicle.flightModes);
+                setFlightModes(vehicle.flightModesOnGround);
             }else{
                 setFlightModes(vehicle.flightModesOnAir);
             }
@@ -107,7 +107,7 @@ Item {
         onFlightModesChanged:{
             console.log("List flight mode update");
             if(vehicle.landed){
-                setFlightModes(vehicle.flightModes);
+                setFlightModes(vehicle.flightModesOnGround);
             }else{
                 setFlightModes(vehicle.flightModesOnAir);
             }
@@ -700,7 +700,7 @@ Item {
                     }
                     MouseArea{
                         anchors.fill: parent
-                        enabled: lstFlightMode.model.length > 0
+//                        enabled: lstFlightMode.model.length > 0
                         onClicked: {
                             if(dialogShow !== "FLIGHT_MODES"){
                                 dialogShow = "FLIGHT_MODES";
@@ -744,6 +744,7 @@ Item {
                         color: UIConstants.transparentBlue
                         orientation: ListView.Vertical
                         layoutDirection: Qt.LeftToRight
+                        model: []
                         onListViewClicked: {
                             rootItem.doSwitchPlaneMode(prevItem,choosedItem);
                         }

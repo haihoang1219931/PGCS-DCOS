@@ -1934,7 +1934,7 @@ ApplicationWindow {
             comTest.connectLink();
             vehicle.communication = comTest;
             vehicle.planController = planController;
-
+            vehicle.joystick = joystick;
             comTracker.loadConfig(TRKConfig);
             comTracker.connectLink();
             tracker.communication = comTracker;

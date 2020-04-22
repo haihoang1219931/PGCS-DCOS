@@ -34,9 +34,9 @@ Rectangle {
 
         GridView {
             id: gridView
+            anchors.topMargin: UIConstants.sRect*2 + 16
+            anchors.top: parent.top
             clip: true
-            anchors.top: btnCancel.bottom
-            anchors.topMargin: 8
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 8
             anchors.right: parent.right
@@ -132,3 +132,8 @@ Rectangle {
             gridView.model = vehicle.propertiesModel;
     }
 }
+
+/*##^## Designer {
+    D{i:2;anchors_height:0}
+}
+ ##^##*/

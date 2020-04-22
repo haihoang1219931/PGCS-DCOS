@@ -17,7 +17,7 @@
 #include "../UAS/UAS.h"
 #include "../Com/QGCMAVLink.h"
 #include <ardupilotmega/ardupilotmega.h>
-#include "../../Joystick/Files/FileControler.h"
+#include "../../Joystick/JoystickLib/JoystickThreaded.h"
 //#define DEBUG
 //#define DEBUG_FUNC
 //#define DEBUG_MESSAGE_RECV
@@ -32,11 +32,13 @@ class Vehicle : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(Vehicle*             uav                         READ uav            WRITE setUav)
+    Q_PROPERTY(JoystickThreaded*    joystick                    READ joystick       WRITE setJoystick)
     Q_PROPERTY(IOFlightController*  communication               READ communication      WRITE setCommunication)
     Q_PROPERTY(PlanController*      planController              READ planController     WRITE setPlanController)
     Q_PROPERTY(ParamsController*    paramsController            READ paramsController   WRITE setParamsController)
     Q_PROPERTY(QStringList          flightModes                 READ flightModes                                    NOTIFY flightModesChanged)
     Q_PROPERTY(QStringList          flightModesOnAir            READ flightModesOnAir                               NOTIFY flightModesOnAirChanged)
+    Q_PROPERTY(QStringList          flightModesOnGround         READ flightModesOnGround                            NOTIFY flightModesOnGroundChanged)
     Q_PROPERTY(QString              flightMode                  READ flightMode         WRITE setFlightMode         NOTIFY flightModeChanged)
     Q_PROPERTY(bool                 armed                       READ armed                                          NOTIFY armedChanged)
     Q_PROPERTY(bool                 landed                      READ landed                                         NOTIFY landedChanged)
@@ -354,6 +356,8 @@ public:
 public:
     Vehicle* uav();
     void setUav(Vehicle* uav);
+    JoystickThreaded* joystick();
+    void setJoystick(JoystickThreaded* joystick);
     ParamsController* paramsController();
     void setParamsController(ParamsController* paramsController);
     PlanController* planController();
@@ -368,6 +372,7 @@ public:
 
     bool flightModeSetAvailable(void);
     QStringList flightModes(void);
+    QStringList flightModesOnGround(void);
     QStringList flightModesOnAir(void);
     QString flightMode(void);
     void setFlightMode(const QString& flightMode);
@@ -402,7 +407,7 @@ public:
     void setFirmwareVersion(int majorVersion, int minorVersion, int patchVersion, FIRMWARE_VERSION_TYPE versionType = FIRMWARE_VERSION_TYPE_OFFICIAL);
     void setFirmwareCustomVersion(int majorVersion, int minorVersion, int patchVersion);
     // Property accesors
-    int id(void) { return _id; }
+    uint8_t id() { return static_cast<uint8_t>(_id); }
     MAV_AUTOPILOT firmwareType(void) const { return _firmwareType; }
     VEHICLE_MAV_TYPE vehicleType(void) const { return _vehicleType; }
     void setVehicleType(VEHICLE_MAV_TYPE vehicleType){
@@ -457,6 +462,7 @@ Q_SIGNALS:
     void flightModeChanged(const QString& flightMode);
     void flightModesChanged(void);
     void flightModesOnAirChanged(void);
+    void flightModesOnGroundChanged(void);
     void coordinateChanged(const QGeoCoordinate& position);
     void homePositionReceivedChanged();
     //// Communication count
@@ -556,6 +562,7 @@ public:
     quint64 _uid;
 private:
     Vehicle* m_uav = nullptr;
+    JoystickThreaded*  m_joystick = nullptr;
     UAS* m_uas;
     ParamsController *              m_paramsController;
     PlanController *                m_planController;

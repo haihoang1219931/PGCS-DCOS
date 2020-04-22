@@ -45,9 +45,9 @@ void ParamsController::refreshAllParameters(uint8_t componentId)
 }
 QVariant ParamsController::getParam(QString paramName){
     QVariant result;
-//    if(_paramMap.keys().contains(paramName)){
-//        result = _paramMap[paramName];
-//    }
+    if(_paramMap.keys().contains(paramName)){
+        result = QVariant(_paramMap[paramName].param_value);
+    }
     return result;
 }
 void ParamsController::_handleMessageReceived(mavlink_message_t msg)

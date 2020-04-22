@@ -36,38 +36,38 @@ public:
         QRTL          = 21,
         modeCount
     };
-    explicit QuadPlaneFirmware(FirmwarePlugin *parent = nullptr);
+    QuadPlaneFirmware(Vehicle* vehicle = nullptr);
     QString flightMode(int flightModeId) override;
     bool flightModeID(QString flightMode,int* base_mode,int* custom_mode) override;
-    void initializeVehicle(Vehicle* vehicle) override;
+    void initializeVehicle() override;
     /// Returns the flight mode which the vehicle will be in if it is performing a goto location
-    QString gotoFlightMode(void) const override;
+    QString gotoFlightMode() const override;
     /// Sets base_mode and custom_mode to specified flight mode.
     ///     @param[out] base_mode Base mode for SET_MODE mavlink message
     ///     @param[out] custom_mode Custom mode for SET_MODE mavlink message
     bool setFlightMode(const QString& flightMode, uint8_t* base_mode, uint32_t* custom_mode) override;
 
     /// Command vehicle to return to launch
-    void commandRTL(void) override;
+    void commandRTL() override;
 
     /// Command vehicle to land at current location
-    void commandLand(void) override;
+    void commandLand() override;
 
     /// Command vehicle to takeoff from current location
-    void commandTakeoff(Vehicle* vehicle,double altitudeRelative) override;
+    void commandTakeoff(double altitudeRelative) override;
 
     /// @return The minimum takeoff altitude (relative) for guided takeoff.
-    double minimumTakeoffAltitude(void) override;
+    double minimumTakeoffAltitude() override;
 
     /// Command vehicle to move to specified location (altitude is included and relative)
-    void commandGotoLocation(Vehicle *vehicle, const QGeoCoordinate& gotoCoord) override;
+    void commandGotoLocation(const QGeoCoordinate& gotoCoord) override;
 
     /// Command vehicle to change altitude
     ///     @param altitudeChange If > 0, go up by amount specified, if < 0, go down by amount specified
-    void commandSetAltitude(Vehicle* vehicle,double newAltitude) override;
+    void commandSetAltitude(double newAltitude) override;
     /// Command vehicle to change speed
     ///     @param speedChange If > 0, go up by amount specified, if < 0, go down by amount specified
-    void commandChangeSpeed(Vehicle* vehicle,double speedChange) override;
+    void commandChangeSpeed(double speedChange) override;
     /// Command vehicle to orbit given center point
     ///     @param centerCoord Orit around this point
     ///     @param radius Distance from vehicle to centerCoord
@@ -76,18 +76,18 @@ public:
 
     /// Command vehicle to pause at current location. If vehicle supports guide mode, vehicle will be left
     /// in guided mode after pause.
-    void pauseVehicle(void) override;
+    void pauseVehicle() override;
 
     /// Command vehicle to kill all motors no matter what state
-    void emergencyStop(void) override;
+    void emergencyStop() override;
 
     /// Command vehicle to abort landing
     void abortLanding(double climbOutAltitude) override;
 
-    void startMission(Vehicle* vehicle) override;
+    void startMission() override;
 
     /// Alter the current mission item on the vehicle
-    void setCurrentMissionSequence(Vehicle* vehicle, int seq) override;
+    void setCurrentMissionSequence( int seq) override;
 
     /// Reboot vehicle
     void rebootVehicle() override;
@@ -95,7 +95,7 @@ public:
     /// Clear Messages
     void clearMessages() override;
 
-    void triggerCamera(void) override;
+    void triggerCamera() override;
     void sendPlan(QString planFile) override;
 
     /// Used to check if running current version is equal or higher than the one being compared.
@@ -106,13 +106,13 @@ public:
     /// Test motor
     ///     @param motor Motor number, 1-based
     ///     @param percent 0-no power, 100-full power
-    void motorTest(Vehicle* vehicle,int motor, int percent) override;
+    void motorTest(int motor, int percent) override;
 
     /// Set home postion
     ///     @param lat: latitude
     ///     @param lon: longitude
     ///     @param alt: altitude
-    void setHomeHere(Vehicle* vehicle,float lat, float lon, float alt);
+    void setHomeHere(float lat, float lon, float alt) override;
 Q_SIGNALS:
 
 public Q_SLOTS:

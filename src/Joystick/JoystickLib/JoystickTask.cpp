@@ -122,44 +122,103 @@ bool JoystickTask::stop()
 {
     return this->m_stop;
 }
+QStringList JoystickTask::getListJoystick()
+{
+    std::string folderName = "/dev/input/";
+    unsigned long numOfFile;
+    QStringList listFiles;
+    std::cout << "Checking\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\: " << folderName << std::endl;
+    unsigned long countFiles = 0;
+    DIR *dir = opendir(folderName.c_str());
+    struct dirent *de;
+    if(!dir)
+    {
+        printf("opendir() failed! Does it exist? %s\n", folderName.c_str());
+        closedir(dir);
+        return listFiles;
+//        createNewFolder(folderName);
+//        dir = opendir(folderName.c_str());
+    }
+    while((de = readdir(dir)) != NULL)
+    {
+       countFiles++;
+       if(countFiles > 2)
+       {
+           if(listFiles.size()>1024)
+           {
+               listFiles.erase(listFiles.begin());
+           }
+           std::string fileName = string(de->d_name);
+           std::size_t found = fileName.find("js");
+           if(found!=std::string::npos){
+                listFiles.append(QString::fromStdString(folderName + fileName));
+                std::cout << "File: " << folderName + fileName << std::endl;
+           }
+       }
+    }
+    numOfFile = countFiles;
+    std::cout << "Count File: " << numOfFile << std::endl;
+    closedir(dir);
+    return listFiles;
+}
+QVariant JoystickTask::getJoystickInfo(QString jsFile){
+    QVariant res;
+    QVariantMap map;
 
+    uint32_t version;
+    uint8_t axes;
+    uint8_t buttons;
+    char name[256];
+    int _fd = open(jsFile.toStdString().c_str(), false ? O_RDONLY : O_RDONLY | O_NONBLOCK);
+    if(_fd < 0){
+        map.insert("NAME", QString::fromStdString("Unknown"));
+        map.insert("VERSION", QString::fromStdString("Unknown"));
+        map.insert("AXES", QString::fromStdString("0"));
+        map.insert("BUTTONS", QString::fromStdString("0"));
+    }else{
+        ioctl(_fd, JSIOCGNAME(256), name);
+        ioctl(_fd, JSIOCGVERSION, &version);
+        ioctl(_fd, JSIOCGAXES, &axes);
+        ioctl(_fd, JSIOCGBUTTONS, &buttons);
+        close(_fd);
+        map.insert("NAME", QString::fromStdString(std::string(name)));
+        map.insert("VERSION", QString::fromStdString(std::to_string(version)));
+        map.insert("AXES", QString::fromStdString(std::to_string(axes)));
+        map.insert("BUTTONS", QString::fromStdString(std::to_string(buttons)));
+    }
+    res = QVariant(map);
+    return res;
+}
 void JoystickTask::doWork()
 {
-    m_joystick.openPath(m_joyID.toStdString());
-    printf("Start getting data from joy %s\r\n", m_joyID.toStdString().c_str());
-    // Ensure that it was found and that we can use it
-    sleep(2);
+    bool foundValidJs = false;
+    while(!foundValidJs){
+        printf("Looking for valid joystick...\r\n");
+        QStringList jsList = getListJoystick();
+        for(int i=0; i< jsList.size(); i++){
+            QString jsFile = jsList[i];
+            uint32_t version;
+            uint8_t axes;
+            uint8_t buttons;
+            char name[256];
+            int _fd = open(jsFile.toStdString().c_str(), false ? O_RDONLY : O_RDONLY | O_NONBLOCK);
+            if(_fd < 0){
 
-    if (!m_joystick.isFound())
-    {
-        printf("First not found joystick\r\n");
-        Q_EMIT joystickConnected(false);
-
-        while (m_joystick.isExist() == false)
-        {
-            //            printf("isExist = false\r\n");
-            sleep(1);
-
-            if (m_joystick.isExist() == true)
-            {
-                m_joystick.closePath();
-                m_joystick.openPath(m_joystick.m_devicePath);
-
-                if (m_joystick.isFound())
-                {
-                    Q_EMIT joystickConnected(true);
-                    printf("Joystick connected\r\n");
-                    break;
-                }
+            }else{
+                ioctl(_fd, JSIOCGNAME(256), name);
+                ioctl(_fd, JSIOCGVERSION, &version);
+                ioctl(_fd, JSIOCGAXES, &axes);
+                ioctl(_fd, JSIOCGBUTTONS, &buttons);
+                close(_fd);
+                foundValidJs = true;
+                m_joyID = jsFile;
+                m_joystick.openPath(m_joyID.toStdString());
+                Q_EMIT joystickConnected(true);
+                break;
             }
         }
+        sleep(1);
     }
-    else
-    {
-        printf("\r\nFrist found joystick\r\n");
-        Q_EMIT joystickConnected(true);
-    }
-
     m_stop = false;
     while (m_stop == false)
     {
