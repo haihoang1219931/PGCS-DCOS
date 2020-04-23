@@ -483,7 +483,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.link?"green":"red"
+                color: vehicle.flightMode === "Loiter"?UIConstants.blueColor:UIConstants.greenColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor

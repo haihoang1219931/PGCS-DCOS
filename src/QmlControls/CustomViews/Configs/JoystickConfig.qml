@@ -26,8 +26,8 @@ Item {
     clip: true
     property var mapAxisKeys: ["Unused","Yaw","Throttle","Roll","Pitch"]
     property var mapAxis: {"Unused":-1,"Roll":2,"Pitch":3,"Yaw":0,"Throttle":1}
-    property var mapButtonKeys: ["Unused","Stabilize","Loiter","Auto","PIC/CIC","CIC/PIC"]
-    property var mapButton: {"Unused":-1,"Stabilize":0,"Loiter":1,"Auto":2,"PIC/CIC":3,"CIC/PIC":4}
+    property var mapButtonKeys: ["Unused","Guided","Loiter","Auto","RTL","PIC/CIC","CIC/PIC"]
+    property var mapButton: {"Unused":-1,"Guided":0,"Loiter":1,"Auto":2,"RTL":3,"PIC/CIC":4,"CIC/PIC":5}
     Row{
         id: row
         anchors.rightMargin: UIConstants.sRect
