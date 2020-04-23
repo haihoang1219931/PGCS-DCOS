@@ -1,4 +1,5 @@
 #include "Vehicle.h"
+#include "../../Joystick/JoystickLib/JoystickThreaded.h"
 #include "../Firmware/FirmwarePluginManager.h"
 #include "../Firmware/FirmwarePlugin.h"
 #include "../../Joystick/JoystickLib/JoystickThreaded.h"

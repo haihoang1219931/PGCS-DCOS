@@ -478,6 +478,23 @@ Item {
                     font.pixelSize: UIConstants.fontSize
                 }
             }
+            Rectangle{
+                id: rectPICCIC
+                Layout.alignment: Qt.AlignVCenter
+                width: UIConstants.sRect * 2
+                height: parent.height
+                color: vehicle.link?"green":"red"
+                radius: UIConstants.rectRadius
+                Label{
+                    color: UIConstants.textColor
+                    text: vehicle.flightMode === "Loiter"?"PIC":"CIC"
+                    font.family: UIConstants.appFont
+                    anchors.fill: parent
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: UIConstants.fontSize
+                }
+            }
             Label{
                 id: lblU1
                 Layout.alignment: Qt.AlignVCenter

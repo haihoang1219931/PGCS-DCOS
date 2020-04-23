@@ -128,12 +128,12 @@ ApplicationWindow {
         }
     }
     IOFlightController{
-        id: comTest
+        id: comVehicle
     }
 
     Vehicle{
         id: vehicle
-//        communication: comTest
+//        communication: comVehicle
         onCoordinateChanged: {
             mapPane.updatePlane(position);
         }
@@ -285,6 +285,7 @@ ApplicationWindow {
 
         //--- Signal inform that client socket connected to server
         onConnectedToServer: {
+            userOnMap.reloadPcdVideo();
             toast.toastContent = "UC module connected to server";
             toast.callActionAppearance =  false;
             toast.rejectButtonAppearance = false;
@@ -323,7 +324,7 @@ ApplicationWindow {
             JSON.parse(listUsers).forEach(function(eachUser, i) {
                 if(!UCDataModel.isUserExist(eachUser.name)){
                     var user = {};
-                    user.ipAddress = eachUser.ipAddress;
+                    user.ipAddress = eachUser.ip_address;
                     user.userId = eachUser.user_id;
                     user.roomName =  eachUser.room_name;
                     user.available = eachUser.available;
@@ -332,11 +333,20 @@ ApplicationWindow {
                     user.uid = eachUser.uid;
                     user.name = eachUser.name;
                     user.connectionState = eachUser.connection;
-                    user.latitude = eachUser.lat;
-                    user.longitude = eachUser.lng;
+                    user.latitude = 21.039140;
+                    user.longitude = 105.544545;
                     UCDataModel.addUser(user);
+                } else {
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.IP_ADDRESS, eachUser.ip_address);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.USER_ID, eachUser.user_id);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.ROOM_NAME, eachUser.room_name);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.AVAILABLE, eachUser.available);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.SHARED, eachUser.shared);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.NAME, eachUser.name);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.CONNECTION_STATE, eachUser.connection);
                 }
             });
+            mapPane.updateUsersOnMap();
             console.log("--------------------------------------> Done handle received list users\n");
         }
 
@@ -371,15 +381,24 @@ ApplicationWindow {
         onPcdRequestShareVideo: {
             console.log("\nHanlde signal onPcdRequestShareVideo:");
             console.log("--------------------------------------> Data: pcdUid = " + pcdUid);
-            for (var i = 0; i < userOnMap.listUsersOnMap.count; i++) {
-                if( userOnMap.listUsersOnMap.itemAt(i).uid_ == JSON.parse(pcdUid) ) {
-                    userOnMap.listUsersOnMap.itemAt(i).spreadColor = "#fc5c65";
-                    userOnMap.listUsersOnMap.itemAt(i).iconFlag = "\uf256";
+            toast.toastContent = "Warning from pcd. Open pcd video to view detail";
+            toast.callActionAppearance = false;
+            toast.rejectButtonAppearance = false;
+            toast.show();
+            for (var i = 0; i < Object.keys(UCDataModel.listUsers).length; i++) {
+                if( UCDataModel.listUsers[i].uid == JSON.parse(pcdUid) ) {
+                    //userOnMap.listUsersOnMap.itemAt(i).spreadColor = "#fc5c65";
+                    //userOnMap.listUsersOnMap.itemAt(i).iconFlag = "\uf256";
+                    mapPane.focusOnPosition(UCDataModel.listUsers[i].latitude,
+                                            UCDataModel.listUsers[i].longitude);
+                    // UCDataModel.updateUser(JSON.parse(pcdUid), 10, !UCDataModel.listUsers[i].isSelected);
+                    UCDataModel.updateUser(JSON.parse(pcdUid), 12, !UCDataModel.listUsers[i].warning);
                     if( userOnMap.listUsersOnMap.itemAt(i).active !== true ) {
                         userOnMap.listUsersOnMap.itemAt(i).active = true;
                     }
                 }
             }
+
             console.log("--------------------------------------> Done handle pcd request share video\n");
         }
 
@@ -416,7 +435,7 @@ ApplicationWindow {
                 UCDataModel.updateUser(dataObject.participant.uid, UserAttribute.AVAILABLE, dataObject.participant.available);
                 toast.callActionAppearance =  false;
                 toast.rejectButtonAppearance = false;
-                toast.toastContent = "PCD" + dataObject.participant.name + " đã rời phòng. !";
+                toast.toastContent = dataObject.participant.name + " đã rời phòng. !";
                 toast.show();
                 UCDataModel.userLeftRoom(UcApi.getRoomName());
             }
@@ -430,7 +449,7 @@ ApplicationWindow {
             console.log("--------------------------------------> Data: " + userAttrObj);
             UCDataModel.updateUser(JSON.parse(userAttrObj).uid, UserAttribute.AVAILABLE, JSON.parse(userAttrObj).available);
             console.log("--------------------------------------> Done handle user change available signal\n");
-//            mapPane.updateUserOnMap();
+            //            mapPane.updateUserOnMap();
         }
 
         //--- Signal to notify that there is one user just change hist role
@@ -449,7 +468,6 @@ ApplicationWindow {
             UCDataModel.removeUser(JSON.parse(userUid));
             console.log("--------------------------------------> Done handle spec user inactive\n");
         }
-
 
         //--- Signal to inform about state of sharing pcd video
         onPcdSharingVideoStatus: {
@@ -486,12 +504,12 @@ ApplicationWindow {
                 var redoData_ = JSON.parse(redoData);
                 if( userOnMap.pcdVideoView.pcdVideo.loading === false ) {
                     switch( redoAction ) {
-                        case RedoActionAfterReloadWebView.OPEN_SINGLE_PCD_VIDEO:
-                            UcApi.requestOpenParticularPcdVideo(redoData_.pcdUid);
-                            break;
-                        case RedoActionAfterReloadWebView.ADD_PCD_TO_ROOM:
-                            UcApi.addPcdToRoom(redoData_.pcd_uid);
-                            break;
+                    case RedoActionAfterReloadWebView.OPEN_SINGLE_PCD_VIDEO:
+                        UcApi.requestOpenParticularPcdVideo(redoData_.pcdUid);
+                        break;
+                    case RedoActionAfterReloadWebView.ADD_PCD_TO_ROOM:
+                        UcApi.addPcdToRoom(redoData_.pcd_uid);
+                        break;
                     }
                     timer.running = false;
                     //-- update web engine view position follow along with x, y of pcd
@@ -523,6 +541,32 @@ ApplicationWindow {
             console.log("--------------------------------------> Data: (usreUid: " + userUid + ", connectionState: " + connectionState + " ) ");
             UCDataModel.updateUser(userUid, UserAttribute.CONNECTION_STATE, connectionState);
             console.log("--------------------------------------> Done handle update user connection\n");
+        }
+
+        //--- Signal to notify you that the target media connection has failed
+        onMediaError: {
+            console.log("\nHandle signal notify you that the target media connection has failed");
+            console.log("-------------------------------------> Data: (sourceUid: " + sourceUid + ", errorType: " + errorType + ")");
+            toast.toastContent = "Không thể truy cập camera của người dùng";
+            toast.callActionAppearance = false;
+            toast.rejectButtonAppearance = false;
+            toast.show();
+            userOnMap.pcdVideoView.visible = false;
+            console.log("--------------------------------------> Done handle media error\n");
+        }
+
+        //--- Signal to notify you that losed connection to socket server
+        onNetworkCrash: {
+            console.log("\nHandle signal notify you that losed connection to socket server");
+            console.log("-------------------------------------> Data: ()");
+            toast.toastContent = "Mất kết nối đến server";
+            toast.callActionAppearance = false;
+            toast.rejectButtonAppearance = false;
+            toast.show();
+            for (var i = 0; i < Object.keys(UCDataModel.listUsers).length; i++) {
+                UCDataModel.updateUser(UCDataModel.listUsers[i].uid, 11, false);
+            }
+            console.log("--------------------------------------> Done handle connection error\n");
         }
     }
 
@@ -1621,7 +1665,6 @@ ApplicationWindow {
     Timer{
         id: timerRequestData
         interval: 100; repeat: true;
-//        running: camState.isPingOk && camState.isConnected
         running: false
         property int countGetData: 0
         onTriggered: {
@@ -1692,237 +1735,6 @@ ApplicationWindow {
             }
         }
     }
-//    Rectangle {
-//        id: rectCameraControl
-//        width: UIConstants.sRect * 13
-//        height: UIConstants.sRect * 6
-//        color: UIConstants.transparentBlue
-//        visible: stkMainRect.currentIndex == 1 && CAMERA_CONTROL
-//        radius: UIConstants.rectRadius
-//        anchors.bottom: footerBar.top
-//        anchors.bottomMargin: 8
-//        anchors.horizontalCenter: parent.horizontalCenter
-//        property bool show: true
-//        z:7
-//        MouseArea{
-//            anchors.fill: parent
-//            hoverEnabled: true
-//        }
-//        PropertyAnimation{
-//            id: animCameraControl
-//            target: rectCameraControl
-//            properties: "anchors.bottomMargin"
-//            to: rectCameraControl.show ? 8 : - rectCameraControl.height
-//            duration: 800
-//            easing.type: Easing.InOutBack
-//            running: false
-//        }
-//        PropertyAnimation{
-//            id: animShowCameraControl
-//            target: btnShowCameraControl
-//            properties: "iconRotate"
-//            to: rectCameraControl.show ? 0 : 180
-//            duration: 800
-//            easing.type: Easing.InExpo
-//            running: false
-//            onStopped: {
-//                animCameraControl.start()
-//            }
-//        }
-//        Canvas{
-//            width: UIConstants.sRect * 3
-//            height: UIConstants.sRect
-//            anchors.horizontalCenter: rectCameraControl.horizontalCenter
-//            anchors.bottom: rectCameraControl.top
-//            anchors.bottomMargin: 0
-//            onPaint: {
-//                var ctx = getContext("2d");
-//                var drawColor = UIConstants.transparentBlue;
-//                ctx.strokeStyle = drawColor;
-//                ctx.fillStyle = drawColor;
-//                ctx.beginPath();
-//                ctx.moveTo(0,height);
-//                ctx.lineTo(width,height);
-//                ctx.lineTo(width*5/6,0);
-//                ctx.lineTo(width*1/6,0);
-//                ctx.closePath();
-//                ctx.fill();
-//            }
-//            FlatButtonIcon{
-//                id: btnShowCameraControl
-//                width: parent.height
-//                height: parent.width
-//                anchors.verticalCenter: parent.verticalCenter
-//                anchors.horizontalCenter: parent.horizontalCenter
-//                iconSize: UIConstants.fontSize * 2
-//                icon: UIConstants.iChevronDown
-//                isAutoReturn: true
-//                isShowRect: false
-//                isSolid: true
-//                onClicked: {
-//                    rectCameraControl.show = !rectCameraControl.show;
-//                    animShowCameraControl.start();
-//                }
-//            }
-//        }
-
-
-//        FlatButtonIcon{
-//            id: btnDown
-//            x: 70
-//            y: 107
-//            width: UIConstants.sRect*2
-//            height: UIConstants.sRect*2
-//            anchors.bottom: parent.bottom
-//            anchors.bottomMargin: 8
-//            anchors.horizontalCenterOffset: 0
-//            icon: UIConstants.iChevronDown
-//            isSolid: true
-//            isAutoReturn: true
-//            isShowRect: false
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            onPressed: {
-////                console.log("Pressed");
-//                if(gimbalNetwork.isGimbalConnected)
-//                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, camState.invertTilt*(-1023)*camState.hfov/Math.PI*camState.alphaSpeed)
-//            }
-//            onReleased: {
-////                console.log("Released");
-//                if(gimbalNetwork.isGimbalConnected)
-//                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
-//            }
-//        }
-
-//        FlatButtonIcon{
-//            id: btnUp
-//            x: 70
-//            y: 8
-//            width: UIConstants.sRect*2
-//            height: UIConstants.sRect*2
-//            anchors.horizontalCenterOffset: 0
-//            icon: UIConstants.iChevronDown
-//            rotation: 180
-//            isAutoReturn: true
-//            isShowRect: false
-//            isSolid: true
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            onPressed: {
-////                console.log("Pressed");
-//                if(gimbalNetwork.isGimbalConnected)
-//                    gimbalNetwork.ipcCommands.gimbalControl(0,0, camState.invertTilt*1023*camState.hfov/Math.PI*camState.alphaSpeed)
-//            }
-//            onReleased: {
-////                console.log("Released");
-//                if(gimbalNetwork.isGimbalConnected)
-//                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
-//            }
-//        }
-
-//        FlatButtonIcon{
-//            id: btnRight
-//            x: 107
-//            y: 70
-//            width: UIConstants.sRect*2
-//            height: UIConstants.sRect*2
-//            anchors.right: parent.right
-//            anchors.rightMargin: 8
-//            anchors.verticalCenterOffset: 0
-//            icon: UIConstants.iChevronDown
-//            rotation: -90
-//            isAutoReturn: true
-//            isShowRect: false
-//            isSolid: true
-//            anchors.verticalCenter: parent.verticalCenter
-//            onPressed: {
-////                console.log("Pressed");
-//                if(gimbalNetwork.isGimbalConnected)
-//                    gimbalNetwork.ipcCommands.gimbalControl(0, camState.invertPan*(-1023)*camState.hfov/Math.PI*camState.alphaSpeed, 0)
-//            }
-//            onReleased: {
-////                console.log("Released");
-//                if(gimbalNetwork.isGimbalConnected)
-//                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
-//            }
-//        }
-
-//        FlatButtonIcon{
-//            id: btnLeft
-//            y: 70
-//            width: UIConstants.sRect*2
-//            height: UIConstants.sRect*2
-//            anchors.left: parent.left
-//            anchors.leftMargin: 8
-//            icon: UIConstants.iChevronDown
-//            rotation: 90
-//            isAutoReturn: true
-//            isShowRect: false
-//            isSolid: true
-//            anchors.verticalCenter: parent.verticalCenter
-//            onPressed: {
-////                console.log("Pressed");
-//                if(gimbalNetwork.isGimbalConnected)
-//                    gimbalNetwork.ipcCommands.gimbalControl(0, camState.invertPan*1023*camState.hfov/Math.PI*camState.alphaSpeed, 0)
-//            }
-//            onReleased: {
-////                console.log("Released");
-//                if(gimbalNetwork.isGimbalConnected)
-//                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0)
-//            }
-//        }
-
-//        FlatButtonIcon{
-//            id: btnZoomIn
-//            y: 70
-//            width: UIConstants.sRect*2
-//            height: UIConstants.sRect*2
-//            anchors.verticalCenterOffset: 0
-//            anchors.left: btnLeft.right
-//            anchors.leftMargin: 14
-//            icon: UIConstants.iZoomIn
-//            isAutoReturn: true
-//            isShowRect: false
-//            isSolid: true
-//            iconColor: camState.sensorID === camState.sensorIDEO?UIConstants.textColor:UIConstants.grayColor
-//            isEnable: camState.sensorID === camState.sensorIDEO
-//            anchors.verticalCenter: parent.verticalCenter
-//            onPressed: {
-//                if(gimbalNetwork.isSensorConnected)
-//                    gimbalNetwork.ipcCommands.treronZoomIn()
-//            }
-//            onReleased: {
-//                if(gimbalNetwork.isSensorConnected)
-//                    gimbalNetwork.ipcCommands.treronZoomStop()
-//            }
-//        }
-
-//        FlatButtonIcon{
-//            id: btnZoomOut
-//            x: 147
-//            y: 70
-//            width: UIConstants.sRect*2
-//            height: UIConstants.sRect*2
-//            anchors.right: btnRight.left
-//            anchors.rightMargin: 14
-//            anchors.verticalCenterOffset: 0
-//            icon: UIConstants.iZoomOut
-//            isAutoReturn: true
-//            isShowRect: false
-//            isSolid: true
-//            iconColor: camState.sensorID === camState.sensorIDEO?UIConstants.textColor:UIConstants.grayColor
-//            isEnable: camState.sensorID === camState.sensorIDEO
-//            anchors.verticalCenter: parent.verticalCenter
-//            onPressed: {
-//                if(gimbalNetwork.isSensorConnected)
-//                    gimbalNetwork.ipcCommands.treronZoomOut()
-//            }
-//            onReleased: {
-//                if(gimbalNetwork.isSensorConnected)
-//                    gimbalNetwork.ipcCommands.treronZoomStop()
-//            }
-//        }
-//    }
-
-
 
     Timer{
         id: timerStart
@@ -1930,9 +1742,9 @@ ApplicationWindow {
         interval: 2000
         onTriggered: {
             // --- Flight
-            comTest.loadConfig(FCSConfig);
-            comTest.connectLink();
-            vehicle.communication = comTest;
+            comVehicle.loadConfig(FCSConfig);
+            comVehicle.connectLink();
+            vehicle.communication = comVehicle;
             vehicle.planController = planController;
             vehicle.joystick = joystick;
             comTracker.loadConfig(TRKConfig);

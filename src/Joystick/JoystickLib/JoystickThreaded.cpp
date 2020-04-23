@@ -88,6 +88,17 @@ void JoystickThreaded::loadConfig(){
                     QString::fromStdString(std::string(pFunc->GetText())));
             pListElementButton = pListElementButton->NextSiblingElement("Button");
         }
+        for(int i=0;i<m_axes.size(); i++){
+            if(m_axes.at(i)->mapFunc() == "Roll"){
+                m_axisRoll = m_axes.at(i)->id();
+            }else if(m_axes.at(i)->mapFunc() == "Pitch"){
+                m_axisPitch = m_axes.at(i)->id();
+            }else if(m_axes.at(i)->mapFunc() == "Yaw"){
+                m_axisYaw = m_axes.at(i)->id();
+            }else if(m_axes.at(i)->mapFunc() == "Throttle"){
+                m_axisThrottle = m_axes.at(i)->id();
+            }
+        }
     }else{
         saveConfig();
     }
@@ -246,6 +257,7 @@ void JoystickThreaded::changeAxisValue(int axisID, float value){
     if(axisID < m_axes.size()){
 //        qDebug("axisStateChanged %d value to %f\n", axisID, value);
         m_axesTemp[axisID]->setValue(value);
+        m_axes[axisID]->setValue(value);
         Q_EMIT axisValueChanged(axisID,value);
     }
 }

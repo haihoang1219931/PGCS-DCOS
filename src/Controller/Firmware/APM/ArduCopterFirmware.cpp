@@ -90,7 +90,7 @@ void ArduCopterFirmware::initializeVehicle()
     m_vehicle->requestDataStream(MAV_DATA_STREAM_RAW_SENSORS,     2);
     m_vehicle->requestDataStream(MAV_DATA_STREAM_EXTENDED_STATUS, 2);
     m_vehicle->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS,     2);
-//    m_vehicle->requestDataStream(MAV_DATA_STREAM_RAW_CONTROLLER,  10);
+    //    m_vehicle->requestDataStream(MAV_DATA_STREAM_RAW_CONTROLLER,  10);
     m_vehicle->requestDataStream(MAV_DATA_STREAM_POSITION,        5);//position
     m_vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA1,          6);//attitude
     m_vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA2,          6);//attitude
@@ -121,12 +121,12 @@ void ArduCopterFirmware::commandTakeoff( double altitudeRelative)
     double minimumAltitude = minimumTakeoffAltitude();
     double vehicleAltitudeAMSL = m_vehicle->altitudeAMSL();
     double takeoffAltRel = vehicleAltitudeAMSL > minimumAltitude ?
-                           vehicleAltitudeAMSL : minimumAltitude;
+                vehicleAltitudeAMSL : minimumAltitude;
     m_vehicle->sendMavCommand(m_vehicle->defaultComponentId(),
-                            MAV_CMD_NAV_TAKEOFF,
-                            true, // show error
-                            0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                            static_cast<float>(takeoffAltRel)); // Relative altitude
+                              MAV_CMD_NAV_TAKEOFF,
+                              true, // show error
+                              0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                              static_cast<float>(takeoffAltRel)); // Relative altitude
     printf("takeoffAltRel = %f\r\n", takeoffAltRel);
 }
 
@@ -155,16 +155,16 @@ void ArduCopterFirmware::commandGotoLocation(const QGeoCoordinate &gotoCoord)
     cmd.lat_int = static_cast<int32_t>(gotoCoord.latitude()*1E7);
     cmd.lon_int = static_cast<int32_t>(gotoCoord.longitude()*1E7);
     cmd.alt = static_cast<float>(altitudeSet);
-//    cmd.x = 0.0f;
-//    cmd.y = 0.0f;
-//    cmd.z = static_cast<float>(-newAltitude);
+    //    cmd.x = 0.0f;
+    //    cmd.y = 0.0f;
+    //    cmd.z = static_cast<float>(-newAltitude);
 
     mavlink_msg_set_position_target_global_int_encode_chan(
-        static_cast<uint8_t>(m_vehicle->communication()->systemId()),
-        static_cast<uint8_t>(m_vehicle->communication()->componentId()),
-        m_vehicle->communication()->mavlinkChannel(),
-        &msg,
-        &cmd);
+                static_cast<uint8_t>(m_vehicle->communication()->systemId()),
+                static_cast<uint8_t>(m_vehicle->communication()->componentId()),
+                m_vehicle->communication()->mavlinkChannel(),
+                &msg,
+                &cmd);
 
     m_vehicle->sendMessageOnLink(m_vehicle->communication(), msg);
 }
@@ -193,16 +193,16 @@ void ArduCopterFirmware::commandSetAltitude(double newAltitude)
     cmd.lat_int = static_cast<int32_t>(m_vehicle->coordinate().latitude()*1E7);
     cmd.lon_int = static_cast<int32_t>(m_vehicle->coordinate().longitude()*1E7);
     cmd.alt = static_cast<float>(newAltitude);
-//    cmd.x = 0.0f;
-//    cmd.y = 0.0f;
-//    cmd.z = static_cast<float>(-newAltitude);
+    //    cmd.x = 0.0f;
+    //    cmd.y = 0.0f;
+    //    cmd.z = static_cast<float>(-newAltitude);
 
     mavlink_msg_set_position_target_global_int_encode_chan(
-        static_cast<uint8_t>(m_vehicle->communication()->systemId()),
-        static_cast<uint8_t>(m_vehicle->communication()->componentId()),
-        m_vehicle->communication()->mavlinkChannel(),
-        &msg,
-        &cmd);
+                static_cast<uint8_t>(m_vehicle->communication()->systemId()),
+                static_cast<uint8_t>(m_vehicle->communication()->componentId()),
+                m_vehicle->communication()->mavlinkChannel(),
+                &msg,
+                &cmd);
 
     m_vehicle->sendMessageOnLink(m_vehicle->communication(), msg);
 }
@@ -215,7 +215,7 @@ void ArduCopterFirmware::commandChangeSpeed(double speedChange)
 }
 
 void ArduCopterFirmware::commandOrbit(const QGeoCoordinate &centerCoord,
-        double radius, double amslAltitude)
+                                      double radius, double amslAltitude)
 {
     Q_UNUSED(centerCoord);
     Q_UNUSED(radius);
@@ -254,12 +254,12 @@ void ArduCopterFirmware::setCurrentMissionSequence( int seq)
     mavlink_message_t msg;
     printf("setCurrentMissionSequence to %d\r\n", seq);
     mavlink_msg_mission_set_current_pack_chan(m_vehicle->communication()->systemId(),
-            m_vehicle->communication()->componentId(),
-            m_vehicle->communication()->mavlinkChannel(),
-            &msg,
-            m_vehicle->id(),
-            m_vehicle->_compID,
-            seq);
+                                              m_vehicle->communication()->componentId(),
+                                              m_vehicle->communication()->mavlinkChannel(),
+                                              &msg,
+                                              m_vehicle->id(),
+                                              m_vehicle->_compID,
+                                              seq);
     m_vehicle->sendMessageOnLink(m_vehicle->m_com, msg);
 }
 
@@ -308,7 +308,7 @@ void ArduCopterFirmware::setHomeHere(float lat, float lon, float alt){
         return;
     printf("Set home altitude = %f\r\n",static_cast<double>(alt));
     m_vehicle->sendMavCommand(m_vehicle->defaultComponentId(), MAV_CMD_DO_SET_HOME, true,
-                            0,0,0,0, lat,lon,alt);
+                              0,0,0,0, lat,lon,alt);
 }
 void ArduCopterFirmware::sendJoystickData(){
 
@@ -325,30 +325,30 @@ void ArduCopterFirmware::sendJoystickData(){
     float yaw = axisYaw != nullptr?axisYaw->value()*(axisYaw->inverted()?-1:1):0;
     float throttle = axisThrottle != nullptr?axisThrottle->value()*(axisThrottle->inverted()?-1:1):0;
     mavlink_msg_rc_channels_override_pack_chan(
-        m_vehicle->communication()->systemId(),
-        m_vehicle->communication()->componentId(),
-        m_vehicle->communication()->mavlinkChannel(),
-        &msg,
-        m_vehicle->id(),
-        m_vehicle->_compID,
-        static_cast<uint16_t>(convertRC(roll,1)),
-        static_cast<uint16_t>(convertRC(pitch,2)),
-        static_cast<uint16_t>(convertRC(throttle,3)),
-        static_cast<uint16_t>(convertRC(yaw,4)),
-        0,//static_cast<uint16_t>(convertRC(0,5)),
-        0,//static_cast<uint16_t>(convertRC(0,6)),
-        0,//static_cast<uint16_t>(convertRC(0,7)),
-        0,//static_cast<uint16_t>(convertRC(0,8)),
-        0,//static_cast<uint16_t>(convertRC(0,9)),
-        0,//static_cast<uint16_t>(convertRC(0,10)),
-        0,//static_cast<uint16_t>(convertRC(0,11)),
-        0,//static_cast<uint16_t>(convertRC(0,12)),
-        0,//static_cast<uint16_t>(convertRC(0,13)),
-        0,//static_cast<uint16_t>(convertRC(0,14)),
-        0,//static_cast<uint16_t>(convertRC(0,15)),
-        0,//static_cast<uint16_t>(convertRC(0,16)),
-        0,//static_cast<uint16_t>(convertRC(0,17)),
-        0//static_cast<uint16_t>(convertRC(0,18))
+                m_vehicle->communication()->systemId(),
+                m_vehicle->communication()->componentId(),
+                m_vehicle->communication()->mavlinkChannel(),
+                &msg,
+                m_vehicle->id(),
+                m_vehicle->_compID,
+                static_cast<uint16_t>(convertRC(m_vehicle->flightMode() == "LOITER"?roll:0,1)),
+                static_cast<uint16_t>(convertRC(m_vehicle->flightMode() == "LOITER"?pitch:0,2)),
+                static_cast<uint16_t>(convertRC(m_vehicle->flightMode() == "LOITER"?throttle:0,3)),
+                static_cast<uint16_t>(convertRC(m_vehicle->flightMode() == "LOITER"?yaw:0,4)),
+                0,//static_cast<uint16_t>(convertRC(0,5)),
+                0,//static_cast<uint16_t>(convertRC(0,6)),
+                0,//static_cast<uint16_t>(convertRC(0,7)),
+                0,//static_cast<uint16_t>(convertRC(0,8)),
+                0,//static_cast<uint16_t>(convertRC(0,9)),
+                0,//static_cast<uint16_t>(convertRC(0,10)),
+                0,//static_cast<uint16_t>(convertRC(0,11)),
+                0,//static_cast<uint16_t>(convertRC(0,12)),
+                0,//static_cast<uint16_t>(convertRC(0,13)),
+                0,//static_cast<uint16_t>(convertRC(0,14)),
+                0,//static_cast<uint16_t>(convertRC(0,15)),
+                0,//static_cast<uint16_t>(convertRC(0,16)),
+                0,//static_cast<uint16_t>(convertRC(0,17)),
+                0//static_cast<uint16_t>(convertRC(0,18))
                 );
     m_vehicle->sendMessageOnLink(m_vehicle->communication(),msg);
 }
@@ -361,6 +361,8 @@ void ArduCopterFirmware::handleJSButton(int id, bool clicked){
             }
             else if(button->mapFunc() == "PIC/CIC"){
                 m_vehicle->setFlightMode(clicked?"Loiter":"Guided");
+            }else if(button->mapFunc() == "CIC/PIC"){
+                m_vehicle->setFlightMode(!clicked?"Loiter":"Guided");
             }
         }
     }
@@ -371,15 +373,23 @@ float ArduCopterFirmware::convertRC(float input, int channel){
         float axisMin = -32768;
         float axisMax = 32768;
         float axisZero = 0;
-        float min = m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_MIN").toFloat();
-        float max = m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_MAX").toFloat();
-        float trim = m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_TRIM").toFloat();
-        if(input < 0){
-            result = (input-axisZero) / (axisMin-axisZero) * (min-trim)+trim;
+        float min = m_vehicle->paramsController()->containKey("RC"+QString::fromStdString(std::to_string(channel))+"_MIN")?
+                    m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_MIN").toFloat():1000;
+        float max = m_vehicle->paramsController()->containKey("RC"+QString::fromStdString(std::to_string(channel))+"_MIN")?
+                    m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_MAX").toFloat():2000;
+        float trim = m_vehicle->paramsController()->containKey("RC"+QString::fromStdString(std::to_string(channel))+"_MIN")?
+                    m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_TRIM").toFloat():1500;
+
+        if(channel != 3){
+            if(input < 0){
+                result = (input-axisZero) / (axisMin-axisZero) * (min-trim)+trim;
+            }else {
+                result = (input-axisZero) / (axisMax-axisZero) * (max-trim)+trim;
+            }
         }else{
-            result = (input-axisZero) / (axisMax-axisZero) * (max-trim)+trim;
+            result = (max + min) / 2;
         }
-//        printf("RC%d[%f - %f - %f] from %f to %f\r\n",channel,min,trim,max,input,result);
+        //        printf("RC%d[%f - %f - %f] from %f to %f\r\n",channel,min,trim,max,input,result);
     }
 
     return result;

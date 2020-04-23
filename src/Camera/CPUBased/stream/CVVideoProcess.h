@@ -32,7 +32,7 @@
 #define MOVE_CLICK_TRACK
 //#define USE_SALIENCY
 #define DEBUG_TIME_OFF
-
+Q_DECLARE_METATYPE(cv::Mat)
 using namespace rva;
 class  CVVideoProcess : public QObject
 {
@@ -67,10 +67,10 @@ class  CVVideoProcess : public QObject
         float m_irFOV = 0;
         float m_eoFOV = 0;
         bool m_stop = false;
-        bool m_usingIPC = false;
+        bool m_usingIPC = true;
         bool m_trackEnable = true;
         bool m_stabEnable = false;
-        bool m_recordEnable = true;
+        bool m_recordEnable = false;
         bool m_sharedEnable = true;
         bool m_setTrack = false;
         bool GlobalTrackInited;
@@ -102,6 +102,7 @@ class  CVVideoProcess : public QObject
         void objectSizeChange(float zoomRate);
         void trackInitSuccess(bool success, int _x, int _y, int _width, int _height);
         void streamFrameSizeChanged(int width, int height);
+        void readyDrawOnViewerID(cv::Mat img, int viewerID);
     public Q_SLOTS:
         void capture();
         void doWork();

@@ -4,6 +4,7 @@ OnlineCCs                        1.0 OnlineCCs.qml
 OnlineFCSs                       1.0 OnlineFCSs.qml
 OnlineUsers                      1.0 OnlineUsers.qml
 PcdVideo                         1.0 PcdVideo.qml
+RoomMsg                          1.0 RoomMsg.qml
 Toast                            1.0 Toast.qml
 UserOnMap                        1.0 UserOnMap.qml
 

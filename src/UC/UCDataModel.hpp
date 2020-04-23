@@ -86,8 +86,10 @@ namespace UC
             }
             void setIPAddress(QString ipAddress)
             {
-                m_ipAddress = ipAddress;
-                Q_EMIT ipAddressChanged(ipAddress);
+                if (ipAddress != m_ipAddress) {
+                    m_ipAddress = ipAddress;
+                    Q_EMIT ipAddressChanged(ipAddress);
+                }
             }
 
             QString userId()
@@ -96,8 +98,10 @@ namespace UC
             }
             void setUserId(QString userId)
             {
-                m_userId = userId;
-                Q_EMIT userIdChanged(userId);
+                if (userId != m_userId) {
+                    m_userId = userId;
+                    Q_EMIT userIdChanged(userId);
+                }
             }
 
             QString roomName()
@@ -106,8 +110,10 @@ namespace UC
             }
             void setRoomName(QString roomName)
             {
-                m_roomName = roomName;
-                Q_EMIT roomNameChanged(roomName);
+                if (roomName != m_roomName) {
+                    m_roomName = roomName;
+                    Q_EMIT roomNameChanged(roomName);
+                }
             }
 
             bool available()
@@ -116,8 +122,10 @@ namespace UC
             }
             void setAvailable(bool available)
             {
-                m_available = available;
-                Q_EMIT availableChanged(available);
+                if (available != m_available) {
+                    m_available = available;
+                    Q_EMIT availableChanged(available);
+                }
             }
 
             int role()
@@ -126,8 +134,10 @@ namespace UC
             }
             void setRole(int role)
             {
-                m_role = role;
-                Q_EMIT roleChanged(role);
+                if (role != m_role){
+                    m_role = role;
+                    Q_EMIT roleChanged(role);
+                }
             }
 
             bool shared()
@@ -136,8 +146,10 @@ namespace UC
             }
             void setShared(bool shared)
             {
-                m_shared = shared;
-                Q_EMIT sharedChanged(shared);
+                if (shared != m_shared) {
+                    m_shared = shared;
+                    Q_EMIT sharedChanged(shared);
+                }
             }
 
             float latitude()
@@ -146,9 +158,7 @@ namespace UC
             }
             void setLatitude(float latitude)
             {
-                printf("%s = %f\r\n", __func__, latitude);
                 m_latitude = latitude;
-                //            printf("setLatitude = %f\r\n", m_latitude);
                 Q_EMIT latitudeChanged(latitude);
             }
 
@@ -158,9 +168,7 @@ namespace UC
             }
             void setLongitude(float longitude)
             {
-                printf("%s = %f\r\n", __func__, longitude);
                 m_longitude = longitude;
-                printf("setLongitude = %f\r\n", m_longitude);
                 Q_EMIT longitudeChanged(longitude);
             }
 
@@ -180,8 +188,10 @@ namespace UC
             }
             void setName(QString name)
             {
-                m_name = name;
-                Q_EMIT nameChanged(name);
+                if (name != m_name) {
+                    m_name = name;
+                    Q_EMIT nameChanged(name);
+                }
             }
 
             bool isSelected()
@@ -190,7 +200,6 @@ namespace UC
             }
             void setIsSelected(bool isSelected)
             {
-                printf("%s[%s] = %s\r\n", __func__, m_uid.toStdString().c_str(), isSelected ? "true" : "false");
                 m_isSelected = isSelected;
                 Q_EMIT isSelectedChanged();
             }

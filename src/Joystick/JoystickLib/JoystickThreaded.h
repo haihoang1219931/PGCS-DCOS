@@ -214,8 +214,6 @@ Q_SIGNALS:
 private:
     QThread *m_workerThread;
     JoystickTask* m_task = nullptr;
-//    QMap<QString,JSAxis*> m_axesMap;
-//    QMap<QString,JSButton*> m_buttonsMap;
     QList<JSAxis*> m_axes;
     QList<JSAxis*> m_axesTemp;
     QList<JSButton*> m_buttons;

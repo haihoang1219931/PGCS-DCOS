@@ -50,6 +50,9 @@ QVariant ParamsController::getParam(QString paramName){
     }
     return result;
 }
+bool ParamsController::containKey(QString paramName){
+    return _paramMap.keys().contains(paramName);
+}
 void ParamsController::_handleMessageReceived(mavlink_message_t msg)
 {
 #ifdef DEBUG_FUNC
