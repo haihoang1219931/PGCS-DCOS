@@ -169,8 +169,7 @@ public:
     Q_INVOKABLE virtual void start(){}
     Q_INVOKABLE virtual void play(){}
     Q_INVOKABLE virtual void stop(){}
-    Q_INVOKABLE virtual void setVideo(QString _streamingAddress){}
-    Q_INVOKABLE virtual void setAddress(QString _ip, int _port){}
+    Q_INVOKABLE virtual void setVideo(QString _ip,int _port = 0){}
     Q_INVOKABLE virtual void setStab(bool enable){}
     Q_INVOKABLE virtual void setRecord(bool enable){}
     Q_INVOKABLE virtual void setShare(bool enable){}
@@ -246,6 +245,7 @@ protected:
     bool m_enSteer = false;
     bool m_enTrack = false;
     bool m_enOD = false;
+    bool m_enPD = false;
     QList<TrackObjectInfo *> m_listTrackObjectInfos;
 };
 

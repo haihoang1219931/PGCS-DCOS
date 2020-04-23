@@ -135,14 +135,11 @@ CVVideoCaptureThread::~CVVideoCaptureThread()
     delete m_mutexCapture;
     delete m_mutexProcess;
 }
-void CVVideoCaptureThread::setVideo(QString value)
-{
-    m_capture->setSource(value.toStdString() + " ! appsink name=mysink sync=true async=true");
-}
-void CVVideoCaptureThread::setAddress(QString _ip, int _port)
+void CVVideoCaptureThread::setVideo(QString _ip, int _port)
 {
     m_capture->m_ip = _ip.toStdString();
     m_capture->m_port = _port;
+    m_capture->setSource(_ip.toStdString() + " ! appsink name=mysink sync=true async=true");
 }
 void CVVideoCaptureThread::start()
 {

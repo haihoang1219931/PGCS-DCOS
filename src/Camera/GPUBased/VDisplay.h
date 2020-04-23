@@ -18,161 +18,43 @@
 #include <QVariant>
 #include "OD/yolo_v2_class.hpp"
 #include "Clicktrack/recognition.h"
+#include "Camera/VideoEngine/VideoEngineInterface.h"
 #include "Camera/VideoDisplay/ImageItem.h"
 #include "Camera/Cache/TrackObject.h"
 
-class VDisplay : public QObject
+class VDisplay : public VideoEngineInterface
 {
         Q_OBJECT
-        Q_PROPERTY(QQmlListProperty<TrackObjectInfo> listTrackObjectInfos READ listTrackObjectInfos NOTIFY listTrackObjectInfosChanged);
-        Q_PROPERTY(QAbstractVideoSurface *videoSurface READ videoSurface WRITE
-                   setVideoSurface)
-        Q_PROPERTY(QSize sourceSize READ sourceSize NOTIFY sourceSizeChanged)
-        Q_PROPERTY(int frameID READ frameID)
-        Q_PROPERTY(bool enOD READ enOD)
-        Q_PROPERTY(bool enTrack READ enTrack)
-        Q_PROPERTY(bool enSteer READ enSteer)
-        Q_PROPERTY(PlateLog* plateLog READ plateLog WRITE setPlateLog NOTIFY plateLogChanged)
     public:
-        explicit VDisplay(QObject *_parent = 0);
+        explicit VDisplay(VideoEngineInterface *_parent = 0);
         ~VDisplay();
-    PlateLog* plateLog(){return m_vDisplayWorker->m_plateLog;};
-    void setPlateLog(PlateLog* plateLog){
+    PlateLog* plateLog() override{return m_vDisplayWorker->m_plateLog;};
+    void setPlateLog(PlateLog* plateLog) override{
         if(m_vDisplayWorker != nullptr)
             m_vDisplayWorker->m_plateLog = plateLog;
             m_vTrackWorker->m_plateLog = plateLog;
         };
-        QAbstractVideoSurface *videoSurface();
-        void setVideoSurface(QAbstractVideoSurface *_videoSurface);
-        QQmlListProperty<TrackObjectInfo> listTrackObjectInfos()
-        {
-            return QQmlListProperty<TrackObjectInfo>(this, m_listTrackObjectInfos);
-        }
-        void addTrackObjectInfo(TrackObjectInfo* object)
-        {
-            this->m_listTrackObjectInfos.append(object);
-            Q_EMIT listTrackObjectInfosChanged();
-        }
-        void removeTrackObjectInfo(const int& sequence) {
-            if(sequence < 0 || sequence >= this->m_listTrackObjectInfos.size()){
-                return;
-            }
-
-            // remove user on list
-            this->m_listTrackObjectInfos.removeAt(sequence);
-            Q_EMIT listTrackObjectInfosChanged();
-        }
-        void removeTrackObjectInfo(const QString &userUid)
-        {
-            // check room contain user
-            int sequence = -1;
-            for (int i = 0; i < this->m_listTrackObjectInfos.size(); i++) {
-                if (this->m_listTrackObjectInfos[i]->userId() == userUid) {
-                    sequence = i;
-                    break;
-                }
-            }
-            removeTrackObjectInfo(sequence);
-        }
-        Q_INVOKABLE void updateTrackObjectInfo(const QString& userUid, const QString& attr, const QVariant& newValue) {
-
-            for(int i = 0; i < this->m_listTrackObjectInfos.size(); i++ ) {
-                TrackObjectInfo* object = this->m_listTrackObjectInfos[i];
-                if(userUid.contains(this->m_listTrackObjectInfos.at(i)->userId())) {
-                    if( attr == "RECT"){
-                        object->setRect(newValue.toRect());
-                    }else if( attr == "SIZE"){
-                        object->setSourceSize(newValue.toSize());
-                    }else if( attr == "LATITUDE"){
-                        object->setLatitude(newValue.toFloat());
-                    }else if( attr == "LONGTITUDE"){
-                        object->setLongitude(newValue.toFloat());
-                    }else if( attr == "SPEED"){
-                        object->setSpeed(newValue.toFloat());
-                    }else if( attr == "ANGLE"){
-                        object->setAngle(newValue.toFloat());
-                    }else if( attr == "SCREEN_X"){
-                        object->setScreenX(newValue.toInt());
-                    }else if( attr == "SCREEN_Y"){
-                        object->setScreenY(newValue.toInt());
-                    }
-                    if( attr == "SELECTED"){
-                        object->setIsSelected(newValue.toBool());
-                    }
-                }else{
-                    if( attr == "SELECTED"){
-                        object->setIsSelected(false);
-                    }
-                }
-            }
-        }
-        QSize sourceSize();
-        int frameID();
-        void init();
-        void stop();
-        bool enOD()
-        {
-            return m_enOD;
-        }
-        bool enTrack()
-        {
-            return m_enTrack;
-        }
-        bool enSteer()
-        {
-            return m_enSteer;
-        }
-        void update();
-        QMap<int,bool>  freezeMap(){ return m_freezeMap; }
-    Q_SIGNALS:
-        void listTrackObjectInfosChanged();
-        void determinedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h,
-                                     double _pxStab,double _pyStab);
-        void objectLost();
-        void determinedPlateOnTracking(QString _imgPath, QString _plateID);
-        void plateLogChanged();
+    void init();
     public Q_SLOTS:
-
         void onReceivedFrame(int _id, QVideoFrame _frame);
         void onReceivedFrame();
-        void slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h,
-                                       double _pxStab,double _pyStab);
-        void slObjectLost();
-        void drawOnViewerID(cv::Mat img, int viewerID);
     public:
-        Q_INVOKABLE void start();
-        Q_INVOKABLE int addSubViewer(ImageItem *viewer);
-        Q_INVOKABLE void removeSubViewer(int viewerID);
-        Q_INVOKABLE void updateVideoSurface(int width = -1, int height = -1);
-        Q_INVOKABLE void setObjectDetect(bool enable);
-        Q_INVOKABLE void setPowerLineDetect(bool enable);
-        Q_INVOKABLE void setVideoSource(QString _ip, int _port);
+        Q_INVOKABLE void start() override;
+        Q_INVOKABLE void stop() override;
+        Q_INVOKABLE void setObjectDetect(bool enable) override;
+        Q_INVOKABLE void setPowerLineDetect(bool enable) override;
         Q_INVOKABLE void searchByClass(QVariantList _classList);
-        Q_INVOKABLE void setTrackAt(int _id, double _px, double _py, double _w, double _h);
-        Q_INVOKABLE void disableObjectDetect();
-        Q_INVOKABLE void enableObjectDetect();
+        Q_INVOKABLE void setTrackAt(int _id, double _px, double _py, double _w, double _h) override;
+        Q_INVOKABLE void disableObjectDetect() override;
+        Q_INVOKABLE void enableObjectDetect() override;
         Q_INVOKABLE void setVideoSavingState(bool _state);
-        Q_INVOKABLE void setVideo(QString _ip, int _port = 0);
-        Q_INVOKABLE void enVisualLock();
-        Q_INVOKABLE void disVisualLock();
-        Q_INVOKABLE void setDigitalStab(bool _en);
+        Q_INVOKABLE void setVideo(QString _ip, int _port = 0) override;
+        Q_INVOKABLE void enVisualLock() override;
+        Q_INVOKABLE void disVisualLock() override;
+        Q_INVOKABLE void setDigitalStab(bool _en) override;
         Q_INVOKABLE void setGimbalRecorder(bool _en);
-        Q_INVOKABLE void changeTrackSize(int _val);
-
-    Q_SIGNALS:
-        void sourceSizeChanged(int newWidth, int newHeight);
-
+        Q_INVOKABLE void changeTrackSize(int _val) override;
     private:
-        const QVideoFrame::PixelFormat VIDEO_OUTPUT_FORMAT =
-            QVideoFrame::PixelFormat::Format_RGB32;
-        QAbstractVideoSurface *m_videoSurface = nullptr;
-        // === sub viewer
-        QList<ImageItem*> m_listSubViewer;
-        QMutex imageDataMutex[10];
-        unsigned char imageData[10][34041600];
-        QMap<int,bool> m_freezeMap;
-        // sub viewer ===
-        QSize m_sourceSize;
         QThread *m_threadEODisplay;
         VDisplayWorker *m_vDisplayWorker;
         VFrameGrabber *m_vFrameGrabber;
@@ -181,28 +63,13 @@ class VDisplay : public QObject
         VMOTWorker *m_vMOTWorker;
 		VSearchWorker *m_vSearchWorker;
         VTrackWorker *m_vTrackWorker;
-        VSavingWorker *m_vSavingWorker;
-        VRTSPServer *m_vRTSPServer;
-        bool m_updateVideoSurface = false;
-        int m_updateCount = 0;
-        int m_updateMax = 2;
-        QSize m_videoSurfaceSize;
-        int m_id;
-
         // OD
         Detector *m_detector;
-        bool m_enSteer = false;
-        bool m_enTrack = false;
-        bool m_enOD = false;
-        bool m_enPD = false;
-
         // CLicktrack
         Detector *m_clicktrackDetector;
         OCR *m_OCR;
 		// Search
         Detector *m_searchDetector;
-private:
-        QList<TrackObjectInfo *> m_listTrackObjectInfos;
 };
 
 #endif // VDISPLAY_H

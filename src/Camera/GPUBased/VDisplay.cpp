@@ -1,9 +1,9 @@
 #include "VDisplay.h"
 
 
-VDisplay::VDisplay(QObject *_parent) : QObject(_parent)
+VDisplay::VDisplay(VideoEngineInterface *_parent) : VideoEngineInterface(_parent)
 {
-    m_id = -1;
+    m_frameID = -1;
     m_vFrameGrabber = new VFrameGrabber;
     m_vPreprocess = new VPreprocess;
     m_vODWorker = new VODWorker;
@@ -31,12 +31,6 @@ VDisplay::VDisplay(QObject *_parent) : QObject(_parent)
     m_videoSurfaceSize.setWidth(-1);
     m_videoSurfaceSize.setHeight(-1);
     init();
-}
-
-void VDisplay::setVideo(QString _ip, int _port)
-{
-    m_vFrameGrabber->setSource(_ip.toStdString(), _port);
-    m_vFrameGrabber->restartPipeline();
 }
 
 VDisplay::~VDisplay()
@@ -74,19 +68,6 @@ void VDisplay::init()
     m_vSearchWorker->setOCR(m_OCR);
 }
 
-int VDisplay::addSubViewer(ImageItem *viewer){
-    printf("%s[%d] %p\r\n",__func__,m_listSubViewer.size(),viewer);
-    this->freezeMap()[m_listSubViewer.size()] = true;
-    m_listSubViewer.append(viewer);
-    return m_listSubViewer.size() -1;
-}
-void VDisplay::removeSubViewer(int viewerID){
-     printf("%s[%d] %d\r\n",__func__,m_listSubViewer.size(),viewerID);
-    if(viewerID >= 0 && viewerID < m_listSubViewer.size()){
-        this->freezeMap().remove(viewerID);
-        m_listSubViewer.removeAt(viewerID);
-    }
-}
 void VDisplay::start()
 {
 
@@ -102,69 +83,11 @@ void VDisplay::start()
     m_threadEODisplay->start();
 }
 
-int VDisplay::frameID()
-{
-    return m_id;
-}
 
-QAbstractVideoSurface *VDisplay::videoSurface()
-{
-    return m_videoSurface;
-}
-
-void VDisplay::setVideoSurface(QAbstractVideoSurface *_videoSurface)
-{
-    printf("setVideoSurface");
-
-    if (m_videoSurface != _videoSurface) {
-        m_videoSurface = _videoSurface;
-        update();
-    }
-}
-void VDisplay::update()
-{
-    printf("Update video surface(%d,%d)\r\n",
-           m_videoSurfaceSize.width(),
-           m_videoSurfaceSize.height());
-    if (m_videoSurface) {
-        if (m_videoSurface->isActive()) {
-            m_videoSurface->stop();
-        }
-        if (!m_videoSurface->start(QVideoSurfaceFormat(m_videoSurfaceSize, VIDEO_OUTPUT_FORMAT))) {
-            printf("Could not start QAbstractVideoSurface, error: %d", m_videoSurface->error());
-        } else {
-            printf("Start QAbstractVideoSurface done\r\n");
-        }
-    }
-}
-QSize VDisplay::sourceSize()
-{
-    return m_sourceSize;
-}
-
-
-void VDisplay::slObjectLost(){
-    removeTrackObjectInfo(0);
-    Q_EMIT objectLost();
-}
-void VDisplay::slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h,
-                                         double _pxStab,double _pyStab){
-    updateTrackObjectInfo("Object","RECT",QVariant(QRect(
-                                                       static_cast<int>(_pxStab),
-                                                       static_cast<int>(_pyStab),
-                                                       static_cast<int>(_oW),
-                                                       static_cast<int>(_oH)))
-                          );
-    updateTrackObjectInfo("Object","LATITUDE",QVariant(20.975092+_px/1000000));
-    updateTrackObjectInfo("Object","LONGIITUDE",QVariant(105.307680+_py/1000000));
-    updateTrackObjectInfo("Object","SPEED",QVariant(_py));
-    updateTrackObjectInfo("Object","ANGLE",QVariant(_px));
-    Q_EMIT determinedTrackObjected(_id,_px,_py,_oW, _oH, _w, _h,_pxStab,_pyStab);
-}
 void VDisplay::onReceivedFrame(int _id, QVideoFrame frame)
 {
     if(m_videoSurface!=nullptr){
-        m_id = _id;
+        m_frameID = _id;
         if (m_sourceSize.width() != frame.width() ||
                 m_sourceSize.height() != frame.height()) {
             m_sourceSize.setWidth(frame.width());
@@ -185,7 +108,7 @@ void VDisplay::onReceivedFrame(int _id, QVideoFrame frame)
 void VDisplay::onReceivedFrame()
 {
     if(m_videoSurface!=nullptr){
-        m_id = m_vDisplayWorker->m_currID;
+        m_frameID = m_vDisplayWorker->m_currID;
         if(m_updateVideoSurface){
             if(m_updateCount < m_updateMax){
                 update();
@@ -210,13 +133,7 @@ void VDisplay::onReceivedFrame()
         frame.unmap();
     }
 }
-void VDisplay::updateVideoSurface(int width, int height){
-    m_updateCount = 0;
-    m_updateVideoSurface = true;
-    m_videoSurfaceSize.setWidth(width);
-    m_videoSurfaceSize.setHeight(height);
-}
-void VDisplay::setVideoSource(QString _ip, int _port)
+void VDisplay::setVideo(QString _ip, int _port)
 {
     m_vFrameGrabber->setSource(_ip.toStdString(), _port);
 }
@@ -350,34 +267,4 @@ void VDisplay::stop()
 void VDisplay::changeTrackSize(int _val)
 {
     m_vTrackWorker->changeTrackSize(_val);
-}
-void VDisplay::drawOnViewerID(cv::Mat img, int viewerID){
-    if(viewerID >=0 && viewerID < m_listSubViewer.size()){
-        ImageItem* tmpViewer = m_listSubViewer[viewerID];
-        if(tmpViewer != nullptr){
-            if(viewerID == 0){
-                if(m_sourceSize.width() != img.cols ||
-                        m_sourceSize.height() != img.rows){
-                    m_sourceSize.setWidth(img.cols);
-                    m_sourceSize.setHeight(img.rows);
-//                    sourceSizeChanged(img.cols,img.rows);
-                }
-            }
-            cv::Mat imgDraw;
-            cv::Mat imgResize;
-            cv::resize(img,imgResize,cv::Size(tmpViewer->boundingRect().width(),tmpViewer->boundingRect().height()));
-
-            if(imgResize.channels() == 3){
-                cv::cvtColor(imgResize,imgDraw,cv::COLOR_BGR2RGBA);
-            }else if(imgResize.channels() == 4){
-                cv::cvtColor(imgResize,imgDraw,cv::COLOR_RGBA2BGRA);
-            }
-            imageDataMutex[viewerID].lock();
-            memcpy(imageData[viewerID],imgDraw.data,imgDraw.cols*imgDraw.rows*4);
-            QImage tmp((uchar*)imageData[viewerID], imgDraw.cols, imgDraw.rows, QImage::Format_RGBA8888);
-            tmpViewer->setImage(tmp);
-            imageDataMutex[viewerID].unlock();
-        }else{
-        }
-    }
 }

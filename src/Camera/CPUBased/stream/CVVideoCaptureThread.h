@@ -30,8 +30,7 @@ class CVVideoCaptureThread : public VideoEngineInterface
         Q_INVOKABLE void start() override;
         Q_INVOKABLE void play() override;
         Q_INVOKABLE void stop() override;
-        Q_INVOKABLE void setVideo(QString _streamingAddress) override;
-        Q_INVOKABLE void setAddress(QString _ip, int _port) override;
+        Q_INVOKABLE void setVideo(QString _ip, int _port=0) override;
         Q_INVOKABLE void setStab(bool enable) override;
         Q_INVOKABLE void setRecord(bool enable) override;
         Q_INVOKABLE void setShare(bool enable) override;
