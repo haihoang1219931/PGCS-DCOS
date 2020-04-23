@@ -1,5 +1,5 @@
 #include "Vehicle.h"
-
+#include "../../Joystick/JoystickLib/JoystickThreaded.h"
 #include "../Firmware/FirmwarePluginManager.h"
 #include "../Firmware/FirmwarePlugin.h"
 Vehicle::Vehicle(QObject *parent) : QObject(parent)

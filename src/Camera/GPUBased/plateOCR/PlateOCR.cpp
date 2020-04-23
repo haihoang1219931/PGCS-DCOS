@@ -181,7 +181,7 @@ std::vector<bbox_t> PlateOCR::getPlateBoxes(const image_t& frame, const cv::Rect
 	return m_plate_detector->gpu_detect_roi_I420(frame, roi, 0.2f, false);
 }
 
-std::string PlateOCR::getPlateString(const image_t& frame, const cv::Mat &cpu_gray_frame, const bbox_t& box)
+std::string PlateOCR::getPlateString(const image_t& frame, const cv::Mat &cpu_gray_frame, const cv::Mat &cpu_bgr_frame, const bbox_t& box)
 {
 	if (m_maxPlateDetect-- < 0) return std::string();
 //    cv::Rect searchRoi(0, 72, 1280, 576);
@@ -203,6 +203,38 @@ std::string PlateOCR::getPlateString(const image_t& frame, const cv::Mat &cpu_gr
 		{
 			//              std::cout << "possible plate" << std::endl;
 			cv::Rect r(i.x, i.y, i.w, i.h);
+            // Rectangle for checking type of plates: White or blue?
+            cv::Rect p_rect(r.x >= 0 ? r.x : 0,
+                            r.y >= 0 ? r.y : 0,
+                            r.x + r.width < cpu_gray_frame.cols ? r.width : cpu_gray_frame.cols - r.x,
+                            r.y + r.height < cpu_gray_frame.rows ? r.height : cpu_gray_frame.rows - r.y);
+            cv::Mat bgr_plate = cpu_bgr_frame(p_rect).clone();
+            double minVal, maxVal;
+            cv::Mat float_plate;
+            int blue = 0;
+            int white = 0;
+            int black = 0;
+            cv::minMaxLoc(bgr_plate, &minVal, &maxVal);
+            bgr_plate.convertTo(float_plate, CV_32FC3);
+
+            for(uint r = 0; r < float_plate.rows; r++)
+                for(uint c = 0; c  < float_plate.cols; c++)
+                {
+                    for(int d = 0; d < 3; d++)
+                        float_plate.at<float>(r, 3 * c + d) = std::floor(255 * (float_plate.at<float>(r, 3 * c + d) - minVal) / (maxVal - minVal));
+                    if(std::abs(float_plate.at<float>(r, 3 * c) - float_plate.at<float>(r, 3 * c + 1)) >= 50.f || std::abs(float_plate.at<float>(r, 3 * c) - float_plate.at<float>(r, 3 * c + 2)) >= 50.f)
+                        blue++;
+                    else
+                    {
+                        if(float_plate.at<float>(r, 3 * c) < 50.f && float_plate.at<float>(r, 3 * c + 1) < 50.f && float_plate.at<float>(r, 3 * c + 2) < 50.f)
+                            black++;
+                        else
+                            white++;
+                    }
+                }
+
+            float blue_rate = (float)blue / (float)(bgr_plate.rows * bgr_plate.cols - black);
+            // End of checking
             r.x = MAX(r.x - 0.05 * r.width,  0);
             r.y = MAX(r.y - 0.05 * r.height, 0);
             r.width  = MIN(cpu_gray_frame.cols - r.x - 1, 1.1*r.width);
@@ -214,11 +246,16 @@ std::string PlateOCR::getPlateString(const image_t& frame, const cv::Mat &cpu_gr
 
 			cv::Mat cpu_plateimage( cpu_gray_frame(r) );
 			cv::Mat cpu_thresh_plate = deskewImage(cpu_plateimage);
+            cv::imwrite("/home/pgcs-01/Desktop/imgs/0.jpg", cpu_thresh_plate);
 
 			// TODO: output string from cpu_thresh_plate
             // do something with m_OCR
             if(!cpu_thresh_plate.empty())
             {
+                if(blue_rate >= 0.1f)
+                {
+                    cpu_thresh_plate = ~cpu_thresh_plate;
+                }
                 int plateType = i.obj_id;
                 int sign = -1;
                 std::vector<cv::Mat> chars = preprocess(cpu_thresh_plate, plateType, &sign);
@@ -267,21 +304,22 @@ void PlateOCR::setOCR(OCR* _OCR)
     m_OCR = _OCR;
 }
 
-void PlateOCR::run(std::vector<bbox_t> & track_vec, const image_t &frame, const cv::Mat &cpu_gray_frame, int max_info_read)
+void PlateOCR::run(std::vector<bbox_t> & track_vec, const image_t &frame, const cv::Mat &cpu_gray_frame, const cv::Mat &cpu_bgr_frame, int max_info_read)
 {
+    // Define region for searching
     cv::Rect searchRoi(0, 72, 1280, 576);
 	m_maxPlateDetect = max_info_read;
-	for (auto i : sort_indexes(track_vec)) {
+    for (auto i : sort_indexes(track_vec)) {// Sort objects that are tracked
         cv::Rect r(track_vec[i].x, track_vec[i].y, track_vec[i].w, track_vec[i].h);
         if(std::find(wanted_class.begin(), wanted_class.end(), track_vec[i].obj_id) == wanted_class.end() || (r & searchRoi) == r)
             continue;
 
         unsigned int cur_track_id = track_vec[i].track_id;
-        // track_vec[i].track_id not exists
         if (!data.count(cur_track_id)) {
             std::vector<std::string> current_data;
             current_data.push_back(std::string());
-            std::string plate = getPlateString(frame, cpu_gray_frame, track_vec[i]);
+            // Do OCR
+            std::string plate = getPlateString(frame, cpu_gray_frame, cpu_bgr_frame, track_vec[i]);
             if (!plate.empty()) {
                 current_data.push_back(plate);
                 // update database
@@ -297,7 +335,6 @@ void PlateOCR::run(std::vector<bbox_t> & track_vec, const image_t &frame, const 
             if (!cur_data[0].empty())
             {
                 track_vec[i].track_info.stringinfo = cur_data[0];
-//                std::cout << "===================>>> " << cur_data[0] << std::endl;
             }
             else {
                 if (cur_data.size() >= 4)
@@ -309,7 +346,6 @@ void PlateOCR::run(std::vector<bbox_t> & track_vec, const image_t &frame, const 
 
                     // return
                     cur_data[0] = temp;
-//                    std::cout << "**********>>" << cur_data[0] << std::endl;
                     track_vec[i].track_info.stringinfo = cur_data[0];
 
                     // update database
@@ -318,7 +354,7 @@ void PlateOCR::run(std::vector<bbox_t> & track_vec, const image_t &frame, const 
                 else
                 {
 
-                    std::string plate = getPlateString(frame, cpu_gray_frame, track_vec[i]);
+                    std::string plate = getPlateString(frame, cpu_gray_frame, cpu_bgr_frame, track_vec[i]);
 //                    std::string time = FileController::get_time_stamp();
 //                    std::string imgFile = "plates/"+ time+"_"+plate+".png";
 //                    std::string lineLog = time + ";" + plate + ";" + imgFile;

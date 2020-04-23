@@ -14,10 +14,10 @@ import QtQuick 2.9
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
-import QtWebEngine 1.7
-import QtGraphicalEffects 1.0
-
-import CustomViews.UIConstants  1.0
+import QtWebEngine 1.1
+import CustomViews.Components 1.0
+import CustomViews.UIConstants 1.0
+import io.qdt.dev   1.0
 Rectangle {
     id: rootComponent
     color: UIConstants.transparentBlue
@@ -35,7 +35,7 @@ Rectangle {
         //--- Attributes
         visible: true
         opacity: 1
-        url: UC_API?Qt.resolvedUrl(UcApiConfig.value("Settings:UCPCDVideoSource:Value:data")):Qt.resolvedUrl("")
+        url: Qt.resolvedUrl(UcApiConfig.value("Settings:UCPCDVideoSource:Value:data"))
         //--- Set permision to access video/audio
         onFeaturePermissionRequested: {
             grantFeaturePermission(securityOrigin, feature, true);
@@ -48,9 +48,9 @@ Rectangle {
         onJavaScriptConsoleMessage: {
             console.log(message);
         }
-        Component.onCompleted: {
-            console.log("pcdVideoView.url:"+pcdVideoView.url);
-        }
+//        Component.onCompleted: {
+//            console.log("pcdVideoView.url:"+pcdVideoView.url);
+//        }
 
         //--- Button group actions
         Row {

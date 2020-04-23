@@ -285,6 +285,7 @@ ApplicationWindow {
 
         //--- Signal inform that client socket connected to server
         onConnectedToServer: {
+            userOnMap.reloadPcdVideo();
             toast.toastContent = "UC module connected to server";
             toast.callActionAppearance =  false;
             toast.rejectButtonAppearance = false;
@@ -323,7 +324,7 @@ ApplicationWindow {
             JSON.parse(listUsers).forEach(function(eachUser, i) {
                 if(!UCDataModel.isUserExist(eachUser.name)){
                     var user = {};
-                    user.ipAddress = eachUser.ipAddress;
+                    user.ipAddress = eachUser.ip_address;
                     user.userId = eachUser.user_id;
                     user.roomName =  eachUser.room_name;
                     user.available = eachUser.available;
@@ -332,11 +333,20 @@ ApplicationWindow {
                     user.uid = eachUser.uid;
                     user.name = eachUser.name;
                     user.connectionState = eachUser.connection;
-                    user.latitude = eachUser.lat;
-                    user.longitude = eachUser.lng;
+                    user.latitude = 21.039140;
+                    user.longitude = 105.544545;
                     UCDataModel.addUser(user);
+                } else {
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.IP_ADDRESS, eachUser.ip_address);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.USER_ID, eachUser.user_id);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.ROOM_NAME, eachUser.room_name);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.AVAILABLE, eachUser.available);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.SHARED, eachUser.shared);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.NAME, eachUser.name);
+                    UCDataModel.updateUser(eachUser.uid, UserAttribute.CONNECTION_STATE, eachUser.connection);
                 }
             });
+            mapPane.updateUsersOnMap();
             console.log("--------------------------------------> Done handle received list users\n");
         }
 
@@ -371,15 +381,24 @@ ApplicationWindow {
         onPcdRequestShareVideo: {
             console.log("\nHanlde signal onPcdRequestShareVideo:");
             console.log("--------------------------------------> Data: pcdUid = " + pcdUid);
-            for (var i = 0; i < userOnMap.listUsersOnMap.count; i++) {
-                if( userOnMap.listUsersOnMap.itemAt(i).uid_ == JSON.parse(pcdUid) ) {
-                    userOnMap.listUsersOnMap.itemAt(i).spreadColor = "#fc5c65";
-                    userOnMap.listUsersOnMap.itemAt(i).iconFlag = "\uf256";
+            toast.toastContent = "Warning from pcd. Open pcd video to view detail";
+            toast.callActionAppearance = false;
+            toast.rejectButtonAppearance = false;
+            toast.show();
+            for (var i = 0; i < Object.keys(UCDataModel.listUsers).length; i++) {
+                if( UCDataModel.listUsers[i].uid == JSON.parse(pcdUid) ) {
+                    //userOnMap.listUsersOnMap.itemAt(i).spreadColor = "#fc5c65";
+                    //userOnMap.listUsersOnMap.itemAt(i).iconFlag = "\uf256";
+                    mapPane.focusOnPosition(UCDataModel.listUsers[i].latitude,
+                                            UCDataModel.listUsers[i].longitude);
+                    // UCDataModel.updateUser(JSON.parse(pcdUid), 10, !UCDataModel.listUsers[i].isSelected);
+                    UCDataModel.updateUser(JSON.parse(pcdUid), 12, !UCDataModel.listUsers[i].warning);
                     if( userOnMap.listUsersOnMap.itemAt(i).active !== true ) {
                         userOnMap.listUsersOnMap.itemAt(i).active = true;
                     }
                 }
             }
+
             console.log("--------------------------------------> Done handle pcd request share video\n");
         }
 
@@ -416,7 +435,7 @@ ApplicationWindow {
                 UCDataModel.updateUser(dataObject.participant.uid, UserAttribute.AVAILABLE, dataObject.participant.available);
                 toast.callActionAppearance =  false;
                 toast.rejectButtonAppearance = false;
-                toast.toastContent = "PCD" + dataObject.participant.name + " đã rời phòng. !";
+                toast.toastContent = dataObject.participant.name + " đã rời phòng. !";
                 toast.show();
                 UCDataModel.userLeftRoom(UcApi.getRoomName());
             }
@@ -430,7 +449,7 @@ ApplicationWindow {
             console.log("--------------------------------------> Data: " + userAttrObj);
             UCDataModel.updateUser(JSON.parse(userAttrObj).uid, UserAttribute.AVAILABLE, JSON.parse(userAttrObj).available);
             console.log("--------------------------------------> Done handle user change available signal\n");
-//            mapPane.updateUserOnMap();
+            //            mapPane.updateUserOnMap();
         }
 
         //--- Signal to notify that there is one user just change hist role
@@ -449,7 +468,6 @@ ApplicationWindow {
             UCDataModel.removeUser(JSON.parse(userUid));
             console.log("--------------------------------------> Done handle spec user inactive\n");
         }
-
 
         //--- Signal to inform about state of sharing pcd video
         onPcdSharingVideoStatus: {
@@ -486,12 +504,12 @@ ApplicationWindow {
                 var redoData_ = JSON.parse(redoData);
                 if( userOnMap.pcdVideoView.pcdVideo.loading === false ) {
                     switch( redoAction ) {
-                        case RedoActionAfterReloadWebView.OPEN_SINGLE_PCD_VIDEO:
-                            UcApi.requestOpenParticularPcdVideo(redoData_.pcdUid);
-                            break;
-                        case RedoActionAfterReloadWebView.ADD_PCD_TO_ROOM:
-                            UcApi.addPcdToRoom(redoData_.pcd_uid);
-                            break;
+                    case RedoActionAfterReloadWebView.OPEN_SINGLE_PCD_VIDEO:
+                        UcApi.requestOpenParticularPcdVideo(redoData_.pcdUid);
+                        break;
+                    case RedoActionAfterReloadWebView.ADD_PCD_TO_ROOM:
+                        UcApi.addPcdToRoom(redoData_.pcd_uid);
+                        break;
                     }
                     timer.running = false;
                     //-- update web engine view position follow along with x, y of pcd
@@ -523,6 +541,32 @@ ApplicationWindow {
             console.log("--------------------------------------> Data: (usreUid: " + userUid + ", connectionState: " + connectionState + " ) ");
             UCDataModel.updateUser(userUid, UserAttribute.CONNECTION_STATE, connectionState);
             console.log("--------------------------------------> Done handle update user connection\n");
+        }
+
+        //--- Signal to notify you that the target media connection has failed
+        onMediaError: {
+            console.log("\nHandle signal notify you that the target media connection has failed");
+            console.log("-------------------------------------> Data: (sourceUid: " + sourceUid + ", errorType: " + errorType + ")");
+            toast.toastContent = "Không thể truy cập camera của người dùng";
+            toast.callActionAppearance = false;
+            toast.rejectButtonAppearance = false;
+            toast.show();
+            userOnMap.pcdVideoView.visible = false;
+            console.log("--------------------------------------> Done handle media error\n");
+        }
+
+        //--- Signal to notify you that losed connection to socket server
+        onNetworkCrash: {
+            console.log("\nHandle signal notify you that losed connection to socket server");
+            console.log("-------------------------------------> Data: ()");
+            toast.toastContent = "Mất kết nối đến server";
+            toast.callActionAppearance = false;
+            toast.rejectButtonAppearance = false;
+            toast.show();
+            for (var i = 0; i < Object.keys(UCDataModel.listUsers).length; i++) {
+                UCDataModel.updateUser(UCDataModel.listUsers[i].uid, 11, false);
+            }
+            console.log("--------------------------------------> Done handle connection error\n");
         }
     }
 

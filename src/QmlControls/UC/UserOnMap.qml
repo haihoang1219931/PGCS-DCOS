@@ -5,8 +5,9 @@ import QtQuick.Layouts 1.3
 import QtWebEngine 1.7
 import QtGraphicalEffects 1.0
 
-import CustomViews.UIConstants  1.0
-import UC 1.0
+import QSyncable 1.0
+import CustomViews.Components 1.0
+import CustomViews.UIConstants 1.0
 import io.qdt.dev   1.0
 
 //-------- :User location on map
@@ -43,25 +44,30 @@ Item {
     //--- Users on Map
     Repeater {
         id: listUsersOnMap
-        model: UC_API?UCDataModel.listUsers:[]
+        model: JsonListModel {
+           keyField: "uid"
+           source: JSON.parse(JSON.stringify(Object.keys(UCDataModel.listUsers).map(function(key) {return UCDataModel.listUsers[key]})))
+           fields: ["ipAddress", "userId", "roomName", "available", "role", "shared", "latitude", "longitude", "uid", "name", "isSelected", "warning", "connectionState"]
+        }
 
         delegate: Rectangle {
             id: userOnMap
-            property bool show_popup: isSelected && (role !== UserRoles.FCS)
-            property string spreadColor: "#1abc9c"
-            property string ipAddress_: ipAddress
-            property string userId_: userId
-            property string roomName_: roomName
-            property bool available_: available
-            property string role_: role
-            property bool shared_: shared
-            property double latitude_: latitude
-            property double longitude_: longitude
-            property string uid_: uid
-            property string name_: name
+            property bool show_popup: (model.isSelected && (role !== UserRoles.FCS)) || (pcdVideoView.visible && pcdVideoView.pcdActive === model.uid) || model.warning
+            property string spreadColor: model.warning ? "#fc5c65" : "#1abc9c"
+            property string ipAddress_: model.ipAddress
+            property string userId_: model.userId
+            property string roomName_: model.roomName
+            property bool available_: model.available
+            property string role_: model.role
+            property bool shared_: model.shared
+            property double latitude_: model.latitude
+            property double longitude_: model.longitude
+            property string uid_: model.uid
+            property string name_: model.name
             property int screenX_: 0
             property int screenY_: 0
-            property int connectionState_: connectionState
+            property int connectionState_: model.connectionState
+            property bool isSelected_: model.isSelected
             onLatitude_Changed: {
                 mapPane.updateUsersOnMap();
             }
@@ -75,7 +81,7 @@ Item {
             y: screenY_
             color: "#16a085"
             radius: 20
-            z: isSelected ? 99999 : 99998
+            z: model.isSelected ? 99999 : 99998
             Rectangle {
                 id: rect
                 anchors.fill: parent
@@ -89,7 +95,8 @@ Item {
                 text: UIConstants.iPatrolMan
                 font{ pixelSize: 16;
                     weight: Font.Bold;
-                    family: ExternalFontLoader.solidFont}
+                    //family: ExternalFontLoader.solidFont
+                }
                 color: "#bdc3c7"
             }
 
@@ -98,7 +105,8 @@ Item {
                 text: UIConstants.iFlag
                 font{ pixelSize: 20;
                     weight: Font.Bold;
-                    family: ExternalFontLoader.solidFont}
+                    //family: ExternalFontLoader.solidFont
+                }
                 color: "#fc5c65"
                 opacity: 0.9
                 y: - 25
@@ -163,6 +171,7 @@ Item {
                                 radius: 5
                                 border {width: 1; color: "#d1d8e0"}
                                 enabled: userOnMap.available_ || userOnMap.roomName_
+                                opacity: userOnMap.connectionState_ ? 1 : .5
                                 Text {
                                     id: popupBtn1Txt
                                     anchors.centerIn: parent
@@ -179,10 +188,26 @@ Item {
                                     onClicked: {
                                         if( !userOnMap.available_ && userOnMap.roomName_ === UcApi.getRoomName() ) {
                                             UcApi.removePcdFromRoom(userOnMap.uid_);
+                                            UCDataModel.updateUser(userOnMap.uid_, 12, false);
                                             pcdVideoView.visible=false;
                                         } else {
                                             UcApi.addPcdToRoom(userOnMap.uid_);
                                         }
+                                    }
+                                }
+
+                                Canvas {
+                                    anchors.fill: parent
+                                    visible: !userOnMap.connectionState_
+                                    onPaint: {
+                                        var ctx = getContext("2d");
+                                        ctx.lineWidth = 2;
+                                        ctx.strokeStyle = "#dfe4ea";
+                                        ctx.beginPath();
+                                        ctx.moveTo(0, 0);
+                                        ctx.lineTo(width, height);
+                                        ctx.closePath();
+                                        ctx.stroke();
                                     }
                                 }
                             }
@@ -194,20 +219,48 @@ Item {
                                 x: parent.width / 9
                                 radius: 5
                                 border {width: 1; color: "#d1d8e0"}
+                                opacity: userOnMap.connectionState_ ? 1 : .5
                                 Text {
+                                    id: videoIcon
                                     anchors.centerIn: parent
                                     text: "\uf03d"
                                     font{ pixelSize: 12;
                                         weight: Font.Bold;
-                                        family: ExternalFontLoader.solidFont}
+                                        //family: ExternalFontLoader.solidFont
+                                    }
                                     color: "#fff"
                                     font.bold: true
                                 }
+                                SequentialAnimation {
+                                    running: warning
+                                    loops: Animation.Infinite
+                                    PropertyAnimation {
+                                        target: videoIcon
+                                        properties: "color"
+                                        to: "#fc5c65"
+                                        duration: 500
+                                        easing.type: Easing.InOutBounce
+                                    }
+                                    PropertyAnimation {
+                                        target: videoIcon
+                                        properties: "color"
+                                        to: "#fff"
+                                        duration: 300
+                                        easing.type: Easing.InOutBounce
+                                    }
+                                    onRunningChanged: {
+                                        if (!model.warning) {
+                                            videoIcon.color = "#fff";
+                                        }
+                                    }
+                                }
+
                                 MouseArea {
                                     anchors.fill: parent
+                                    visible: userOnMap.connectionState_ ? true : false
                                     onClicked: {
                                         if( userOnMap.roomName_ === UcApi.getRoomName() ) {
-                                            if( pcdVideoView.z === true ) {
+                                            if( pcdVideoView.visible === true ) {
                                                 //toastContent.text = "Chỉ mở được video của 1 PCD tại 1 thời điểm.! \nĐóng PCD video trước khi mở video của PCD khác";
                                                 //toast.show();
                                                 //invalidOpenPcdVideo("duplicate");
@@ -216,9 +269,9 @@ Item {
                                                 pcdVideoView.pcdActive =  userOnMap.uid_;
                                                 pcdVideoView.sharing = userOnMap.shared_;
                                                 UcApi.requestOpenParticularPcdVideo(userOnMap.uid_);
-//                                                pcdVideoView.opacity = 1;
                                                 pcdVideoView.visible = true;
                                                 updatePcdVideo(index);
+                                                UCDataModel.updateUser(userOnMap.uid_, 12, false);
                                             }
                                         } else {
                                             //toast.toastContent  = "Ko hợp lệ ! \n Chỉ xem được hình ảnh của PCD ở trong phòng !" ;
@@ -226,6 +279,21 @@ Item {
                                             //invalidOpenPcdVideo("not-in-room");
                                             UCEventListener.invalidOpenPcdVideo(UCEventEnums.USER_NOT_IN_ROOM);
                                         }
+                                    }
+                                }
+
+                                Canvas {
+                                    anchors.fill: parent
+                                    visible: !userOnMap.connectionState_
+                                    onPaint: {
+                                        var ctx = getContext("2d");
+                                        ctx.lineWidth = 2;
+                                        ctx.strokeStyle = "#dfe4ea";
+                                        ctx.beginPath();
+                                        ctx.moveTo(0, 0);
+                                        ctx.lineTo(width, height);
+                                        ctx.closePath();
+                                        ctx.stroke();
                                     }
                                 }
                             }
@@ -253,14 +321,6 @@ Item {
                     }
                 }
 
-//                NumberAnimation {
-//                    target: popup
-//                    duration: 1000
-//                    properties: "opacity"
-//                    to: 1
-//                    running: userOnMap.show_popup
-//                    easing.type: Easing.InExpo
-//                }
             }
 
             MouseArea {
@@ -271,15 +331,13 @@ Item {
                             listUsersOnMap.itemAt(i).z = 99998;
                         }
                     }
-                    console.log("Show popup of - " + userOnMap.role_, UserRoles.FCS);
-                    if(/*parent.room === UcApi.getRoomName() &&*/ userOnMap.role_ != UserRoles.FCS) {
+                    if(/*parent.room === UcApi.getRoomName() &&*/ userOnMap.role_ !== UserRoles.FCS) {
                         if (pcdVideoView.visible) {
-                            console.log("Close pcd video if it already opened!!!!");
                             pcdVideoView.visible = false;
                             UcApi.closePcdVideo(pcdVideoView.pcdActive);
                         }
-                        UCDataModel.updateUser(uid, 10, !isSelected);
-                        UCEventListener.pointToPcdFromSidebar(uid, !isSelected);
+                        UCDataModel.updateUser(userOnMap.uid_, 10, !userOnMap.isSelected_);
+                        UCEventListener.pointToPcdFromSidebar(userOnMap.uid_, !userOnMap.isSelected_);
                     }
                 }
             }
@@ -293,14 +351,14 @@ Item {
                         target: rect
                         from: 1
                         to: 1.1
-                        duration: 200
+                        duration: 400
                     }
                     NumberAnimation {
                         target: rect
                         properties: "opacity"
                         from: 0
                         to: 0.5
-                        duration: 200
+                        duration: 400
                     }
                 }
 
@@ -309,14 +367,14 @@ Item {
                         target: rect
                         from: 1.1
                         to: 1.2
-                        duration: 300
+                        duration: 500
                     }
                     NumberAnimation {
                         target: rect
                         properties: "opacity"
                         from: 0.5
                         to: 1
-                        duration: 300
+                        duration: 500
                     }
                 }
 
@@ -325,14 +383,14 @@ Item {
                         target: rect
                         from: 1.4
                         to: 1.5
-                        duration: 300
+                        duration: 500
                     }
                     NumberAnimation {
                         target: rect
                         properties: "opacity"
                         from: 1
                         to: 0
-                        duration: 300
+                        duration: 500
                     }
                 }
             }
@@ -353,7 +411,7 @@ Item {
     }
 
     Connections {
-        target: UC_API?UCEventListener:undefined
+        target: UCEventListener
         onUserIsPointed: {
             console.log("Pointed to " + pcdUid);
             if (pcdVideoView.visible) {

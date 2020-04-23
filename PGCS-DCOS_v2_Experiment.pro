@@ -14,25 +14,23 @@ QML_DESIGNER_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
+include(thirdparty/qsyncable/qsyncable.pri)
 CONFIG += use_flight_control
 
-#CONFIG += use_ucapi
+CONFIG += use_ucapi
 
-#CONFIG += use_camera_control
+CONFIG += use_camera_control
 
 #CONFIG += use_video_gpu
 
-#CONFIG += use_video_cpu
+CONFIG += use_video_cpu
 
 QML_IMPORT_PATH += \
     $$PWD \
     $$PWD/src/QmlControls \
     $$PWD/src/Controller
 SOURCES += \
-    main.cpp \
-    src/Camera/VideoDisplay/ImageItem.cpp
-
+    main.cpp
 # Flight controller
 use_flight_control{
 INCLUDEPATH += src/libs/mavlink/include/mavlink/v2.0
@@ -200,7 +198,6 @@ unix:!macx: LIBS += -LD:\usr\lib\x86_64-linux-gnu\
     -lgstvideo-1.0
 unix:!macx: INCLUDEPATH += /usr/local/include
 unix:!macx: DEPENDPATH += /usr/local/include
-
 SOURCES += \
     src/Camera/ControllerLib/Buffer/BufferOut.cpp \
     src/Camera/ControllerLib/Command/GeoCommands.cpp \
@@ -219,7 +216,11 @@ SOURCES += \
     src/Camera/ControllerLib/tcp/clientStuff.cpp \
     src/Camera/ControllerLib/tcp/gimbal_control.cpp \
     src/Camera/ControllerLib/EPTools/EPHucomTool.cpp \
-    src/Camera/Cache/Cache.cpp
+    src/Camera/Cache/Cache.cpp \
+    src/Camera/VideoEngine/VideoEngineInterface.cpp \
+    src/Camera/VideoEngine/VRTSPServer.cpp \
+    src/Camera/VideoEngine/VSavingWorker.cpp \
+    src/Camera/VideoDisplay/ImageItem.cpp
 
 HEADERS += \
     src/Camera/ControllerLib/Buffer/BufferOut.h \
@@ -304,7 +305,11 @@ HEADERS += \
     src/Camera/ControllerLib/tcp/clientStuff.h \
     src/Camera/ControllerLib/tcp/gimbal_control.h \
     src/Camera/ControllerLib/EPTools/EPHucomTool.h \
-    src/Camera/ControllerLib/EPTools/EPSensorTool.h
+    src/Camera/ControllerLib/EPTools/EPSensorTool.h \
+    src/Camera/VideoEngine/VideoEngineInterface.h \
+    src/Camera/VideoEngine/VRTSPServer.h \
+    src/Camera/VideoEngine/VSavingWorker.h \
+    src/Camera/VideoDisplay/ImageItem.h
 }
 
 
@@ -395,8 +400,6 @@ HEADERS += \
     src/Camera/GPUBased/VODWorker.h \
     src/Camera/GPUBased/Cuda/ip_utils.h \
     src/Camera/GPUBased/Cuda/ipcuda_image.h \
-    src/Camera/GPUBased/VRTSPServer.h \
-    src/Camera/GPUBased/VSavingWorker.h \
     src/Camera/GPUBased/Clicktrack/clicktrack.h \
     src/Camera/GPUBased/Clicktrack/platedetector.h \
     src/Camera/GPUBased/Clicktrack/preprocessing.h \
@@ -437,8 +440,6 @@ SOURCES += \
     src/Camera/GPUBased/VTrackWorker.cpp \
     src/Camera/GPUBased/VODWorker.cpp \
     src/Camera/GPUBased/Cuda/ip_utils.cpp \
-    src/Camera/GPUBased/VSavingWorker.cpp \
-    src/Camera/GPUBased/VRTSPServer.cpp
 DISTFILES += \
     src/Camera/GPUBased/Cuda/ipcuda_image.cu \
     src/Camera/GPUBased/OD/yolo-setup/yolov3-tiny_3l_last.weights \
@@ -494,8 +495,6 @@ SOURCES += \
     src/Camera/CPUBased/stream/CVVideoCapture.cpp \
     src/Camera/CPUBased/stream/CVVideoCaptureThread.cpp \
     src/Camera/CPUBased/stream/CVVideoProcess.cpp \
-    src/Camera/CPUBased/stream/VRTSPServer.cpp \
-    src/Camera/CPUBased/stream/VSavingWorker.cpp \
     src/Camera/CPUBased/stabilizer/dando_02/stab_gcs_kiir.cpp \
     src/Camera/CPUBased/tracker/dando/LME/lme.cpp \
     src/Camera/CPUBased/tracker/dando/HTrack/ffttools.cpp \
@@ -533,8 +532,6 @@ HEADERS += \
     src/Camera/CPUBased/stream/CVVideoCaptureThread.h \
     src/Camera/CPUBased/stream/CVVideoProcess.h \
     src/Camera/CPUBased/stream/gstreamer_element.h \
-    src/Camera/CPUBased/stream/VRTSPServer.h \
-    src/Camera/CPUBased/stream/VSavingWorker.h \
     src/Camera/CPUBased/stabilizer/dando_02/stab_gcs_kiir.hpp \
     src/Camera/CPUBased/tracker/dando/SKCF/gradient.h \
     src/Camera/CPUBased/tracker/dando/SKCF/skcf.h \
@@ -557,6 +554,5 @@ HEADERS += \
     src/Camera/CPUBased/tracker/dando/Utilities.hpp
 }
 
-HEADERS += \
-    src/Camera/VideoDisplay/ImageItem.h
+
 

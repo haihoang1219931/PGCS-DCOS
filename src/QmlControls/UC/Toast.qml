@@ -15,9 +15,9 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 import QtWebEngine 1.7
-import QtGraphicalEffects 1.0
-
+import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
+import io.qdt.dev   1.0
 //-------- :Toast notification
 Rectangle{
     id: toast
@@ -43,8 +43,7 @@ Rectangle{
     border { width: 1; color: "#40739e" }
     opacity: 0
     z: 100000
-    radius: 20
-
+    radius: 10
     //--- Content
     Column {
         spacing: 10
@@ -133,7 +132,7 @@ Rectangle{
 
         PauseAnimation {
             id: pauseAnimation
-            duration: 1500
+            duration: 2500
         }
 
         NumberAnimation {

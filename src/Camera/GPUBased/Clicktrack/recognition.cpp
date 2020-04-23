@@ -4,7 +4,7 @@
 OCR::OCR()
 {
     std::cout << "Tensorflow model is loading...\n";
-    std::string graphPath = "../GPUBased/Clicktrack/mynet.pb";
+    std::string graphPath = "../Controller/Video/Clicktrack/mynet.pb";
     tensorflow::Status status = loadGraph(graphPath, &m_session);
 
     if (!status.ok()) {

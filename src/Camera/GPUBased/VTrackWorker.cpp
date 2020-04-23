@@ -34,6 +34,7 @@ void VTrackWorker::run()
     m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
     ProcessImageCacheItem processImgItem;
     cv::Mat proccImg;
+    cv::Mat bgrImg, i420Img;     /**< For check type of plate.*/
     cv::Size imgSize;
     cv::Mat stabMatrix;
     unsigned char *d_imageData;
@@ -49,7 +50,6 @@ void VTrackWorker::run()
 
         while (!m_hasNewTrack) {
             m_cvHasNewTrack.wait_for(locker, std::chrono::seconds(2));
-            // printf("\n=====================>Still waitting for new Track");
         }
 
         m_hasNewTrack = false;
@@ -82,6 +82,9 @@ void VTrackWorker::run()
         h_stabMat = processImgItem.getHostStabMatrix();
         stabMatrix = cv::Mat(2, 3, CV_32F, h_stabMat);
         proccImg = cv::Mat(imgSize.height, imgSize.width, CV_8UC1, h_imageData);
+//        i420Img = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
+//        cv::cvtColor(i420Img, bgrImg, CV_YUV2BGR_I420);
+//        cv::imwrite("/home/pgcs-01/Desktop/giap.png", bgrImg, {CV_IMWRITE_PNG_COMPRESSION, 0});
         // Inverst stab
         int x, y;
         x = m_trackPoint.getPx() / m_trackPoint.getWidth() * imgSize.width;
@@ -146,6 +149,11 @@ void VTrackWorker::run()
             imgSize = processImgItem.getImageSize();
             proccImg = cv::Mat(imgSize.height, imgSize.width, CV_8UC1, h_imageData);
 
+            // get BGR image
+            i420Img = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
+            cv::cvtColor(i420Img, bgrImg, CV_YUV2BGR_I420);
+//            cv::imwrite("/home/pgcs-01/Desktop/giap0.png", bgrImg, {CV_IMWRITE_PNG_COMPRESSION, 0});
+
             input.c = 1;
             input.h = imgSize.height * 3 / 2;
             input.w = imgSize.width;
@@ -171,20 +179,9 @@ void VTrackWorker::run()
                     }
 
 //                    printf("\n====> DO TRACK [%d, %d, %d, %d]", objectPosition.x, objectPosition.y, objectPosition.width, objectPosition.height);
-                    double pxStab = objectPosition.x;
-                    double pyStab = objectPosition.y;
-                    if(m_enStab){
-                        cv::Mat pointBeforeStab(3, 1, CV_32F, cv::Scalar::all(0));
-                        pointBeforeStab.at<float>(0,0) = objectPosition.x;
-                        pointBeforeStab.at<float>(1,0) = objectPosition.y;
-                        cv::Mat pointAfterStab = stabMatrix * pointBeforeStab ;
-                        pxStab = pointAfterStab.at<float>(0,0);
-                        pyStab = pointAfterStab.at<float>(0,1);
-                    }
                     Q_EMIT determinedTrackObjected(m_currID, objectPosition.x, objectPosition.y,
                                                    objectPosition.width, objectPosition.height,
-                                                   imgSize.width, imgSize.height,pxStab,pyStab);
-
+                                                   imgSize.width, imgSize.height);
                     // TODO : Detect Plate
 //                    // check if objectPosition is inside proccImg
                     if (    (objectPosition.x > 0)
@@ -200,7 +197,7 @@ void VTrackWorker::run()
 //                        cv::imwrite("img/grayTrackObject" + std::to_string(m_currID) + ".png", grayTrackObject);
 
                             input.data = (float *)d_imageData;
-                            m_clickTrack->status = m_clickTrack->updateNewImage_I420(input, proccImg, objectPosition);
+                            m_clickTrack->status = m_clickTrack->updateNewImage_I420(input, proccImg, objectPosition, bgrImg);
                         }
                         if (m_clickTrack->status == PLATE_SUCCESS){
                             plateNumber = m_clickTrack->getPlateNumber_I420();

@@ -2,15 +2,15 @@ import QtQuick 2.9
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 import QtWebEngine 1.7
-import QtGraphicalEffects 1.0
 
+import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
 // This is available in all editors.
 Flickable {
     id: rootItem
     clip: true
     width: UIConstants.sRect * 12
-    height: UIConstants.sRect * 3/2
+    height: UIConstants.sRect * 2
     property var listRooms
     //[ {ipAddress: String, user_id: String, available: bool, ... }, {...}, {...} ]
     Rectangle{
@@ -25,7 +25,7 @@ Flickable {
 
         delegate: Rectangle {
             width: rootItem.width
-            height: UIConstants.sRect * 3/2
+            height: UIConstants.sRect * 2
 //            border.color: UIConstants.grayLighterColor
 //            border.width: 1
             color: UIConstants.transparentColor
@@ -33,7 +33,7 @@ Flickable {
             Text {
                 text: UIConstants.iCenterCommander
                 font.bold: true
-                font.pixelSize: UIConstants.fontSize
+                font.pixelSize: 20
                 color: UIConstants.greenColor
                 anchors {
                     left: parent.left;

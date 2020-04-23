@@ -5,7 +5,7 @@
 #include "../OD/yolo_v2_class.hpp"
 #include "../Clicktrack/recognition.h"
 #include "../Clicktrack/preprocessing.h"
-#include "../../../Files/FileControler.h"
+#include "../../Files/FileControler.h"
 class PlateOCR
 {
 public:
@@ -14,12 +14,12 @@ public:
 
 	void setPlateDetector(Detector * _plate_detector);
     void setOCR(OCR* _OCR);
-	void run(std::vector<bbox_t> & track_vec, const image_t& frame, const cv::Mat& cpu_gray_frame, int max_info_read);
+    void run(std::vector<bbox_t> & track_vec, const image_t& frame, const cv::Mat& cpu_gray_frame, const cv::Mat &cpu_bgr_frame, int max_info_read);
 
 	std::vector<bbox_t> getPlateBoxes(const image_t& frame, const cv::Rect& _roi);
 
 private:
-	std::string getPlateString(const image_t& frame, const cv::Mat& cpu_gray_frame, const bbox_t& box);
+    std::string getPlateString(const image_t& frame, const cv::Mat& cpu_gray_frame, const cv::Mat &cpu_bgr_frame, const bbox_t& box);
 	void contrastEnhance(cv::Mat &scr, cv::Mat &dst, int dist = 10);
 	cv::Mat deskewImage(cv::Mat image);
 	std::vector<uint> sort_indexes(std::vector<bbox_t> & track_vec);
