@@ -15,7 +15,6 @@ Rectangle {
     radius: UIConstants.rectRadius
     border.color: "gray"
     border.width: 1
-    property var vehicle
     property alias title: txtDialog.text
     property string type: ""
     property color fontColor: UIConstants.textColor
@@ -45,7 +44,7 @@ Rectangle {
             anchors.leftMargin: 8
             cellWidth: UIConstants.sRect * 7
             cellHeight: UIConstants.sRect * 3 / 2
-
+            model: vehicle.propertiesModel
             layoutDirection: Qt.LeftToRight
             flow: GridView.FlowTopToBottom
             delegate: Item {
@@ -125,12 +124,12 @@ Rectangle {
             root.clicked(root.type,"DIALOG_CANCEL");
         }
     }
-    Component.onCompleted: {
-        console.log("Set Focus true");
-        setFocus(true);
-        if(vehicle !== null)
-            gridView.model = vehicle.propertiesModel;
-    }
+//    Component.onCompleted: {
+//        console.log("Set Focus true");
+//        setFocus(true);
+//        if(vehicle !== null)
+//            gridView.model = vehicle.propertiesModel;
+//    }
 }
 
 /*##^## Designer {

@@ -362,7 +362,7 @@ void Vehicle::_setPropertyValue(QString name,QString value,QString unit){
     bool paramExist = false;
     int propertiesShowCount = 0;
     for(int i=0; i< _propertiesModel.size(); i++){
-        if(_propertiesModel[i]->name() == name){
+        if(_propertiesModel[i]->name().toUpper() == name.toUpper()){
             paramExist = true;
             _propertiesModel[i]->setValue(value);
             _propertiesModel[i]->setUnit(unit);

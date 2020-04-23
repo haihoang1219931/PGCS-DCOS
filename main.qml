@@ -688,7 +688,6 @@ ApplicationWindow {
                 visible: false
                 title:"Select minor params to show"
                 type: "CONFIRM"
-                vehicle: vehicle
                 x:parent.width / 2 - width / 2
                 y:parent.height / 2 - height / 2
                 z:9

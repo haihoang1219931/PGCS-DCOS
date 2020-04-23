@@ -331,10 +331,10 @@ void ArduCopterFirmware::sendJoystickData(){
                 &msg,
                 m_vehicle->id(),
                 m_vehicle->_compID,
-                static_cast<uint16_t>(convertRC(m_vehicle->flightMode() == "LOITER"?roll:0,1)),
-                static_cast<uint16_t>(convertRC(m_vehicle->flightMode() == "LOITER"?pitch:0,2)),
-                static_cast<uint16_t>(convertRC(m_vehicle->flightMode() == "LOITER"?throttle:0,3)),
-                static_cast<uint16_t>(convertRC(m_vehicle->flightMode() == "LOITER"?yaw:0,4)),
+                static_cast<uint16_t>(convertRC(m_vehicle->flightMode().toUpper() == "LOITER"?roll:0,1)),
+                static_cast<uint16_t>(convertRC(m_vehicle->flightMode().toUpper() == "LOITER"?pitch:0,2)),
+                static_cast<uint16_t>(convertRC(m_vehicle->flightMode().toUpper() == "LOITER"?throttle:0,3)),
+                static_cast<uint16_t>(convertRC(m_vehicle->flightMode().toUpper() == "LOITER"?yaw:0,4)),
                 0,//static_cast<uint16_t>(convertRC(0,5)),
                 0,//static_cast<uint16_t>(convertRC(0,6)),
                 0,//static_cast<uint16_t>(convertRC(0,7)),
@@ -380,16 +380,15 @@ float ArduCopterFirmware::convertRC(float input, int channel){
         float trim = m_vehicle->paramsController()->containKey("RC"+QString::fromStdString(std::to_string(channel))+"_MIN")?
                     m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_TRIM").toFloat():1500;
 
-        if(channel != 3){
-            if(input < 0){
-                result = (input-axisZero) / (axisMin-axisZero) * (min-trim)+trim;
-            }else {
-                result = (input-axisZero) / (axisMax-axisZero) * (max-trim)+trim;
-            }
-        }else{
-            result = (max + min) / 2;
+        if(channel == 3){
+            trim = (max+min)/2;
         }
-        //        printf("RC%d[%f - %f - %f] from %f to %f\r\n",channel,min,trim,max,input,result);
+        if(input < 0){
+            result = (input-axisZero) / (axisMin-axisZero) * (min-trim)+trim;
+        }else {
+            result = (input-axisZero) / (axisMax-axisZero) * (max-trim)+trim;
+        }
+//        printf("RC%d[%f - %f - %f] from %f to %f\r\n",channel,min,trim,max,input,result);
     }
 
     return result;
