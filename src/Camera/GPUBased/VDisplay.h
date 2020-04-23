@@ -12,14 +12,14 @@
 #include "VODWorker.h"
 #include "VMOTWorker.h"
 #include "VSearchWorker.h"
-#include "VSavingWorker.h"
-#include "VRTSPServer.h"
+#include "Camera/VideoEngine/VSavingWorker.h"
+#include "Camera/VideoEngine/VRTSPServer.h"
 #include <QVariantList>
 #include <QVariant>
 #include "OD/yolo_v2_class.hpp"
 #include "Clicktrack/recognition.h"
-#include "../VideoDisplay/ImageItem.h"
-#include "../../Camera/Cache/TrackObject.h"
+#include "Camera/VideoDisplay/ImageItem.h"
+#include "Camera/Cache/TrackObject.h"
 
 class VDisplay : public QObject
 {

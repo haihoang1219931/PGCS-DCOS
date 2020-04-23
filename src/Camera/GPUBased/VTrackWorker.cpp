@@ -1,5 +1,7 @@
 #include "VTrackWorker.h"
-
+// plate detection
+#include "Clicktrack/clicktrack.h"
+#include "OD/yolo_v2_class.hpp"
 VTrackWorker::VTrackWorker()
 {
     this->init();

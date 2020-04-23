@@ -14,17 +14,13 @@
 #include <opencv2/highgui.hpp>
 #include <string.h>
 
-#include "../Utils/filenameutils.h"
-#include "../Files/FileControler.h"
-#include "../Files/PlateLog.h"
-#include "../tracker/dando/ITrack.hpp"
-#include "../tracker/dando/Utilities.hpp"
-#include "../tracker/dando/HTrack/saliency.h"
-
-// plate detection
-#include "Clicktrack/clicktrack.h"
-#include "OD/yolo_v2_class.hpp"
-
+#include "Files/FileControler.h"
+#include "Files/PlateLog.h"
+#include "tracker/dando/ITrack.hpp"
+#include "tracker/dando/Utilities.hpp"
+#include "tracker/dando/HTrack/saliency.h"
+class ClickTrack;
+class OCR;
 using namespace rva;
 
 class VTrackWorker : public QThread

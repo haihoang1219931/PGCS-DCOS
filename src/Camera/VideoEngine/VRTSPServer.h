@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QThread>
-#include <QMutex>
 #include <chrono>
 #include <gst/gst.h>
 #include <iostream>
@@ -16,6 +15,7 @@
 #include <gst/rtsp-server/rtsp-server.h>
 #include "../Cache/Cache.h"
 
+using namespace Eye;
 using namespace rva;
 
 class VRTSPServer : public QThread
@@ -38,23 +38,21 @@ class VRTSPServer : public QThread
 
     public:
         gboolean gstreamer_pipeline_operate();
-        void setStateRun(bool running);
+        void stopPipeline();
         void pause(bool pause);
-        void setStreamMount(std::string _streamMount);
-        void setStreamSize(int _width, int _height);
-    public:
-        std::string m_streamMount = "/stream";
-        int m_width = 1280;
-        int m_height = 720;
-        int m_fps = 30;
+
+    private:
+        int m_width = 1920;
+        int m_height = 1080;
+        int m_fps = 25;
         int m_currID = -1;
         bool m_stop = false;
         GstElement *element;
         GstElement *appsrc;
-        GError *err = NULL;
-        GMainLoop *loop  = NULL;
-        GstPipeline *pipeline = NULL;
-        GstElement *mPipeline = NULL;
+        GError *err = nullptr;
+        GMainLoop *loop  = nullptr;
+        GstPipeline *pipeline = nullptr;
+        GstElement *mPipeline = nullptr;
         GstClockTime timestamp = 0;
         GstRTSPMedia *media;
         GstRTSPServer *server;

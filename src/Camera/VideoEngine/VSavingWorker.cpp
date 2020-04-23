@@ -1,18 +1,28 @@
 #include "VSavingWorker.h"
 
-VSavingWorker::VSavingWorker()
+VSavingWorker::VSavingWorker(std::string _mode)
 {
-    m_currID = -1;
-    m_loop = g_main_loop_new(NULL, FALSE);
+    m_currID = 0;
+    m_loop = g_main_loop_new(nullptr, FALSE);
     m_bitrate = 4000000;
     m_frameRate = 30;
     m_width = 1920;
     m_height = 1080;
+
+    if (std::strcmp(_mode.data(), "EO") == 0) {
+        m_sensorMode = Status::SensorMode::EO;
+    } else {
+        m_sensorMode = Status::SensorMode::IR;
+    }
 }
 
 VSavingWorker::~VSavingWorker()
 {
-    printf("Desconstruct VSavingWorker\r\n");
+    delete m_appSrc;
+    delete m_bus;
+    delete m_loop;
+    delete m_pipeline;
+    delete  m_err;
 }
 
 void VSavingWorker::wrapperOnEnoughData(GstAppSrc *_appSrc, gpointer _uData)
@@ -49,7 +59,7 @@ void VSavingWorker::onNeedData(GstAppSrc *_appSrc, guint _size, gpointer _uData)
 
     m_currID = gstBuff.getIndex();
     GstBuffer *img_save = gst_buffer_copy(gstBuff.getGstBuffer());
-//    printf("\n===> Saving Video: sensor = %s  |  id = %d", (m_sensorMode == 1) ? "EO" : "IR", m_currID);
+    //    printf("\n===> Saving Video: sensor = %s  |  id = %d", (m_sensorMode == Status::SensorMode::EO) ? "EO" : "IR", m_currID);
     GstClockTime gstDuration = GST_SECOND / m_frameRate;
     GST_BUFFER_PTS(img_save) = (m_countFrame + 1) * gstDuration;
     GST_BUFFER_DTS(img_save) = (m_countFrame + 1) * gstDuration;
@@ -69,17 +79,22 @@ bool VSavingWorker::initPipeline()
     m_filename =  getFileNameByTime();
 
     if (createFolder("flights")) {
-        std::string sensor_name = (m_sensorMode == 1) ? "eo_" : "ir_";
+        std::string sensor_name = (m_sensorMode == Status::SensorMode::EO) ? "eo_" : "ir_";
         m_filename = "flights/" + sensor_name + m_filename;
     }
 
-    m_pipeline_str = "appsrc name=mysrcSave ! video/x-raw,format=BGRA,width="
-                     + std::to_string(m_width) + ",height=" + std::to_string(m_height) + " ! nvh265enc bitrate=" + std::to_string(m_bitrate)
-                     + " ! h265parse ! matroskamux ! filesink location=" + m_filename  + ".mkv";
+    if (m_sensorMode == Status::SensorMode::EO) {
+        m_buffVideoSaving = Cache::instance()->getGstEOSavingCache();
+    } else {
+        m_buffVideoSaving = Cache::instance()->getGstIRSavingCache();
+    }
+
     //    m_pipeline_str = "appsrc name=mysrcSave ! video/x-raw,format=BGRA,width="
-    //                     + std::to_string(m_width) + ",height=" + std::to_string(m_height) + " ! nvh264enc bitrate=" + std::to_string(m_bitrate)
-    //                     + " ! video/x-h264, stream-format=(string)byte-stream ! h264parse ! matroskamux ! filesink location=" + m_filename  + ".mkv";
-    printf("\nSaving pipeline: %s", m_pipeline_str.data());
+    //                     + std::to_string(m_width) + ",height=" + std::to_string(m_height) + " ! nvh265enc bitrate=" + std::to_string(m_bitrate)
+    //                     + " ! h265parse ! matroskamux ! filesink location=" + m_filename  + ".mkv";
+    m_pipeline_str = "appsrc name=mysrcSave ! video/x-raw,format=I420,width="
+                     + std::to_string(m_width) + ",height=" + std::to_string(m_height) + " ! nvh264enc ! h264parse ! matroskamux ! filesink location=" + m_filename  + ".mkv";
+    printf("\nReading pipeline: %s", m_pipeline_str.data());
     m_pipeline = GST_PIPELINE(gst_parse_launch(m_pipeline_str.data(), &m_err));
 
     if (!m_pipeline) {
@@ -88,7 +103,7 @@ bool VSavingWorker::initPipeline()
     }
 
     m_appSrc = GST_APP_SRC(gst_bin_get_by_name(GST_BIN(m_pipeline), "mysrcSave"));
-    std::string capStr = "video/x-raw,width=" + std::to_string(m_width) + ",height=" + std::to_string(m_height) + ",format=BGRA,framerate=" + std::to_string(m_frameRate) + "/1";
+    std::string capStr = "video/x-raw,width=" + std::to_string(m_width) + ",height=" + std::to_string(m_height) + ",format=I420,framerate=" + std::to_string(m_frameRate) + "/1";
     GstCaps *caps =  gst_caps_from_string((const gchar *)capStr.c_str());
     gst_app_src_set_caps(m_appSrc, caps);
     gst_caps_unref(caps);
@@ -102,14 +117,13 @@ bool VSavingWorker::initPipeline()
     cbs.need_data = wrapperOnNeedData;
     cbs.enough_data = wrapperOnEnoughData;
     cbs.seek_data = wrapperOnSeekData;
-    gst_app_src_set_callbacks(GST_APP_SRC_CAST(m_appSrc), &cbs, this, NULL);
+    gst_app_src_set_callbacks(GST_APP_SRC_CAST(m_appSrc), &cbs, this, nullptr);
     return true;
 }
 
 void VSavingWorker::run()
 {
     //    std::this_thread::sleep_for(std::chrono::seconds(2));
-    this->initPipeline();
     GstStateChangeReturn result = gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
 
     if (result != GST_STATE_CHANGE_SUCCESS) {
@@ -174,20 +188,7 @@ bool VSavingWorker::checkIfFolderExist(std::string _folderName)
 
 void VSavingWorker::stopPipeline()
 {
-
     if (m_loop != nullptr &&  g_main_loop_is_running(m_loop) == TRUE) {
-        //            printf("Set video capture state to null\r\n");
         g_main_loop_quit(m_loop);
     }
-}
-
-void VSavingWorker::setStreamSize(int _width, int _height)
-{
-    m_width = _width;
-    m_height = _height;
-}
-
-void VSavingWorker::setSensorMode(int _mode)
-{
-    m_sensorMode = _mode;
 }

@@ -21,9 +21,9 @@ CONFIG += use_ucapi
 
 CONFIG += use_camera_control
 
-#CONFIG += use_video_gpu
+CONFIG += use_video_gpu
 
-CONFIG += use_video_cpu
+#CONFIG += use_video_cpu
 
 QML_IMPORT_PATH += \
     $$PWD \
@@ -31,10 +31,11 @@ QML_IMPORT_PATH += \
     $$PWD/src/Controller
 SOURCES += \
     main.cpp
+INCLUDEPATH += $$PWD/src
 # Flight controller
 use_flight_control{
-INCLUDEPATH += src/libs/mavlink/include/mavlink/v2.0
-INCLUDEPATH += src/libs/mavlink/include/mavlink/v2.0/ardupilotmega
+INCLUDEPATH += $$PWD/src/libs/mavlink/include/mavlink/v2.0
+INCLUDEPATH += $$PWD/src/libs/mavlink/include/mavlink/v2.0/ardupilotmega
 
 SOURCES += \
     src/Controller/Com/IOFlightController.cpp \
@@ -439,7 +440,7 @@ SOURCES += \
     src/Camera/GPUBased/VPreprocess.cpp \
     src/Camera/GPUBased/VTrackWorker.cpp \
     src/Camera/GPUBased/VODWorker.cpp \
-    src/Camera/GPUBased/Cuda/ip_utils.cpp \
+    src/Camera/GPUBased/Cuda/ip_utils.cpp
 DISTFILES += \
     src/Camera/GPUBased/Cuda/ipcuda_image.cu \
     src/Camera/GPUBased/OD/yolo-setup/yolov3-tiny_3l_last.weights \

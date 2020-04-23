@@ -128,17 +128,7 @@ Rectangle {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
             }
-            CustomViews.ScrollBar {
-                id: verticalScrollBar
-                width: 12;
-                height: cfgJoystick.height
-                anchors.top: sdbJoystick.bottom
-                anchors.right: cfgJoystick.right
-                anchors.bottom: parent.bottom
-                orientation: Qt.Vertical
-                position: cfgJoystick.visibleArea.yPosition / 2
-                pageSize: cfgJoystick.visibleArea.heightRatio
-            }
+
         }
         Item{
             CustomViews.SidebarTitle {
