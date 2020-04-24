@@ -1,5 +1,5 @@
 #include "VDisplayWorker.h"
-
+Q_DECLARE_METATYPE(cv::Mat)
 VDisplayWorker::VDisplayWorker(QObject *_parent) : QObject(_parent)
 {
     qRegisterMetaType< cv::Mat >("cv::Mat");
@@ -18,15 +18,15 @@ void VDisplayWorker::init()
 void VDisplayWorker::process()
 {
     m_matImageBuff = Cache::instance()->getProcessImageCache();
-    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
-    m_rbXPointEO = Cache::instance()->getEOSteeringCache();
-    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
-    m_rbXPointIR = Cache::instance()->getIRSteeringCache();
     m_rbSearchObjs = Cache::instance()->getSearchCache();
     m_rbMOTObjs = Cache::instance()->getMOTCache();
-    m_rbSystem = Cache::instance()->getSystemStatusCache();
-    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
-    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
+//    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
+//    m_rbXPointEO = Cache::instance()->getEOSteeringCache();
+//    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
+//    m_rbXPointIR = Cache::instance()->getIRSteeringCache();
+//    m_rbSystem = Cache::instance()->getSystemStatusCache();
+//    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
+//    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
     m_gstEOSavingBuff = Cache::instance()->getGstEOSavingCache();
     m_gstIRSavingBuff = Cache::instance()->getGstIRSavingCache();
     m_gstRTSPBuff = Cache::instance()->getGstRTSPCache();

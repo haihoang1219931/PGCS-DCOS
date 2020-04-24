@@ -21,16 +21,18 @@ CONFIG += use_ucapi
 
 CONFIG += use_camera_control
 
-#CONFIG += use_video_gpu
+CONFIG += use_video_gpu
 
-CONFIG += use_video_cpu
+#CONFIG += use_video_cpu
 
 QML_IMPORT_PATH += \
     $$PWD \
     $$PWD/src/QmlControls \
     $$PWD/src/Controller
 SOURCES += \
-    main.cpp
+    main.cpp \
+    src/Bytes/ByteManipulation.cpp \
+    src/Camera/CameraController.cpp
 INCLUDEPATH += $$PWD/src
 # Flight controller
 use_flight_control{
@@ -200,23 +202,7 @@ unix:!macx: LIBS += -LD:\usr\lib\x86_64-linux-gnu\
 unix:!macx: INCLUDEPATH += /usr/local/include
 unix:!macx: DEPENDPATH += /usr/local/include
 SOURCES += \
-    src/Camera/ControllerLib/Buffer/BufferOut.cpp \
-    src/Camera/ControllerLib/Command/GeoCommands.cpp \
-    src/Camera/ControllerLib/Command/IPCCommands.cpp \
-    src/Camera/ControllerLib/Command/MotionCCommands.cpp \
-    src/Camera/ControllerLib/Command/SystemCommands.cpp \
-    src/Camera/ControllerLib/ByteManipulation.cpp \
-    src/Camera/ControllerLib/georeferencecontext.cpp \
-    src/Camera/ControllerLib/gimbalcontext.cpp \
-    src/Camera/ControllerLib/gimbalinterfacecontext.cpp \
-    src/Camera/ControllerLib/gimbalpacketparser.cpp \
-    src/Camera/ControllerLib/networkparameterscontext.cpp \
-    src/Camera/ControllerLib/samplegimbal.cpp \
-    src/Camera/ControllerLib/udppayload.cpp \
-    src/Camera/ControllerLib/versioncontext.cpp \
-    src/Camera/ControllerLib/tcp/clientStuff.cpp \
-    src/Camera/ControllerLib/tcp/gimbal_control.cpp \
-    src/Camera/ControllerLib/EPTools/EPHucomTool.cpp \
+    src/Camera/Buffer/BufferOut.cpp \
     src/Camera/Cache/Cache.cpp \
     src/Camera/VideoEngine/VideoEngineInterface.cpp \
     src/Camera/VideoEngine/VRTSPServer.cpp \
@@ -224,78 +210,11 @@ SOURCES += \
     src/Camera/VideoDisplay/ImageItem.cpp
 
 HEADERS += \
-    src/Camera/ControllerLib/Buffer/BufferOut.h \
-    src/Camera/ControllerLib/Buffer/RollBuffer.h \
-    src/Camera/ControllerLib/Buffer/RollBuffer_.h \
-    src/Camera/ControllerLib/Buffer/RollBuffer_q.h \
-    src/Camera/ControllerLib/Command/GeoCommands.h \
-    src/Camera/ControllerLib/Command/IPCCommands.h \
-    src/Camera/ControllerLib/Command/MotionCCommands.h \
-    src/Camera/ControllerLib/Command/SystemCommands.h \
-    src/Camera/ControllerLib/Packet/Common_type.h \
-    src/Camera/ControllerLib/Packet/Confirm.h \
-    src/Camera/ControllerLib/Packet/EnGeoLocation.h \
-    src/Camera/ControllerLib/Packet/EOS.h \
-    src/Camera/ControllerLib/Packet/EyeCheck.h \
-    src/Camera/ControllerLib/Packet/EyeEvent.h \
-    src/Camera/ControllerLib/Packet/EyephoenixProtocol.h \
-    src/Camera/ControllerLib/Packet/EyeRotationMatrix.h \
-    src/Camera/ControllerLib/Packet/EyeStatus.h \
-    src/Camera/ControllerLib/Packet/GimbalMode.h \
-    src/Camera/ControllerLib/Packet/GimbalRecord.h \
-    src/Camera/ControllerLib/Packet/GimbalRecordStatus.h \
-    src/Camera/ControllerLib/Packet/GimbalStab.h \
-    src/Camera/ControllerLib/Packet/GPSData.h \
-    src/Camera/ControllerLib/Packet/GPSRate.h \
-    src/Camera/ControllerLib/Packet/HConfigMessage.h \
-    src/Camera/ControllerLib/Packet/ImageStab.h \
-    src/Camera/ControllerLib/Packet/InstallMode.h \
-    src/Camera/ControllerLib/Packet/IPCStatusResponse.h \
-    src/Camera/ControllerLib/Packet/KLV.h \
-    src/Camera/ControllerLib/Packet/LockMode.h \
-    src/Camera/ControllerLib/Packet/Matrix.h \
-    src/Camera/ControllerLib/Packet/MCParams.h \
-    src/Camera/ControllerLib/Packet/MData.h \
-    src/Camera/ControllerLib/Packet/MotionAngle.h \
-    src/Camera/ControllerLib/Packet/MotionCStatus.h \
-    src/Camera/ControllerLib/Packet/MotionImage.h \
-    src/Camera/ControllerLib/Packet/Object.h \
-    src/Camera/ControllerLib/Packet/PTAngle.h \
-    src/Camera/ControllerLib/Packet/PTAngleDiff.h \
-    src/Camera/ControllerLib/Packet/PTRateFactor.h \
-    src/Camera/ControllerLib/Packet/RapidView.h \
-    src/Camera/ControllerLib/Packet/RequestResponsePacket.h \
-    src/Camera/ControllerLib/Packet/RFData.h \
-    src/Camera/ControllerLib/Packet/RFRequest.h \
-    src/Camera/ControllerLib/Packet/RTData.h \
-    src/Camera/ControllerLib/Packet/SceneSteering.h \
-    src/Camera/ControllerLib/Packet/ScreenPoint.h \
-    src/Camera/ControllerLib/Packet/SensorColor.h \
-    src/Camera/ControllerLib/Packet/SensorId.h \
-    src/Camera/ControllerLib/Packet/Snapshot.h \
-    src/Camera/ControllerLib/Packet/StreamingProfile.h \
-    src/Camera/ControllerLib/Packet/SystemStatus.h \
-    src/Camera/ControllerLib/Packet/TargetPosition.h \
-    src/Camera/ControllerLib/Packet/Telemetry.h \
-    src/Camera/ControllerLib/Packet/TrackObject.h \
-    src/Camera/ControllerLib/Packet/TrackResponse.h \
-    src/Camera/ControllerLib/Packet/TrackSize.h \
-    src/Camera/ControllerLib/Packet/utils.h \
-    src/Camera/ControllerLib/Packet/Vector.h \
-    src/Camera/ControllerLib/Packet/XPoint.h \
-    src/Camera/ControllerLib/Packet/ZoomData.h \
-    src/Camera/ControllerLib/Packet/ZoomStatus.h \
-    src/Camera/ControllerLib/ByteManipulation.h \
-    src/Camera/ControllerLib/georeferencecontext.h \
-    src/Camera/ControllerLib/gimbalcontext.h \
-    src/Camera/ControllerLib/gimbalinterfacecontext.h \
-    src/Camera/ControllerLib/gimbalpacketparser.h \
-    src/Camera/ControllerLib/ipendpoint.h \
-    src/Camera/ControllerLib/networkparameterscontext.h \
-    src/Camera/ControllerLib/samplegimbal.h \
-    src/Camera/ControllerLib/UavvGimbalProtocol.h \
-    src/Camera/ControllerLib/udppayload.h \
-    src/Camera/ControllerLib/versioncontext.h \
+    src/Camera/Packet/Common_type.h \
+    src/Camera/Buffer/BufferOut.h \
+    src/Camera/Buffer/RollBuffer.h \
+    src/Camera/Buffer/RollBuffer_.h \
+    src/Camera/Buffer/RollBuffer_q.h \
     src/Camera/Cache/Cache.h \
     src/Camera/Cache/TrackObject.h \
     src/Camera/Cache/CacheItem.h \
@@ -303,14 +222,272 @@ HEADERS += \
     src/Camera/Cache/FixedMemory.h \
     src/Camera/Cache/GstFrameCacheItem.h \
     src/Camera/Cache/ProcessImageCacheItem.h \
-    src/Camera/ControllerLib/tcp/clientStuff.h \
-    src/Camera/ControllerLib/tcp/gimbal_control.h \
-    src/Camera/ControllerLib/EPTools/EPHucomTool.h \
-    src/Camera/ControllerLib/EPTools/EPSensorTool.h \
     src/Camera/VideoEngine/VideoEngineInterface.h \
     src/Camera/VideoEngine/VRTSPServer.h \
     src/Camera/VideoEngine/VSavingWorker.h \
     src/Camera/VideoDisplay/ImageItem.h
+
+# Gimbal control
+SOURCES += \
+    src/Camera/GimbalController/CM160/CM160Gimbal.cpp \
+    src/Camera/GimbalController/CM160/GimbalDiscoverer.cpp \
+    src/Camera/GimbalController/CM160/GimbalPacketParser.cpp \
+    src/Camera/GimbalController/CM160/UDPPayload.cpp \
+    src/Camera/GimbalController/CM160/UDPSenderListener.cpp \
+    src/Camera/GimbalController/CM160/UavvPacket.cpp \
+    src/Camera/GimbalController/CM160/UavvPacketHelper.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavCombinedZoomEnable.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavCurrentExposureMode.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavDefog.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavDisableInfraredCutFilter.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableAutoExposure.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableAutoFocus.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableDigitalZoom.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableEOSensor.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableLensStabilization.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableManualIris.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableManualShutterMode.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavGetZoomPosition.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavInvertPicture.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavSensorCurrentFoV.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavSensorZoom.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavSetCameraGain.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavSetDigitalZoomPosition.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavSetDigitalZoomVelocity.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavSetEOOpticalZoomPosition.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavSetEOOpticalZoomVelocity.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavSetEOSensorVideoMode.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavSetFocus.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavSetIris.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavSetShutterSpeed.cpp \
+    src/Camera/GimbalController/CM160/eosensor/UavZoomPositionResponse.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvAltitudeOffset.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvCurrentCornerLocations.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvCurrentGeolockSetpoit.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvCurrentTargetLocation.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvExternalAltitude.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvExternalPosition.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvGNSSStatus.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvGimbalMisalignmentOffset.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvGimbalOrientationOffset.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvPlatformOrientation.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvPlatformPosition.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvSeedTerrainHeight.cpp \
+    src/Camera/GimbalController/CM160/geopointing/UavvSetGeolockLocation.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvCurrentGimbalMode.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvCurrentGimbalPositionRate.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvInitialiseGimbal.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvPanPositionReply.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvSceneSteering.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvSceneSteeringConfiguration.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetPanPosition.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetPanTiltPosition.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetPanTiltVelocity.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetPanVelocity.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetPrimaryVideo.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetTiltPositon.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetTiltVelocity.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvStowConfiguration.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvStowMode.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvStowStatusResponse.cpp \
+    src/Camera/GimbalController/CM160/gimbal/UavvTiltPositionReply.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavEnableIRIsotherm.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavIRSensorTemperatureResponse.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavMWIRTempPreset.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavPerformFFC.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavResetIRCamera.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetDynamicDDE.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetFFCMode.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetFFCTemperatureDelta.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRAGCMode.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRBrightness.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRBrightnessBias.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRConstrast.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRGainMode.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRITTMidpoint.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRIsothermThresholds.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRMaxGain.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRPalette.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRPlateauLevel.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRVideoModulation.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRVideoOrientation.cpp \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRZoom.cpp \
+    src/Camera/GimbalController/CM160/laserrangefinder/ArmLaserDevice.cpp \
+    src/Camera/GimbalController/CM160/laserrangefinder/FireLaserDevice.cpp \
+    src/Camera/GimbalController/CM160/laserrangefinder/LaserDeviceStatus.cpp \
+    src/Camera/GimbalController/CM160/laserrangefinder/LaserRange.cpp \
+    src/Camera/GimbalController/CM160/laserrangefinder/LaserRangeStart.cpp \
+    src/Camera/GimbalController/CM160/laserrangefinder/LaserRangeStatus.cpp \
+    src/Camera/GimbalController/CM160/system/UavvConfigurePacketRates.cpp \
+    src/Camera/GimbalController/CM160/system/UavvEnableGyroStabilisation.cpp \
+    src/Camera/GimbalController/CM160/system/UavvEnableMessageACK.cpp \
+    src/Camera/GimbalController/CM160/system/UavvEnableStreamMode.cpp \
+    src/Camera/GimbalController/CM160/system/UavvMessageACKResponse.cpp \
+    src/Camera/GimbalController/CM160/system/UavvNetworkConfiguration.cpp \
+    src/Camera/GimbalController/CM160/system/UavvRequestResponse.cpp \
+    src/Camera/GimbalController/CM160/system/UavvSaveParameters.cpp \
+    src/Camera/GimbalController/CM160/system/UavvSetSystemTime.cpp \
+    src/Camera/GimbalController/CM160/system/UavvVersion.cpp \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocoleosensorpackets.cpp \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocolgeopointingpackets.cpp \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocolgimbalpackets.cpp \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocolirsensorpackets.cpp \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocollaserrangefinderpackets.cpp \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocolsystempackets.cpp \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocolvideoprocessorpackets.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvChangeVideoRecordingState.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvCurrentImageSize.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvCurrentRecordingState.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvH264StreamParameters.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvModifyObjectTrack.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvModifyTrackIndex.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvNudgeTrack.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvOverlay.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvStabilisationParameters.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvStabiliseOnTrack.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvTakeSnapshot.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvTrackingParameters.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvVideoConfiguration.cpp \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvVideoDestination.cpp \
+    src/Camera/GimbalController/GimbalController.cpp \
+    src/Camera/GimbalController/GimbalData.cpp \
+    src/Camera/GimbalController/GimbalInterface.cpp \
+    src/Camera/GimbalController/GimbalInterfaceManager.cpp \
+    src/Camera/GimbalController/Gremsey/GimbalControl.cpp \
+    src/Camera/GimbalController/Gremsey/GremseyGimbal.cpp \
+    src/Camera/GimbalController/Gremsey/TCPClient.cpp \
+    src/Camera/GimbalController/Treron/TreronGimbal.cpp
+HEADERS += \
+    src/Camera/GimbalController/CM160/CM160Gimbal.h \
+    src/Camera/GimbalController/CM160/GimbalDiscoverer.h \
+    src/Camera/GimbalController/CM160/GimbalPacketParser.h \
+    src/Camera/GimbalController/CM160/IPEndpoint.h \
+    src/Camera/GimbalController/CM160/UDPPayload.h \
+    src/Camera/GimbalController/CM160/UDPSenderListener.h \
+    src/Camera/GimbalController/CM160/UavvGimbalProtocol.h \
+    src/Camera/GimbalController/CM160/UavvPacket.h \
+    src/Camera/GimbalController/CM160/UavvPacketHelper.h \
+    src/Camera/GimbalController/CM160/eosensor/UavCombinedZoomEnable.h \
+    src/Camera/GimbalController/CM160/eosensor/UavCurrentExposureMode.h \
+    src/Camera/GimbalController/CM160/eosensor/UavDefog.h \
+    src/Camera/GimbalController/CM160/eosensor/UavDisableInfraredCutFilter.h \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableAutoExposure.h \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableAutoFocus.h \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableDigitalZoom.h \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableEOSensor.h \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableLensStabilization.h \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableManualIris.h \
+    src/Camera/GimbalController/CM160/eosensor/UavEnableManualShutterMode.h \
+    src/Camera/GimbalController/CM160/eosensor/UavGetZoomPosition.h \
+    src/Camera/GimbalController/CM160/eosensor/UavInvertPicture.h \
+    src/Camera/GimbalController/CM160/eosensor/UavSensorCurrentFoV.h \
+    src/Camera/GimbalController/CM160/eosensor/UavSensorZoom.h \
+    src/Camera/GimbalController/CM160/eosensor/UavSetCameraGain.h \
+    src/Camera/GimbalController/CM160/eosensor/UavSetDigitalZoomPosition.h \
+    src/Camera/GimbalController/CM160/eosensor/UavSetDigitalZoomVelocity.h \
+    src/Camera/GimbalController/CM160/eosensor/UavSetEOOpticalZoomPosition.h \
+    src/Camera/GimbalController/CM160/eosensor/UavSetEOOpticalZoomVelocity.h \
+    src/Camera/GimbalController/CM160/eosensor/UavSetEOSensorVideoMode.h \
+    src/Camera/GimbalController/CM160/eosensor/UavSetFocus.h \
+    src/Camera/GimbalController/CM160/eosensor/UavSetIris.h \
+    src/Camera/GimbalController/CM160/eosensor/UavSetShutterSpeed.h \
+    src/Camera/GimbalController/CM160/eosensor/UavZoomPositionResponse.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvAltitudeOffset.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvCurrentCornerLocations.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvCurrentGeolockSetpoit.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvCurrentTargetLocation.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvExternalAltitude.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvExternalPosition.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvGNSSStatus.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvGimbalMisalignmentOffset.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvGimbalOrientationOffset.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvPlatformOrientation.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvPlatformPosition.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvSeedTerrainHeight.h \
+    src/Camera/GimbalController/CM160/geopointing/UavvSetGeolockLocation.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvCurrentGimbalMode.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvCurrentGimbalPositionRate.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvInitialiseGimbal.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvPanPositionReply.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvSceneSteering.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvSceneSteeringConfiguration.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetPanPosition.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetPanTiltPosition.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetPanTiltVelocity.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetPanVelocity.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetPrimaryVideo.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetTiltPositon.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvSetTiltVelocity.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvStowConfiguration.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvStowMode.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvStowStatusResponse.h \
+    src/Camera/GimbalController/CM160/gimbal/UavvTiltPositionReply.h \
+    src/Camera/GimbalController/CM160/irsensor/UavEnableIRIsotherm.h \
+    src/Camera/GimbalController/CM160/irsensor/UavIRSensorTemperatureResponse.h \
+    src/Camera/GimbalController/CM160/irsensor/UavMWIRTempPreset.h \
+    src/Camera/GimbalController/CM160/irsensor/UavPerformFFC.h \
+    src/Camera/GimbalController/CM160/irsensor/UavResetIRCamera.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetDynamicDDE.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetFFCMode.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetFFCTemperatureDelta.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRAGCMode.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRBrightness.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRBrightnessBias.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRContrast.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRGainMode.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRITTMidpoint.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRIsothermThresholds.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRMaxGain.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRPalette.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRPlateauLevel.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRVideoModulation.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRVideoOrientation.h \
+    src/Camera/GimbalController/CM160/irsensor/UavSetIRZoom.h \
+    src/Camera/GimbalController/CM160/laserrangefinder/ArmLaserDevice.h \
+    src/Camera/GimbalController/CM160/laserrangefinder/FireLaserDevice.h \
+    src/Camera/GimbalController/CM160/laserrangefinder/LaserDeviceStatus.h \
+    src/Camera/GimbalController/CM160/laserrangefinder/LaserRange.h \
+    src/Camera/GimbalController/CM160/laserrangefinder/LaserRangeStart.h \
+    src/Camera/GimbalController/CM160/laserrangefinder/LaserRangeStatus.h \
+    src/Camera/GimbalController/CM160/system/UavvConfigurePacketRates.h \
+    src/Camera/GimbalController/CM160/system/UavvEnableGyroStabilisation.h \
+    src/Camera/GimbalController/CM160/system/UavvEnableMessageACK.h \
+    src/Camera/GimbalController/CM160/system/UavvEnableStreamMode.h \
+    src/Camera/GimbalController/CM160/system/UavvMessageACKResponse.h \
+    src/Camera/GimbalController/CM160/system/UavvNetworkConfiguration.h \
+    src/Camera/GimbalController/CM160/system/UavvRequestResponse.h \
+    src/Camera/GimbalController/CM160/system/UavvSaveParameters.h \
+    src/Camera/GimbalController/CM160/system/UavvSetSystemTime.h \
+    src/Camera/GimbalController/CM160/system/UavvVersion.h \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocoleosensorpackets.h \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocolgeopointingpackets.h \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocolgimbalpackets.h \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocolirsensorpackets.h \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocollaserrangefinderpackets.h \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocolsystempackets.h \
+    src/Camera/GimbalController/CM160/uavvgimbalprotocolvideoprocessorpackets.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvChangeVideoRecordingState.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvCurrentImageSize.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvCurrentRecordingState.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvH264StreamParameters.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvModifyObjectTrack.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvModifyTrackIndex.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvNudgeTrack.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvOverlay.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvStabilisationParameters.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvStabiliseOnTrack.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvTakeSnapshot.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvTrackingParameters.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvVideoConfiguration.h \
+    src/Camera/GimbalController/CM160/videoprocessor/UavvVideoDestination.h \
+    src/Camera/GimbalController/GimbalController.h \
+    src/Camera/GimbalController/GimbalData.h \
+    src/Camera/GimbalController/GimbalInterface.h \
+    src/Camera/GimbalController/GimbalInterfaceManager.h \
+    src/Camera/GimbalController/Gremsey/GimbalControl.h \
+    src/Camera/GimbalController/Gremsey/GremseyGimbal.h \
+    src/Camera/GimbalController/Gremsey/TCPClient.h \
+    src/Camera/GimbalController/Treron/TreronGimbal.h
 }
 
 
@@ -554,6 +731,16 @@ HEADERS += \
     src/Camera/CPUBased/tracker/dando/ITrack.hpp \
     src/Camera/CPUBased/tracker/dando/Utilities.hpp
 }
+
+HEADERS += \
+    src/Bytes/ByteManipulation.h \
+    src/Camera/CameraController.h \
+    src/Camera/Packet/Object.h \
+    src/Camera/Packet/XPoint.h \
+    src/Camera/Packet/utils.h
+
+
+
 
 
 

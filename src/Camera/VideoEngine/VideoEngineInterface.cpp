@@ -3,15 +3,39 @@
 #include "VRTSPServer.h"
 #include "VSavingWorker.h"
 #include "../Cache/TrackObject.h"
-VideoEngineInterface::VideoEngineInterface(QObject *parent) : QObject(parent)
+#include "Joystick/JoystickLib/JoystickThreaded.h"
+VideoEngine::VideoEngine(QObject *parent) : QObject(parent)
 {
 
 }
-void VideoEngineInterface::slObjectLost(){
+JoystickThreaded* VideoEngine::joystick(){
+    return m_joystick;
+}
+void VideoEngine::setJoystick(JoystickThreaded* joystick){
+    m_joystick = joystick;
+    connect(m_joystick,&JoystickThreaded::axisValueChanged,this,&VideoEngine::handleAxis);
+}
+void VideoEngine::handleAxis(int axisID, float value){
+
+}
+GimbalControllerInterface* VideoEngine::gimbal(){
+    return m_gimbal;
+}
+void VideoEngine::setGimbal(GimbalControllerInterface* gimbal){
+    m_gimbal = gimbal;
+}
+void VideoEngine::loadConfig(Config* config){
+    if(config != nullptr){
+        m_config = config;
+        setVideo(m_config->getData().toMap()["CAM_STREAM_EO"].toString());
+        start();
+    }
+}
+void VideoEngine::slObjectLost(){
     removeTrackObjectInfo(0);
     Q_EMIT objectLost();
 }
-void VideoEngineInterface::slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h){
+void VideoEngine::slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h){
     updateTrackObjectInfo("Object","RECT",QVariant(QRect(
                                                        static_cast<int>(_px-_oW/2),
                                                        static_cast<int>(_py-_oH/2),
@@ -24,30 +48,30 @@ void VideoEngineInterface::slDeterminedTrackObjected(int _id, double _px, double
     updateTrackObjectInfo("Object","ANGLE",QVariant(_px));
     Q_EMIT determinedTrackObjected(_id,_px,_py,_oW, _oH, _w, _h);
 }
-void VideoEngineInterface::updateVideoSurface(int width, int height){
+void VideoEngine::updateVideoSurface(int width, int height){
     m_updateCount = 0;
     m_updateVideoSurface = true;
     m_videoSurfaceSize.setWidth(width);
     m_videoSurfaceSize.setHeight(height);
 }
-int VideoEngineInterface::addSubViewer(ImageItem *viewer){
+int VideoEngine::addSubViewer(ImageItem *viewer){
     printf("%s[%d] %p\r\n",__func__,m_listSubViewer.size(),viewer);
     this->freezeMap()[m_listSubViewer.size()] = true;
     m_listSubViewer.append(viewer);
     return m_listSubViewer.size() -1;
 }
-void VideoEngineInterface::removeSubViewer(int viewerID){
+void VideoEngine::removeSubViewer(int viewerID){
      printf("%s[%d] %d\r\n",__func__,m_listSubViewer.size(),viewerID);
     if(viewerID >= 0 && viewerID < m_listSubViewer.size()){
         this->freezeMap().remove(viewerID);
         m_listSubViewer.removeAt(viewerID);
     }
 }
-QAbstractVideoSurface *VideoEngineInterface::videoSurface()
+QAbstractVideoSurface *VideoEngine::videoSurface()
 {
     return m_videoSurface;
 }
-void VideoEngineInterface::drawOnViewerID(cv::Mat img, int viewerID){
+void VideoEngine::drawOnViewerID(cv::Mat img, int viewerID){
     if(viewerID >=0 && viewerID < m_listSubViewer.size()){
         ImageItem* tmpViewer = m_listSubViewer[viewerID];
         if(tmpViewer != nullptr){
@@ -78,7 +102,7 @@ void VideoEngineInterface::drawOnViewerID(cv::Mat img, int viewerID){
     }
 }
 
-void VideoEngineInterface::setVideoSurface(QAbstractVideoSurface *_videoSurface)
+void VideoEngine::setVideoSurface(QAbstractVideoSurface *_videoSurface)
 {
     printf("setVideoSurface");
 
@@ -87,7 +111,7 @@ void VideoEngineInterface::setVideoSurface(QAbstractVideoSurface *_videoSurface)
         update();
     }
 }
-void VideoEngineInterface::update()
+void VideoEngine::update()
 {
     printf("Update video surface(%d,%d)\r\n",
            m_videoSurfaceSize.width(),
@@ -103,7 +127,7 @@ void VideoEngineInterface::update()
         }
     }
 }
-QSize VideoEngineInterface::sourceSize()
+QSize VideoEngine::sourceSize()
 {
     return m_sourceSize;
 }

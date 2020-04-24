@@ -3,8 +3,9 @@
 
 #include "../Cache/Cache.h"
 #include "../Cache/ProcessImageCacheItem.h"
-#include "../ControllerLib/Buffer/RollBuffer.h"
-#include "../ControllerLib/Packet/Common_type.h"
+#include "Camera/Buffer/RollBuffer.h"
+#include "Camera/Packet/Common_type.h"
+#include "Camera/Packet/XPoint.h"
 #include "../Cache/FixedMemory.h"
 #include "../../Zbar/ZbarLibs.h"
 #include "Cuda/ipcuda_image.h"
@@ -23,7 +24,7 @@
 
 using namespace Eye;
 using namespace rva;
-Q_DECLARE_METATYPE(cv::Mat)
+
 class VDisplayWorker : public QObject
 {
     Q_OBJECT    
@@ -70,15 +71,15 @@ class VDisplayWorker : public QObject
         RollBuffer_<GstFrameCacheItem> *m_gstRTSPBuff;
         RollBuffer_<GstFrameCacheItem> *m_gstEOSavingBuff;
         RollBuffer_<GstFrameCacheItem> *m_gstIRSavingBuff;
-        RollBuffer<Eye::TrackResponse> *m_rbTrackResEO;
-        RollBuffer<Eye::XPoint> *m_rbXPointEO;
-        RollBuffer<Eye::TrackResponse> *m_rbTrackResIR;
-        RollBuffer<Eye::XPoint> *m_rbXPointIR;
         RollBuffer_<DetectedObjectsCacheItem> *m_rbSearchObjs;
         RollBuffer_<DetectedObjectsCacheItem> *m_rbMOTObjs;
-        RollBuffer<Eye::SystemStatus> *m_rbSystem;
-        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
-        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
+//        RollBuffer<Eye::TrackResponse> *m_rbTrackResEO;
+//        RollBuffer<Eye::XPoint> *m_rbXPointEO;
+//        RollBuffer<Eye::TrackResponse> *m_rbTrackResIR;
+//        RollBuffer<Eye::XPoint> *m_rbXPointIR;
+//        RollBuffer<Eye::SystemStatus> *m_rbSystem;
+//        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
+//        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
         std::vector<std::string> m_objName;
         cv::Mat m_imgShow;
         std::string m_ipStream;

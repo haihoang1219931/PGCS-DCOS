@@ -2,8 +2,8 @@
 #define VTRACKWORKER_H
 
 #include "../Cache/Cache.h"
-#include "../ControllerLib/Command/IPCCommands.h"
-#include "../ControllerLib/Packet/XPoint.h"
+//#include "../ControllerLib/Command/IPCCommands.h"
+#include "Camera/Packet/XPoint.h"
 #include "../Zbar/ZbarLibs.h"
 #include <QObject>
 #include <QThread>
@@ -55,11 +55,11 @@ class VTrackWorker : public QThread
         bool m_running = true;
         index_type m_currID;
         RollBuffer_<ProcessImageCacheItem> *m_matImageBuff = nullptr;
-        RollBuffer<Eye::TrackResponse> *m_rbTrackResIR = nullptr;
-        RollBuffer<Eye::TrackResponse> *m_rbTrackResEO = nullptr;
-        RollBuffer<Eye::SystemStatus> *m_rbSystem = nullptr;
-        RollBuffer<Eye::MotionImage> *m_rbIPCEO = nullptr;
-        RollBuffer<Eye::MotionImage> *m_rbIPCIR = nullptr;
+//        RollBuffer<Eye::TrackResponse> *m_rbTrackResIR = nullptr;
+//        RollBuffer<Eye::TrackResponse> *m_rbTrackResEO = nullptr;
+//        RollBuffer<Eye::SystemStatus> *m_rbSystem = nullptr;
+//        RollBuffer<Eye::MotionImage> *m_rbIPCEO = nullptr;
+//        RollBuffer<Eye::MotionImage> *m_rbIPCIR = nullptr;
         const float m_threshold = 0.3f;
 
         XPoint m_trackPoint;

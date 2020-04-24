@@ -15,8 +15,7 @@
 //----Model
 #include "src/Maplib/profilepath.h"
 #ifdef CAMERA_CONTROL
-    #include "src/Camera/ControllerLib/samplegimbal.h"
-    #include "src/Camera/Cache/Cache.h"
+    #include "src/Camera/CameraController.h"
 #endif
 //--- UC
 #ifdef UC_API
@@ -93,7 +92,7 @@ int main(int argc, char *argv[])
     PCSConfig pcsConfig;
     pcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/pcs.conf");
     engine.rootContext()->setContextProperty("PCSConfig", &pcsConfig);
-    qmlRegisterType<SampleGimbal>("io.qdt.dev", 1, 0, "GimbalNetwork");
+    qmlRegisterType<CameraController>("io.qdt.dev", 1, 0, "CameraController");
     engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(true));
 #else
     qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "GimbalNetwork");

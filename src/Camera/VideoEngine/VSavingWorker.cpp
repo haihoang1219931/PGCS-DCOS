@@ -10,9 +10,9 @@ VSavingWorker::VSavingWorker(std::string _mode)
     m_height = 1080;
 
     if (std::strcmp(_mode.data(), "EO") == 0) {
-        m_sensorMode = Status::SensorMode::EO;
+        m_sensorMode = "EO";
     } else {
-        m_sensorMode = Status::SensorMode::IR;
+        m_sensorMode = "IR";
     }
 }
 
@@ -79,11 +79,11 @@ bool VSavingWorker::initPipeline()
     m_filename =  getFileNameByTime();
 
     if (createFolder("flights")) {
-        std::string sensor_name = (m_sensorMode == Status::SensorMode::EO) ? "eo_" : "ir_";
+        std::string sensor_name = (m_sensorMode == "EO") ? "eo_" : "ir_";
         m_filename = "flights/" + sensor_name + m_filename;
     }
 
-    if (m_sensorMode == Status::SensorMode::EO) {
+    if (m_sensorMode == "EO") {
         m_buffVideoSaving = Cache::instance()->getGstEOSavingCache();
     } else {
         m_buffVideoSaving = Cache::instance()->getGstIRSavingCache();

@@ -29,11 +29,11 @@ void VTrackWorker::run()
     std::chrono::high_resolution_clock::time_point start, stop;
     long sleepTime = 0;
     m_matImageBuff = Cache::instance()->getProcessImageCache();
-    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
-    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
-    m_rbSystem = Cache::instance()->getSystemStatusCache();
-    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
-    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
+//    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
+//    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
+//    m_rbSystem = Cache::instance()->getSystemStatusCache();
+//    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
+//    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
     ProcessImageCacheItem processImgItem;
     cv::Mat proccImg;
     cv::Mat bgrImg, i420Img;     /**< For check type of plate.*/

@@ -105,8 +105,8 @@ ApplicationWindow {
     //                  Components
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    GimbalNetwork{
-        id: gimbalNetwork
+    CameraController{
+        id: cameraController
     }
 
     Joystick{
@@ -717,8 +717,7 @@ ApplicationWindow {
                 camState: camState
                 ObjectsOnScreen{
                     anchors.fill: parent
-                    player: videoPane.player
-
+                    player: cameraController.videoEngine
                 }
             }
             PaneControl{
@@ -757,12 +756,12 @@ ApplicationWindow {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         if(camState.sensorID === camState.sensorIDEO){
                             var config = PCSConfig.getData();
-                            videoPane.player.setVideo(config["CAM_STREAM_EO"]);
-                            videoPane.player.start()
+                            cameraController.videoEngine.setVideo(config["CAM_STREAM_EO"]);
+                            cameraController.videoEngine.start()
                         }else{
                             var config = PCSConfig.getData();
-                            videoPane.player.setVideo(config["CAM_STREAM_IR"]);
-                            videoPane.player.start()
+                            cameraController.videoEngine.setVideo(config["CAM_STREAM_IR"]);
+                            cameraController.videoEngine.start()
                         }
                     }
 //                    if(CAMERA_CONTROL){
@@ -773,13 +772,13 @@ ApplicationWindow {
                 }
                 onGcsSnapshotClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.capture();
+                        cameraController.videoEngine.capture();
                     }
                 }
                 onGcsStabClicked: {
                     camState.gcsStab =! camState.gcsStab;
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.setDigitalStab(camState.gcsStab)
+                        cameraController.videoEngine.setDigitalStab(camState.gcsStab)
                     }
                 }
 
@@ -787,14 +786,14 @@ ApplicationWindow {
                     camState.gcsRecord=!camState.gcsRecord;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.setRecord(camState.gcsRecord);
+                        cameraController.videoEngine.setRecord(camState.gcsRecord);
                     }
                 }
                 onGcsShareClicked: {
                     camState.gcsShare=!camState.gcsShare;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.setShare(camState.gcsShare);
+                        cameraController.videoEngine.setShare(camState.gcsShare);
                     }
                 }
 
@@ -829,9 +828,9 @@ ApplicationWindow {
                     }
                 }
                 function updateObjectsOnMap(){
-                    if(videoPane.player !== undefined){
-                        for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
-                            var object = videoPane.player.listTrackObjectInfos[id];
+                    if(cameraController.videoEngine !== undefined){
+                        for (var id = 0; id < cameraController.videoEngine.listTrackObjectInfos.length; id++){
+                            var object = cameraController.videoEngine.listTrackObjectInfos[id];
                             var pointMapOnScreen =
                                     mapPane.convertLocationToScreen(object.latitude,object.longitude);
                             objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
@@ -886,7 +885,7 @@ ApplicationWindow {
                 ObjectsOnMap{
                     id: objectsOnMap
                     anchors.fill: parent
-                    player: videoPane.player
+                    player: cameraController.videoEngine
                 }
             }
             Rectangle{
@@ -1653,7 +1652,7 @@ ApplicationWindow {
                         "x":parent.width / 2 - UIConstants.sRect * 19 / 2,
                         "y":parent.height / 2 - UIConstants.sRect * 13 / 2,
                         "camState": camState,
-                        "player": videoPane.player});
+                        "player": cameraController.videoEngine});
                 }
             }
         }
@@ -1672,10 +1671,10 @@ ApplicationWindow {
 //            console.log("Get gimbal data");
             var frameID = 0;
             if(USE_VIDEO_CPU){
-//                frameID = videoPane.player.frameID;
+//                frameID = cameraController.videoEngine.frameID;
             }
 
-            var data = gimbalNetwork.gimbalModel.gimbal.getData(frameID);
+            var data = cameraController.context.getData(frameID);
             // === hainh added 2019-03-28
 //            camState.panPos = Number(data["panPos"]);
 //            camState.tiltPos = Number(data["tiltPos"]);
@@ -1702,8 +1701,6 @@ ApplicationWindow {
 //            camState.gimbalStab = data["STAB_GIMBAL"];
 //            camState.digitalStab = data["STAB_DIGITAL"];
 //            camState.trackSize = data["TRACK_SIZE"];
-            if(gimbalNetwork.isSensorConnected)
-                gimbalNetwork.ipcCommands.treronGetZoomPos();
         }
     }
     Rectangle{
@@ -1756,15 +1753,13 @@ ApplicationWindow {
             console.log("CAMERA_CONTROL = "+CAMERA_CONTROL)
             // --- Payload
             if(CAMERA_CONTROL){
-                var config = PCSConfig.getData();
-                console.log("config = "+config);
-                console.log("Connect to camera "+config["CAM_CONTROL_IP"]+":"+config["CAM_CONTROL_IN"]+":"+config["CAM_CONTROL_REP"])
-                gimbalNetwork.newConnect(config["CAM_CONTROL_IP"],
-                                         config["CAM_CONTROL_IN"],
-                                         config["CAM_CONTROL_REP"]);
-                timerRequestData.start();
-                videoPane.player.setVideo(config["CAM_STREAM_EO"]);
-                videoPane.player.start();
+                cameraController.loadConfig(PCSConfig);
+//                camera.newConnect(config["CAM_CONTROL_IP"],
+//                                         config["CAM_CONTROL_IN"],
+//                                         config["CAM_CONTROL_REP"]);
+//                timerRequestData.start();
+//                cameraController.videoEngine.setVideo(config["CAM_STREAM_EO"]);
+//                cameraController.videoEngine.start();
             }
             if(UC_API)
             {

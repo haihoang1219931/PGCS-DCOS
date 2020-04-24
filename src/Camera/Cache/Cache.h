@@ -1,12 +1,12 @@
 #ifndef CACHE_H
 #define CACHE_H
 
-#include "../ControllerLib/Buffer/RollBuffer.h"
-#include "../ControllerLib/Buffer/RollBuffer_.h"
-#include "../ControllerLib/Packet/MotionImage.h"
-#include "../ControllerLib/Packet/SystemStatus.h"
-#include "../ControllerLib/Packet/TrackResponse.h"
-#include "../ControllerLib/Packet/XPoint.h"
+#include "Camera/Buffer/RollBuffer.h"
+#include "Camera/Buffer/RollBuffer_.h"
+//#include "Camera/Packet/MotionImage.h"
+//#include "Camera/Packet/SystemStatus.h"
+//#include "Camera/Packet/TrackResponse.h"
+//#include "Camera/Packet/XPoint.h"
 
 #include "DetectedObjectsCacheItem.h"
 #include "GstFrameCacheItem.h"
@@ -46,68 +46,68 @@ class Cache
             return nullptr;
         }
 
-        RollBuffer<Eye::SystemStatus> *getSystemStatusCache()
-        {
-            if (nullptr != m_instance) {
-                return m_rbSystem;
-            }
+//        RollBuffer<Eye::SystemStatus> *getSystemStatusCache()
+//        {
+//            if (nullptr != m_instance) {
+//                return m_rbSystem;
+//            }
 
-            return nullptr;
-        }
+//            return nullptr;
+//        }
 
-        RollBuffer<Eye::MotionImage> *getMotionImageEOCache()
-        {
-            if (nullptr != m_instance) {
-                return m_rbIPCEO;
-            }
+//        RollBuffer<Eye::MotionImage> *getMotionImageEOCache()
+//        {
+//            if (nullptr != m_instance) {
+//                return m_rbIPCEO;
+//            }
 
-            return nullptr;
-        }
+//            return nullptr;
+//        }
 
-        RollBuffer<Eye::MotionImage> *getMotionImageIRCache()
-        {
-            if (nullptr != m_instance) {
-                return m_rbIPCIR;
-            }
+//        RollBuffer<Eye::MotionImage> *getMotionImageIRCache()
+//        {
+//            if (nullptr != m_instance) {
+//                return m_rbIPCIR;
+//            }
 
-            return nullptr;
-        }
+//            return nullptr;
+//        }
 
-        RollBuffer<Eye::TrackResponse> *getEOTrackingCache()
-        {
-            if (nullptr != m_instance) {
-                return m_rbTrackResEO;
-            }
+//        RollBuffer<Eye::TrackResponse> *getEOTrackingCache()
+//        {
+//            if (nullptr != m_instance) {
+//                return m_rbTrackResEO;
+//            }
 
-            return nullptr;
-        }
+//            return nullptr;
+//        }
 
-        RollBuffer<Eye::XPoint> *getEOSteeringCache()
-        {
-            if (nullptr != m_instance) {
-                return m_rbXPointEO;
-            }
+//        RollBuffer<Eye::XPoint> *getEOSteeringCache()
+//        {
+//            if (nullptr != m_instance) {
+//                return m_rbXPointEO;
+//            }
 
-            return nullptr;
-        }
+//            return nullptr;
+//        }
 
-        RollBuffer<Eye::TrackResponse> *getIRTrackingCache()
-        {
-            if (nullptr != m_instance) {
-                return m_rbTrackResIR;
-            }
+//        RollBuffer<Eye::TrackResponse> *getIRTrackingCache()
+//        {
+//            if (nullptr != m_instance) {
+//                return m_rbTrackResIR;
+//            }
 
-            return nullptr;
-        }
+//            return nullptr;
+//        }
 
-        RollBuffer<Eye::XPoint> *getIRSteeringCache()
-        {
-            if (nullptr != m_instance) {
-                return m_rbXPointIR;
-            }
+//        RollBuffer<Eye::XPoint> *getIRSteeringCache()
+//        {
+//            if (nullptr != m_instance) {
+//                return m_rbXPointIR;
+//            }
 
-            return nullptr;
-        }
+//            return nullptr;
+//        }
 
         RollBuffer_<DetectedObjectsCacheItem> *getDetectedObjectsCache()
         {
@@ -170,13 +170,13 @@ class Cache
             m_gstIRSavingBuff = new RollBuffer_<GstFrameCacheItem>(10);
             m_gstEOSavingBuff = new RollBuffer_<GstFrameCacheItem>(10);
             m_matImageBuff = new RollBuffer_<ProcessImageCacheItem>(30);
-            m_rbSystem = new RollBuffer<Eye::SystemStatus>(60);
-            m_rbIPCEO = new RollBuffer<Eye::MotionImage>(60);
-            m_rbIPCIR = new RollBuffer<Eye::MotionImage>(60);
-            m_rbTrackResEO = new RollBuffer<Eye::TrackResponse>(60);
-            m_rbXPointEO = new RollBuffer<Eye::XPoint>(60);
-            m_rbTrackResIR = new RollBuffer<Eye::TrackResponse>(60);
-            m_rbXPointIR = new RollBuffer<Eye::XPoint>(60);
+//            m_rbSystem = new RollBuffer<Eye::SystemStatus>(60);
+//            m_rbIPCEO = new RollBuffer<Eye::MotionImage>(60);
+//            m_rbIPCIR = new RollBuffer<Eye::MotionImage>(60);
+//            m_rbTrackResEO = new RollBuffer<Eye::TrackResponse>(60);
+//            m_rbXPointEO = new RollBuffer<Eye::XPoint>(60);
+//            m_rbTrackResIR = new RollBuffer<Eye::TrackResponse>(60);
+//            m_rbXPointIR = new RollBuffer<Eye::XPoint>(60);
             m_rbDetectedObjs = new RollBuffer_<DetectedObjectsCacheItem>(60);
             m_rbMOTObjs = new RollBuffer_<DetectedObjectsCacheItem>(60);
             m_rbSearchObjs = new RollBuffer_<DetectedObjectsCacheItem>(60);
@@ -189,13 +189,13 @@ class Cache
         RollBuffer_<GstFrameCacheItem> *m_gstEOSavingBuff;
         RollBuffer_<GstFrameCacheItem> *m_gstIRSavingBuff;
         RollBuffer_<ProcessImageCacheItem> *m_matImageBuff;
-        RollBuffer<Eye::SystemStatus> *m_rbSystem;
-        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
-        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
-        RollBuffer<Eye::TrackResponse> *m_rbTrackResEO;
-        RollBuffer<Eye::XPoint> *m_rbXPointEO;
-        RollBuffer<Eye::TrackResponse> *m_rbTrackResIR;
-        RollBuffer<Eye::XPoint> *m_rbXPointIR;
+//        RollBuffer<Eye::SystemStatus> *m_rbSystem;
+//        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
+//        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
+//        RollBuffer<Eye::TrackResponse> *m_rbTrackResEO;
+//        RollBuffer<Eye::XPoint> *m_rbXPointEO;
+//        RollBuffer<Eye::TrackResponse> *m_rbTrackResIR;
+//        RollBuffer<Eye::XPoint> *m_rbXPointIR;
         RollBuffer_<DetectedObjectsCacheItem> *m_rbDetectedObjs;
         RollBuffer_<DetectedObjectsCacheItem> *m_rbMOTObjs;
         RollBuffer_<DetectedObjectsCacheItem> *m_rbSearchObjs;

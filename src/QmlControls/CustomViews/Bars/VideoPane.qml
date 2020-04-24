@@ -172,12 +172,7 @@ Item{
     }
     Component.onCompleted: {
         if(USE_VIDEO_GPU || USE_VIDEO_CPU){
-            var component = Qt.createQmlObject('import io.qdt.dev 1.0;
-                                    Player {
-                                    }',
-                                               rootItem,
-                                               "dynamicSnipet1");
-            rootItem.player = component;
+            rootItem.player = cameraController.videoEngine;
             rootItem.player.plateLog = listPlateLog.plateLog;
             rootItem.player.determinedTrackObjected.connect( function (_id,_px,_py,_oW,_oH,_w,_h){
                 var px = (_px + _oW/2) - _w/2

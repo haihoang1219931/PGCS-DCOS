@@ -1,7 +1,5 @@
 #include "VDisplay.h"
-
-
-VDisplay::VDisplay(VideoEngineInterface *_parent) : VideoEngineInterface(_parent)
+VDisplay::VDisplay(VideoEngine *_parent) : VideoEngine(_parent)
 {
     m_frameID = -1;
     m_vFrameGrabber = new VFrameGrabber;
@@ -135,6 +133,7 @@ void VDisplay::onReceivedFrame()
 }
 void VDisplay::setVideo(QString _ip, int _port)
 {
+    printf("%s - %s\r\n",__func__,_ip.toStdString().c_str());
     m_vFrameGrabber->setSource(_ip.toStdString(), _port);
 }
 void VDisplay::setObjectDetect(bool enable){

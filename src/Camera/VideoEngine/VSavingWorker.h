@@ -57,7 +57,7 @@ class VSavingWorker : public QThread
         bool checkIfFolderExist(std::string _folderName);
 
     public:
-        Status::SensorMode m_sensorMode;                        /**< Mode of image sensing (EO/IR) */
+        QString m_sensorMode;                        /**< Mode of image sensing (EO/IR) */
         RollBuffer_<rva::GstFrameCacheItem> *m_buffVideoSaving;
         GMainLoop *m_loop = nullptr;
         GstPipeline *m_pipeline = nullptr;

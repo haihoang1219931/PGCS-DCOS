@@ -19,8 +19,8 @@ void VODWorker::run()
     long sleepTime = 0;
     m_matImageBuff = Cache::instance()->getProcessImageCache();         /**< */
     m_rbDetectedObjs = Cache::instance()->getDetectedObjectsCache();    /**< */
-    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();             /**< */
-    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();             /**< */
+//    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();             /**< */
+//    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();             /**< */
     ProcessImageCacheItem processImgItem;
     cv::Mat proccImg;
     cv::Size imgSize;

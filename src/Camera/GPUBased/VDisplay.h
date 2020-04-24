@@ -21,12 +21,11 @@
 #include "Camera/VideoEngine/VideoEngineInterface.h"
 #include "Camera/VideoDisplay/ImageItem.h"
 #include "Camera/Cache/TrackObject.h"
-
-class VDisplay : public VideoEngineInterface
+class VDisplay : public VideoEngine
 {
         Q_OBJECT
     public:
-        explicit VDisplay(VideoEngineInterface *_parent = 0);
+        explicit VDisplay(VideoEngine *_parent = 0);
         ~VDisplay();
     PlateLog* plateLog() override{return m_vDisplayWorker->m_plateLog;};
     void setPlateLog(PlateLog* plateLog) override{
