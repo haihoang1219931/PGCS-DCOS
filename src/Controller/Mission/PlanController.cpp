@@ -1,4 +1,5 @@
 #include "PlanController.h"
+#include "../Vehicle/Vehicle.h"
 Q_LOGGING_CATEGORY(PlanManagerLog, "PlanManagerLog");
 PlanController::PlanController(QObject *parent) : QObject(parent)
 {

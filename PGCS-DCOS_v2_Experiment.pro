@@ -17,13 +17,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 include(thirdparty/qsyncable/qsyncable.pri)
 CONFIG += use_flight_control
 
-CONFIG += use_ucapi
+#CONFIG += use_ucapi
 
-CONFIG += use_camera_control
+#CONFIG += use_camera_control
 
 #CONFIG += use_video_gpu
 
-CONFIG += use_video_cpu
+#CONFIG += use_video_cpu
 
 QML_IMPORT_PATH += \
     $$PWD \

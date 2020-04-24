@@ -1,7 +1,11 @@
 #include "ParamsController.h"
 #include <QVariant>
 #include "../Vehicle/Vehicle.h"
-class Vehicle;
+#include "../Firmware/FirmwarePlugin.h"
+#include <QObject>
+#include <QTimer>
+#include <QVariantMap>
+#include <QVariant>
 ParamsController::ParamsController(Vehicle *vehicle)
 {
     _vehicle = vehicle;
