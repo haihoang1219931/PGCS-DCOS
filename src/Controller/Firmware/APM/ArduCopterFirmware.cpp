@@ -329,7 +329,9 @@ void ArduCopterFirmware::sendJoystickData(){
 //            m_vehicle->setFlightMode("Guided");
 //        }
     }
-
+    if(m_vehicle->joystick()->axisCount() < 4){
+        return;
+    }
     mavlink_message_t msg;
     JSAxis *axisRoll = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisRoll());
     JSAxis *axitPitch = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisPitch());

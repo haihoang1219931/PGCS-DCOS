@@ -51,7 +51,7 @@ Rectangle {
                 isAutoReturn: true
                 onClicked: {
                     if(mainWindow.visibility === ApplicationWindow.FullScreen)
-                        mainWindow.visibility = ApplicationWindow.Maximized;
+                        mainWindow.visibility = ApplicationWindow.Windowed;
                     else
                         mainWindow.visibility = ApplicationWindow.FullScreen;
                 }
