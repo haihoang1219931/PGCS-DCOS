@@ -198,6 +198,9 @@ public:
     }
     bool pic(){return m_pic;}
     void setPIC(bool pic){m_pic = pic;}
+    int axisPan(){ return m_axisPan; }
+    int axisTilt(){ return m_axisTilt; }
+    int axisZoom(){ return m_axisZoom; }
 public Q_SLOTS:
     void updateButtonAxis(bool connected);
     void changeButtonState(int btnID,bool clicked);
@@ -228,6 +231,9 @@ private:
     int m_axisPitch = 3;
     int m_axisYaw = 0;
     int m_axisThrottle = 1;
+    int m_axisPan = 0;
+    int m_axisTilt = 1;
+    int m_axisZoom = 2;
     int m_butonPICCIC = 0;
     bool m_pic = false;
 };

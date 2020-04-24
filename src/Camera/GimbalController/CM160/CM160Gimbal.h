@@ -34,13 +34,14 @@ public Q_SLOTS:
     void setPanPos(float pos) override;
     void setTiltPos(float pos) override;
     void setGimbalPos(float panPos,float tiltPos) override;
-    void setEOZoom(QString command, QString value) override;
+    void setEOZoom(QString command, int value) override;
     void setIRZoom(QString command) override;
+    void changeSensor(QString sensorID) override;
     void snapShot() override;
     void setGimbalMode(QString mode) override;
     void setGimbalPreset(QString mode) override;
-    void setGimbalRecorder(QString mode) override;
-    void setLockMode(QString mode, bool enable, QPoint location) override;
+    void setGimbalRecorder(bool enable) override;
+    void setLockMode(QString mode, QPoint location=QPoint(0,0)) override;
     void setGeoLockPosition(QPoint location) override;
     void handlePacketReceived();
     void handlePacketParsed(GimbalPacket packet,unsigned char checksum);

@@ -362,7 +362,7 @@ void GRGimbalController::onTcpError(QAbstractSocket::SocketError error) {
 
 void GRGimbalController::gimbalRetryConnect()
 {
-    qDebug() << " Gimbal retry connect";
+//    qDebug() << " Gimbal retry connect";
     _socket->disconnectFromHost();
     _socket->connectToHost(_ipAddress, _ipPort);
 }

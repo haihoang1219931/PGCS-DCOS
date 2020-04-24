@@ -22,8 +22,6 @@ ApplicationWindow {
     visible: true
     visibility: ApplicationWindow.FullScreen
     title: qsTr("DCOS - PGCSv0.1")
-    width: Screen.width
-    height: Screen.height
     flags: Qt.WindowMinMaxButtonsHint
     function switchMapFull(){
         videoPane.x = paneControl.x;
@@ -755,13 +753,9 @@ ApplicationWindow {
                     console.log("Change sensor ID to ["+camState.sensorID+"]");
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         if(camState.sensorID === camState.sensorIDEO){
-                            var config = PCSConfig.getData();
-                            cameraController.videoEngine.setVideo(config["CAM_STREAM_EO"]);
-                            cameraController.videoEngine.start()
+                            cameraController.gimbal.changeSensor("EO");
                         }else{
-                            var config = PCSConfig.getData();
-                            cameraController.videoEngine.setVideo(config["CAM_STREAM_IR"]);
-                            cameraController.videoEngine.start()
+                            cameraController.gimbal.changeSensor("IR");
                         }
                     }
 //                    if(CAMERA_CONTROL){
@@ -772,13 +766,13 @@ ApplicationWindow {
                 }
                 onGcsSnapshotClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.videoEngine.capture();
+                        cameraController.gimbal.snapShot();
                     }
                 }
                 onGcsStabClicked: {
                     camState.gcsStab =! camState.gcsStab;
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.videoEngine.setDigitalStab(camState.gcsStab)
+                        cameraController.gimbal.setDigitalStab(camState.gcsStab)
                     }
                 }
 
@@ -786,14 +780,14 @@ ApplicationWindow {
                     camState.gcsRecord=!camState.gcsRecord;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.videoEngine.setRecord(camState.gcsRecord);
+                        cameraController.gimbal.setRecord(camState.gcsRecord);
                     }
                 }
                 onGcsShareClicked: {
                     camState.gcsShare=!camState.gcsShare;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.videoEngine.setShare(camState.gcsShare);
+                        cameraController.gimbal.setShare(camState.gcsShare);
                     }
                 }
 
@@ -1670,7 +1664,7 @@ ApplicationWindow {
         onTriggered: {
 //            console.log("Get gimbal data");
             var frameID = 0;
-            if(USE_VIDEO_CPU){
+            if(USE_VIDEO_CPU || USE_VIDEO_GPU){
 //                frameID = cameraController.videoEngine.frameID;
             }
 
@@ -1754,12 +1748,7 @@ ApplicationWindow {
             // --- Payload
             if(CAMERA_CONTROL){
                 cameraController.loadConfig(PCSConfig);
-//                camera.newConnect(config["CAM_CONTROL_IP"],
-//                                         config["CAM_CONTROL_IN"],
-//                                         config["CAM_CONTROL_REP"]);
-//                timerRequestData.start();
-//                cameraController.videoEngine.setVideo(config["CAM_STREAM_EO"]);
-//                cameraController.videoEngine.start();
+                cameraController.gimbal.joystick = joystick;
             }
             if(UC_API)
             {

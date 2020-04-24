@@ -4,30 +4,21 @@
 #include "VSavingWorker.h"
 #include "../Cache/TrackObject.h"
 #include "Joystick/JoystickLib/JoystickThreaded.h"
+#include "../GimbalController/GimbalInterface.h"
 VideoEngine::VideoEngine(QObject *parent) : QObject(parent)
 {
 
 }
-JoystickThreaded* VideoEngine::joystick(){
-    return m_joystick;
-}
-void VideoEngine::setJoystick(JoystickThreaded* joystick){
-    m_joystick = joystick;
-    connect(m_joystick,&JoystickThreaded::axisValueChanged,this,&VideoEngine::handleAxis);
-}
-void VideoEngine::handleAxis(int axisID, float value){
-
-}
-GimbalControllerInterface* VideoEngine::gimbal(){
+GimbalInterface* VideoEngine::gimbal(){
     return m_gimbal;
 }
-void VideoEngine::setGimbal(GimbalControllerInterface* gimbal){
+void VideoEngine::setGimbal(GimbalInterface* gimbal){
     m_gimbal = gimbal;
 }
 void VideoEngine::loadConfig(Config* config){
     if(config != nullptr){
         m_config = config;
-        setVideo(m_config->getData().toMap()["CAM_STREAM_EO"].toString());
+        setVideo(m_config->value("Settings:StreamEO:Value:data").toString());
         start();
     }
 }

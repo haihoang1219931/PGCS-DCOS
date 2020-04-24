@@ -1,6 +1,9 @@
 #include "CameraController.h"
+#ifdef USE_VIDEO_CPU
 #include "Camera/CPUBased/stream/CVVideoCaptureThread.h"
+#elif USE_VIDEO_GPU
 #include "Camera/GPUBased/VDisplay.h"
+#endif
 CameraController::CameraController(QObject *parent) : QObject(parent)
 {
 #ifdef USE_VIDEO_GPU
@@ -9,8 +12,9 @@ CameraController::CameraController(QObject *parent) : QObject(parent)
     m_videoEngine = new CVVideoCaptureThread();
 #endif
     m_gimbalManager = new GimbalInterfaceManager();
-    m_gimbal = m_gimbalManager->getGimbal(GimbalInterfaceManager::GIMBAL_TYPE::TRERON);
-//    m_videoEngine->decoder()->setContext(m_gimbal->context());
+    m_gimbal = m_gimbalManager->getGimbal(GimbalInterfaceManager::GIMBAL_TYPE::GREMSEY);
+    m_gimbal->setVideoEngine(m_videoEngine);
+    //    m_videoEngine->decoder()->setContext(m_gimbal->context());
 }
 void CameraController::loadConfig(Config *config){
     if(config != nullptr){

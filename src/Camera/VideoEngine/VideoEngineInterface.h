@@ -41,14 +41,12 @@ class VRTSPServer;
 class VSavingWorker;
 class ImageItem;
 class TrackObjectInfo;
-class JoystickThreaded;
-class GimbalControllerInterface;
+class GimbalInterface;
 class VideoEngine : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<TrackObjectInfo> listTrackObjectInfos READ listTrackObjectInfos NOTIFY listTrackObjectInfosChanged);
-    Q_PROPERTY(JoystickThreaded*    joystick                    READ joystick       WRITE setJoystick)
-    Q_PROPERTY(GimbalControllerInterface*    gimbal   READ gimbal       WRITE setGimbal)
+    Q_PROPERTY(GimbalInterface*    gimbal   READ gimbal       WRITE setGimbal)
     Q_PROPERTY(QAbstractVideoSurface *videoSurface READ videoSurface WRITE setVideoSurface)
     Q_PROPERTY(QSize sourceSize READ sourceSize NOTIFY sourceSizeChanged)
     Q_PROPERTY(bool enStream READ enStream WRITE setEnStream)
@@ -165,10 +163,8 @@ public:
     }
 
     QMap<int,bool>  freezeMap(){ return m_freezeMap; }
-    JoystickThreaded* joystick();
-    void setJoystick(JoystickThreaded* joystick);
-    GimbalControllerInterface* gimbal();
-    void setGimbal(GimbalControllerInterface* gimbal);
+    GimbalInterface* gimbal();
+    void setGimbal(GimbalInterface* gimbal);
 public:
     QAbstractVideoSurface *videoSurface();
     void setVideoSurface(QAbstractVideoSurface *videoSurface);
@@ -225,15 +221,13 @@ public Q_SLOTS:
     virtual void onStreamFrameSizeChanged(int width, int height){}
     virtual void doShowVideo(){}
     virtual void drawOnViewerID(cv::Mat img, int viewerID);
-    void handleAxis(int axisID, float value);
 protected:
     virtual PlateLog* plateLog(){return nullptr;}
     virtual void setPlateLog(PlateLog* plateLog){
         Q_UNUSED(plateLog);
     }
 protected:
-    JoystickThreaded*  m_joystick = nullptr;
-    GimbalControllerInterface* m_gimbal = nullptr;
+    GimbalInterface* m_gimbal = nullptr;
     // === sub viewer
     QList<ImageItem*> m_listSubViewer;
     QMutex imageDataMutex[10];

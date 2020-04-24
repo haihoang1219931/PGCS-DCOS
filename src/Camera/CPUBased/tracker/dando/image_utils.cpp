@@ -51,7 +51,7 @@ cv::Mat ImageUtility::contrastEnhance(cv::Mat image, float weightingParam)
             data[i] = 255 * std::pow((float)(value / 255.), (1 - cdf.at<float>(value, 0)));
         }
     };
-    cv::parallel_for_(cv::Range(0, width * height), fillData);
+//    cv::parallel_for_(cv::Range(0, width * height), fillData);
 
     //    for (int i = 0; i < result.rows; i++) {
     //        for (int j = 0; j < result.cols; j++) {

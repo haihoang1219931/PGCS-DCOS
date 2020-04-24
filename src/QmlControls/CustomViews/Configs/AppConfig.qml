@@ -50,10 +50,13 @@ Rectangle {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 isAutoReturn: true
                 onClicked: {
-                    if(mainWindow.visibility === ApplicationWindow.FullScreen)
+                    if(mainWindow.visibility === ApplicationWindow.FullScreen){
+                        mainWindow.width = Screen.width;
+                        mainWindow.height = Screen.height;
                         mainWindow.visibility = ApplicationWindow.Windowed;
-                    else
+                    }else{
                         mainWindow.visibility = ApplicationWindow.FullScreen;
+                    }
                 }
             }
             Label{

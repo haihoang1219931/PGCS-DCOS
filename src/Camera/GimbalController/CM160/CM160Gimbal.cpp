@@ -143,18 +143,21 @@ void CM160Gimbal::setGimbalPos(float panPos,float tiltPos){
         _gimbalCommand->setPanTiltPosition(panPos,tiltPos);
     }
 }
-void CM160Gimbal::setEOZoom(QString command, QString value){
+void CM160Gimbal::setEOZoom(QString command, int value){
 //    Q_UNUSED(command);
 
     if(_eoCommand!=nullptr){
         if(command != ""){
-            _eoCommand->setEOOpticalZoomVelocity(command,value.toInt());
+            _eoCommand->setEOOpticalZoomVelocity(command,value);
         }else
-            _eoCommand->setEOOpticalZoomPosition(value.toInt());
+            _eoCommand->setEOOpticalZoomPosition(value);
     }
 }
 void CM160Gimbal::setIRZoom(QString command){
     Q_UNUSED(command);
+}
+void CM160Gimbal::changeSensor(QString sensorID){
+
 }
 void CM160Gimbal::snapShot(){
 
@@ -165,12 +168,11 @@ void CM160Gimbal::setGimbalMode(QString mode){
 void CM160Gimbal::setGimbalPreset(QString mode){
     Q_UNUSED(mode);
 }
-void CM160Gimbal::setGimbalRecorder(QString mode){
-    Q_UNUSED(mode);
-}
-void CM160Gimbal::setLockMode(QString mode, bool enable, QPoint location){
-    Q_UNUSED(mode);
+void CM160Gimbal::setGimbalRecorder(bool enable){
     Q_UNUSED(enable);
+}
+void CM160Gimbal::setLockMode(QString mode, QPoint location){
+    Q_UNUSED(mode);
     Q_UNUSED(location);
 }
 void CM160Gimbal::setGeoLockPosition(QPoint location){
