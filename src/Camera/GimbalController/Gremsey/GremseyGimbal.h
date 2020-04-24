@@ -9,7 +9,9 @@ class GremseyGimbal : public GimbalInterface
     Q_OBJECT
 public:
     explicit GremseyGimbal(GimbalInterface *parent = nullptr);
-
+public:
+    void connectToGimbal(Config* config = nullptr) override;
+    void disconnectGimbal() override;
 Q_SIGNALS:
 
 public Q_SLOTS:
