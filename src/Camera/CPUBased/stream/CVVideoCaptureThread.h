@@ -7,8 +7,6 @@
 #include "CVVideoCapture.h"
 #include "CVVideoProcess.h"
 #include "CVRecord.h"
-
-
 class CVVideoCaptureThread : public VideoEngineInterface
 {
         Q_OBJECT

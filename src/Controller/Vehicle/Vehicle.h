@@ -39,6 +39,7 @@ class Vehicle : public QObject
     Q_PROPERTY(QStringList          flightModesOnAir            READ flightModesOnAir                               NOTIFY flightModesOnAirChanged)
     Q_PROPERTY(QStringList          flightModesOnGround         READ flightModesOnGround                            NOTIFY flightModesOnGroundChanged)
     Q_PROPERTY(QString              flightMode                  READ flightMode         WRITE setFlightMode         NOTIFY flightModeChanged)
+    Q_PROPERTY(bool                 pic                         READ pic                                            NOTIFY picChanged)
     Q_PROPERTY(bool                 armed                       READ armed                                          NOTIFY armedChanged)
     Q_PROPERTY(bool                 landed                      READ landed                                         NOTIFY landedChanged)
     Q_PROPERTY(QGeoCoordinate       coordinate                  READ coordinate                                     NOTIFY coordinateChanged)
@@ -364,6 +365,7 @@ public:
     IOFlightController* communication();
     void setCommunication(IOFlightController* com);
     ParamsController* params();
+    bool pic(void);
     bool armed(void) { return _armed; }
     Q_INVOKABLE void setArmed(bool armed);
 
@@ -456,6 +458,7 @@ Q_SIGNALS:
     void mavlinkMessageReceived(mavlink_message_t message);
     void mavCommandResult(int vehicleId, int component, int command, int result, bool noReponseFromVehicle);
     void homePositionChanged(const QGeoCoordinate& currentHomePosition);
+    void picChanged();
     void armedChanged(bool armed);
     void landedChanged();
     void flightModeChanged(const QString& flightMode);
@@ -530,6 +533,7 @@ Q_SIGNALS:
     void propertiesShowCountChanged();
     void paramsModelChanged();
 public Q_SLOTS:
+    void handlePIC();
     void _loadDefaultParamsShow();
     void _setPropertyValue(QString name,QString value,QString unit);
     void _sendMessageOnLink(IOFlightController* link, mavlink_message_t message);
@@ -718,7 +722,8 @@ private:
     uint64_t    _mavlinkLossCount       = 0;
     float       _mavlinkLossPercent     = 100.0f;
     float _pressABS = 0;
-    int _temperature = 0;
+    int _temperature = 0;    
+    bool _pic = false;
     QList<Fact*> _propertiesModel;
     QList<Fact*> _paramsModel;
     QMap<QString,int> _paramsMap;

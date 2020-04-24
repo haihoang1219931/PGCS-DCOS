@@ -153,6 +153,7 @@ public:
     }
     int buttonCount() const{return m_buttons.count();}
     JSButton *button(int index) const{ return m_buttons.at(index);}
+    JSButton *buttonTemp(int index) const{ return m_buttonsTemp.at(index);}
     void clearButtons() {
         m_buttons.clear();
         Q_EMIT buttonsChanged();
@@ -195,11 +196,15 @@ public:
         qmlRegisterType<JSButton>();
         qmlRegisterType<JoystickThreaded>("io.qdt.dev", 1, 0, "Joystick");
     }
+    bool pic(){return m_pic;}
+    void setPIC(bool pic){m_pic = pic;}
 public Q_SLOTS:
     void updateButtonAxis(bool connected);
     void changeButtonState(int btnID,bool clicked);
     void changeAxisValue(int axisID, float value);
 Q_SIGNALS:
+    void picChanged();
+    void buttonAxisLoaded();
     void joystickConnected(bool state);
     void axesChanged();
     void buttonsChanged();
@@ -223,6 +228,8 @@ private:
     int m_axisPitch = 3;
     int m_axisYaw = 0;
     int m_axisThrottle = 1;
+    int m_butonPICCIC = 0;
+    bool m_pic = false;
 };
 
 #endif // JOYSTICKTHREAD_H

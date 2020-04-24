@@ -22,7 +22,7 @@ class VSavingWorker : public QThread
         Q_OBJECT
     public:
         //  explicit VFrameGrabber(QObject *_parent = 0);
-        VSavingWorker(std::string _mode);
+        VSavingWorker(std::string _mode = "EO");
         ~VSavingWorker();
 
         static bool wrapper_run(void *pointer);
@@ -38,6 +38,10 @@ class VSavingWorker : public QThread
 
         static gboolean wrapperOnSeekData(GstAppSrc *_appSrc, guint64 _offset, gpointer _uData);
 
+        void setStreamSize(int width,int height){
+            m_width = width;
+            m_height = height;
+        }
     private:
         void onNeedData(GstAppSrc *_appSrc, guint _size, gpointer _uData);
 
@@ -53,9 +57,9 @@ class VSavingWorker : public QThread
 
         bool checkIfFolderExist(std::string _folderName);
 
-    private:
+    public:
         Status::SensorMode m_sensorMode;                        /**< Mode of image sensing (EO/IR) */
-        RollBuffer_<GstFrameCacheItem> *m_buffVideoSaving;
+        RollBuffer_<rva::GstFrameCacheItem> *m_buffVideoSaving;
         GMainLoop *m_loop = nullptr;
         GstPipeline *m_pipeline = nullptr;
         std::string m_pipeline_str;

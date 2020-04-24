@@ -112,7 +112,7 @@ gboolean VRTSPServer::gstreamer_pipeline_operate()
     server = gst_rtsp_server_new();
     mounts = gst_rtsp_server_get_mount_points(server);
     factory = gst_rtsp_media_factory_new();
-    gst_rtsp_media_factory_set_launch(factory, "( appsrc name=othersrc ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay name=pay0 pt=96 )");
+    gst_rtsp_media_factory_set_launch(factory, "( appsrc name=othersrc ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )");
     printf("gstreamer_pipeline_operate user_data %p\r\n", this);
     g_signal_connect(factory, "media-configure", (GCallback) wrap_media_configure, this);
     gst_rtsp_media_factory_set_shared(factory, TRUE);

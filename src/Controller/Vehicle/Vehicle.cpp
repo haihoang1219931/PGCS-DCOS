@@ -41,6 +41,13 @@ JoystickThreaded* Vehicle::joystick(){
 }
 void Vehicle::setJoystick(JoystickThreaded* joystick){
     m_joystick = joystick;
+    _pic = m_joystick->pic();
+    Q_EMIT picChanged();
+    connect(m_joystick,&JoystickThreaded::picChanged,this,&Vehicle::handlePIC);
+}
+void Vehicle::handlePIC(){
+    _pic = m_joystick->pic();
+    Q_EMIT picChanged();
 }
 ParamsController *Vehicle::paramsController()
 {
@@ -1638,7 +1645,9 @@ QStringList Vehicle::unhealthySensors(void) const
 
     return sensorList;
 }
-
+bool Vehicle::pic(void){
+    return _pic;
+}
 QString Vehicle::flightMode(void)
 {
     //    return _firmwarePlugin->flightMode(_base_mode, _custom_mode);

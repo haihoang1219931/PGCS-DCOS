@@ -498,9 +498,9 @@ Item {
                                                                     ("Go to\nLocation")
                         isEnable: vehicle.link
                                   &&
-                                  ((vehicle.vehicleType === 2)
+                                  ((vehicle.vehicleType === 2 && !vehicle.pic)
                                    ||
-                                   (vehicle.vehicleType === 14)
+                                   (vehicle.vehicleType === 14 && !vehicle.pic)
                                    ||
                                    (vehicle.vehicleType === 1 && mapPane.selectedWP !== undefined ) )
                         onClicked: {
@@ -561,7 +561,7 @@ Item {
                         Layout.alignment: Qt.AlignTop
                         icon: UIConstants.iAuto
                         btnText: "Auto"
-                        isEnable: vehicle.link
+                        isEnable: vehicle.link && !vehicle.pic
                         onClicked: {
                             rootItem.doFlyAction(1);
                         }

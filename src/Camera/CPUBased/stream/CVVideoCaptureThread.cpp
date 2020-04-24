@@ -1,6 +1,6 @@
 #include "CVVideoCaptureThread.h"
-
-
+#include "Camera/VideoEngine/VRTSPServer.h"
+#include "Camera/VideoEngine/VSavingWorker.h"
 CVVideoCaptureThread::CVVideoCaptureThread(VideoEngineInterface *parent) : VideoEngineInterface(parent)
 {
     char cmd[100];
@@ -34,8 +34,8 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngineInterface *parent) : Video
     m_processThread = new QThread(nullptr);
     m_mutexCapture = new QMutex();
     m_mutexProcess = new QMutex();
-    m_vRTSPServer = new VRTSPServer;
-    m_vSavingWorker = new VSavingWorker;
+    m_vRTSPServer = new VRTSPServer();
+    m_vSavingWorker = new VSavingWorker();
     m_capture->moveToThread(m_captureThread);
     m_process->moveToThread(m_processThread);
     m_record->moveToThread(m_recordThread);
@@ -180,7 +180,7 @@ void CVVideoCaptureThread::stop()
     } else {
         printf("Record already stopped\r\n");
     }
-    m_vRTSPServer->setStateRun(false);
+//    m_vRTSPServer->setStateRun(false);
     m_vSavingWorker->stopPipeline();
 }
 

@@ -24,17 +24,22 @@
 #include <QThread>
 #include <QVariantList>
 #include <QVariantMap>
+#include <QList>
 #include <QtQuick>
 #include <QQmlApplicationEngine>
 #include <QQmlListProperty>
 #include <QList>
 #include <QRect>
 #include "../ControllerLib/Buffer/RollBuffer.h"
+#include "../ControllerLib/Buffer/RollBuffer_.h"
 #include "../Cache/TrackObject.h"
+#include "../Cache/GstFrameCacheItem.h"
 #include "../../../Files/PlateLog.h"
-#include "VRTSPServer.h"
-#include "VSavingWorker.h"
+#include <opencv2/core.hpp>
+class VRTSPServer;
+class VSavingWorker;
 class ImageItem;
+class TrackObjectInfo;
 class VideoEngineInterface : public QObject
 {
     Q_OBJECT
@@ -238,8 +243,8 @@ protected:
     std::string m_logFile;
     VRTSPServer *m_vRTSPServer;
     VSavingWorker *m_vSavingWorker;
-    RollBuffer_<GstFrameCacheItem> *m_gstRTSPBuff;
-    RollBuffer_<GstFrameCacheItem> *m_buffVideoSaving;
+    RollBuffer_<rva::GstFrameCacheItem> *m_gstRTSPBuff;
+    RollBuffer_<rva::GstFrameCacheItem> *m_buffVideoSaving;
 
     // OD
     bool m_enSteer = false;

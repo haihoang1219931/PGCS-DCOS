@@ -110,6 +110,9 @@ void FirmwarePlugin::saveToFile(QString fileName,QList<Fact*> _listParamShow){
 QList<Fact*> FirmwarePlugin::listParamsShow(){
     return _listParamShow;
 }
+bool FirmwarePlugin::pic(){
+    return false;
+}
 QString FirmwarePlugin::rtlAltParamName(){
     return m_rtlAltParamName;
 }

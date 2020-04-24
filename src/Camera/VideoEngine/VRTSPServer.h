@@ -35,18 +35,23 @@ class VRTSPServer : public QThread
         static gboolean wrap_seek_data(GstElement *object, guint64 arg0,  gpointer user_data);
         void media_configure(GstRTSPMediaFactory *factory, GstRTSPMedia *media, gpointer user_data);
         static void wrap_media_configure(GstRTSPMediaFactory *factory, GstRTSPMedia *media, gpointer user_data);
-
+        void setStreamMount(std::string streamMount){ m_streamMount = streamMount;}
+        void setStreamSize(int width,int height){
+            m_width = width;
+            m_height = height;
+        }
     public:
         gboolean gstreamer_pipeline_operate();
         void stopPipeline();
         void pause(bool pause);
 
-    private:
+    public:
         int m_width = 1920;
         int m_height = 1080;
         int m_fps = 25;
         int m_currID = -1;
         bool m_stop = false;
+        std::string m_streamMount = "/stream";
         GstElement *element;
         GstElement *appsrc;
         GError *err = nullptr;

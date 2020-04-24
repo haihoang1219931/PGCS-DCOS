@@ -483,11 +483,11 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.flightMode === "Loiter"?UIConstants.blueColor:UIConstants.greenColor
+                color: vehicle.pic?UIConstants.blueColor:UIConstants.greenColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor
-                    text: vehicle.flightMode === "Loiter"?"PIC":"CIC"
+                    text: vehicle.pic?"PIC":"CIC"
                     font.family: UIConstants.appFont
                     anchors.fill: parent
                     verticalAlignment: Text.AlignVCenter

@@ -28,6 +28,7 @@ public:
     virtual QList<Fact*> listParamsShow();
     /// Returns the list of available flight modes. Flight modes can be different in normal/advanced ui mode.
     /// Call will be made again if advanced mode changes.
+    virtual bool pic();
     virtual QString rtlAltParamName();
     virtual QString airSpeedParamName();
     virtual QString loiterRadiusParamName();

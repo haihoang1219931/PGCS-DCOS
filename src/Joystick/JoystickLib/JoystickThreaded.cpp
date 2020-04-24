@@ -99,6 +99,11 @@ void JoystickThreaded::loadConfig(){
                 m_axisThrottle = m_axes.at(i)->id();
             }
         }
+        for(int i=0;i< m_buttons.size(); i++){
+            if(m_buttons.at(i)->mapFunc()=="PIC/CIC"){
+                m_butonPICCIC = m_buttons.at(i)->id();
+            }
+        }
     }else{
         saveConfig();
     }
@@ -125,6 +130,9 @@ void JoystickThreaded::saveConfig(){
             // copy
             m_buttons.at(i)->setId(m_buttonsTemp.at(i)->id());
             m_buttons.at(i)->setMapFunc(m_buttonsTemp.at(i)->mapFunc());
+            if(m_buttons.at(i)->mapFunc() == "PIC/CIC"){
+                m_butonPICCIC = i;
+            }
         }
         tinyxml2::XMLDocument xmlDoc;
         tinyxml2::XMLNode * pRoot = xmlDoc.NewElement("ArrayOfProperties");
@@ -208,6 +216,7 @@ void JoystickThreaded::updateButtonAxis(bool connected){
             loadConfig();
             Q_EMIT axesConfigChanged();
             Q_EMIT buttonsConfigChanged();
+            Q_EMIT buttonAxisLoaded();
         }
     }
 }
@@ -251,6 +260,10 @@ void JoystickThreaded::changeButtonState(int btnID,bool clicked){
 //        qDebug("Button %d is %s\n", btnID, !clicked ? "up" : "down");
         m_buttonsTemp[btnID]->setPressed(clicked);
         Q_EMIT buttonStateChanged(btnID,clicked);
+        if(btnID == m_butonPICCIC){
+            m_pic = clicked;
+            Q_EMIT picChanged();
+        }
     }
 }
 void JoystickThreaded::changeAxisValue(int axisID, float value){

@@ -42,6 +42,9 @@ ArduCopterFirmware::~ArduCopterFirmware(){
         m_joystickTimer.stop();
     }
 }
+bool ArduCopterFirmware::pic(){
+    return m_pic;
+}
 QString ArduCopterFirmware::flightMode(int flightModeId)
 {
     if (m_mapFlightMode.contains(flightModeId)) {
@@ -331,10 +334,10 @@ void ArduCopterFirmware::sendJoystickData(){
                 &msg,
                 m_vehicle->id(),
                 m_vehicle->_compID,
-                static_cast<uint16_t>(convertRC(m_vehicle->flightMode().toUpper() == "LOITER"?roll:0,1)),
-                static_cast<uint16_t>(convertRC(m_vehicle->flightMode().toUpper() == "LOITER"?pitch:0,2)),
-                static_cast<uint16_t>(convertRC(m_vehicle->flightMode().toUpper() == "LOITER"?throttle:0,3)),
-                static_cast<uint16_t>(convertRC(m_vehicle->flightMode().toUpper() == "LOITER"?yaw:0,4)),
+                static_cast<uint16_t>(convertRC(m_vehicle->pic()?roll:0,1)),
+                static_cast<uint16_t>(convertRC(m_vehicle->pic()?pitch:0,2)),
+                static_cast<uint16_t>(convertRC(m_vehicle->pic()?throttle:0,3)),
+                static_cast<uint16_t>(convertRC(m_vehicle->pic()?yaw:0,4)),
                 0,//static_cast<uint16_t>(convertRC(0,5)),
                 0,//static_cast<uint16_t>(convertRC(0,6)),
                 0,//static_cast<uint16_t>(convertRC(0,7)),
@@ -357,13 +360,16 @@ void ArduCopterFirmware::handleJSButton(int id, bool clicked){
         if(id>=0 && id < m_vehicle->joystick()->buttonCount()){
             JSButton* button = m_vehicle->joystick()->button(id);
             if(m_mapFlightMode.values().contains(button->mapFunc())){
-                m_vehicle->setFlightMode(button->mapFunc());
-            }
-            else if(button->mapFunc() == "PIC/CIC"){
+                if(m_vehicle->pic()){
+                    if(button->mapFunc() == "RTL")
+                        m_vehicle->setFlightMode(button->mapFunc());
+                }else{
+                    m_vehicle->setFlightMode(button->mapFunc());
+                }
+            }else if(button->mapFunc() == "PIC/CIC"){
                 m_vehicle->setFlightMode(clicked?"Loiter":"Guided");
-            }else if(button->mapFunc() == "CIC/PIC"){
-                m_vehicle->setFlightMode(!clicked?"Loiter":"Guided");
             }
+
         }
     }
 }

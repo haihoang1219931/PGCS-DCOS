@@ -1,5 +1,8 @@
 #include "VideoEngineInterface.h"
 #include "../VideoDisplay/ImageItem.h"
+#include "VRTSPServer.h"
+#include "VSavingWorker.h"
+#include "../Cache/TrackObject.h"
 VideoEngineInterface::VideoEngineInterface(QObject *parent) : QObject(parent)
 {
 

@@ -38,6 +38,7 @@ public:
     };
     ArduCopterFirmware(Vehicle* vehicle = nullptr);
     ~ArduCopterFirmware();
+    bool pic() override;
     QString flightMode(int flightModeId) override;
     bool flightModeID(QString flightMode,int* base_mode,int* custom_mode) override;
     void sendHomePosition(QGeoCoordinate location) override;
@@ -125,6 +126,7 @@ public Q_SLOTS:
     void handleJSButton(int id, bool clicked) override;
 private:
     float convertRC(float input, int channel);
+    bool m_pic = false;
 };
 
 #endif // ARDUCOPTERFIRMWARE_H
