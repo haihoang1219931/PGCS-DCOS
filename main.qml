@@ -22,6 +22,8 @@ ApplicationWindow {
     visible: true
     visibility: ApplicationWindow.FullScreen
     title: qsTr("DCOS - PGCSv0.1")
+    width: Screen.width
+    height: Screen.height
     flags: Qt.WindowMinMaxButtonsHint
     function switchMapFull(){
         videoPane.x = paneControl.x;
