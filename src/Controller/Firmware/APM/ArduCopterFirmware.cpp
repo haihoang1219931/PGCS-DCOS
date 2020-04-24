@@ -36,6 +36,9 @@ ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
     m_joystickTimer.setSingleShot(false);
     connect(&m_joystickTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendJoystickData);
     m_joystickTimer.start();
+    if(m_vehicle->joystick()!=nullptr){
+        m_vehicle->setFlightMode(m_vehicle->pic()?"Loiter":"Guided");
+    }
 }
 ArduCopterFirmware::~ArduCopterFirmware(){
     if(m_joystickTimer.isActive()){
@@ -317,6 +320,16 @@ void ArduCopterFirmware::sendJoystickData(){
 
     if (m_vehicle == nullptr)
         return;
+    if(m_vehicle->pic()){
+        if(m_vehicle->flightMode()!= "Loiter" && m_vehicle->flightMode()!= "RTL"){
+            m_vehicle->setFlightMode("Loiter");
+        }
+    }else{
+//        if(m_vehicle->flightMode()!= "Guided"){
+//            m_vehicle->setFlightMode("Guided");
+//        }
+    }
+
     mavlink_message_t msg;
     JSAxis *axisRoll = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisRoll());
     JSAxis *axitPitch = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisPitch());
