@@ -320,6 +320,9 @@ void ArduCopterFirmware::sendJoystickData(){
 
     if (m_vehicle == nullptr)
         return;
+    if(m_vehicle->joystick()->axisCount()<4){
+        return;
+    }
     if(m_vehicle->pic()){
         if(m_vehicle->flightMode()!= "Loiter" && m_vehicle->flightMode()!= "RTL"){
             m_vehicle->setFlightMode("Loiter");
