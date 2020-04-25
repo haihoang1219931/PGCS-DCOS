@@ -37,7 +37,7 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(pa
     m_capture->moveToThread(m_captureThread);
     m_process->moveToThread(m_processThread);
     connect(m_captureThread, SIGNAL(started()), m_capture, SLOT(doWork()));
-    connect(m_processThread, SIGNAL(started()), m_process, SLOT(doWork()));
+    connect(m_processThread, SIGNAL(started()), m_process, SLOT(doWork01()));
     connect(m_process, SIGNAL(trackInitSuccess(bool, int, int, int, int)), this, SIGNAL(trackInitSuccess(bool, int, int, int, int)));
     connect(m_process, SIGNAL(processDone()), this, SLOT(doShowVideo()));
     connect(m_process, SIGNAL(trackStateLost()), this, SLOT(slObjectLost()));
