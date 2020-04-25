@@ -27,6 +27,7 @@ public Q_SLOTS:
     virtual void discoverOnLan();
     virtual void changeSensor(QString sensorID);
     virtual void handleAxes();
+    virtual void lockScreenPoint(int _id,double _px,double _py,double _oW,double _oH,double _w,double _h);
     virtual void setPanRate(float rate);
     virtual void setTiltRate(float rate);
     virtual void setGimbalRate(float panRate,float tiltRate);
@@ -51,6 +52,40 @@ protected:
     bool m_isGimbalConnected = false;
     Config* m_config = nullptr;
     JoystickThreaded*  m_joystick = nullptr;
+
+protected:
+    void  resetTrackParam(){
+        m_iPan = 0.0;
+        m_cPan = 0.0;
+        m_dPanOld = 0.0;
+        m_panRate = 0.0;
+        m_uPan = 0.0;
+        m_iTilt = 0.0;
+        m_cTilt = 0.0;
+        m_dTiltOld = 0.0;
+        m_tiltRate = 0.0;
+        m_uTilt = 0.0;
+    }
+    // tracker param
+    float m_iPan= 0 ;
+    float m_cPan= 0 ;
+    float m_dPanOld= 0 ;
+    float m_panRate= 0 ;
+    float m_uPan= 0 ;
+
+    float m_kpPan = 45.0f;
+    float m_kiPan = 1.0;
+    float m_kdPan = 0.05;
+
+    float m_iTilt= 0 ;
+    float m_cTilt= 0 ;
+    float m_dTiltOld= 0 ;
+    float m_tiltRate= 0 ;
+    float m_uTilt= 0 ;
+
+    float m_kpTilt = 50.0f;
+    float m_kiTilt = 5.0;
+    float m_kdTilt= 0.05f;
 };
 
 #endif // GIMBALINTERFACE_H

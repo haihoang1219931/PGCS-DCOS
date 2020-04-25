@@ -1672,11 +1672,6 @@ ApplicationWindow {
             // === hainh added 2019-03-28
 //            camState.panPos = Number(data["panPos"]);
 //            camState.tiltPos = Number(data["tiltPos"]);
-            if(camState.sensorID === camState.sensorIDEO){
-                camState.hfov = Number(data["EO"]["HFOV"]);
-            }else{
-                camState.hfov = Number(data["IR"]["HFOV"]);
-            }
 //            camState.hfov = Number(data["EO"]["HFOV"]);
 //            camState.vfov = Number(data["hfov"])/2;
             // 'pn', 'pe', 'pd', 'roll', 'pitch', 'yaw',
@@ -1687,9 +1682,9 @@ ApplicationWindow {
 //            camState.pitch = Number(data["pitch"]);
 //            camState.yaw = Number(data["yaw"]);
             // hainh added 2019-03-28 ===
-//            camState.sensorID = data["SENSOR"];
+            camState.sensorID = data["SENSOR"];
 //            camState.updateTrackSize(data["TRACK_SIZE"]);
-//            camState.changeLockMode(data["LOCK_MODE"]);
+            camState.changeLockMode(data["LOCK_MODE"]);
 //            camState.gimbalMode = data["GIMBAL_MODE"];
 //            camState.gimbalRecord = data["GIMBAL_RECORD"];
 //            camState.gimbalStab = data["STAB_GIMBAL"];
@@ -1749,6 +1744,7 @@ ApplicationWindow {
             if(CAMERA_CONTROL){
                 cameraController.loadConfig(PCSConfig);
                 cameraController.gimbal.joystick = joystick;
+                timerRequestData.start();
             }
             if(UC_API)
             {

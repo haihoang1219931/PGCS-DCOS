@@ -23,10 +23,16 @@ void VideoEngine::loadConfig(Config* config){
     }
 }
 void VideoEngine::slObjectLost(){
+    m_gimbal->setGimbalRate(0,0);
+    m_gimbal->context()->m_lockMode = "FREE";
     removeTrackObjectInfo(0);
     Q_EMIT objectLost();
 }
 void VideoEngine::slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h){
+//    printf("%s]\r\n",__func__);
+    if(m_gimbal != nullptr){
+        m_gimbal->lockScreenPoint(_id,_px,_py,_oW,_oH,_w,_h);
+    }
     updateTrackObjectInfo("Object","RECT",QVariant(QRect(
                                                        static_cast<int>(_px-_oW/2),
                                                        static_cast<int>(_py-_oH/2),

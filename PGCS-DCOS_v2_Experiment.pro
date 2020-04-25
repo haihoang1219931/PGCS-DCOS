@@ -146,7 +146,8 @@ INCLUDEPATH += $$PWD/src/UC/boost1.62/include
 INCLUDEPATH += $$PWD/src/UC/openssl
 
 #LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
-LIBS+= -L/home/pgcs-05/workspaces/boost1.62/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
+#LIBS+= -L/home/pgcs-05/workspaces/boost1.62/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
+LIBS+= -L/home/pgcs-04/install/boost_1_62_0/stage/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
 LIBS += -L/usr/local/lib -lcrypto -lssl
 LIBS += -lpthread
 
@@ -355,7 +356,7 @@ SOURCES += \
     src/Camera/GimbalController/GimbalInterfaceManager.cpp \
     src/Camera/GimbalController/Gremsey/GimbalControl.cpp \
     src/Camera/GimbalController/Gremsey/GremseyGimbal.cpp \
-    src/Camera/GimbalController/Gremsey/TCPClient.cpp \
+    src/Camera/GimbalController/Gremsey/SensorController.cpp \
     src/Camera/GimbalController/Treron/TreronGimbal.cpp
 HEADERS += \
     src/Camera/GimbalController/CM160/CM160Gimbal.h \
@@ -486,7 +487,7 @@ HEADERS += \
     src/Camera/GimbalController/GimbalInterfaceManager.h \
     src/Camera/GimbalController/Gremsey/GimbalControl.h \
     src/Camera/GimbalController/Gremsey/GremseyGimbal.h \
-    src/Camera/GimbalController/Gremsey/TCPClient.h \
+    src/Camera/GimbalController/Gremsey/SensorController.h \
     src/Camera/GimbalController/Treron/TreronGimbal.h
 }
 

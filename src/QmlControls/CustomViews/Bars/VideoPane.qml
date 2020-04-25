@@ -121,10 +121,8 @@ Item{
             orientation: Slider.SnapOnRelease
             value: 0.1
             onValueChanged: {
-                var newTrackSize = parseInt(value*256);
-                if(camState.isConnected && camState.isPingOk && gimbalNetwork.isGimbalConnected){
-                    gimbalNetwork.ipcCommands.changeTrackSize(newTrackSize);
-                }
+                var newTrackSize = value*parseInt(lblMax.text);
+                cameraController.gimbal.changeTrackSize(newTrackSize);
             }
         }
 
@@ -149,7 +147,7 @@ Item{
             width: 40
             height: 17
             color: "#ffffff"
-            text: qsTr("256")
+            text: qsTr("450")
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             anchors.bottom: parent.bottom
@@ -174,71 +172,72 @@ Item{
         if(USE_VIDEO_GPU || USE_VIDEO_CPU){
             rootItem.player = cameraController.videoEngine;
             rootItem.player.plateLog = listPlateLog.plateLog;
-            rootItem.player.determinedTrackObjected.connect( function (_id,_px,_py,_oW,_oH,_w,_h){
-                var px = (_px + _oW/2) - _w/2
-                var py = (_py + _oH/2) - _h/2
-                var hfov = camState.hfov;
-
-                if(hfov > 0.0963){
-                    var focalLength = _w / 2 / Math.tan(hfov/2)
-
-                    var deltaPan = Math.atan(-px/focalLength) * 180.0 / Math.PI
-        //            if(deltaPan > 10)deltaPan = 10
-        //            else if(deltaPan < -10)deltaPan = -10
-                    iPan+=deltaPan/30.0
-                    cPan+=(panRate - uPan)/30.0
-                    var dPan = (deltaPan - dPanOld) * 30
-                    uPan = kpPan * deltaPan + kiPan * iPan + kdPan * dPan
-                    dPanOld = deltaPan
-
-                    if(uPan > 1023){
-                        console.log("\n limit pan")
-                        panRate = 1023
-                    }
-                    else if (uPan < -1023){
-                        console.log("\n limit pan")
-                        panRate = -1023
-                    }
-                    else panRate = uPan
-
-                    var deltaTilt = Math.atan(-py/focalLength) * 180.0 / Math.PI
-        //            if(deltaTilt > 10)deltaTilt = 10
-        //            else if(deltaTilt < -10)deltaTilt = -10
-                    iTilt+=deltaTilt/30.0
-                    cTilt+=(tiltRate - uTilt)/30.0
-                    var dTilt = (deltaTilt - dTiltOld) * 30
-                    uTilt = kpTilt * deltaTilt + kiTilt * iTilt + kdTilt * dTilt
-                    dTiltOld = deltaTilt
-
-                    if(uTilt > 1023){
-                        console.log("\n limit tilt")
-                        tiltRate = 1023
-                    }
-                    else if (uTilt < -1023){
-                        console.log("\n limit tilt")
-                        tiltRate = -1023
-                    }
-                    else tiltRate = uTilt
-
-                    if(gimbalNetwork.isGimbalConnected){
-                        gimbalNetwork.ipcCommands.gimbalControl(0, panRate, tiltRate);
-        //                console.log("rate ===> " + px + " | " + py);
-                    }
-                }
-            });
-            rootItem.player.objectLost.connect(function () {
-                if(gimbalNetwork.isGimbalConnected){
-                    camState.changeLockMode("FREE");
-                    hud.changeLockMode("LOCK_FREE");
-                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0);
-                }
-            })
-
-            rootItem.player.determinedPlateOnTracking.connect(function (_imgPath,_plateID){
-                listPlate.add(_imgPath, _plateID);
-            })
             console.log("Player component="+rootItem.player);
             videoOutput.source = rootItem.player;
+//            rootItem.player.determinedTrackObjected.connect( function (_id,_px,_py,_oW,_oH,_w,_h){
+//                var px = (_px + _oW/2) - _w/2
+//                var py = (_py + _oH/2) - _h/2
+//                var hfov = camState.hfov;
+
+//                if(hfov > 0.0963){
+//                    var focalLength = _w / 2 / Math.tan(hfov/2)
+
+//                    var deltaPan = Math.atan(-px/focalLength) * 180.0 / Math.PI
+//        //            if(deltaPan > 10)deltaPan = 10
+//        //            else if(deltaPan < -10)deltaPan = -10
+//                    iPan+=deltaPan/30.0
+//                    cPan+=(panRate - uPan)/30.0
+//                    var dPan = (deltaPan - dPanOld) * 30
+//                    uPan = kpPan * deltaPan + kiPan * iPan + kdPan * dPan
+//                    dPanOld = deltaPan
+
+//                    if(uPan > 1023){
+//                        console.log("\n limit pan")
+//                        panRate = 1023
+//                    }
+//                    else if (uPan < -1023){
+//                        console.log("\n limit pan")
+//                        panRate = -1023
+//                    }
+//                    else panRate = uPan
+
+//                    var deltaTilt = Math.atan(-py/focalLength) * 180.0 / Math.PI
+//        //            if(deltaTilt > 10)deltaTilt = 10
+//        //            else if(deltaTilt < -10)deltaTilt = -10
+//                    iTilt+=deltaTilt/30.0
+//                    cTilt+=(tiltRate - uTilt)/30.0
+//                    var dTilt = (deltaTilt - dTiltOld) * 30
+//                    uTilt = kpTilt * deltaTilt + kiTilt * iTilt + kdTilt * dTilt
+//                    dTiltOld = deltaTilt
+
+//                    if(uTilt > 1023){
+//                        console.log("\n limit tilt")
+//                        tiltRate = 1023
+//                    }
+//                    else if (uTilt < -1023){
+//                        console.log("\n limit tilt")
+//                        tiltRate = -1023
+//                    }
+//                    else tiltRate = uTilt
+
+//                    if(gimbalNetwork.isGimbalConnected){
+//                        gimbalNetwork.ipcCommands.gimbalControl(0, panRate, tiltRate);
+//        //                console.log("rate ===> " + px + " | " + py);
+//                    }
+//                }
+//            });
+//            rootItem.player.objectLost.connect(function () {
+//                if(gimbalNetwork.isGimbalConnected){
+//                    camState.changeLockMode("FREE");
+//                    hud.changeLockMode("LOCK_FREE");
+//                    gimbalNetwork.ipcCommands.gimbalControl(0, 0, 0);
+//                }
+//            })
+
+//            rootItem.player.determinedPlateOnTracking.connect(function (_imgPath,_plateID){
+//                list.add(_imgPath, _plateID);
+//            })
+
         }
     }
 }

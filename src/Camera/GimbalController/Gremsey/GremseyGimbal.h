@@ -4,9 +4,10 @@
 #include <QObject>
 #include <QTimer>
 #include "../GimbalInterface.h"
-
+#include <QMap>
+#include <QVector>
 class GRGimbalController;
-class TCPClient;
+class SensorController;
 class GremseyGimbal : public GimbalInterface
 {
     Q_OBJECT
@@ -28,13 +29,15 @@ Q_SIGNALS:
 public Q_SLOTS:
     void handleAxisValueChanged(int axisID, float value);
     void sendQueryZoom();
-    void handleQueryZoom();
+    void handleQuery(QString data);
 private:
     void enableDigitalZoom(bool enable);
 private:
     QTimer* m_timerQueryZoom;
     GRGimbalController* m_gimbal;
-    TCPClient* m_sensor;
+    SensorController* m_sensor;
+    QVector<int> m_zoom;
+    QMap<int,int> m_mapZoom;
 };
 
 #endif // GREMSEYGIMBAL_H
