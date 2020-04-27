@@ -38,6 +38,7 @@ class VDisplay : public VideoEngine
         void onReceivedFrame(int _id, QVideoFrame _frame);
         void onReceivedFrame();
     public:
+        Q_INVOKABLE void moveImage(float panRate,float tiltRate,float zoomRate,float alpha = 0) override;
         Q_INVOKABLE void start() override;
         Q_INVOKABLE void stop() override;
         Q_INVOKABLE void setObjectDetect(bool enable) override;
@@ -50,7 +51,7 @@ class VDisplay : public VideoEngine
         Q_INVOKABLE void setVideo(QString _ip, int _port = 0) override;
         Q_INVOKABLE void enVisualLock() override;
         Q_INVOKABLE void disVisualLock() override;
-        Q_INVOKABLE void setDigitalStab(bool _en) override;
+        Q_INVOKABLE void setStab(bool _en) override;
         Q_INVOKABLE void setGimbalRecorder(bool _en);
         Q_INVOKABLE void changeTrackSize(int _val) override;
     private:

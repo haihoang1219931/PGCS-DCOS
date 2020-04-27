@@ -713,8 +713,14 @@ ApplicationWindow {
                 y: paneControl.y
                 z: 2
                 camState: camState
+                Overlay{
+                    id: videoOverlay
+                    anchors.fill: parent
+                }
+
                 ObjectsOnScreen{
                     anchors.fill: parent
+                    visible: camState.objectLocalization
                     player: cameraController.videoEngine
                 }
             }
@@ -879,6 +885,7 @@ ApplicationWindow {
                 ObjectsOnMap{
                     id: objectsOnMap
                     anchors.fill: parent
+                    visible: camState.objectLocalization
                     player: cameraController.videoEngine
                 }
             }
@@ -1658,7 +1665,7 @@ ApplicationWindow {
     }
     Timer{
         id: timerRequestData
-        interval: 100; repeat: true;
+        interval: 30; repeat: true;
         running: false
         property int countGetData: 0
         onTriggered: {
@@ -1685,6 +1692,7 @@ ApplicationWindow {
             camState.sensorID = data["SENSOR"];
 //            camState.updateTrackSize(data["TRACK_SIZE"]);
             camState.changeLockMode(data["LOCK_MODE"]);
+            videoOverlay.zoomRatio = data["ZOOM"][data["SENSOR"]];
 //            camState.gimbalMode = data["GIMBAL_MODE"];
 //            camState.gimbalRecord = data["GIMBAL_RECORD"];
 //            camState.gimbalStab = data["STAB_GIMBAL"];

@@ -60,38 +60,42 @@ void GremseyGimbal::setJoystick(JoystickThreaded* joystick){
 }
 void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
     if(!m_joystick->pic()){
+        if(m_joystick->axisCount()<3) return;
+        // send raw gimbal rate
+        float maxAxis = 32768.0f;
+        float maxRate = 1024.0f/maxAxis;
+        float deadZone = 60;
+        float alphaSpeed = 2;
+        float invertPan = -1;
+        float invertTilt = 1;
+        float panRate = m_joystick->axis(m_joystick->axisPan())->value();
+        float tiltRate = m_joystick->axis(m_joystick->axisTilt())->value();
+        float zoomRate = m_joystick->axis(m_joystick->axisZoom())->value();
+        if(fabs(panRate) < deadZone) panRate = 0;
+        if(fabs(tiltRate) < deadZone) tiltRate = 0;
+        if(fabs(zoomRate) < deadZone) zoomRate = 0;
+        float x = invertPan * panRate * maxRate;
+        float y = invertTilt * tiltRate * maxRate;
+        float hfov = m_context->m_hfov[m_context->m_sensorID];
+        float panRateScale = (alphaSpeed * hfov * x / m_context->m_hfovMax[m_context->m_sensorID]);
+        float tiltRateScale = (alphaSpeed *  hfov * y / m_context->m_hfovMax[m_context->m_sensorID]);
+        printf("hfov[%.02f] hfovMax[%.02f] x[%.02f] y[%.02f] panRateScale[%.02f] tiltRateScale[%.02f]\r\n",
+               hfov,m_context->m_hfovMax[m_context->m_sensorID],
+                x,y,
+                panRateScale,tiltRateScale);
         if(m_videoEngine == nullptr
                 || m_context->m_lockMode == "FREE"){
-            if(m_joystick->axisCount()<3) return;
-            // send raw gimbal rate
-            float maxAxis = 32768.0f;
-            float maxRate = 1024.0f/maxAxis;
-            float deadZone = 60;
-            float alphaSpeed = 1;
-            float invertPan = -1;
-            float invertTilt = 1;
-            float panRate = m_joystick->axis(m_joystick->axisPan())->value();
-            float tiltRate = m_joystick->axis(m_joystick->axisTilt())->value();
-            float zoomRate = m_joystick->axis(m_joystick->axisZoom())->value();
-            printf("%s maxRate = %f before [%f - %f - %f]\r\n",__func__, maxRate,panRate,tiltRate,zoomRate);
-            if(fabs(panRate) < 60) panRate = 0;
-            if(fabs(tiltRate) < 60) tiltRate = 0;
-            printf("%s after [%f - %f - %f]\r\n",__func__, panRate,tiltRate,zoomRate);
-            float x = invertPan * panRate * maxRate;
-            float y = invertTilt * tiltRate * maxRate;
-            float hfov = m_context->m_hfov[m_context->m_sensorID];
-            if(hfov<1.0){
-                 hfov = 62.9f;
-            }
-            float panRateScale = (alphaSpeed * hfov / 62.9* x);
-            float tiltRateScale = (alphaSpeed *  hfov / 62.9* y);
             setGimbalRate((panRateScale),(tiltRateScale));
-            if(zoomRate < -deadZone)
+            if(zoomRate > 0)
                 setEOZoom("ZOOM_OUT",0);
-            else if(zoomRate >deadZone)
+            else if(zoomRate < 0)
                 setEOZoom("ZOOM_IN",0);
             else
                 setEOZoom("ZOOM_STOP",0);
+        }else{
+            m_videoEngine->moveImage(invertPan * panRate / maxAxis,
+                                     invertTilt * tiltRate / maxAxis,
+                                     zoomRate/maxAxis);
         }
     }
 }
@@ -162,6 +166,20 @@ void GremseyGimbal::setDigitalStab(bool enable){
         m_videoEngine->setStab(enable);
     }
 }
+void GremseyGimbal::setLockMode(QString mode, QPoint location){
+    m_context->m_lockMode = mode;
+    if(mode == "FREE"){
+        m_videoEngine->disVisualLock();
+    }else if(mode == "TRACK"){
+        m_videoEngine->setTrackAt(0,
+                                  m_videoEngine->sourceSize().width()/2,
+                                  m_videoEngine->sourceSize().height()/2,
+                                  m_videoEngine->sourceSize().width(),
+                                  m_videoEngine->sourceSize().height());
+    }else if(mode == "VISUAL"){
+        m_videoEngine->enVisualLock();
+    }
+}
 void GremseyGimbal::setRecord(bool enable){
 
 }
@@ -172,7 +190,7 @@ void GremseyGimbal::sendQueryZoom(){
     m_sensor->sendRawData("0681090447FF");
 }
 void GremseyGimbal::handleQuery(QString data){
-    if(data.contains("9050"))
+    if(data.startsWith("9050") && data.size() == 14 && data.endsWith("FF"))
     {
         // zoom position
         QString zoomPosition = QString(data[5])+QString(data[7])+QString(data[9])+QString(data[11]);
@@ -189,7 +207,9 @@ void GremseyGimbal::handleQuery(QString data){
                 break;
             }
         }
-//        printf("zoomPosition = %s %04X X%.02f %.02f deg\r\n",zoomPosition.toStdString().c_str(),zoomPos,zoomPosF,m_context->m_hfov[0]);
+//        printf("data = %s zoomPosition = %s %04X X%.02f %.02f deg\r\n",
+//               data.toStdString().c_str(),
+//               zoomPosition.toStdString().c_str(),zoomPos,zoomPosF,m_context->m_hfov[0]);
     }
 }
 void GremseyGimbal::enableDigitalZoom(bool enable){

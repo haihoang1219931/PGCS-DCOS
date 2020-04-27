@@ -38,7 +38,7 @@ void VTrackWorker::run()
     cv::Mat proccImg;
     cv::Mat bgrImg, i420Img;     /**< For check type of plate.*/
     cv::Size imgSize;
-    cv::Mat stabMatrix;
+
     unsigned char *d_imageData;
     unsigned char *h_imageData;
     float *h_stabMat;
@@ -159,7 +159,7 @@ void VTrackWorker::run()
             input.c = 1;
             input.h = imgSize.height * 3 / 2;
             input.w = imgSize.width;
-
+            m_imgSize = imgSize;
             if (m_tracker->isInitialized()) {
                 m_tracker->performTrack(proccImg);
 
@@ -180,10 +180,12 @@ void VTrackWorker::run()
                             proccImg, objectPosition, cv::Scalar(255, 255, 255));
                     }
 
+
 //                    printf("\n====> DO TRACK [%d, %d, %d, %d]", objectPosition.x, objectPosition.y, objectPosition.width, objectPosition.height);
                     Q_EMIT determinedTrackObjected(m_currID, objectPosition.x, objectPosition.y,
                                                    objectPosition.width, objectPosition.height,
                                                    imgSize.width, imgSize.height);
+                    m_trackRect = objectPosition;
                     // TODO : Detect Plate
 //                    // check if objectPosition is inside proccImg
                     if (    (objectPosition.x > 0)
@@ -271,6 +273,7 @@ void VTrackWorker::stop()
 void VTrackWorker::hasNewTrack(int _id, double _px, double _py, double _w,
                                double _h, bool _enSteer, bool _enStab)
 {
+//    printf("%s _px = %.0f py= %.0f\r\n",__func__,_px,_py);
     m_trackPoint = XPoint(_id, _px, _py, _w, _h);
     m_hasNewTrack = true;
     m_hasNewMode = true;

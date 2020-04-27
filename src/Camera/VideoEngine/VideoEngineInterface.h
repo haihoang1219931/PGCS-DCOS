@@ -193,6 +193,7 @@ public:
     Q_INVOKABLE virtual void setStreamMount(QString _streamMount){}
     Q_INVOKABLE virtual void disableObjectDetect(){}
     Q_INVOKABLE virtual void enableObjectDetect(){}
+    Q_INVOKABLE virtual void moveImage(float panRate,float tiltRate,float zoomRate,float alpha = 0){}
     Q_INVOKABLE virtual void enVisualLock(){}
     Q_INVOKABLE virtual void disVisualLock(){}
     Q_INVOKABLE virtual void setDigitalStab(bool _en){}

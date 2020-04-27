@@ -21,9 +21,9 @@ CONFIG += use_ucapi
 
 CONFIG += use_camera_control
 
-#CONFIG += use_video_gpu
+CONFIG += use_video_gpu
 
-CONFIG += use_video_cpu
+#CONFIG += use_video_cpu
 
 QML_IMPORT_PATH += \
     $$PWD \
@@ -146,8 +146,8 @@ INCLUDEPATH += $$PWD/src/UC/boost1.62/include
 INCLUDEPATH += $$PWD/src/UC/openssl
 
 #LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
-#LIBS+= -L/home/pgcs-05/workspaces/boost1.62/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
-LIBS+= -L/home/pgcs-04/install/boost_1_62_0/stage/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
+LIBS+= -L/home/pgcs-05/workspaces/boost1.62/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
+#LIBS+= -L/home/pgcs-04/install/boost_1_62_0/stage/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
 LIBS += -L/usr/local/lib -lcrypto -lssl
 LIBS += -lpthread
 

@@ -22,6 +22,7 @@ public:
     void setEOZoom(QString command, int value) override;
     void snapShot() override;
     void setDigitalStab(bool enable) override;
+    void setLockMode(QString mode, QPoint location = QPoint(0,0)) override;
     void setRecord(bool enable) override;
     void setShare(bool enable) override;
 Q_SIGNALS:

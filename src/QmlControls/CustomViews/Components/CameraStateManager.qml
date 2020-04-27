@@ -6,6 +6,7 @@ Item {
     property bool isJoystickConnected: false
     property bool isConnected: true
     property bool isPingOk: true
+    property bool objectLocalization: false
     property string camIP: ""
     property string joyID: ""
     property int defaultWidth: 1366
