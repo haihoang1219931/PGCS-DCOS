@@ -392,7 +392,7 @@ Rectangle {
                 id: btnVisualLock
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: parent.width
-                icon: UIConstants.iDisplay
+                icon: UIConstants.iVisualLock
                 btnText: "Visual\nLock"
                 color: UIConstants.bgAppColor
                 isSync: true
@@ -410,7 +410,7 @@ Rectangle {
                 id: btnFree
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: parent.width
-                icon: UIConstants.iInvertTilt
+                icon: UIConstants.iFree
                 btnText: "FREE"
                 color: UIConstants.bgAppColor
                 onClicked: {

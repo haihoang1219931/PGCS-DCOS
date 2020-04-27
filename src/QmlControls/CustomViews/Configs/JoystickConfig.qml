@@ -220,22 +220,13 @@ Item {
 
         Column {
             id: column
-            anchors.leftMargin: UIConstants.sRect
-            anchors.left: clmJoystick.right
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 0
-            anchors.top: parent.top
-            anchors.topMargin: 0
+            width: parent.width - clmJoystick.width - parent.spacing
             spacing:    UIConstants.sRect/2
+            height: parent.height
             Column {
                 id: clmAxis
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.left: parent.left
-                anchors.leftMargin: 0
                 spacing:    UIConstants.sRect/2
+                width: parent.width
                 Label {
                     text: qsTr("Axis Monitor")
                     color: UIConstants.textColor
@@ -352,16 +343,9 @@ Item {
             // Button monitor
             Column {
                 id: clmButton
-                anchors.topMargin: UIConstants.sRect
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.top: clmAxis.bottom
+                width: parent.width
+                height: parent.height - clmAxis.height - parent.spacing
                 spacing:    UIConstants.sRect/2
-
                 Label {
                     id: lblButtonMonitor
                     text: qsTr("Button Monitor")
@@ -372,14 +356,8 @@ Item {
 
                 ListView {
                     id:     buttonMonitorRepeater
-                    anchors.topMargin: UIConstants.sRect
-                    anchors.right: parent.right
-                    anchors.rightMargin: 0
-                    anchors.left: parent.left
-                    anchors.leftMargin: 0
-                    anchors.top: lblButtonMonitor.bottom
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 1
+                    width: parent.width
+                    height: parent.height - lblButtonMonitor.height - parent.spacing
                     model: joystick.buttonsConfig
                     spacing:    UIConstants.sRect/2
                     clip: true
@@ -446,3 +424,4 @@ Designer {
     D{i:33;anchors_width:850}D{i:50;anchors_height:700;anchors_width:668}D{i:48;anchors_height:743;anchors_width:680}
 }
 ##^##*/
+

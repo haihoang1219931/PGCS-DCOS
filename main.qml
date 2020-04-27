@@ -712,7 +712,6 @@ ApplicationWindow {
                 x: paneControl.x
                 y: paneControl.y
                 z: 2
-                camState: camState
                 Overlay{
                     id: videoOverlay
                     anchors.fill: parent
@@ -1726,7 +1725,6 @@ ApplicationWindow {
             anchors.fill: parent
             AdvancedConfig{
                 id: advancedConfig
-                anchors.fill: parent
             }
         }
     }
