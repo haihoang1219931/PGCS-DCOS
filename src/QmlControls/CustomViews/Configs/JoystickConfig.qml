@@ -167,6 +167,41 @@ Item {
                     verticalAlignment: Label.AlignVCenter
                 }
             }
+            Row {
+                id: chbUseJoystick
+                width: parent.width
+                height: UIConstants.sRect * 1.5
+                spacing: 5
+                Rectangle{
+                    width: parent.height
+                    height: parent.height
+                    radius: 3
+                    Rectangle{
+                        visible: vehicle.useJoystick
+                        color: "#555"
+                        border.color: "#333"
+                        radius: 1
+                        anchors.margins: parent.height / 4
+                        anchors.fill: parent
+                    }
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            joystick.setUseJoystick(!vehicle.useJoystick);
+                        }
+                    }
+                }
+                Label{
+                    height: parent.height
+                    verticalAlignment: Label.AlignVCenter
+                    horizontalAlignment: Label.AlignLeft
+                    font.pixelSize: UIConstants.fontSize
+                    font.family: UIConstants.appFont
+                    color: UIConstants.textColor
+                    text: "Enable control plane using joystick"
+                }
+            }
+
             Row{
                 spacing: parent.width - btnSaveConfig.width - btnResetConfig.width
                 OldCtrl.Button{

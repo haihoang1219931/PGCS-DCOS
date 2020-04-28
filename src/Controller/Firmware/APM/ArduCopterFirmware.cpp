@@ -5,6 +5,7 @@ ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
 {
     m_vehicle = vehicle;
     connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&ArduCopterFirmware::handleJSButton);
+    connect(m_vehicle,&Vehicle::useJoystickChanged,this,&ArduCopterFirmware::handleUseJoystick);
     loadFromFile("conf/Properties.conf");
     m_rtlAltParamName = "RTL_ALT";
     m_airSpeedParamName = "WPNAV_SPEED";
@@ -317,7 +318,6 @@ void ArduCopterFirmware::setHomeHere(float lat, float lon, float alt){
                               0,0,0,0, lat,lon,alt);
 }
 void ArduCopterFirmware::sendJoystickData(){
-
     if (m_vehicle == nullptr)
         return;
     if(m_vehicle->joystick()->axisCount()<4){
@@ -389,6 +389,13 @@ void ArduCopterFirmware::handleJSButton(int id, bool clicked){
             }
 
         }
+    }
+}
+void ArduCopterFirmware::handleUseJoystick(bool enable) {
+    if(enable){
+        m_joystickTimer.start();
+    }else{
+        m_joystickTimer.stop();
     }
 }
 float ArduCopterFirmware::convertRC(float input, int channel){

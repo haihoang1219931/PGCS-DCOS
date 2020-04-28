@@ -21,6 +21,7 @@ public:
     void setGimbalRate(float panRate,float tiltRate) override;
     void setEOZoom(QString command, int value) override;
     void snapShot() override;
+    void changeTrackSize(float trackSize) override;
     void setDigitalStab(bool enable) override;
     void setLockMode(QString mode, QPoint location = QPoint(0,0)) override;
     void setRecord(bool enable) override;

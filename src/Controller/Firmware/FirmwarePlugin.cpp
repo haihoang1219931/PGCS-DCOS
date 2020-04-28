@@ -304,6 +304,9 @@ void FirmwarePlugin::handleJSButton(int id, bool clicked){
     Q_UNUSED(id);
     Q_UNUSED(clicked);
 }
+void FirmwarePlugin::handleUseJoystick(bool enable){
+    Q_UNUSED(enable);
+}
 void FirmwarePlugin::setHomeHere(float lat, float lon, float alt){
 
     Q_UNUSED(lat);

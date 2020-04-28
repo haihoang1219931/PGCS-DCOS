@@ -37,6 +37,7 @@ public Q_SLOTS:
     virtual void setEOZoom(QString command, int value);
     virtual void setIRZoom(QString command);
     virtual void snapShot();
+    virtual void changeTrackSize(float trackSize);
     virtual void setDigitalStab(bool enable);
     virtual void setRecord(bool enable);
     virtual void setShare(bool enable);

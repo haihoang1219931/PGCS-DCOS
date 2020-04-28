@@ -197,7 +197,15 @@ public:
         qmlRegisterType<JoystickThreaded>("io.qdt.dev", 1, 0, "Joystick");
     }
     bool pic(){return m_pic;}
-    void setPIC(bool pic){m_pic = pic;}
+    void setPIC(bool pic){
+        m_pic = pic;
+        Q_EMIT picChanged();
+    }
+    bool useJoystick(){return m_useJoystick;}
+    Q_INVOKABLE void setUseJoystick(bool enable){
+        m_useJoystick = enable;
+        Q_EMIT useJoystickChanged();
+    }
     int axisPan(){ return m_axisPan; }
     int axisTilt(){ return m_axisTilt; }
     int axisZoom(){ return m_axisZoom; }
@@ -206,6 +214,7 @@ public Q_SLOTS:
     void changeButtonState(int btnID,bool clicked);
     void changeAxisValue(int axisID, float value);
 Q_SIGNALS:
+    void useJoystickChanged();
     void picChanged();
     void buttonAxisLoaded();
     void joystickConnected(bool state);
@@ -236,6 +245,7 @@ private:
     int m_axisZoom = 2;
     int m_butonPICCIC = 0;
     bool m_pic = false;
+    bool m_useJoystick = true;
 };
 
 #endif // JOYSTICKTHREAD_H

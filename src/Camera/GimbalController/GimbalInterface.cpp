@@ -93,6 +93,9 @@ void GimbalInterface::setIRZoom(QString command){
 void GimbalInterface::snapShot(){
 
 }
+void GimbalInterface::changeTrackSize(float trackSize){
+    Q_UNUSED(trackSize);
+}
 void GimbalInterface::setDigitalStab(bool enable){
     Q_UNUSED(enable);
 }

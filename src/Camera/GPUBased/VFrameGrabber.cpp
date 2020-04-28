@@ -237,7 +237,10 @@ bool VFrameGrabber::initPipeline()
     //        "appsink  name=mysink sync=false async=false ";
     //----- 4
     //    m_pipelineStr = "rtspsrc location=" + m_ip + " ! queue ! rtph265depay ! h265parse ! nvh265dec ! glcolorconvert ! video/x-raw(memory:GLMemory),format=I420 ! appsink name=mysink sync=false async=false";
-    m_pipelineStr = m_ip + " ! appsink name=mysink sync=true async=true";
+    if(QString::fromStdString(m_ip).contains("filesrc"))
+        m_pipelineStr = m_ip + " ! appsink name=mysink sync=true async=true";
+    else
+        m_pipelineStr = m_ip + " ! appsink name=mysink sync=false async=false";
 //    m_pipelineStr = "filesrc location=/home/pgcs-04/Videos/vt/vt5.mp4 ! decodebin ! appsink name=mysink sync=true async=true";
     //
     //------ 2

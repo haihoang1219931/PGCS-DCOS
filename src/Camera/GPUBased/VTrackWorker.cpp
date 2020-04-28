@@ -112,7 +112,7 @@ void VTrackWorker::run()
         cv::Rect roiOpen;
         // Check roi size for track to avoid coredump fault
         int trackSize = m_trackSize;
-
+//        printf("Set track size = %d\r\n",m_trackSize);
         if (m_steerEn) {
             trackSize = 400;
         }

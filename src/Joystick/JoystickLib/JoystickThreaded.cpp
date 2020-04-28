@@ -63,6 +63,12 @@ void JoystickThreaded::loadConfig(){
     tinyxml2::XMLError res = m_doc.LoadFile(m_mapFile.toStdString().c_str());
     if(res == tinyxml2::XML_SUCCESS){
         tinyxml2::XMLElement * pElement = m_doc.FirstChildElement("ArrayOfProperties");
+        // load use joystick
+        tinyxml2::XMLElement * pElementUseJoystick = pElement->FirstChildElement("UseJoystick");
+        if(pElementUseJoystick!= nullptr){
+            m_useJoystick = QString::fromStdString(std::string(pElementUseJoystick->GetText())) == "True"?true:false;
+            Q_EMIT useJoystickChanged();
+        }
         // load axes
         tinyxml2::XMLElement * pListElementAxis = pElement->FirstChildElement("Axis");
         while(pListElementAxis!= nullptr){
@@ -132,11 +138,15 @@ void JoystickThreaded::saveConfig(){
             m_buttons.at(i)->setMapFunc(m_buttonsTemp.at(i)->mapFunc());
             if(m_buttons.at(i)->mapFunc() == "PIC/CIC"){
                 m_butonPICCIC = i;
+                break;
             }
         }
         tinyxml2::XMLDocument xmlDoc;
         tinyxml2::XMLNode * pRoot = xmlDoc.NewElement("ArrayOfProperties");
         xmlDoc.InsertFirstChild(pRoot);
+        tinyxml2::XMLElement * pElement = xmlDoc.NewElement("UseJoystick");
+        pElement->SetText(m_useJoystick?"True":"False");
+        pRoot->InsertEndChild(pElement);
         for(int i=0; i< m_axes.size(); i++){
             JSAxis *tmp = m_axes.at(i);
             tinyxml2::XMLElement * pElement = xmlDoc.NewElement("Axis");
@@ -261,8 +271,7 @@ void JoystickThreaded::changeButtonState(int btnID,bool clicked){
         m_buttonsTemp[btnID]->setPressed(clicked);
         Q_EMIT buttonStateChanged(btnID,clicked);
         if(btnID == m_butonPICCIC){
-            m_pic = clicked;
-            Q_EMIT picChanged();
+            setPIC(clicked);
         }
     }
 }

@@ -161,6 +161,11 @@ void GremseyGimbal::snapShot(){
         m_videoEngine->capture();
     }
 }
+void GremseyGimbal::changeTrackSize(float trackSize){
+    if(m_videoEngine!=nullptr){
+        m_videoEngine->changeTrackSize((int)trackSize);
+    }
+}
 void GremseyGimbal::setDigitalStab(bool enable){
     if(m_videoEngine!=nullptr){
         m_videoEngine->setStab(enable);

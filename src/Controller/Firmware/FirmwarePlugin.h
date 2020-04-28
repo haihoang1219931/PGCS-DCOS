@@ -155,6 +155,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     virtual void handleJSButton(int id, bool clicked);
+    virtual void handleUseJoystick(bool enable);
 protected:
     Vehicle *m_vehicle = nullptr;
     QString m_rtlAltParamName;
