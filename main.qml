@@ -1333,9 +1333,9 @@ ApplicationWindow {
                         "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
-                            if(!vehicle.armed)
-                                vehicle.setArmed(true);
-                            vehicle.commandTakeoff(100);
+//                            if(!vehicle.armed)
+//                                vehicle.setArmed(true);
+//                            vehicle.commandTakeoff(100);
                             vehicle.startMission();
 //                            navbar.startFlightTimer();
                         }else if(func === "DIALOG_CANCEL"){

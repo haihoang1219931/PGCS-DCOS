@@ -10,6 +10,7 @@ VFrameGrabber::VFrameGrabber()
     gst_init(0, NULL);
     m_loop = g_main_loop_new(NULL, FALSE);
     m_gstFrameBuff = Cache::instance()->getGstFrameCache();
+    m_gstEOSavingBuff = Cache::instance()->getGstEOSavingCache();
     m_ip = "232.4.130.146";
     m_port = 18888;
 }
@@ -117,14 +118,29 @@ GstFlowReturn VFrameGrabber::onNewSample(GstAppSink *_vsink, gpointer _uData)
     }
 
     m_currID++;
+    GstBuffer *gstItem = gst_sample_get_buffer(sample);
+
+
     GstFrameCacheItem gstFrame;
     gstFrame.setIndex(m_currID);
-    gstFrame.setGstBuffer(gst_buffer_copy(gst_sample_get_buffer(sample)));
+    gstFrame.setGstBuffer(gst_buffer_copy(gstItem));
     m_gstFrameBuff->add(gstFrame);
+    if (m_enSaving) {
+        GstFrameCacheItem gstEOSaving;
+        gstEOSaving.setIndex(m_currID);
+        gstEOSaving.setGstBuffer(gst_buffer_copy(gstItem));
+        m_gstEOSavingBuff->add(gstEOSaving);
+    }
     //    printf("\nReadFrame %d - %d", m_currID, gst_buffer_get_size(gst_sample_get_buffer(sample)));
     gst_sample_unref(sample);
     return GST_FLOW_OK;
 }
+
+void VFrameGrabber::setVideoSavingState(bool _state)
+{
+    m_enSaving = _state;
+}
+
 
 void VFrameGrabber::onEOS(_GstAppSink *_sink, void *_uData)
 {

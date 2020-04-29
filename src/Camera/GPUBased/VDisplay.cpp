@@ -287,7 +287,8 @@ void VDisplay::setTrackAt(int _id, double _px, double _py, double _w, double _h)
 
 void VDisplay::setVideoSavingState(bool _state)
 {
-    m_vDisplayWorker->setVideoSavingState(_state);
+//    m_vDisplayWorker->setVideoSavingState(_state);
+    m_vFrameGrabber->setVideoSavingState(_state);
 }
 
 void VDisplay::enVisualLock()

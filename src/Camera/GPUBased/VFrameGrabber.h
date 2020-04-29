@@ -49,6 +49,8 @@ class VFrameGrabber : public QThread
         void restartPipeline();
 
         void setSource(std::string _ip, int _port);
+
+        void setVideoSavingState(bool _state);
     private:
         GstFlowReturn onNewSample(GstAppSink *vsink, gpointer user_data);
 
@@ -84,10 +86,12 @@ class VFrameGrabber : public QThread
         std::string m_ip;
         uint16_t m_port;
         gint64 m_totalTime;
+        bool m_enSaving = true;
         bool m_stop = false;
         index_type m_currID;
         std::string m_filename;
         RollBuffer_<GstFrameCacheItem> *m_gstFrameBuff;
+        RollBuffer_<GstFrameCacheItem> *m_gstEOSavingBuff;
 };
 
 #endif // VFrameGrabber_H

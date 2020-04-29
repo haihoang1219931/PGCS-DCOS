@@ -116,12 +116,12 @@ void VDisplayWorker::process()
         gstRTSP.setIndex(m_currID);
         gstRTSP.setGstBuffer(gstBuffRTSP);
         m_gstRTSPBuff->add(gstRTSP);
-        if (m_enSaving) {
-            GstFrameCacheItem gstEOSaving;
-            gstEOSaving.setIndex(m_currID);
-            gstEOSaving.setGstBuffer(gst_buffer_copy(gstBuffRTSP));
-            m_gstEOSavingBuff->add(gstEOSaving);
-        }
+//        if (m_enSaving) {
+//            GstFrameCacheItem gstEOSaving;
+//            gstEOSaving.setIndex(m_currID);
+//            gstEOSaving.setGstBuffer(gst_buffer_copy(gstBuffRTSP));
+//            m_gstEOSavingBuff->add(gstEOSaving);
+//        }
 
         //        frame = QVideoFrame(QImage((uchar *)m_imgShow.data, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888));
 
