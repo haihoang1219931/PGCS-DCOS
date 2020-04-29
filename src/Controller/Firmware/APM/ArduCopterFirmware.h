@@ -123,6 +123,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void sendJoystickData();
+    void sendClearRC();
     void handleJSButton(int id, bool clicked) override;
     void handleUseJoystick(bool enable) override;
 private:

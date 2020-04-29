@@ -328,7 +328,9 @@ void VDisplay::stop()
     m_vPreprocess->stop();
     std::this_thread::sleep_for(std::chrono::seconds(1));
 }
-
+void VDisplay::capture(){
+    m_vDisplayWorker->capture();
+}
 void VDisplay::changeTrackSize(int _val)
 {
     m_vTrackWorker->changeTrackSize(_val);

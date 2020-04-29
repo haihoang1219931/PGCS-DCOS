@@ -76,6 +76,15 @@ void VDisplayWorker::process()
         /***Warp Image CPU*******/
         m_imgShow = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
         cv::cvtColor(m_imgShow, m_imgShow, cv::COLOR_YUV2BGRA_I420);
+        if(m_captureSet){
+            m_captureMutex.lock();
+            m_captureSet = false;
+            m_captureMutex.unlock();
+            std::string timestamp = FileController::get_time_stamp();
+            std::string captureFile = "flights/" + timestamp + ".jpg";
+            printf("Save file %s\r\n", captureFile.c_str());
+            cv::imwrite(captureFile, m_imgShow);
+        }
         //----------------------------- Draw EO object detected
         DetectedObjectsCacheItem detectedObjsItem = m_rbSearchObjs->getElementById(m_currID);
 //        DetectedObjectsCacheItem detectedObjsItem = m_rbMOTObjs->getElementById(m_currID);
@@ -107,7 +116,6 @@ void VDisplayWorker::process()
         gstRTSP.setIndex(m_currID);
         gstRTSP.setGstBuffer(gstBuffRTSP);
         m_gstRTSPBuff->add(gstRTSP);
-
         if (m_enSaving) {
             GstFrameCacheItem gstEOSaving;
             gstEOSaving.setIndex(m_currID);
@@ -252,7 +260,11 @@ bool VDisplayWorker::getDigitalStab()
 {
     return m_enDigitalStab;
 }
-
+void VDisplayWorker::capture(){
+    m_captureMutex.lock();
+    m_captureSet = true;
+    m_captureMutex.unlock();
+}
 
 void VDisplayWorker::drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t> &_listObj)
 {

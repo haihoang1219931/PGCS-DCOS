@@ -26,22 +26,17 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
-    Label {
-        id: lblTitle1
+    QLabel {
+        id: lblTitle
         height: 54
         text: "Checking Altitude measurement Laser"
-        wrapMode: Text.WordWrap
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.leftMargin: 8
         anchors.topMargin: 0
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignLeft
-        color: UIConstants.textColor
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
+        border.width: 0
     }
 
     Rectangle {
@@ -54,19 +49,6 @@ Rectangle{
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 8
         anchors.horizontalCenter: parent.horizontalCenter
-
-        Image {
-            id: imgLogo1
-            y: -226
-            height: 346
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            source: "qrc:/assets/images/Shikra_4.png"
-        }
 
         Label {
             id: label

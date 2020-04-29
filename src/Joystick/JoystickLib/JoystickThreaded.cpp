@@ -138,15 +138,14 @@ void JoystickThreaded::saveConfig(){
             m_buttons.at(i)->setMapFunc(m_buttonsTemp.at(i)->mapFunc());
             if(m_buttons.at(i)->mapFunc() == "PIC/CIC"){
                 m_butonPICCIC = i;
-                break;
             }
         }
         tinyxml2::XMLDocument xmlDoc;
         tinyxml2::XMLNode * pRoot = xmlDoc.NewElement("ArrayOfProperties");
         xmlDoc.InsertFirstChild(pRoot);
-        tinyxml2::XMLElement * pElement = xmlDoc.NewElement("UseJoystick");
-        pElement->SetText(m_useJoystick?"True":"False");
-        pRoot->InsertEndChild(pElement);
+        tinyxml2::XMLElement * pElementUseJoystick = xmlDoc.NewElement("UseJoystick");
+        pElementUseJoystick->SetText(m_useJoystick?"True":"False");
+        pRoot->InsertEndChild(pElementUseJoystick);
         for(int i=0; i< m_axes.size(); i++){
             JSAxis *tmp = m_axes.at(i);
             tinyxml2::XMLElement * pElement = xmlDoc.NewElement("Axis");
@@ -160,6 +159,7 @@ void JoystickThreaded::saveConfig(){
             pInvert->SetText(tmp->inverted()?"True":"False");
             pElement->InsertEndChild(pInvert);
             pRoot->InsertEndChild(pElement);
+            printf("Save axis[%d] [%s] [%s]\r\n",i,tmp->mapFunc().toStdString().c_str(),tmp->inverted()?"True":"False");
         }
         for(int i=0; i< m_buttons.size(); i++){
             JSButton *tmp = m_buttons.at(i);
@@ -171,6 +171,7 @@ void JoystickThreaded::saveConfig(){
             pFunc->SetText(tmp->mapFunc().toStdString().c_str());
             pElement->InsertEndChild(pFunc);
             pRoot->InsertEndChild(pElement);
+            printf("Save button[%d] [%s] \r\n",i,tmp->mapFunc().toStdString().c_str());
         }
         tinyxml2::XMLError eResult = xmlDoc.SaveFile(m_mapFile.toStdString().c_str());
     }

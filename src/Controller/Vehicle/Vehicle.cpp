@@ -305,7 +305,7 @@ void Vehicle::motorTest(int motor, int percent)
 void Vehicle::setHomeLocation(float lat, float lon){
     if(m_firmwarePlugin != nullptr){
         if(m_planController->m_missionItems.size() > 0)
-            m_firmwarePlugin->setHomeHere(lat, lon, _homeAltitude);
+            m_firmwarePlugin->setHomeHere(lat, lon, _altitudeAMSL - _altitudeRelative);
     }
 }
 void Vehicle::setAltitudeRTL(float alt){
@@ -961,6 +961,14 @@ void Vehicle::_handleRCIn(mavlink_message_t& message)
     _setPropertyValue("RCIN_chan16",QString::fromStdString(std::to_string(rcIn.chan16_raw)),"us");
     _setPropertyValue("RCIN_chan17",QString::fromStdString(std::to_string(rcIn.chan17_raw)),"us");
     _setPropertyValue("RCIN_chan18",QString::fromStdString(std::to_string(rcIn.chan18_raw)),"us");
+    _rcinChan1 = rcIn.chan1_raw;
+    Q_EMIT rcinChan1Changed();
+    _rcinChan2 = rcIn.chan2_raw;
+    Q_EMIT rcinChan2Changed();
+    _rcinChan3 = rcIn.chan3_raw;
+    Q_EMIT rcinChan3Changed();
+    _rcinChan4 = rcIn.chan4_raw;
+    Q_EMIT rcinChan4Changed();
 }
 
 void Vehicle::_handleServoOut(mavlink_message_t& message)

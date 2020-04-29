@@ -1534,8 +1534,6 @@ ApplicationWindow {
                     if(func === "DIALOG_OK"){
                         vehicle.setArmed(!vehicle.armed);
                         if(arm){
-                            vehicle.setHomeLocation(vehicle.coordinate.latitude,
-                                                vehicle.coordinate.longitude);
                             mapPane.moveWPWithID(0,vehicle.coordinate);
                         }
                     }else if(func === "DIALOG_CANCEL"){

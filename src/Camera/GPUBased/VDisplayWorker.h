@@ -15,6 +15,7 @@
 #include "../Cache/TrackObject.h"
 #include <QObject>
 #include <QVideoFrame>
+#include <QMutex>
 #include <chrono>
 #include <iostream>
 #include <opencv2/opencv.hpp>
@@ -36,7 +37,7 @@ class VDisplayWorker : public QObject
         bool isOnDigitalStab();
         int setDigitalStab(bool _enStab);
         bool getDigitalStab();
-
+        void capture();
     public Q_SLOTS:
         void process();
 
@@ -91,5 +92,7 @@ class VDisplayWorker : public QObject
         bool m_enDigitalStab = true;
         QMap<QString,QString> m_mapPlates;
         PlateLog* m_plateLog;
+        QMutex m_captureMutex;
+        bool m_captureSet = false;
 };
 #endif // VDISPLAYWORKER_H

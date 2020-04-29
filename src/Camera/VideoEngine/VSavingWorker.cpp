@@ -89,11 +89,8 @@ bool VSavingWorker::initPipeline()
         m_buffVideoSaving = Cache::instance()->getGstIRSavingCache();
     }
 
-    //    m_pipeline_str = "appsrc name=mysrcSave ! video/x-raw,format=BGRA,width="
-    //                     + std::to_string(m_width) + ",height=" + std::to_string(m_height) + " ! nvh265enc bitrate=" + std::to_string(m_bitrate)
-    //                     + " ! h265parse ! matroskamux ! filesink location=" + m_filename  + ".mkv";
     m_pipeline_str = "appsrc name=mysrcSave ! video/x-raw,format=I420,width="
-                     + std::to_string(m_width) + ",height=" + std::to_string(m_height) + " ! nvh264enc ! h264parse ! matroskamux ! filesink location=" + m_filename  + ".mkv";
+                     + std::to_string(m_width) + ",height=" + std::to_string(m_height) + " ! nvh264enc ! h264parse ! mpegtsmux ! filesink location=" + m_filename  + ".mp4";
     printf("\nReading pipeline: %s", m_pipeline_str.data());
     m_pipeline = GST_PIPELINE(gst_parse_launch(m_pipeline_str.data(), &m_err));
 

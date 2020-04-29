@@ -166,6 +166,9 @@ protected:
     QMap<int,QString> m_mapFlightModeOnGround;
     QList<Fact*> _listParamShow;
     QTimer m_joystickTimer;
+    QTimer m_joystickClearRCTimer;
+    int m_sendClearRCCount = 0;
+    int m_sendClearRCMax = 5;
 };
 
 #endif // FIRMWAREPLUGIN_H

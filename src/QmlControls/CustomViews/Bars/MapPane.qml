@@ -2725,7 +2725,8 @@ Item {
                         waypointEditor.changeASL(asl);
                         waypointEditor.changeCoordinate(waypointCoordinate);
                         updateWPDoJump();
-                        isMapSync = false;
+                        if(selectedWP.attributes.attributeValue("id") > 0)
+                            isMapSync = false;
                     }
                 }
                 onPressAndHold: {

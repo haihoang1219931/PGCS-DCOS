@@ -103,6 +103,7 @@
         <file alias="CustomViews/Pages/ModeCheck.qml">src/QmlControls/CustomViews/Pages/ModeCheck.qml</file>
         <file alias="CustomViews/Pages/Propellers.qml">src/QmlControls/CustomViews/Pages/Propellers.qml</file>
         <file alias="CustomViews/Pages/Steering.qml">src/QmlControls/CustomViews/Pages/Steering.qml</file>
+        <file alias="CustomViews/Pages/JoystickCheck.qml">src/QmlControls/CustomViews/Pages/JoystickCheck.qml</file>
         <file alias="CustomViews/Pages/Pitot.qml">src/QmlControls/CustomViews/Pages/Pitot.qml</file>
         <file alias="CustomViews/Pages/Laser.qml">src/QmlControls/CustomViews/Pages/Laser.qml</file>
         <file alias="CustomViews/Pages/GPS.qml">src/QmlControls/CustomViews/Pages/GPS.qml</file>

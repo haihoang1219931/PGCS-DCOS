@@ -55,20 +55,6 @@ Rectangle{
         anchors.bottomMargin: 8
         anchors.horizontalCenter: parent.horizontalCenter
 
-        Image {
-            id: imgLogo1
-            y: -226
-            height: 346
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            source: "qrc:/assets/images/Shikra_5.png"
-            rotation: 0
-        }
-
         Label {
             id: label
             y: 384

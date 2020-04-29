@@ -26,35 +26,18 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
-    Label {
-        id: lblTitle1
+    QLabel {
+        id: lblTitle
         height: 54
         text: "Press Safety and continue to check propellers"
-        wrapMode: Text.WordWrap
-        anchors.right: imgLogo1.left
-        anchors.rightMargin: 6
+        anchors.right: parent.right
+        anchors.rightMargin: 8
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.leftMargin: 8
         anchors.topMargin: 0
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignLeft
-        color: UIConstants.textColor
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
+        border.width: 0
     }
-    Image {
-        id: imgLogo1
-        x: 379
-        width: 446
-        height: 285
-        anchors.top: parent.top
-        anchors.topMargin: 8
-        anchors.right: parent.right
-        anchors.rightMargin: 8
-        source: "qrc:/assets/images/Shikra_4.png"
-    }
-
     Rectangle {
         id: rectangle
         x: 120

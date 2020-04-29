@@ -41,6 +41,7 @@ class VDisplay : public VideoEngine
         Q_INVOKABLE void moveImage(float panRate,float tiltRate,float zoomRate,float alpha = 0) override;
         Q_INVOKABLE void start() override;
         Q_INVOKABLE void stop() override;
+        Q_INVOKABLE void capture() override;
         Q_INVOKABLE void setObjectDetect(bool enable) override;
         Q_INVOKABLE void setPowerLineDetect(bool enable) override;
         Q_INVOKABLE void searchByClass(QVariantList _classList);
