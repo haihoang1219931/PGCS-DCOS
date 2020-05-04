@@ -5,7 +5,6 @@
 #include "Joystick/JoystickLib/JoystickThreaded.h"
 GremseyGimbal::GremseyGimbal(GimbalInterface *parent) : GimbalInterface(parent)
 {
-
     m_zoom.append(0x0000); //1x
     m_zoom.append(0x0DC1); //2x
     m_zoom.append(0x186C); //3x
@@ -66,8 +65,9 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
         float maxRate = 1024.0f/maxAxis;
         float deadZone = 60;
         float alphaSpeed = 2;
-        float invertPan = -1;
-        float invertTilt = 1;
+        float invertPan = m_joystick->invertPan();
+        float invertTilt = m_joystick->invertTilt();
+        float invertZoom = m_joystick->invertZoom();
         float panRate = m_joystick->axis(m_joystick->axisPan())->value();
         float tiltRate = m_joystick->axis(m_joystick->axisTilt())->value();
         float zoomRate = m_joystick->axis(m_joystick->axisZoom())->value();
@@ -76,26 +76,27 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
         if(fabs(zoomRate) < deadZone) zoomRate = 0;
         float x = invertPan * panRate * maxRate;
         float y = invertTilt * tiltRate * maxRate;
+        float z = invertZoom * zoomRate;
         float hfov = m_context->m_hfov[m_context->m_sensorID];
         float panRateScale = (alphaSpeed * hfov * x / m_context->m_hfovMax[m_context->m_sensorID]);
         float tiltRateScale = (alphaSpeed *  hfov * y / m_context->m_hfovMax[m_context->m_sensorID]);
-        printf("hfov[%.02f] hfovMax[%.02f] x[%.02f] y[%.02f] panRateScale[%.02f] tiltRateScale[%.02f]\r\n",
+        printf("hfov[%.02f] hfovMax[%.02f] x[%.02f] y[%.02f] z[%.02f] panRateScale[%.02f] tiltRateScale[%.02f]\r\n",
                hfov,m_context->m_hfovMax[m_context->m_sensorID],
-                x,y,
+                x,y,z,
                 panRateScale,tiltRateScale);
         if(m_videoEngine == nullptr
                 || m_context->m_lockMode == "FREE"){
             setGimbalRate((panRateScale),(tiltRateScale));
-            if(zoomRate > 0)
+            if(z < 0)
                 setEOZoom("ZOOM_OUT",0);
-            else if(zoomRate < 0)
+            else if(z < 0)
                 setEOZoom("ZOOM_IN",0);
             else
                 setEOZoom("ZOOM_STOP",0);
         }else{
             m_videoEngine->moveImage(invertPan * panRate / maxAxis,
                                      invertTilt * tiltRate / maxAxis,
-                                     zoomRate/maxAxis);
+                                     invertZoom * zoomRate / maxAxis);
         }
     }
 }

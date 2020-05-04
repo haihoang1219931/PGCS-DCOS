@@ -550,7 +550,7 @@ Q_SIGNALS:
     void rcinChan4Changed();
 public Q_SLOTS:
     void handlePIC();
-    void handleUseJoystick();
+    void handleUseJoystick(bool useJoystick);
     void _loadDefaultParamsShow();
     void _setPropertyValue(QString name,QString value,QString unit);
     void _sendMessageOnLink(IOFlightController* link, mavlink_message_t message);

@@ -38,7 +38,7 @@ ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
     m_joystickClearRCTimer.setInterval(20);
     m_joystickClearRCTimer.setSingleShot(false);
     connect(&m_joystickTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendJoystickData);
-    connect(&m_joystickClearRCTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendJoystickData);
+    connect(&m_joystickClearRCTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendClearRC);
     m_joystickTimer.start();
     if(m_vehicle->joystick()!=nullptr){
         m_vehicle->setFlightMode(m_vehicle->pic()?"Loiter":"Guided");
@@ -323,9 +323,6 @@ void ArduCopterFirmware::setHomeHere(float lat, float lon, float alt){
 void ArduCopterFirmware::sendJoystickData(){
     if (m_vehicle == nullptr)
         return;
-    if(m_vehicle->joystick()->axisCount()<4){
-        return;
-    }
     if(m_vehicle->pic()){
         if(m_vehicle->flightMode()!= "Loiter" && m_vehicle->flightMode()!= "RTL"){
             m_vehicle->setFlightMode("Loiter");
@@ -335,7 +332,7 @@ void ArduCopterFirmware::sendJoystickData(){
 //            m_vehicle->setFlightMode("Guided");
 //        }
     }
-    if(m_vehicle->joystick()->axisCount() < 4){
+    if(m_vehicle->joystick()->axisCount() < 4 || !m_vehicle->joystick()->useJoystick()){
         return;
     }
     mavlink_message_t msg;
@@ -431,9 +428,12 @@ void ArduCopterFirmware::handleJSButton(int id, bool clicked){
     }
 }
 void ArduCopterFirmware::handleUseJoystick(bool enable) {
-    if(enable){
+    printf("%s %s\r\n",__func__,enable?"true":"false");
+    if(enable){        
+        connect(&m_joystickTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendJoystickData);
         m_joystickTimer.start();
-    }else{
+    }else{        
+        disconnect(&m_joystickTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendJoystickData);
         m_joystickTimer.stop();
         m_sendClearRCCount = 0;
         m_joystickClearRCTimer.start();

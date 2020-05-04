@@ -52,8 +52,8 @@ void Vehicle::handlePIC(){
     _pic = m_joystick->pic();
     Q_EMIT picChanged();
 }
-void Vehicle::handleUseJoystick(){
-    _useJoystick = m_joystick->useJoystick();
+void Vehicle::handleUseJoystick(bool useJoystick){
+    _useJoystick = useJoystick;
     Q_EMIT useJoystickChanged(_useJoystick);
 }
 ParamsController *Vehicle::paramsController()

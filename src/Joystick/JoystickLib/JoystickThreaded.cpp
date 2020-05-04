@@ -67,7 +67,7 @@ void JoystickThreaded::loadConfig(){
         tinyxml2::XMLElement * pElementUseJoystick = pElement->FirstChildElement("UseJoystick");
         if(pElementUseJoystick!= nullptr){
             m_useJoystick = QString::fromStdString(std::string(pElementUseJoystick->GetText())) == "True"?true:false;
-            Q_EMIT useJoystickChanged();
+            Q_EMIT useJoystickChanged(m_useJoystick);
         }
         // load axes
         tinyxml2::XMLElement * pListElementAxis = pElement->FirstChildElement("Axis");
@@ -146,6 +146,7 @@ void JoystickThreaded::saveConfig(){
         tinyxml2::XMLElement * pElementUseJoystick = xmlDoc.NewElement("UseJoystick");
         pElementUseJoystick->SetText(m_useJoystick?"True":"False");
         pRoot->InsertEndChild(pElementUseJoystick);
+        Q_EMIT useJoystickChanged(m_useJoystick);
         for(int i=0; i< m_axes.size(); i++){
             JSAxis *tmp = m_axes.at(i);
             tinyxml2::XMLElement * pElement = xmlDoc.NewElement("Axis");
@@ -264,6 +265,15 @@ void JoystickThreaded::mapButtonConfig(int buttonID, QString mapFunc){
             m_buttonsTemp.at(i)->setMapFunc(mapFunc);
             break;
         }
+    }
+}
+void JoystickThreaded::setInvert(QString camFunc,bool invert){
+    if(camFunc == "PAN"){
+        m_invertPan = invert?-1:1;
+    }else if(camFunc == "TILT"){
+        m_invertTilt = invert?-1:1;
+    }else if(camFunc == "ZOOM"){
+        m_invertZoom = invert?-1:1;
     }
 }
 void JoystickThreaded::changeButtonState(int btnID,bool clicked){

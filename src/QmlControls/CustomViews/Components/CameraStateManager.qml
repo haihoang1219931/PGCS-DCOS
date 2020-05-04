@@ -55,8 +55,9 @@ Item {
     property real alphaSpeed: 3
     property real hfov: 63
     property real vfov: 27
-    property int invertPan: 1
-    property int invertTilt: 1
+    property bool invertPan: false
+    property bool invertTilt: false
+    property bool invertZoom: false
     property real latitude: 21.120457
     property real longitude: 105.120457
     property real altitude: 400.12

@@ -303,17 +303,7 @@ Rectangle {
                     }
                 }
             }
-            FooterButton {
-                id: btnInvertTilt
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: parent.width
-                icon: UIConstants.iInvertTilt
-                btnText: "Invert\ntilt"
-                color: UIConstants.bgAppColor
-                onClicked: {
-                    camState.invertTilt = -camState.invertTilt;
-                }
-            }
+
 //            SwitchFlatButton {
 //                id: btnVisualLock
 //                Layout.preferredWidth: parent.width
@@ -416,6 +406,42 @@ Rectangle {
                 onClicked: {
                     camState.lockMode = "FREE";
                     cameraController.gimbal.setLockMode(camState.lockMode);
+                }
+            }
+            FooterButton {
+                id: btnInvertPan
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iInvertPan
+                btnText: "Invert\npan"
+                color: UIConstants.bgAppColor
+                onClicked: {
+                    camState.invertPan = !camState.invertPan;
+                    joystick.setInvert("PAN",camState.invertPan);
+                }
+            }
+            FooterButton {
+                id: btnInvertTilt
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iInvertTilt
+                btnText: "Invert\ntilt"
+                color: UIConstants.bgAppColor
+                onClicked: {
+                    camState.invertTilt = !camState.invertTilt;
+                    joystick.setInvert("TILT",camState.invertTilt);
+                }
+            }
+            FooterButton {
+                id: btnInvertZoom
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iZoomIn
+                btnText: "Invert\nzoom"
+                color: UIConstants.bgAppColor
+                onClicked: {
+                    camState.invertZoom = !camState.invertZoom;
+                    joystick.setInvert("ZOOM",camState.invertZoom);
                 }
             }
         }
