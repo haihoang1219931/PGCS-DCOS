@@ -247,9 +247,9 @@ private:
     int m_axisPan = 0;
     int m_axisTilt = 1;
     int m_axisZoom = 2;
-    float m_invertPan = 1;
+    float m_invertPan = -1;
     float m_invertTilt = 1;
-    float m_invertZoom = 1;
+    float m_invertZoom = -1;
     int m_butonPICCIC = 0;
     bool m_pic = false;
     bool m_useJoystick = true;

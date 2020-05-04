@@ -89,7 +89,7 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
             setGimbalRate((panRateScale),(tiltRateScale));
             if(z < 0)
                 setEOZoom("ZOOM_OUT",0);
-            else if(z < 0)
+            else if(z > 0)
                 setEOZoom("ZOOM_IN",0);
             else
                 setEOZoom("ZOOM_STOP",0);
