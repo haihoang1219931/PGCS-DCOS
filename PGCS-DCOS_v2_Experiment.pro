@@ -548,11 +548,8 @@ LIBS += -L/home/pgcs-05/install/tensorflow/tensorflow-1.14.0/bazel-bin/tensorflo
 
 LIBS += `pkg-config --libs opencv`
 # End TensorFlow
-#LIBS += -LD:\usr\local\lib \
-# -ldarknet
-
-#LIBS += -L/home/pgcs-05/Downloads/darknet-GPU_blob_click_updateLayers_I420 -ldarknet
-LIBS += /home/pgcs-05/workspaces/darknet-GPU_blob_click_updateLayers_I420/libdarknet.so
+LIBS += -LD:\usr\local\lib \
+ -ldarknet
 message($$LIBS)
 
 DEFINES += GPU
