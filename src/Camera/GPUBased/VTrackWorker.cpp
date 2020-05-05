@@ -176,8 +176,11 @@ void VTrackWorker::run()
                         this->drawSteeringCenter(proccImg, 400, objectPosition.x + objectPosition.width / 2.0,
                                                  objectPosition.y + objectPosition.height / 2.0, cv::Scalar(255, 0, 0));
                     } else {
+                        cv::Rect fixedSizeObject(objectPosition.x+objectPosition.width/2-m_trackSize/2,
+                                                 objectPosition.y+objectPosition.height/2-m_trackSize/2,
+                                                 m_trackSize,m_trackSize);
                         this->drawObjectBoundary(
-                            proccImg, objectPosition, cv::Scalar(255, 255, 255));
+                            proccImg, fixedSizeObject, cv::Scalar(255, 255, 255));
                     }
 
 

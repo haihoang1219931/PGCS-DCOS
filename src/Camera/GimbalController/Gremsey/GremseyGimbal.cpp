@@ -73,7 +73,7 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
         float zoomRate = m_joystick->axis(m_joystick->axisZoom())->value();
         if(fabs(panRate) < deadZone) panRate = 0;
         if(fabs(tiltRate) < deadZone) tiltRate = 0;
-        if(fabs(zoomRate) < deadZone) zoomRate = 0;
+//        if(fabs(zoomRate) < deadZone) zoomRate = 0;
         float x = invertPan * panRate * maxRate;
         float y = invertTilt * tiltRate * maxRate;
         float z = invertZoom * zoomRate;
@@ -87,9 +87,9 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
         if(m_videoEngine == nullptr
                 || m_context->m_lockMode == "FREE"){
             setGimbalRate((panRateScale),(tiltRateScale));
-            if(z < 0)
+            if(z > deadZone)
                 setEOZoom("ZOOM_OUT",0);
-            else if(z > 0)
+            else if(z < -deadZone)
                 setEOZoom("ZOOM_IN",0);
             else
                 setEOZoom("ZOOM_STOP",0);
@@ -142,13 +142,16 @@ void GremseyGimbal::changeSensor(QString sensorID){
 }
 void GremseyGimbal::setEOZoom(QString command, int value){
     if(command == "ZOOM_IN"){
+        printf("%s %s\r\n",__func__,command.toStdString().c_str());
         m_sensor->sendRawData("068101040727FF");
     }else if(command == "ZOOM_OUT"){
+        printf("%s %s\r\n",__func__,command.toStdString().c_str());
         m_sensor->sendRawData("068101040737FF");
     }else if(command == "ZOOM_STOP"){
+        printf("%s %s\r\n",__func__,command.toStdString().c_str());
         m_sensor->sendRawData("068101040700FF");
     }else {
-
+        printf("%s %s\r\n",__func__,command.toStdString().c_str());
     }
 }
 void GremseyGimbal::setGimbalRate(float panRate,float tiltRate){

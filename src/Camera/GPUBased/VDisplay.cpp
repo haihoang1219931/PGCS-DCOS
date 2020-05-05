@@ -24,8 +24,8 @@ VDisplay::VDisplay(VideoEngine *_parent) : VideoEngine(_parent)
             this, &VDisplay::slDeterminedTrackObjected);
     connect(m_vTrackWorker, SIGNAL(determinedPlateOnTracking(QString, QString)),
             this, SIGNAL(determinedPlateOnTracking(QString, QString)));
-    connect(m_vTrackWorker, SIGNAL(objectLost()),
-            this, SLOT(slObjectLost()));
+    connect(m_vTrackWorker, &VTrackWorker::objectLost,
+            this, &VDisplay::slObjectLost);
     connect(m_vDisplayWorker,&VDisplayWorker::readyDrawOnViewerID,this,&VDisplay::drawOnViewerID);
     m_videoSurfaceSize.setWidth(-1);
     m_videoSurfaceSize.setHeight(-1);
