@@ -817,7 +817,7 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
     if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID) {
         //        printf("_handleHeartbeat\r\n");
 
-//        if(_landed != ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY))
+        if(_landed != ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY))
         {
             _landed = ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY);
             _setPropertyValue("Landed",((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY)?"True":"False","");
