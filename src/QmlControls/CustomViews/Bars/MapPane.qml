@@ -1761,9 +1761,6 @@ Item {
                 changeWPCommand(selectedWP.attributes.attributeValue("command"),
                             param1,param2,param3,param4);
             }
-            var pointLatLon = Conv.mercatorToLatLon(
-                        selectedWP.geometry.extent.center.x,
-                        selectedWP.geometry.extent.center.y);
             if(selectedWP.attributes.attributeValue("id") === 0){
                 if(newPosition.altitude !== selectedWP.attributes.attributeValue("altitude")){
                     homePositionChanged(selectedWP.attributes.attributeValue("latitude"),
