@@ -24,10 +24,14 @@ Item {
     width: 1280
     height: 768
     clip: true
-    property var mapAxisKeys: ["Unused","Yaw","Throttle","Roll","Pitch"]
-    property var mapAxis: {"Unused":-1,"Roll":2,"Pitch":3,"Yaw":0,"Throttle":1}
-    property var mapButtonKeys: ["Unused","Guided","Loiter","Auto","RTL","PIC/CIC","CIC/PIC"]
-    property var mapButton: {"Unused":-1,"Guided":0,"Loiter":1,"Auto":2,"RTL":3,"PIC/CIC":4,"CIC/PIC":5}
+    property var mapAxisKeys: ["Unused","Roll","Pitch","Yaw","Throttle"]
+    property var mapAxis: {"Unused":-1,"Roll":0,"Pitch":1,"Yaw":2,"Throttle":3}
+    property var mapButtonKeys: ["Unused","PIC/CIC","CIC/PIC","Guided","Loiter","Auto","RTL",
+        "EO/IR",
+        "SNAPSHOT","STEERING","FREE","PRESET_FRONT","PRESET_RIGHT","PRESET_GROUND","DIGITAL_STAB"]
+    property var mapButton: {"Unused":-1,"PIC/CIC":0,"CIC/PIC":1,"Guided":2,"Loiter":3,"Auto":4,"RTL":5,
+        "EO/IR":6,
+        "SNAPSHOT":7,"STEERING":8,"FREE":9,"PRESET_FRONT":10,"PRESET_RIGHT":11,"PRESET_GROUND":12,"DIGITAL_STAB":13}
     Row{
         id: row
         anchors.rightMargin: UIConstants.sRect

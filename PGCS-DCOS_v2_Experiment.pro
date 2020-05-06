@@ -146,7 +146,7 @@ INCLUDEPATH += $$PWD/src/UC/boost1.62/include
 INCLUDEPATH += $$PWD/src/UC/openssl
 
 #LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
-LIBS+= -L/home/pgcs-05/workspaces/boost1.62/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
+LIBS+= -L/home/pgcs-06/workspaces/boost1.62/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
 #LIBS+= -L/home/pgcs-06/install/boost_1_62_0/stage/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
 LIBS += -L/usr/local/lib -lcrypto -lssl
 LIBS += -lpthread

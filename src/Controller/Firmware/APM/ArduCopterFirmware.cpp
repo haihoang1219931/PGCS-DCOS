@@ -420,10 +420,9 @@ void ArduCopterFirmware::handleJSButton(int id, bool clicked){
                 }else{
                     m_vehicle->setFlightMode(button->mapFunc());
                 }
-            }else if(button->mapFunc() == "PIC/CIC"){
+            }else if(button->mapFunc() == "PIC/CIC" || button->mapFunc() == "CIC/PIC"){
                 m_vehicle->setFlightMode(clicked?"Loiter":"Guided");
             }
-
         }
     }
 }

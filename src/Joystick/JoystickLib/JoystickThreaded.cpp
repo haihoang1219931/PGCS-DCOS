@@ -106,7 +106,8 @@ void JoystickThreaded::loadConfig(){
             }
         }
         for(int i=0;i< m_buttons.size(); i++){
-            if(m_buttons.at(i)->mapFunc()=="PIC/CIC"){
+            if(m_buttons.at(i)->mapFunc()=="PIC/CIC"
+                    || m_buttons.at(i)->mapFunc()=="CIC/PIC"){
                 m_butonPICCIC = m_buttons.at(i)->id();
             }
         }
@@ -136,7 +137,8 @@ void JoystickThreaded::saveConfig(){
             // copy
             m_buttons.at(i)->setId(m_buttonsTemp.at(i)->id());
             m_buttons.at(i)->setMapFunc(m_buttonsTemp.at(i)->mapFunc());
-            if(m_buttons.at(i)->mapFunc() == "PIC/CIC"){
+            if(m_buttons.at(i)->mapFunc() == "PIC/CIC"
+                     || m_buttons.at(i)->mapFunc()=="CIC/PIC"){
                 m_butonPICCIC = i;
             }
         }
@@ -282,7 +284,7 @@ void JoystickThreaded::changeButtonState(int btnID,bool clicked){
         m_buttonsTemp[btnID]->setPressed(clicked);
         Q_EMIT buttonStateChanged(btnID,clicked);
         if(btnID == m_butonPICCIC){
-            setPIC(clicked);
+            setPIC( m_buttonsTemp[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
         }
     }
 }
