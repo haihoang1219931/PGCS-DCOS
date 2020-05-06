@@ -29,16 +29,16 @@ void VTrackWorker::run()
     std::chrono::high_resolution_clock::time_point start, stop;
     long sleepTime = 0;
     m_matImageBuff = Cache::instance()->getProcessImageCache();
-    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
-    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
-    m_rbSystem = Cache::instance()->getSystemStatusCache();
-    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
-    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
+//    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
+//    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
+//    m_rbSystem = Cache::instance()->getSystemStatusCache();
+//    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
+//    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
     ProcessImageCacheItem processImgItem;
     cv::Mat proccImg;
     cv::Mat bgrImg, i420Img;     /**< For check type of plate.*/
     cv::Size imgSize;
-    cv::Mat stabMatrix;
+
     unsigned char *d_imageData;
     unsigned char *h_imageData;
     float *h_stabMat;
@@ -112,7 +112,7 @@ void VTrackWorker::run()
         cv::Rect roiOpen;
         // Check roi size for track to avoid coredump fault
         int trackSize = m_trackSize;
-
+//        printf("Set track size = %d\r\n",m_trackSize);
         if (m_steerEn) {
             trackSize = 400;
         }
@@ -159,7 +159,7 @@ void VTrackWorker::run()
             input.c = 1;
             input.h = imgSize.height * 3 / 2;
             input.w = imgSize.width;
-
+            m_imgSize = imgSize;
             if (m_tracker->isInitialized()) {
                 m_tracker->performTrack(proccImg);
 
@@ -176,14 +176,19 @@ void VTrackWorker::run()
                         this->drawSteeringCenter(proccImg, 400, objectPosition.x + objectPosition.width / 2.0,
                                                  objectPosition.y + objectPosition.height / 2.0, cv::Scalar(255, 0, 0));
                     } else {
+                        cv::Rect fixedSizeObject(objectPosition.x+objectPosition.width/2-m_trackSize/2,
+                                                 objectPosition.y+objectPosition.height/2-m_trackSize/2,
+                                                 m_trackSize,m_trackSize);
                         this->drawObjectBoundary(
-                            proccImg, objectPosition, cv::Scalar(255, 255, 255));
+                            proccImg, fixedSizeObject, cv::Scalar(255, 255, 255));
                     }
+
 
 //                    printf("\n====> DO TRACK [%d, %d, %d, %d]", objectPosition.x, objectPosition.y, objectPosition.width, objectPosition.height);
                     Q_EMIT determinedTrackObjected(m_currID, objectPosition.x, objectPosition.y,
                                                    objectPosition.width, objectPosition.height,
                                                    imgSize.width, imgSize.height);
+                    m_trackRect = objectPosition;
                     // TODO : Detect Plate
 //                    // check if objectPosition is inside proccImg
                     if (    (objectPosition.x > 0)
@@ -271,6 +276,7 @@ void VTrackWorker::stop()
 void VTrackWorker::hasNewTrack(int _id, double _px, double _py, double _w,
                                double _h, bool _enSteer, bool _enStab)
 {
+//    printf("%s _px = %.0f py= %.0f\r\n",__func__,_px,_py);
     m_trackPoint = XPoint(_id, _px, _py, _w, _h);
     m_hasNewTrack = true;
     m_hasNewMode = true;

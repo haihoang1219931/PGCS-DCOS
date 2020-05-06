@@ -155,6 +155,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     virtual void handleJSButton(int id, bool clicked);
+    virtual void handleUseJoystick(bool enable);
 protected:
     Vehicle *m_vehicle = nullptr;
     QString m_rtlAltParamName;
@@ -165,6 +166,9 @@ protected:
     QMap<int,QString> m_mapFlightModeOnGround;
     QList<Fact*> _listParamShow;
     QTimer m_joystickTimer;
+    QTimer m_joystickClearRCTimer;
+    int m_sendClearRCCount = 0;
+    int m_sendClearRCMax = 5;
 };
 
 #endif // FIRMWAREPLUGIN_H

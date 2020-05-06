@@ -10,9 +10,9 @@ VSavingWorker::VSavingWorker(std::string _mode)
     m_height = 1080;
 
     if (std::strcmp(_mode.data(), "EO") == 0) {
-        m_sensorMode = Status::SensorMode::EO;
+        m_sensorMode = "EO";
     } else {
-        m_sensorMode = Status::SensorMode::IR;
+        m_sensorMode = "IR";
     }
 }
 
@@ -79,21 +79,18 @@ bool VSavingWorker::initPipeline()
     m_filename =  getFileNameByTime();
 
     if (createFolder("flights")) {
-        std::string sensor_name = (m_sensorMode == Status::SensorMode::EO) ? "eo_" : "ir_";
+        std::string sensor_name = (m_sensorMode == "EO") ? "eo_" : "ir_";
         m_filename = "flights/" + sensor_name + m_filename;
     }
 
-    if (m_sensorMode == Status::SensorMode::EO) {
+    if (m_sensorMode == "EO") {
         m_buffVideoSaving = Cache::instance()->getGstEOSavingCache();
     } else {
         m_buffVideoSaving = Cache::instance()->getGstIRSavingCache();
     }
 
-    //    m_pipeline_str = "appsrc name=mysrcSave ! video/x-raw,format=BGRA,width="
-    //                     + std::to_string(m_width) + ",height=" + std::to_string(m_height) + " ! nvh265enc bitrate=" + std::to_string(m_bitrate)
-    //                     + " ! h265parse ! matroskamux ! filesink location=" + m_filename  + ".mkv";
     m_pipeline_str = "appsrc name=mysrcSave ! video/x-raw,format=I420,width="
-                     + std::to_string(m_width) + ",height=" + std::to_string(m_height) + " ! nvh264enc ! h264parse ! matroskamux ! filesink location=" + m_filename  + ".mkv";
+                     + std::to_string(m_width) + ",height=" + std::to_string(m_height) + " ! nvh264enc ! h264parse ! mpegtsmux ! filesink location=" + m_filename  + ".mp4";
     printf("\nReading pipeline: %s", m_pipeline_str.data());
     m_pipeline = GST_PIPELINE(gst_parse_launch(m_pipeline_str.data(), &m_err));
 

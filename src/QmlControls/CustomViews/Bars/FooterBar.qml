@@ -592,7 +592,7 @@ Item {
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iDeparture
                         btnText: "Take Off"
-                        isEnable: vehicle.link
+                        isEnable: vehicle.link && !vehicle.pic && vehicle.armed && vehicle.landed
                         onClicked: {
                             rootItem.doFlyAction(3);
                         }

@@ -1,5 +1,5 @@
 #include "VDisplayWorker.h"
-
+Q_DECLARE_METATYPE(cv::Mat)
 VDisplayWorker::VDisplayWorker(QObject *_parent) : QObject(_parent)
 {
     qRegisterMetaType< cv::Mat >("cv::Mat");
@@ -18,15 +18,15 @@ void VDisplayWorker::init()
 void VDisplayWorker::process()
 {
     m_matImageBuff = Cache::instance()->getProcessImageCache();
-    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
-    m_rbXPointEO = Cache::instance()->getEOSteeringCache();
-    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
-    m_rbXPointIR = Cache::instance()->getIRSteeringCache();
     m_rbSearchObjs = Cache::instance()->getSearchCache();
     m_rbMOTObjs = Cache::instance()->getMOTCache();
-    m_rbSystem = Cache::instance()->getSystemStatusCache();
-    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
-    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
+//    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
+//    m_rbXPointEO = Cache::instance()->getEOSteeringCache();
+//    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
+//    m_rbXPointIR = Cache::instance()->getIRSteeringCache();
+//    m_rbSystem = Cache::instance()->getSystemStatusCache();
+//    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
+//    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
     m_gstEOSavingBuff = Cache::instance()->getGstEOSavingCache();
     m_gstIRSavingBuff = Cache::instance()->getGstIRSavingCache();
     m_gstRTSPBuff = Cache::instance()->getGstRTSPCache();
@@ -76,6 +76,15 @@ void VDisplayWorker::process()
         /***Warp Image CPU*******/
         m_imgShow = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
         cv::cvtColor(m_imgShow, m_imgShow, cv::COLOR_YUV2BGRA_I420);
+        if(m_captureSet){
+            m_captureMutex.lock();
+            m_captureSet = false;
+            m_captureMutex.unlock();
+            std::string timestamp = FileController::get_time_stamp();
+            std::string captureFile = "flights/" + timestamp + ".jpg";
+            printf("Save file %s\r\n", captureFile.c_str());
+            cv::imwrite(captureFile, m_imgShow);
+        }
         //----------------------------- Draw EO object detected
         DetectedObjectsCacheItem detectedObjsItem = m_rbSearchObjs->getElementById(m_currID);
 //        DetectedObjectsCacheItem detectedObjsItem = m_rbMOTObjs->getElementById(m_currID);
@@ -107,13 +116,12 @@ void VDisplayWorker::process()
         gstRTSP.setIndex(m_currID);
         gstRTSP.setGstBuffer(gstBuffRTSP);
         m_gstRTSPBuff->add(gstRTSP);
-
-        if (m_enSaving) {
-            GstFrameCacheItem gstEOSaving;
-            gstEOSaving.setIndex(m_currID);
-            gstEOSaving.setGstBuffer(gst_buffer_copy(gstBuffRTSP));
-            m_gstEOSavingBuff->add(gstEOSaving);
-        }
+//        if (m_enSaving) {
+//            GstFrameCacheItem gstEOSaving;
+//            gstEOSaving.setIndex(m_currID);
+//            gstEOSaving.setGstBuffer(gst_buffer_copy(gstBuffRTSP));
+//            m_gstEOSavingBuff->add(gstEOSaving);
+//        }
 
         //        frame = QVideoFrame(QImage((uchar *)m_imgShow.data, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888));
 
@@ -252,7 +260,11 @@ bool VDisplayWorker::getDigitalStab()
 {
     return m_enDigitalStab;
 }
-
+void VDisplayWorker::capture(){
+    m_captureMutex.lock();
+    m_captureSet = true;
+    m_captureMutex.unlock();
+}
 
 void VDisplayWorker::drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t> &_listObj)
 {

@@ -124,10 +124,11 @@ bool JoystickTask::stop()
 }
 QStringList JoystickTask::getListJoystick()
 {
+//    printf("Looking for valid joystick...\r\n");
     std::string folderName = "/dev/input/";
     unsigned long numOfFile;
     QStringList listFiles;
-    std::cout << "Checking\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\: " << folderName << std::endl;
+//    std::cout << "Checking\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\: " << folderName << std::endl;
     unsigned long countFiles = 0;
     DIR *dir = opendir(folderName.c_str());
     struct dirent *de;
@@ -157,7 +158,7 @@ QStringList JoystickTask::getListJoystick()
        }
     }
     numOfFile = countFiles;
-    std::cout << "Count File: " << numOfFile << std::endl;
+//    std::cout << "Count File: " << numOfFile << std::endl;
     closedir(dir);
     return listFiles;
 }
@@ -193,7 +194,6 @@ void JoystickTask::doWork()
 {
     bool foundValidJs = false;
     while(!foundValidJs){
-        printf("Looking for valid joystick...\r\n");
         QStringList jsList = getListJoystick();
         for(int i=0; i< jsList.size(); i++){
             QString jsFile = jsList[i];

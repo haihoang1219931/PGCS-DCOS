@@ -63,6 +63,12 @@ void JoystickThreaded::loadConfig(){
     tinyxml2::XMLError res = m_doc.LoadFile(m_mapFile.toStdString().c_str());
     if(res == tinyxml2::XML_SUCCESS){
         tinyxml2::XMLElement * pElement = m_doc.FirstChildElement("ArrayOfProperties");
+        // load use joystick
+        tinyxml2::XMLElement * pElementUseJoystick = pElement->FirstChildElement("UseJoystick");
+        if(pElementUseJoystick!= nullptr){
+            m_useJoystick = QString::fromStdString(std::string(pElementUseJoystick->GetText())) == "True"?true:false;
+            Q_EMIT useJoystickChanged(m_useJoystick);
+        }
         // load axes
         tinyxml2::XMLElement * pListElementAxis = pElement->FirstChildElement("Axis");
         while(pListElementAxis!= nullptr){
@@ -137,6 +143,10 @@ void JoystickThreaded::saveConfig(){
         tinyxml2::XMLDocument xmlDoc;
         tinyxml2::XMLNode * pRoot = xmlDoc.NewElement("ArrayOfProperties");
         xmlDoc.InsertFirstChild(pRoot);
+        tinyxml2::XMLElement * pElementUseJoystick = xmlDoc.NewElement("UseJoystick");
+        pElementUseJoystick->SetText(m_useJoystick?"True":"False");
+        pRoot->InsertEndChild(pElementUseJoystick);
+        Q_EMIT useJoystickChanged(m_useJoystick);
         for(int i=0; i< m_axes.size(); i++){
             JSAxis *tmp = m_axes.at(i);
             tinyxml2::XMLElement * pElement = xmlDoc.NewElement("Axis");
@@ -150,6 +160,7 @@ void JoystickThreaded::saveConfig(){
             pInvert->SetText(tmp->inverted()?"True":"False");
             pElement->InsertEndChild(pInvert);
             pRoot->InsertEndChild(pElement);
+            printf("Save axis[%d] [%s] [%s]\r\n",i,tmp->mapFunc().toStdString().c_str(),tmp->inverted()?"True":"False");
         }
         for(int i=0; i< m_buttons.size(); i++){
             JSButton *tmp = m_buttons.at(i);
@@ -161,6 +172,7 @@ void JoystickThreaded::saveConfig(){
             pFunc->SetText(tmp->mapFunc().toStdString().c_str());
             pElement->InsertEndChild(pFunc);
             pRoot->InsertEndChild(pElement);
+            printf("Save button[%d] [%s] \r\n",i,tmp->mapFunc().toStdString().c_str());
         }
         tinyxml2::XMLError eResult = xmlDoc.SaveFile(m_mapFile.toStdString().c_str());
     }
@@ -255,14 +267,22 @@ void JoystickThreaded::mapButtonConfig(int buttonID, QString mapFunc){
         }
     }
 }
+void JoystickThreaded::setInvert(QString camFunc,bool invert){
+    if(camFunc == "PAN"){
+        m_invertPan = invert?-1:1;
+    }else if(camFunc == "TILT"){
+        m_invertTilt = invert?-1:1;
+    }else if(camFunc == "ZOOM"){
+        m_invertZoom = invert?-1:1;
+    }
+}
 void JoystickThreaded::changeButtonState(int btnID,bool clicked){
     if(btnID < m_buttons.size()){
 //        qDebug("Button %d is %s\n", btnID, !clicked ? "up" : "down");
         m_buttonsTemp[btnID]->setPressed(clicked);
         Q_EMIT buttonStateChanged(btnID,clicked);
         if(btnID == m_butonPICCIC){
-            m_pic = clicked;
-            Q_EMIT picChanged();
+            setPIC(clicked);
         }
     }
 }

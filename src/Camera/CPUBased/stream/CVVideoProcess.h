@@ -32,7 +32,6 @@
 #define MOVE_CLICK_TRACK
 //#define USE_SALIENCY
 #define DEBUG_TIME_OFF
-Q_DECLARE_METATYPE(cv::Mat)
 using namespace rva;
 class  CVVideoProcess : public QObject
 {

@@ -30,20 +30,23 @@
 #include <QQmlListProperty>
 #include <QList>
 #include <QRect>
-#include "../ControllerLib/Buffer/RollBuffer.h"
-#include "../ControllerLib/Buffer/RollBuffer_.h"
+#include "Camera/Buffer/RollBuffer.h"
+#include "Camera/Buffer/RollBuffer_.h"
 #include "../Cache/TrackObject.h"
 #include "../Cache/GstFrameCacheItem.h"
 #include "../../../Files/PlateLog.h"
 #include <opencv2/core.hpp>
+#include "Setting/config.h"
 class VRTSPServer;
 class VSavingWorker;
 class ImageItem;
 class TrackObjectInfo;
-class VideoEngineInterface : public QObject
+class GimbalInterface;
+class VideoEngine : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<TrackObjectInfo> listTrackObjectInfos READ listTrackObjectInfos NOTIFY listTrackObjectInfosChanged);
+    Q_PROPERTY(GimbalInterface*    gimbal   READ gimbal       WRITE setGimbal)
     Q_PROPERTY(QAbstractVideoSurface *videoSurface READ videoSurface WRITE setVideoSurface)
     Q_PROPERTY(QSize sourceSize READ sourceSize NOTIFY sourceSizeChanged)
     Q_PROPERTY(bool enStream READ enStream WRITE setEnStream)
@@ -55,7 +58,7 @@ class VideoEngineInterface : public QObject
     Q_PROPERTY(bool enTrack READ enTrack)
     Q_PROPERTY(bool enSteer READ enSteer)
 public:
-    explicit VideoEngineInterface(QObject *parent = nullptr);
+    explicit VideoEngine(QObject *parent = nullptr);
 
     QQmlListProperty<TrackObjectInfo> listTrackObjectInfos()
     {
@@ -160,12 +163,15 @@ public:
     }
 
     QMap<int,bool>  freezeMap(){ return m_freezeMap; }
+    GimbalInterface* gimbal();
+    void setGimbal(GimbalInterface* gimbal);
 public:
     QAbstractVideoSurface *videoSurface();
     void setVideoSurface(QAbstractVideoSurface *videoSurface);
     QSize sourceSize();
     void update();
     bool allThreadStopped();
+    void loadConfig(Config* config);
 public:
     Q_INVOKABLE virtual int addSubViewer(ImageItem *viewer);
     Q_INVOKABLE virtual void removeSubViewer(int viewerID);
@@ -187,6 +193,7 @@ public:
     Q_INVOKABLE virtual void setStreamMount(QString _streamMount){}
     Q_INVOKABLE virtual void disableObjectDetect(){}
     Q_INVOKABLE virtual void enableObjectDetect(){}
+    Q_INVOKABLE virtual void moveImage(float panRate,float tiltRate,float zoomRate,float alpha = 0){}
     Q_INVOKABLE virtual void enVisualLock(){}
     Q_INVOKABLE virtual void disVisualLock(){}
     Q_INVOKABLE virtual void setDigitalStab(bool _en){}
@@ -221,6 +228,7 @@ protected:
         Q_UNUSED(plateLog);
     }
 protected:
+    GimbalInterface* m_gimbal = nullptr;
     // === sub viewer
     QList<ImageItem*> m_listSubViewer;
     QMutex imageDataMutex[10];
@@ -252,6 +260,9 @@ protected:
     bool m_enOD = false;
     bool m_enPD = false;
     QList<TrackObjectInfo *> m_listTrackObjectInfos;
+
+    // Config
+    Config* m_config = nullptr;
 };
 
 #endif // VIDEOENGINEINTERFACE_H

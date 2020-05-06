@@ -1,7 +1,7 @@
 #ifndef CACHEITEM_H
 #define CACHEITEM_H
 
-#include "../ControllerLib/Packet/Common_type.h"
+#include "Camera/Packet/Common_type.h"
 using namespace Eye;
 namespace rva {
 class CacheItem {

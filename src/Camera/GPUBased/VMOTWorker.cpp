@@ -14,8 +14,8 @@ void VMOTWorker::run()
     m_matImageBuff = Cache::instance()->getProcessImageCache();
     m_rbDetectedObjs = Cache::instance()->getDetectedObjectsCache();
     m_rbMOTObjs = Cache::instance()->getMOTCache();
-    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
-    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
+//    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
+//    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
     ProcessImageCacheItem processImgItem;
     int prevID = -1;
     float *h_gmeMat;

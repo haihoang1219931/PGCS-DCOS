@@ -22,7 +22,7 @@ ApplicationWindow {
     visible: true
     visibility: ApplicationWindow.FullScreen
     title: qsTr("DCOS - PGCSv0.1")
-
+    flags: Qt.WindowMinMaxButtonsHint
     function switchMapFull(){
         videoPane.x = paneControl.x;
         videoPane.y = paneControl.y;
@@ -103,8 +103,8 @@ ApplicationWindow {
     //                  Components
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    GimbalNetwork{
-        id: gimbalNetwork
+    CameraController{
+        id: cameraController
     }
 
     Joystick{
@@ -712,11 +712,15 @@ ApplicationWindow {
                 x: paneControl.x
                 y: paneControl.y
                 z: 2
-                camState: camState
+                Overlay{
+                    id: videoOverlay
+                    anchors.fill: parent
+                }
+
                 ObjectsOnScreen{
                     anchors.fill: parent
-                    player: videoPane.player
-
+                    visible: camState.objectLocalization
+                    player: cameraController.videoEngine
                 }
             }
             PaneControl{
@@ -754,13 +758,9 @@ ApplicationWindow {
                     console.log("Change sensor ID to ["+camState.sensorID+"]");
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         if(camState.sensorID === camState.sensorIDEO){
-                            var config = PCSConfig.getData();
-                            videoPane.player.setVideo(config["CAM_STREAM_EO"]);
-                            videoPane.player.start()
+                            cameraController.gimbal.changeSensor("EO");
                         }else{
-                            var config = PCSConfig.getData();
-                            videoPane.player.setVideo(config["CAM_STREAM_IR"]);
-                            videoPane.player.start()
+                            cameraController.gimbal.changeSensor("IR");
                         }
                     }
 //                    if(CAMERA_CONTROL){
@@ -771,13 +771,13 @@ ApplicationWindow {
                 }
                 onGcsSnapshotClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.capture();
+                        cameraController.gimbal.snapShot();
                     }
                 }
                 onGcsStabClicked: {
                     camState.gcsStab =! camState.gcsStab;
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.setDigitalStab(camState.gcsStab)
+                        cameraController.gimbal.setDigitalStab(camState.gcsStab)
                     }
                 }
 
@@ -785,14 +785,14 @@ ApplicationWindow {
                     camState.gcsRecord=!camState.gcsRecord;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.setRecord(camState.gcsRecord);
+                        cameraController.gimbal.setRecord(camState.gcsRecord);
                     }
                 }
                 onGcsShareClicked: {
                     camState.gcsShare=!camState.gcsShare;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.setShare(camState.gcsShare);
+                        cameraController.gimbal.setShare(camState.gcsShare);
                     }
                 }
 
@@ -827,9 +827,9 @@ ApplicationWindow {
                     }
                 }
                 function updateObjectsOnMap(){
-                    if(videoPane.player !== undefined){
-                        for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
-                            var object = videoPane.player.listTrackObjectInfos[id];
+                    if(cameraController.videoEngine !== undefined){
+                        for (var id = 0; id < cameraController.videoEngine.listTrackObjectInfos.length; id++){
+                            var object = cameraController.videoEngine.listTrackObjectInfos[id];
                             var pointMapOnScreen =
                                     mapPane.convertLocationToScreen(object.latitude,object.longitude);
                             objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
@@ -884,7 +884,8 @@ ApplicationWindow {
                 ObjectsOnMap{
                     id: objectsOnMap
                     anchors.fill: parent
-                    player: videoPane.player
+                    visible: camState.objectLocalization
+                    player: cameraController.videoEngine
                 }
             }
             Rectangle{
@@ -1332,9 +1333,9 @@ ApplicationWindow {
                         "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
-                            if(!vehicle.armed)
-                                vehicle.setArmed(true);
-                            vehicle.commandTakeoff(100);
+//                            if(!vehicle.armed)
+//                                vehicle.setArmed(true);
+//                            vehicle.commandTakeoff(100);
                             vehicle.startMission();
 //                            navbar.startFlightTimer();
                         }else if(func === "DIALOG_CANCEL"){
@@ -1533,8 +1534,6 @@ ApplicationWindow {
                     if(func === "DIALOG_OK"){
                         vehicle.setArmed(!vehicle.armed);
                         if(arm){
-                            vehicle.setHomeLocation(vehicle.coordinate.latitude,
-                                                vehicle.coordinate.longitude);
                             mapPane.moveWPWithID(0,vehicle.coordinate);
                         }
                     }else if(func === "DIALOG_CANCEL"){
@@ -1651,7 +1650,7 @@ ApplicationWindow {
                         "x":parent.width / 2 - UIConstants.sRect * 19 / 2,
                         "y":parent.height / 2 - UIConstants.sRect * 13 / 2,
                         "camState": camState,
-                        "player": videoPane.player});
+                        "player": cameraController.videoEngine});
                 }
             }
         }
@@ -1663,25 +1662,20 @@ ApplicationWindow {
     }
     Timer{
         id: timerRequestData
-        interval: 100; repeat: true;
+        interval: 30; repeat: true;
         running: false
         property int countGetData: 0
         onTriggered: {
 //            console.log("Get gimbal data");
             var frameID = 0;
-            if(USE_VIDEO_CPU){
-//                frameID = videoPane.player.frameID;
+            if(USE_VIDEO_CPU || USE_VIDEO_GPU){
+//                frameID = cameraController.videoEngine.frameID;
             }
 
-            var data = gimbalNetwork.gimbalModel.gimbal.getData(frameID);
+            var data = cameraController.context.getData(frameID);
             // === hainh added 2019-03-28
 //            camState.panPos = Number(data["panPos"]);
 //            camState.tiltPos = Number(data["tiltPos"]);
-            if(camState.sensorID === camState.sensorIDEO){
-                camState.hfov = Number(data["EO"]["HFOV"]);
-            }else{
-                camState.hfov = Number(data["IR"]["HFOV"]);
-            }
 //            camState.hfov = Number(data["EO"]["HFOV"]);
 //            camState.vfov = Number(data["hfov"])/2;
             // 'pn', 'pe', 'pd', 'roll', 'pitch', 'yaw',
@@ -1692,16 +1686,15 @@ ApplicationWindow {
 //            camState.pitch = Number(data["pitch"]);
 //            camState.yaw = Number(data["yaw"]);
             // hainh added 2019-03-28 ===
-//            camState.sensorID = data["SENSOR"];
+            camState.sensorID = data["SENSOR"];
 //            camState.updateTrackSize(data["TRACK_SIZE"]);
-//            camState.changeLockMode(data["LOCK_MODE"]);
+            camState.changeLockMode(data["LOCK_MODE"]);
+            videoOverlay.zoomRatio = data["ZOOM"][data["SENSOR"]];
 //            camState.gimbalMode = data["GIMBAL_MODE"];
 //            camState.gimbalRecord = data["GIMBAL_RECORD"];
 //            camState.gimbalStab = data["STAB_GIMBAL"];
 //            camState.digitalStab = data["STAB_DIGITAL"];
 //            camState.trackSize = data["TRACK_SIZE"];
-            if(gimbalNetwork.isSensorConnected)
-                gimbalNetwork.ipcCommands.treronGetZoomPos();
         }
     }
     Rectangle{
@@ -1730,7 +1723,6 @@ ApplicationWindow {
             anchors.fill: parent
             AdvancedConfig{
                 id: advancedConfig
-                anchors.fill: parent
             }
         }
     }
@@ -1754,15 +1746,9 @@ ApplicationWindow {
             console.log("CAMERA_CONTROL = "+CAMERA_CONTROL)
             // --- Payload
             if(CAMERA_CONTROL){
-                var config = PCSConfig.getData();
-                console.log("config = "+config);
-                console.log("Connect to camera "+config["CAM_CONTROL_IP"]+":"+config["CAM_CONTROL_IN"]+":"+config["CAM_CONTROL_REP"])
-                gimbalNetwork.newConnect(config["CAM_CONTROL_IP"],
-                                         config["CAM_CONTROL_IN"],
-                                         config["CAM_CONTROL_REP"]);
+                cameraController.loadConfig(PCSConfig);
+                cameraController.gimbal.joystick = joystick;
                 timerRequestData.start();
-                videoPane.player.setVideo(config["CAM_STREAM_EO"]);
-                videoPane.player.start();
             }
             if(UC_API)
             {

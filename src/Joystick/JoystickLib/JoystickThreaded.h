@@ -117,6 +117,7 @@ public:
     Q_INVOKABLE void resetConfig();
     Q_INVOKABLE void mapAxisConfig(int axisID, QString mapFunc, bool invert);
     Q_INVOKABLE void mapButtonConfig(int buttonID, QString mapFunc);
+    Q_INVOKABLE void setInvert(QString camFunc,bool invert);
     void mapAxis(int axisID, QString mapFunc, bool invert);
     void mapButton(int buttonID, QString mapFunc);
     QString mapFile(){ return m_mapFile; }
@@ -197,12 +198,27 @@ public:
         qmlRegisterType<JoystickThreaded>("io.qdt.dev", 1, 0, "Joystick");
     }
     bool pic(){return m_pic;}
-    void setPIC(bool pic){m_pic = pic;}
+    void setPIC(bool pic){
+        m_pic = pic;
+        Q_EMIT picChanged();
+    }
+    bool useJoystick(){return m_useJoystick;}
+    Q_INVOKABLE void setUseJoystick(bool enable){
+        m_useJoystick = enable;
+        Q_EMIT useJoystickChanged(m_useJoystick);
+    }
+    int axisPan(){ return m_axisPan; }
+    int axisTilt(){ return m_axisTilt; }
+    int axisZoom(){ return m_axisZoom; }
+    int invertPan(){ return  m_invertPan; }
+    int invertTilt(){ return m_invertTilt; }
+    int invertZoom(){ return m_invertZoom; }
 public Q_SLOTS:
     void updateButtonAxis(bool connected);
     void changeButtonState(int btnID,bool clicked);
     void changeAxisValue(int axisID, float value);
 Q_SIGNALS:
+    void useJoystickChanged(bool useJoystick);
     void picChanged();
     void buttonAxisLoaded();
     void joystickConnected(bool state);
@@ -228,8 +244,15 @@ private:
     int m_axisPitch = 3;
     int m_axisYaw = 0;
     int m_axisThrottle = 1;
+    int m_axisPan = 0;
+    int m_axisTilt = 1;
+    int m_axisZoom = 2;
+    float m_invertPan = -1;
+    float m_invertTilt = 1;
+    float m_invertZoom = 1;
     int m_butonPICCIC = 0;
     bool m_pic = false;
+    bool m_useJoystick = true;
 };
 
 #endif // JOYSTICKTHREAD_H

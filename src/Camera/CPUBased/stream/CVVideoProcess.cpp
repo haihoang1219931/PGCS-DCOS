@@ -1,5 +1,6 @@
 #include "CVVideoProcess.h"
 #include "../../VideoDisplay/ImageItem.h"
+Q_DECLARE_METATYPE(cv::Mat)
 CVVideoProcess::CVVideoProcess(QObject *parent): QObject(parent)
 {
     qRegisterMetaType< cv::Mat >("cv::Mat");

@@ -40,6 +40,7 @@ Rectangle {
 
                 ListElement {
                     need: true
+                    icon: ""
                 }
             }
 //            ScrollBar.vertical: ScrollBar {

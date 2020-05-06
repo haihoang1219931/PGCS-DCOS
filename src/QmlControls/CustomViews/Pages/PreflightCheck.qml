@@ -17,6 +17,7 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
 import QtQuick 2.0
+import QtQml.Models 2.11
 
 //------------------ Include Custom modules/plugins
 import CustomViews.Components 1.0
@@ -42,6 +43,19 @@ Rectangle {
             RectBorder {
                 type: "right"
             }
+            model: ListModel {
+                Component.onCompleted: {
+                    append({state_: "uncheck", text_: "ModeCheck" });
+                    append({state_: "uncheck", text_: "Propellers" });
+//                    append({state_: "uncheck", text_: "Steering" });
+//                    append({state_: "uncheck", text_: "Pitot" });
+                    append({state_: "uncheck", text_: "Laser" });
+                    append({state_: "uncheck", text_: "GPS" });
+                    append({state_: "uncheck", text_: "Joystick" });
+//                    append({state_: "uncheck", text_: "RPM" });
+//                    append({state_: "uncheck", text_: "Payload" });
+                }
+            }
         }
 
         StackLayout {
@@ -50,289 +64,175 @@ Rectangle {
             Layout.preferredHeight: parent.height
             Layout.leftMargin: -5
             currentIndex: 0
-            Item {
-                ColumnLayout {
-                    anchors.fill: parent
-                    //--- Title
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignTop
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2
-                        SidebarTitle {
-                            id: title
-                            anchors.fill: parent
-                            visible: true
-                            title: "Flight Mode check"
-                            iconType: "\uf197"
-                            xPosition: 20
-                        }
-                    }
-
-                    Rectangle {
-                        id: rectangle
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignBottom
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
-                        Layout.fillHeight: true
-                        ModeCheck{
-                            anchors.fill: parent
-                        }
-                    }
+            ColumnLayout {
+                SidebarTitle {
+                    Layout.alignment: Qt.AlignTop
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: UIConstants.sRect * 2
+                    title: "Flight Mode check"
+                    iconType: "\uf197"
+                    xPosition: 20
+                }
+                ModeCheck{
+                    Layout.alignment: Qt.AlignBottom
+                    Layout.preferredWidth: checkingContentStack.width
+                    Layout.preferredHeight: UIConstants.sRect * 2 * 9
+                    Layout.fillHeight: true
                 }
             }
 
-            Item {
-                ColumnLayout {
-                    anchors.fill: parent
-                    //--- Title
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignTop
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2
-                        SidebarTitle {
-                            id: title1
-                            anchors.fill: parent
-                            visible: true
-                            title: "Propeller check"
-                            iconType: "\uf197"
-                            xPosition: 20
-                        }
-                    }
-
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignBottom
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
-                        Layout.fillHeight: true
-                        Propellers{
-                            anchors.fill: parent
-                        }
-                    }
+            ColumnLayout {
+                SidebarTitle {
+                    Layout.alignment: Qt.AlignTop
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: UIConstants.sRect * 2
+                    visible: true
+                    title: "Propeller check"
+                    iconType: "\uf197"
+                    xPosition: 20
+                }
+                Propellers{
+                    Layout.alignment: Qt.AlignBottom
+                    Layout.preferredWidth: checkingContentStack.width
+                    Layout.preferredHeight: UIConstants.sRect * 2 * 9
+                    Layout.fillHeight: true
                 }
             }
 
-            Item {
-                ColumnLayout {
-                    anchors.fill: parent
-                    //--- Title
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignTop
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2
-                        SidebarTitle {
-                            id: title2
-                            anchors.fill: parent
-                            visible: true
-                            title: "Steering check"
-                            iconType: "\uf197"
-                            xPosition: 20
-                        }
-                    }
+//            ColumnLayout {
+//                SidebarTitle {
+//                    Layout.alignment: Qt.AlignTop
+//                    Layout.preferredWidth: parent.width
+//                    Layout.preferredHeight: UIConstants.sRect * 2
+//                    visible: true
+//                    title: "Steering check"
+//                    iconType: "\uf197"
+//                    xPosition: 20
+//                }
+//                Steering{
+//                    Layout.alignment: Qt.AlignBottom
+//                    Layout.preferredWidth: checkingContentStack.width
+//                    Layout.preferredHeight: UIConstants.sRect * 2 * 9
+//                    Layout.fillHeight: true
+//                }
+//            }
 
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignBottom
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
-                        Layout.fillHeight: true
-                        Steering{
-                            anchors.fill: parent
-                        }
-                    }
+//            ColumnLayout {
+//                SidebarTitle {
+//                    Layout.alignment: Qt.AlignTop
+//                    Layout.preferredWidth: parent.width
+//                    Layout.preferredHeight: UIConstants.sRect * 2
+//                    title: "Pitot check"
+//                    iconType: "\uf197"
+//                    xPosition: 20
+//                }
+//                Pitot{
+//                    Layout.alignment: Qt.AlignBottom
+//                    Layout.preferredWidth: checkingContentStack.width
+//                    Layout.preferredHeight: UIConstants.sRect * 2 * 9
+//                    Layout.fillHeight: true
+//                }
+//            }
+
+            ColumnLayout {
+                SidebarTitle {
+                    Layout.alignment: Qt.AlignTop
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: UIConstants.sRect * 2
+                    title: "Altitude measurement Laser check"
+                    iconType: "\uf197"
+                    xPosition: 20
+                }
+                Laser{
+                    Layout.alignment: Qt.AlignBottom
+                    Layout.preferredWidth: checkingContentStack.width
+                    Layout.preferredHeight: UIConstants.sRect * 2 * 9
+                    Layout.fillHeight: true
                 }
             }
 
-            Item {
-                ColumnLayout {
-                    anchors.fill: parent
-                    //--- Title
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignTop
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2
-                        SidebarTitle {
-                            id: title4
-                            anchors.fill: parent
-                            visible: true
-                            title: "Pitot check"
-                            iconType: "\uf197"
-                            xPosition: 20
-                        }
-                    }
-
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignBottom
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
-                        Layout.fillHeight: true
-                        Pitot{
-                            anchors.fill: parent
-                        }
-                    }
+            ColumnLayout {
+                SidebarTitle {
+                    Layout.alignment: Qt.AlignTop
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: UIConstants.sRect * 2
+                    visible: true
+                    title: "UAV GPS Location checking"
+                    iconType: "\uf197"
+                    xPosition: 20
+                }
+                GPS{
+                    Layout.alignment: Qt.AlignBottom
+                    Layout.preferredWidth: checkingContentStack.width
+                    Layout.preferredHeight: UIConstants.sRect * 2 * 9
+                    Layout.fillHeight: true
                 }
             }
-
-            Item {
-                ColumnLayout {
-                    anchors.fill: parent
-                    //--- Title
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignTop
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2
-                        SidebarTitle {
-                            id: title5
-                            anchors.fill: parent
-                            visible: true
-                            title: "Altitude measurement Laser check"
-                            iconType: "\uf197"
-                            xPosition: 20
-                        }
-                    }
-
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignBottom
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
-                        Layout.fillHeight: true
-                        Laser{
-                            anchors.fill: parent
-                        }
-                    }
+            ColumnLayout {
+                SidebarTitle {
+                    Layout.alignment: Qt.AlignTop
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: UIConstants.sRect * 2
+                    visible: true
+                    title: "Joystick action"
+                    iconType: "\uf197"
+                    xPosition: 20
+                }
+                JoystickCheck{
+                    Layout.alignment: Qt.AlignBottom
+                    Layout.preferredWidth: checkingContentStack.width
+                    Layout.preferredHeight: UIConstants.sRect * 2 * 9
+                    Layout.fillHeight: true
                 }
             }
+//            ColumnLayout {
+//                SidebarTitle {
+//                    Layout.alignment: Qt.AlignTop
+//                    Layout.preferredWidth: parent.width
+//                    Layout.preferredHeight: UIConstants.sRect * 2
+//                    title: "UAV Propulsion engine check"
+//                    iconType: "\uf197"
+//                    xPosition: 20
+//                }
+//                RPM{
+//                    Layout.alignment: Qt.AlignBottom
+//                    Layout.preferredWidth: checkingContentStack.width
+//                    Layout.preferredHeight: UIConstants.sRect * 2 * 9
+//                    Layout.fillHeight: true
+//                }
+//            }
 
-            Item {
-                ColumnLayout {
-                    anchors.fill: parent
-                    //--- Title
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignTop
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2
-                        SidebarTitle {
-                            id: title7
-                            anchors.fill: parent
-                            visible: true
-                            title: "UAV GPS Location checking"
-                            iconType: "\uf197"
-                            xPosition: 20
-                        }
-                    }
+//            ColumnLayout {
+//                SidebarTitle {
+//                    Layout.alignment: Qt.AlignTop
+//                    Layout.preferredWidth: parent.width
+//                    Layout.preferredHeight: UIConstants.sRect * 2
+//                    title: "Camera functions checking"
+//                    iconType: "\uf197"
+//                    xPosition: 20
+//                }
+//                Payload{
+//                    Layout.alignment: Qt.AlignBottom
+//                    Layout.preferredWidth: checkingContentStack.width
+//                    Layout.preferredHeight: UIConstants.sRect * 2 * 9
+//                    Layout.fillHeight: true
+//                }
+//            }
 
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignBottom
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
-                        Layout.fillHeight: true
-                        GPS{
-                            anchors.fill: parent
-                        }
-                    }
+            ColumnLayout {
+                SidebarTitle {
+                    Layout.alignment: Qt.AlignTop
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: UIConstants.sRect * 2
+                    title: "Preflight check process"
+                    iconType: "\uf197"
+                    xPosition: 20
                 }
-            }
-
-            Item {
-                ColumnLayout {
-                    anchors.fill: parent
-                    //--- Title
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignTop
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2
-                        SidebarTitle {
-                            anchors.fill: parent
-                            visible: true
-                            title: "UAV Propulsion engine check"
-                            iconType: "\uf197"
-                            xPosition: 20
-                        }
-                    }
-
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignBottom
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
-                        Layout.fillHeight: true
-                        RPM{
-                            anchors.fill: parent
-                        }
-                    }
-                }
-            }
-
-            Item {
-                ColumnLayout {
-                    anchors.fill: parent
-                    //--- Title
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignTop
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2
-                        SidebarTitle {
-                            anchors.fill: parent
-                            visible: true
-                            title: "Camera functions checking"
-                            iconType: "\uf197"
-                            xPosition: 20
-                        }
-                    }
-
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignBottom
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
-                        Layout.fillHeight: true
-                        Payload{
-                            anchors.fill: parent
-                        }
-                    }
-                }
-            }
-
-            Item {
-                ColumnLayout {
-                    anchors.fill: parent
-                    //--- Title
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignTop
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2
-                        SidebarTitle {
-                            anchors.fill: parent
-                            visible: true
-                            title: "Preflight check process"
-                            iconType: "\uf197"
-                            xPosition: 20
-                        }
-                    }
-
-                    Rectangle {
-                        color: UIConstants.transparentColor
-                        Layout.alignment: Qt.AlignBottom
-                        Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: UIConstants.sRect * 2 * 9
-                        Layout.fillHeight: true
-                        Success{
-                            anchors.fill: parent
-                        }
-                    }
+                Success{
+                    Layout.alignment: Qt.AlignBottom
+                    Layout.preferredWidth: checkingContentStack.width
+                    Layout.preferredHeight: UIConstants.sRect * 2 * 9
+                    Layout.fillHeight: true
                 }
             }
         }

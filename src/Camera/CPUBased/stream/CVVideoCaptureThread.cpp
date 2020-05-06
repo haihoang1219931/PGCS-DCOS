@@ -1,7 +1,7 @@
 #include "CVVideoCaptureThread.h"
 #include "Camera/VideoEngine/VRTSPServer.h"
 #include "Camera/VideoEngine/VSavingWorker.h"
-CVVideoCaptureThread::CVVideoCaptureThread(VideoEngineInterface *parent) : VideoEngineInterface(parent)
+CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(parent)
 {
     char cmd[100];
     std::string day = Utils::get_day();
@@ -28,9 +28,7 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngineInterface *parent) : Video
     m_logFile = m_logFolder + "/" + timestamp;
     m_capture = new CVVideoCapture(nullptr);
     m_process = new CVVideoProcess(nullptr);
-    m_record = new CVRecord(nullptr);
     m_captureThread = new QThread(nullptr);
-    m_recordThread = new QThread(nullptr);
     m_processThread = new QThread(nullptr);
     m_mutexCapture = new QMutex();
     m_mutexProcess = new QMutex();
@@ -38,10 +36,8 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngineInterface *parent) : Video
     m_vSavingWorker = new VSavingWorker();
     m_capture->moveToThread(m_captureThread);
     m_process->moveToThread(m_processThread);
-    m_record->moveToThread(m_recordThread);
     connect(m_captureThread, SIGNAL(started()), m_capture, SLOT(doWork()));
-    connect(m_processThread, SIGNAL(started()), m_process, SLOT(doWork()));
-    connect(m_recordThread, SIGNAL(started()), m_record, SLOT(doWork()));
+    connect(m_processThread, SIGNAL(started()), m_process, SLOT(doWork01()));
     connect(m_process, SIGNAL(trackInitSuccess(bool, int, int, int, int)), this, SIGNAL(trackInitSuccess(bool, int, int, int, int)));
     connect(m_process, SIGNAL(processDone()), this, SLOT(doShowVideo()));
     connect(m_process, SIGNAL(trackStateLost()), this, SLOT(slObjectLost()));
@@ -62,10 +58,6 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngineInterface *parent) : Video
     m_process->m_mutexProcess = m_mutexProcess;
     m_process->m_logFolder = m_logFolder;
     m_process->m_logFile = m_logFile;
-    m_record->m_imageQueue = &m_imageQueue;
-    m_record->m_mutexCapture = m_mutexCapture;
-    m_record->m_logFolder = m_logFolder;
-    m_record->m_logFile = m_logFile;
     m_gstRTSPBuff = new RollBuffer_<GstFrameCacheItem>(10);
     m_buffVideoSaving = new RollBuffer_<GstFrameCacheItem>(10);
     m_process->m_gstRTSPBuff = m_gstRTSPBuff;
@@ -95,15 +87,6 @@ CVVideoCaptureThread::~CVVideoCaptureThread()
     }
 
     printf("Process thread stopped\r\n");
-    m_recordThread->wait(100);
-    m_recordThread->quit();
-
-    if (!m_recordThread->wait(100)) {
-        m_recordThread->terminate();
-        m_recordThread->wait(100);
-    }
-
-    printf("Record thread stopped\r\n");
     m_vRTSPServer->wait(100);
     m_vRTSPServer->quit();
 
@@ -126,8 +109,6 @@ CVVideoCaptureThread::~CVVideoCaptureThread()
 
     m_vSavingWorker->deleteLater();
     m_vRTSPServer->deleteLater();
-    m_recordThread->deleteLater();
-    m_record->deleteLater();
     m_processThread->deleteLater();
     m_process->deleteLater();
     m_captureThread->deleteLater();
@@ -147,8 +128,6 @@ void CVVideoCaptureThread::start()
     m_captureThread->start();
     //    m_processThread->wait(100);
     m_processThread->start();
-    //    m_recordThread->wait(100);
-    //    m_recordThread->start();
 }
 void CVVideoCaptureThread::play()
 {
@@ -156,8 +135,6 @@ void CVVideoCaptureThread::play()
     m_captureThread->start();
     //    m_processThread->wait(100);
     m_processThread->start();
-    //    m_recordThread->wait(100);
-    //    m_recordThread->start();
 }
 void CVVideoCaptureThread::stop()
 {
@@ -175,11 +152,6 @@ void CVVideoCaptureThread::stop()
         printf("Process already stopped\r\n");
     }
 
-    if (m_record->m_stop == false) {
-        m_record->m_stop = true;
-    } else {
-        printf("Record already stopped\r\n");
-    }
 //    m_vRTSPServer->setStateRun(false);
     m_vSavingWorker->stopPipeline();
 }
@@ -187,10 +159,6 @@ void CVVideoCaptureThread::stop()
 void CVVideoCaptureThread::setStab(bool enable)
 {
     m_process->m_stabEnable = enable;
-}
-void CVVideoCaptureThread::setRecord(bool enable)
-{
-    m_process->m_recordEnable = enable;
 }
 void CVVideoCaptureThread::setShare(bool enable)
 {

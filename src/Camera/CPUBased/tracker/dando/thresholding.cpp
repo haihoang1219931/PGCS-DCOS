@@ -76,7 +76,7 @@ cv::Mat ThresholdingTracker::contrastEnhance(cv::Mat image, float weightingParam
         }
     };
     auto start = std::chrono::high_resolution_clock::now();
-    cv::parallel_for_(cv::Range(0, width * height), fillData);
+//    cv::parallel_for_(cv::Range(0, width * height), fillData);
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "Time of enhance elapsed: " << elapsed.count() << std::endl;
