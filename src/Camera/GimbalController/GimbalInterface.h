@@ -20,7 +20,7 @@ public:
     JoystickThreaded* joystick();
     virtual void setJoystick(JoystickThreaded* joystick);
 Q_SIGNALS:
-
+    void functionHandled(QString message);
 public Q_SLOTS:
     virtual void connectToGimbal(Config* config = nullptr);
     virtual void disconnectGimbal();

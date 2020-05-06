@@ -558,7 +558,8 @@ Item {
     signal clicked(real lat,real lon,real alt)
     signal mapClicked(bool isMap)
     signal mapMoved()
-    signal homePositionChanged(real lat, real lon, real alt);
+    signal homePositionChanged(real lat, real lon, real alt)
+    signal showAdvancedConfigChanged()
     Computer{
         id: cInfo
     }
@@ -2229,6 +2230,10 @@ Item {
                 rootItem.setFocus(true);
             }else if(event.key === Qt.Key_C){
                 clearFlightPath();
+            }else if(rootItem.ctrlPress && event.key === Qt.Key_F6){
+                rootItem.showAdvancedConfigChanged();
+                console.log("showAdvancedConfigChanged");
+                rootItem.ctrlPress = false;
             }
 
         }

@@ -154,14 +154,8 @@ Rectangle {
                          [camState.language[camState.fd_icon]]
                 color: UIConstants.bgAppColor
                 onClicked: {
-                    if(camState.sensorID === camState.sensorIDEO){
-                        camState.sensorID = camState.sensorIDIR;
-                    }else{
-                        camState.sensorID = camState.sensorIDEO;
-                    }
-                    console.log("Change sensor ID to ["+camState.sensorID+"]");
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        if(camState.sensorID === camState.sensorIDEO){
+                        if(camState.sensorID === camState.sensorIDIR){
                             cameraController.gimbal.changeSensor("EO");
                         }else{
                             cameraController.gimbal.changeSensor("IR");
@@ -245,9 +239,8 @@ Rectangle {
                 color: UIConstants.bgAppColor
                 isOn: camState.gcsStab
                 onClicked: {
-                    camState.gcsStab =! camState.gcsStab;
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setDigitalStab(camState.gcsStab)
+                        cameraController.gimbal.setDigitalStab(!camState.gcsStab)
                     }
                 }
             }

@@ -164,7 +164,7 @@ Rectangle{
             }
             Label {
                 height: UIConstants.sRect*1.5
-                text: qsTr("RCIN_chan3: ") + vehicle.rcinChan3 +" us"
+                text: qsTr("RCIN_chan4: ") + vehicle.rcinChan4 +" us"
                 verticalAlignment: Label.AlignVCenter
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize
@@ -172,7 +172,7 @@ Rectangle{
             }
             Label {
                 height: UIConstants.sRect*1.5
-                text: qsTr("RCIN_chan4: ") + vehicle.rcinChan4  +" us"
+                text: qsTr("RCIN_chan3: ") + vehicle.rcinChan3  +" us"
                 verticalAlignment: Label.AlignVCenter
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize

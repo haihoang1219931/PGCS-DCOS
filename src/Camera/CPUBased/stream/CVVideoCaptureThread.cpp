@@ -37,7 +37,7 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(pa
     m_capture->moveToThread(m_captureThread);
     m_process->moveToThread(m_processThread);
     connect(m_captureThread, SIGNAL(started()), m_capture, SLOT(doWork()));
-    connect(m_processThread, SIGNAL(started()), m_process, SLOT(doWork01()));
+    connect(m_processThread, SIGNAL(started()), m_process, SLOT(doWork()));
     connect(m_process, SIGNAL(trackInitSuccess(bool, int, int, int, int)), this, SIGNAL(trackInitSuccess(bool, int, int, int, int)));
     connect(m_process, SIGNAL(processDone()), this, SLOT(doShowVideo()));
     connect(m_process, SIGNAL(trackStateLost()), this, SLOT(slObjectLost()));
@@ -58,12 +58,6 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(pa
     m_process->m_mutexProcess = m_mutexProcess;
     m_process->m_logFolder = m_logFolder;
     m_process->m_logFile = m_logFile;
-    m_gstRTSPBuff = new RollBuffer_<GstFrameCacheItem>(10);
-    m_buffVideoSaving = new RollBuffer_<GstFrameCacheItem>(10);
-    m_process->m_gstRTSPBuff = m_gstRTSPBuff;
-    m_process->m_buffVideoSaving = m_buffVideoSaving;
-    m_vSavingWorker->m_buffVideoSaving = m_buffVideoSaving;
-    m_vRTSPServer->m_gstRTSPBuff = m_gstRTSPBuff;
 }
 CVVideoCaptureThread::~CVVideoCaptureThread()
 {
@@ -270,8 +264,6 @@ void CVVideoCaptureThread::onStreamFrameSizeChanged(int width, int height)
     printf("%s [%dx%d]\r\n",__func__,width,height);
     m_vRTSPServer->setStreamSize(width, height);
     m_vSavingWorker->setStreamSize(width, height);
-//    m_vSavingWorker->setSensorMode(m_sensorMode);
-
     if (m_enStream) {
         m_vRTSPServer->start();
     }

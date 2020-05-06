@@ -311,8 +311,7 @@ void Vehicle::setHomeLocation(float lat, float lon){
 void Vehicle::setAltitudeRTL(float alt){
     if(m_firmwarePlugin != nullptr){
         if (m_paramsController != nullptr) {
-            if(static_cast<int>(alt) != static_cast<int>(_homeAltitude))
-                m_paramsController->_writeParameterRaw(m_firmwarePlugin->rtlAltParamName(),QVariant::fromValue(alt*100));
+            m_paramsController->_writeParameterRaw(m_firmwarePlugin->rtlAltParamName(),QVariant::fromValue(alt*100));
         }
     }
 }

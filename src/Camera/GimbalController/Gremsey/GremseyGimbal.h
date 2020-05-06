@@ -30,6 +30,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void handleAxisValueChanged(int axisID, float value);
+    void handleButtonStateChanged(int buttonID, bool pressed);
     void sendQueryZoom();
     void handleQuery(QString data);
 private:

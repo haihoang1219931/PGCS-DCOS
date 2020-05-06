@@ -55,8 +55,34 @@ void GremseyGimbal::setJoystick(JoystickThreaded* joystick){
     if(joystick == nullptr) return;
     m_joystick = joystick;
     connect(m_joystick,&JoystickThreaded::axisValueChanged,this,&GremseyGimbal::handleAxisValueChanged);
+    connect(m_joystick,&JoystickThreaded::buttonStateChanged,this,&GremseyGimbal::handleButtonStateChanged);
 //    m_context->m_hfov[m_context->m_sensorID] = 62.9f;
 }
+void GremseyGimbal::handleButtonStateChanged(int buttonID, bool pressed){
+    if(m_joystick != nullptr){
+        if(buttonID >=0 && buttonID < m_joystick->buttonCount() && pressed){
+            QString mapFunc = m_joystick->button(buttonID)->mapFunc();
+            printf("button[%d] pressed=%s mapFunc=%s\r\n",
+                   buttonID,pressed?"true":"false",mapFunc.toStdString().c_str());
+            if(mapFunc == "EO/IR"){
+                if(context()->m_sensorID == 0)
+                    changeSensor("IR");
+                else{
+                    changeSensor("EO");
+                }
+            }else if(mapFunc == "SNAPSHOT"){
+                snapShot();
+            }else if(mapFunc == "VISUAL" || mapFunc == "FREE"){
+                setLockMode(mapFunc);
+            }else if(mapFunc.contains("PRESET")){
+               setGimbalPreset(mapFunc);
+            }else if(mapFunc == "DIGITAL_STAB"){
+                setDigitalStab(!m_context->m_videoStabMode);
+            }
+        }
+    }
+}
+
 void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
     if(!m_joystick->pic()){
         if(m_joystick->axisCount()<3) return;
@@ -163,6 +189,7 @@ void GremseyGimbal::setGimbalRate(float panRate,float tiltRate){
 void GremseyGimbal::snapShot(){
     if(m_videoEngine!=nullptr){
         m_videoEngine->capture();
+        Q_EMIT functionHandled("Snapshot has been taken!");
     }
 }
 void GremseyGimbal::changeTrackSize(float trackSize){
@@ -173,6 +200,7 @@ void GremseyGimbal::changeTrackSize(float trackSize){
 void GremseyGimbal::setDigitalStab(bool enable){
     if(m_videoEngine!=nullptr){
         m_videoEngine->setStab(enable);
+        m_context->m_videoStabMode = enable;
     }
 }
 void GremseyGimbal::setLockMode(QString mode, QPoint location){

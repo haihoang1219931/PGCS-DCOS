@@ -40,12 +40,12 @@
 #include "src/Setting/pcs.h"
 int main(int argc, char *argv[])
 {
+
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    QGuiApplication app(argc, argv);
 #ifdef UC_API
     QtWebEngine::initialize();
 #endif
-    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-    QGuiApplication app(argc, argv);
-
     app.setOrganizationName("qdt");
     app.setOrganizationDomain("qdt");
 

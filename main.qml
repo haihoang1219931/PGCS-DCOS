@@ -605,6 +605,7 @@ ApplicationWindow {
                 }
             }else if(seq === 4){
                 stkMainRect.currentIndex = 2;
+                pageConfig.showAdvancedConfig(false);
             }
         }
         onDoShowParamsSelect:{
@@ -749,15 +750,8 @@ ApplicationWindow {
                     mapPane.zoomOut();
                 }
                 onSensorClicked: {
-                    console.log("Change sensor ID from ["+camState.sensorID+"]");
-                    if(camState.sensorID === camState.sensorIDEO){
-                        camState.sensorID = camState.sensorIDIR;
-                    }else{
-                        camState.sensorID = camState.sensorIDEO;
-                    }
-                    console.log("Change sensor ID to ["+camState.sensorID+"]");
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        if(camState.sensorID === camState.sensorIDEO){
+                        if(camState.sensorID === camState.sensorIDIR){
                             cameraController.gimbal.changeSensor("EO");
                         }else{
                             cameraController.gimbal.changeSensor("IR");
@@ -775,9 +769,8 @@ ApplicationWindow {
                     }
                 }
                 onGcsStabClicked: {
-                    camState.gcsStab =! camState.gcsStab;
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setDigitalStab(camState.gcsStab)
+                        cameraController.gimbal.setDigitalStab(!camState.gcsStab)
                     }
                 }
 
@@ -869,6 +862,10 @@ ApplicationWindow {
                     vehicle.setHomeLocation(lat,lon);
                     vehicle.setAltitudeRTL(alt);
                 }
+                onShowAdvancedConfigChanged: {
+                    pageConfig.showAdvancedConfig(true);
+                }
+
                 Connections{
                     target: vehicle
                     onFlightModeChanged:{
@@ -1129,7 +1126,17 @@ ApplicationWindow {
             anchors {
                 bottom: parent.top;
                 bottomMargin: UIConstants.rectRadius
-                horizontalCenter: parent.horizontalCenter; }
+                horizontalCenter: parent.horizontalCenter;
+            }
+            Connections{
+                target: cameraController.gimbal
+                onFunctionHandled:{
+                    toastFlightControler.callActionAppearance = false;
+                    toastFlightControler.rejectButtonAppearance = false;
+                    toastFlightControler.toastContent = message;
+                    toastFlightControler.show();
+                }
+            }
         }
         onDoLoadMap: {
             console.log("mapPane.dataPath = "+mapPane.dataPath);
@@ -1693,7 +1700,7 @@ ApplicationWindow {
 //            camState.gimbalMode = data["GIMBAL_MODE"];
 //            camState.gimbalRecord = data["GIMBAL_RECORD"];
 //            camState.gimbalStab = data["STAB_GIMBAL"];
-//            camState.digitalStab = data["STAB_DIGITAL"];
+            camState.gcsStab = data["STAB_DIGITAL"];
 //            camState.trackSize = data["TRACK_SIZE"];
         }
     }

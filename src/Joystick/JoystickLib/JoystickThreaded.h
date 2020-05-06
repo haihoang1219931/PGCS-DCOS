@@ -240,10 +240,10 @@ private:
     QList<JSButton*> m_buttons;
     QList<JSButton*> m_buttonsTemp;
     QString m_mapFile;
-    int m_axisRoll = 2;
-    int m_axisPitch = 3;
-    int m_axisYaw = 0;
-    int m_axisThrottle = 1;
+    int m_axisRoll = 0;
+    int m_axisPitch = 1;
+    int m_axisYaw = 3;
+    int m_axisThrottle = 2;
     int m_axisPan = 0;
     int m_axisTilt = 1;
     int m_axisZoom = 2;

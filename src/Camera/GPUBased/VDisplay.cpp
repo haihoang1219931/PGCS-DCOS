@@ -76,7 +76,6 @@ void VDisplay::start()
     m_vMOTWorker->start();
     m_vSearchWorker->start();
     m_vRTSPServer->start();
-    m_vSavingWorker->initPipeline();
     m_vSavingWorker->start();
     m_vTrackWorker->start();
     m_threadEODisplay->start();

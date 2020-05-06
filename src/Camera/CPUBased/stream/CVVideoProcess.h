@@ -68,8 +68,8 @@ class  CVVideoProcess : public QObject
         bool m_stop = false;
         bool m_usingIPC = true;
         bool m_trackEnable = true;
-        bool m_stabEnable = false;
-        bool m_recordEnable = false;
+        bool m_stabEnable = true;
+        bool m_recordEnable = true;
         bool m_sharedEnable = true;
         bool m_setTrack = false;
         bool GlobalTrackInited;

@@ -243,7 +243,7 @@ protected:
     int m_updateMax = 2;
     QSize m_videoSurfaceSize;
     bool m_enStream = true;
-    bool m_enSaving = false;
+    bool m_enSaving = true;
     int m_sensorMode = -1;
     int m_frameID;
     cv::Mat m_imgShow;
@@ -251,8 +251,6 @@ protected:
     std::string m_logFile;
     VRTSPServer *m_vRTSPServer;
     VSavingWorker *m_vSavingWorker;
-    RollBuffer_<rva::GstFrameCacheItem> *m_gstRTSPBuff;
-    RollBuffer_<rva::GstFrameCacheItem> *m_buffVideoSaving;
 
     // OD
     bool m_enSteer = false;

@@ -345,7 +345,7 @@ public:
     float m_powerTilt;
     float m_timeStamp;
     QString m_lockMode = "FREE";
-    bool m_videoStabMode = false;
+    bool m_videoStabMode = true;
     int m_lrfValidCount = 0;
     int m_lrfInValidCount = 0;
     int m_lrfCurrent = -1;
