@@ -144,7 +144,7 @@ INCLUDEPATH += $$PWD/src/UC/boost1.62/include
 INCLUDEPATH += $$PWD/src/UC/openssl
 
 #LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
-LIBS+= -L/home/pgcs-05/workspaces/boost1.62/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
+LIBS+= -L/home/pgcs-06/workspaces/boost1.62/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
 LIBS += -L/usr/local/lib -lcrypto -lssl
 LIBS += -lpthread
 
@@ -360,13 +360,13 @@ INCLUDEPATH += /usr/local/cuda-10.1/targets/x86_64-linux/include
 
 # TensorFlow r1.14
 #include(tensorflow_dependency.pri)
-INCLUDEPATH += /home/pgcs-05/install/tensorflow/tensorflow-1.14.0
-INCLUDEPATH += /home/pgcs-05/install/tensorflow/tensorflow-1.14.0/tensorflow
-INCLUDEPATH += /home/pgcs-05/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/eigen_archive
-INCLUDEPATH += /home/pgcs-05/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/protobuf_archive/src
-INCLUDEPATH += /home/pgcs-05/install/tensorflow/tensorflow-1.14.0/bazel-genfiles
+INCLUDEPATH += /home/pgcs-06/install/tensorflow/tensorflow-1.14.0
+INCLUDEPATH += /home/pgcs-06/install/tensorflow/tensorflow-1.14.0/tensorflow
+INCLUDEPATH += /home/pgcs-06/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/eigen_archive
+INCLUDEPATH += /home/pgcs-06/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/protobuf_archive/src
+INCLUDEPATH += /home/pgcs-06/install/tensorflow/tensorflow-1.14.0/bazel-genfiles
 
-LIBS += -L/home/pgcs-05/install/tensorflow/tensorflow-1.14.0/bazel-bin/tensorflow -ltensorflow_cc -ltensorflow_framework
+LIBS += -L/home/pgcs-06/install/tensorflow/tensorflow-1.14.0/bazel-bin/tensorflow -ltensorflow_cc -ltensorflow_framework
 
 LIBS += `pkg-config --libs opencv`
 # End TensorFlow
@@ -374,7 +374,7 @@ LIBS += `pkg-config --libs opencv`
 # -ldarknet
 
 #LIBS += -L/home/pgcs-05/Downloads/darknet-GPU_blob_click_updateLayers_I420 -ldarknet
-LIBS += /home/pgcs-05/workspaces/darknet-GPU_blob_click_updateLayers_I420/libdarknet.so
+LIBS += /home/pgcs-06/workspaces/darknet-GPU_blob_click_updateLayers_I420/libdarknet.so
 message($$LIBS)
 
 DEFINES += GPU
