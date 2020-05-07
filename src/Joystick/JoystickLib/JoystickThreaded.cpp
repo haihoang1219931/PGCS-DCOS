@@ -284,7 +284,7 @@ void JoystickThreaded::changeButtonState(int btnID,bool clicked){
         m_buttonsTemp[btnID]->setPressed(clicked);
         Q_EMIT buttonStateChanged(btnID,clicked);
         if(btnID == m_butonPICCIC){
-            setPIC( m_buttonsTemp[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
+            setPIC(m_buttonsTemp[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
         }
     }
 }

@@ -156,4 +156,6 @@ int main(int argc, char *argv[])
 * echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 * sudo sysctl fs.inotify.max_user_watches=582222 && sudo sysctl -p
 * convert -background none -resize 40x40 VTOLPlane.svg VTOLPlane.png
+======= install nodejs
+sudo apt install build-essential apt-transport-https lsb-release ca-certificates curl
 */

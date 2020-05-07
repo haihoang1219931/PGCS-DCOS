@@ -770,22 +770,18 @@ ApplicationWindow {
                 }
                 onGcsStabClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setDigitalStab(!camState.gcsStab)
+                        cameraController.gimbal.setDigitalStab(!camState.digitalStab)
                     }
                 }
 
                 onGcsRecordClicked: {
-                    camState.gcsRecord=!camState.gcsRecord;
-//                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setRecord(camState.gcsRecord);
+                        cameraController.gimbal.setRecord(!camState.record);
                     }
                 }
                 onGcsShareClicked: {
-                    camState.gcsShare=!camState.gcsShare;
-//                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setShare(camState.gcsShare);
+                        cameraController.gimbal.setShare(!camState.gcsShare);
                     }
                 }
 
@@ -1680,28 +1676,12 @@ ApplicationWindow {
             }
 
             var data = cameraController.context.getData(frameID);
-            // === hainh added 2019-03-28
-//            camState.panPos = Number(data["panPos"]);
-//            camState.tiltPos = Number(data["tiltPos"]);
-//            camState.hfov = Number(data["EO"]["HFOV"]);
-//            camState.vfov = Number(data["hfov"])/2;
-            // 'pn', 'pe', 'pd', 'roll', 'pitch', 'yaw',
-//            camState.latitude = Number(data["pn"]);
-//            camState.longitude = Number(data["pe"]);
-//            camState.altitude = Number(data["pd"]);
-//            camState.roll = Number(data["roll"]);
-//            camState.pitch = Number(data["pitch"]);
-//            camState.yaw = Number(data["yaw"]);
-            // hainh added 2019-03-28 ===
             camState.sensorID = data["SENSOR"];
-//            camState.updateTrackSize(data["TRACK_SIZE"]);
             camState.changeLockMode(data["LOCK_MODE"]);
             videoOverlay.zoomRatio = data["ZOOM"][data["SENSOR"]];
-//            camState.gimbalMode = data["GIMBAL_MODE"];
-//            camState.gimbalRecord = data["GIMBAL_RECORD"];
-//            camState.gimbalStab = data["STAB_GIMBAL"];
-            camState.gcsStab = data["STAB_DIGITAL"];
-//            camState.trackSize = data["TRACK_SIZE"];
+            camState.record = data["RECORD"];
+            camState.gcsShare = data["GCS_SHARED"];
+            camState.digitalStab = data["STAB_DIGITAL"];
         }
     }
     Rectangle{

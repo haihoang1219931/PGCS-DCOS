@@ -28,10 +28,10 @@ Item {
     property var mapAxis: {"Unused":-1,"Roll":0,"Pitch":1,"Yaw":2,"Throttle":3}
     property var mapButtonKeys: ["Unused","PIC/CIC","CIC/PIC","Guided","Loiter","Auto","RTL",
         "EO/IR",
-        "SNAPSHOT","VISUAL","FREE","PRESET_FRONT","PRESET_RIGHT","PRESET_GROUND","DIGITAL_STAB"]
+        "SNAPSHOT","VISUAL","FREE","PRESET_FRONT","PRESET_RIGHT","PRESET_GROUND","DIGITAL_STAB","RECORD"]
     property var mapButton: {"Unused":-1,"PIC/CIC":0,"CIC/PIC":1,"Guided":2,"Loiter":3,"Auto":4,"RTL":5,
         "EO/IR":6,
-        "SNAPSHOT":7,"VISUAL":8,"FREE":9,"PRESET_FRONT":10,"PRESET_RIGHT":11,"PRESET_GROUND":12,"DIGITAL_STAB":13}
+        "SNAPSHOT":7,"VISUAL":8,"FREE":9,"PRESET_FRONT":10,"PRESET_RIGHT":11,"PRESET_GROUND":12,"DIGITAL_STAB":13,"RECORD":14}
     Row{
         id: row
         anchors.rightMargin: UIConstants.sRect

@@ -328,9 +328,12 @@ void ArduCopterFirmware::sendJoystickData(){
             m_vehicle->setFlightMode("Loiter");
         }
     }else{
-//        if(m_vehicle->flightMode()!= "Guided"){
-//            m_vehicle->setFlightMode("Guided");
-//        }
+        if(m_vehicle->flightMode() == "Loiter"){
+            m_vehicle->setFlightMode("Guided");
+        }
+    }
+    if(m_vehicle->joystick()== nullptr){
+        return;
     }
     if(m_vehicle->joystick()->axisCount() < 4 || !m_vehicle->joystick()->useJoystick()){
         return;
@@ -421,13 +424,12 @@ void ArduCopterFirmware::handleJSButton(int id, bool clicked){
                     m_vehicle->setFlightMode(button->mapFunc());
                 }
             }else if(button->mapFunc() == "PIC/CIC" || button->mapFunc() == "CIC/PIC"){
-                m_vehicle->setFlightMode(clicked?"Loiter":"Guided");
+                m_vehicle->setFlightMode((button->mapFunc() == "PIC/CIC"?clicked:!clicked)?"Loiter":"Guided");
             }
         }
     }
 }
 void ArduCopterFirmware::handleUseJoystick(bool enable) {
-    printf("%s %s\r\n",__func__,enable?"true":"false");
     if(enable){        
         connect(&m_joystickTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendJoystickData);
         m_joystickTimer.start();
