@@ -15,6 +15,8 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 include(thirdparty/qsyncable/qsyncable.pri)
+HOME = $$system(echo $HOME)
+message($$HOME)
 CONFIG += use_flight_control
 
 CONFIG += use_ucapi
@@ -145,9 +147,7 @@ INCLUDEPATH += $$PWD/src/UC/sioclient/lib
 INCLUDEPATH += $$PWD/src/UC/boost1.62/include
 INCLUDEPATH += $$PWD/src/UC/openssl
 
-#LIBS += -L$$PWD/src/UC/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
-LIBS+= -L/home/pgcs-06/workspaces/boost1.62/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
-#LIBS+= -L/home/pgcs-06/install/boost_1_62_0/stage/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
+LIBS+= -L$$HOME/workspaces/boost1.62/lib -lboost_system -lboost_chrono -lboost_thread -lboost_timer
 LIBS += -L/usr/local/lib -lcrypto -lssl
 LIBS += -lpthread
 
@@ -538,13 +538,14 @@ INCLUDEPATH += /usr/local/cuda-10.1/targets/x86_64-linux/include
 
 # TensorFlow r1.14
 #include(tensorflow_dependency.pri)
-INCLUDEPATH += /home/pgcs-06/install/tensorflow/tensorflow-1.14.0
-INCLUDEPATH += /home/pgcs-06/install/tensorflow/tensorflow-1.14.0/tensorflow
-INCLUDEPATH += /home/pgcs-06/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/eigen_archive
-INCLUDEPATH += /home/pgcs-06/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/protobuf_archive/src
-INCLUDEPATH += /home/pgcs-06/install/tensorflow/tensorflow-1.14.0/bazel-genfiles
 
-LIBS += -L/home/pgcs-06/install/tensorflow/tensorflow-1.14.0/bazel-bin/tensorflow -ltensorflow_cc -ltensorflow_framework
+INCLUDEPATH += $$HOME/install/tensorflow/tensorflow-1.14.0
+INCLUDEPATH += $$HOME/install/tensorflow/tensorflow-1.14.0/tensorflow
+INCLUDEPATH += $$HOME/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/eigen_archive
+INCLUDEPATH += $$HOME/install/tensorflow/tensorflow-1.14.0/bazel-tensorflow-1.14.0/external/protobuf_archive/src
+INCLUDEPATH += $$HOME/install/tensorflow/tensorflow-1.14.0/bazel-genfiles
+
+LIBS += -L$$HOME/install/tensorflow/tensorflow-1.14.0/bazel-bin/tensorflow -ltensorflow_cc -ltensorflow_framework
 
 LIBS += `pkg-config --libs opencv`
 # End TensorFlow
