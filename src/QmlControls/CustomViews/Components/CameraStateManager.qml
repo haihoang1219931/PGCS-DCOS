@@ -71,6 +71,7 @@ Item {
     property bool gimbalStab: false
     property bool gcsStab: true
     property bool gcsRecord: true
+    property bool record: true
     property bool gcsOD: false
     property bool gcsPD: false
     property bool gcsExportVideo: false
@@ -186,9 +187,6 @@ Item {
     function changeGimbalMode(gimbalMode){
         root.gimbalMode = gimbalMode
 
-    }
-    function changeRecordMode(recordMode){
-        root.recordMode = recordMode
     }
     function changeGimbalStab(enable){
         gimbalStab = enable;

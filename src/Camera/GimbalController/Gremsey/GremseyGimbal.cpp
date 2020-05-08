@@ -78,6 +78,8 @@ void GremseyGimbal::handleButtonStateChanged(int buttonID, bool pressed){
                setGimbalPreset(mapFunc);
             }else if(mapFunc == "DIGITAL_STAB"){
                 setDigitalStab(!m_context->m_videoStabMode);
+            }else if(mapFunc == "RECORD"){
+                setRecord(!m_context->m_recording);
             }
         }
     }
@@ -218,10 +220,16 @@ void GremseyGimbal::setLockMode(QString mode, QPoint location){
     }
 }
 void GremseyGimbal::setRecord(bool enable){
-
+    m_context->m_recording = !m_context->m_recording;
+    if(m_videoEngine != nullptr){
+        m_videoEngine->setRecord(m_context->m_recording);
+    }
 }
 void GremseyGimbal::setShare(bool enable){
-
+    m_context->m_gcsShare = !m_context->m_gcsShare;
+    if(m_videoEngine != nullptr){
+        m_videoEngine->setShare(m_context->m_gcsShare);
+    }
 }
 void GremseyGimbal::sendQueryZoom(){
     m_sensor->sendRawData("0681090447FF");

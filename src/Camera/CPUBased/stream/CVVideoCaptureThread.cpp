@@ -255,6 +255,9 @@ void CVVideoCaptureThread::setTrackAt(int _id, double _px, double _py, double _w
     object->setIsSelected(true);
     addTrackObjectInfo(object);
 }
+void CVVideoCaptureThread::setRecord(bool _en){
+    m_process->m_recordEnable = _en;
+}
 void CVVideoCaptureThread::setStreamMount(QString _streamMount)
 {
     m_vRTSPServer->setStreamMount(_streamMount.toStdString());

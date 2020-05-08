@@ -228,13 +228,14 @@ public Q_SLOTS:
         map.insert("CORNER03", QPointF(m_cornerLat[2],m_cornerLon[2]));
         map.insert("CORNER04", QPointF(m_cornerLat[3],m_cornerLon[3]));
         map.insert("CENTER", QPointF(m_centerLat,m_centerLon));
-        map.insert("RECODRING",m_recording==true?"ON":"OFF");
+        map.insert("RECORD",m_recording);
         map.insert("GIMBAL_MODE",(m_gimbalMode));
         map.insert("TRACK_SIZE",m_trackSize);
         map.insert("TRACK_MODE",(m_trackMode));
         map.insert("LASER_RANGE", m_laserRange);
         map.insert("VIDEO_IP", (m_videoIP));
         map.insert("VIDEO_PORT", m_videoPort);
+        map.insert("GCS_SHARED",m_gcsShare);
         //        printf("m_enableGyroStabilisationPan = %s\r\n",m_enableGyroStabilisationPan==true?"ON":"OFF");
         //        printf("m_enableGyroStabilisationTilt = %s\r\n",m_enableGyroStabilisationTilt==true?"ON":"OFF");
         //        printf("STAB_DIGITAL = %s\r\n",m_videoStabMode==true?"ON":"OFF");
@@ -346,6 +347,7 @@ public:
     float m_timeStamp;
     QString m_lockMode = "FREE";
     bool m_videoStabMode = true;
+    bool m_gcsShare = true;
     int m_lrfValidCount = 0;
     int m_lrfInValidCount = 0;
     int m_lrfCurrent = -1;
@@ -357,7 +359,7 @@ public:
     float m_geoLon,m_geoLat,m_geoAlt;
     float m_targetLon,m_targetLat,m_targetSlr;
     float m_speedNorth,m_speedEast,m_gpsAlt,m_gpstakeOffAlt;
-    bool m_recording = false;
+    bool m_recording = true;
     QString m_videoIP = "";
     int m_videoPort = 0;
     void set_ushort(unsigned short *val, unsigned short dat, const char* str)

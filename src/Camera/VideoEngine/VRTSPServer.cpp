@@ -65,7 +65,7 @@ GstFlowReturn VRTSPServer::need_data(GstElement *appsrc, guint unused, gpointer 
     //    GstBuffer *gstBuffStream = gst_buffer_new_wrapped((gpointer) streamData, m_width*m_height*3/2);
     //    GstBuffer *img_stream = gst_buffer_copy(gstBuffStream);
     GstBuffer *img_stream = gstFrame.getGstBuffer();
-    printf("\n===> RTSP Stream: %d", m_currID);
+//    printf("\n===> RTSP Stream: %d", m_currID);
     GstFlowReturn ret;
     img_stream->pts = static_cast<GstClockTime>(timestamp);
     img_stream->duration = gst_util_uint64_scale_int(1, GST_SECOND, m_fps);
@@ -112,7 +112,12 @@ gboolean VRTSPServer::gstreamer_pipeline_operate()
     server = gst_rtsp_server_new();
     mounts = gst_rtsp_server_get_mount_points(server);
     factory = gst_rtsp_media_factory_new();
-    gst_rtsp_media_factory_set_launch(factory, "( appsrc name=othersrc ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )");
+#ifdef USE_VIDEO_CPU
+    gst_rtsp_media_factory_set_launch(factory, "( appsrc name=othersrc ! avenc_mpeg4 bitrate=2000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )");
+#endif
+#ifdef USE_VIDEO_GPU
+    gst_rtsp_media_factory_set_launch(factory, "( appsrc name=othersrc ! nvh264enc bitrate=2000000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )");
+#endif
     printf("gstreamer_pipeline_operate user_data %p\r\n", this);
     g_signal_connect(factory, "media-configure", (GCallback) wrap_media_configure, this);
     gst_rtsp_media_factory_set_shared(factory, TRUE);
