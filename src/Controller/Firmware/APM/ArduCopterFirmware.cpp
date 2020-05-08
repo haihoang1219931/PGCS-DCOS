@@ -416,7 +416,9 @@ void ArduCopterFirmware::sendClearRC(){
 void ArduCopterFirmware::handleJSButton(int id, bool clicked){
     if(m_vehicle != nullptr && m_vehicle->joystick() != nullptr){
         if(id>=0 && id < m_vehicle->joystick()->buttonCount()){
+
             JSButton* button = m_vehicle->joystick()->button(id);
+            printf("%s[%id] %s\r\n",__func__,id,clicked?"true":"false");
             if(m_mapFlightMode.values().contains(button->mapFunc())){
                 if(m_vehicle->pic()){
                     if(button->mapFunc() == "RTL")
@@ -425,7 +427,7 @@ void ArduCopterFirmware::handleJSButton(int id, bool clicked){
                     m_vehicle->setFlightMode(button->mapFunc());
                 }
             }else if(button->mapFunc() == "PIC/CIC" || button->mapFunc() == "CIC/PIC"){
-                m_vehicle->setFlightMode((button->mapFunc() == "PIC/CIC"?clicked:!clicked)?"Loiter":"Guided");
+                m_vehicle->setFlightMode((clicked)?"Loiter":"Guided");
             }
         }
     }
