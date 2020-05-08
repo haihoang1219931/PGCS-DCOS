@@ -53,8 +53,9 @@ class VDisplay : public VideoEngine
         Q_INVOKABLE void enVisualLock() override;
         Q_INVOKABLE void disVisualLock() override;
         Q_INVOKABLE void setStab(bool _en) override;
-        Q_INVOKABLE void setGimbalRecorder(bool _en);
+        Q_INVOKABLE void setRecord(bool _en) override;
         Q_INVOKABLE void changeTrackSize(int _val) override;
+        Q_INVOKABLE void setShare(bool enable) override;
     private:
         QThread *m_threadEODisplay;
         VDisplayWorker *m_vDisplayWorker;

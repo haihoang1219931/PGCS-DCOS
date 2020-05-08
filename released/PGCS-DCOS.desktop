@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=PGCS-DCOS
+Comment="PGCS-DCOS"
+Exec=/home/pgcs-05/PGCS-DCOS/run.sh
+Icon=/home/pgcs-05/PGCS-DCOS/drone.png
+Terminal=true
+Type=Application
+X-Ubuntu-Touch=true

@@ -32,9 +32,7 @@ QML_IMPORT_PATH += \
     $$PWD/src/QmlControls \
     $$PWD/src/Controller
 SOURCES += \
-    main.cpp \
-    src/Bytes/ByteManipulation.cpp \
-    src/Camera/CameraController.cpp
+    main.cpp
 INCLUDEPATH += $$PWD/src
 # Flight controller
 use_flight_control{
@@ -203,6 +201,8 @@ unix:!macx: LIBS += -LD:\usr\lib\x86_64-linux-gnu\
 unix:!macx: INCLUDEPATH += /usr/local/include
 unix:!macx: DEPENDPATH += /usr/local/include
 SOURCES += \
+    src/Bytes/ByteManipulation.cpp \
+    src/Camera/CameraController.cpp \
     src/Camera/Buffer/BufferOut.cpp \
     src/Camera/Cache/Cache.cpp \
     src/Camera/VideoEngine/VideoEngineInterface.cpp \
@@ -211,6 +211,11 @@ SOURCES += \
     src/Camera/VideoDisplay/ImageItem.cpp
 
 HEADERS += \
+    src/Bytes/ByteManipulation.h \
+    src/Camera/CameraController.h \
+    src/Camera/Packet/Object.h \
+    src/Camera/Packet/XPoint.h \
+    src/Camera/Packet/utils.h \
     src/Camera/Packet/Common_type.h \
     src/Camera/Buffer/BufferOut.h \
     src/Camera/Buffer/RollBuffer.h \
@@ -730,13 +735,6 @@ HEADERS += \
     src/Camera/CPUBased/tracker/dando/ITrack.hpp \
     src/Camera/CPUBased/tracker/dando/Utilities.hpp
 }
-
-HEADERS += \
-    src/Bytes/ByteManipulation.h \
-    src/Camera/CameraController.h \
-    src/Camera/Packet/Object.h \
-    src/Camera/Packet/XPoint.h \
-    src/Camera/Packet/utils.h
 
 
 

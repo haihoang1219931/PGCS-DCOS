@@ -88,6 +88,7 @@ class VDisplayWorker : public QObject
         std::mutex m_mtxShow;
         Eye::XPoint m_prevSteeringPoint;
         std::vector<int> m_listObjClassID;
+        bool m_enShare = true;
         bool m_enSaving = true;
         bool m_enDigitalStab = true;
         QMap<QString,QString> m_mapPlates;

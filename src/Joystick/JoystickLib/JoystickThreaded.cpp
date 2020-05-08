@@ -281,10 +281,13 @@ void JoystickThreaded::setInvert(QString camFunc,bool invert){
 void JoystickThreaded::changeButtonState(int btnID,bool clicked){
     if(btnID < m_buttons.size()){
 //        qDebug("Button %d is %s\n", btnID, !clicked ? "up" : "down");
-        m_buttonsTemp[btnID]->setPressed(clicked);
-        Q_EMIT buttonStateChanged(btnID,clicked);
         if(btnID == m_butonPICCIC){
-            setPIC( m_buttonsTemp[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
+            m_buttonsTemp[btnID]->setPressed(m_buttonsTemp[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
+            setPIC(m_buttonsTemp[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
+            Q_EMIT buttonStateChanged(btnID,m_buttonsTemp[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
+        }else{
+            m_buttonsTemp[btnID]->setPressed(clicked);
+            Q_EMIT buttonStateChanged(btnID,clicked);
         }
     }
 }

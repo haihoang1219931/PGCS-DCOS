@@ -310,11 +310,14 @@ void VDisplay::setStab(bool _en)
     m_vDisplayWorker->setDigitalStab(_en);
 }
 
-void VDisplay::setGimbalRecorder(bool _en)
+void VDisplay::setRecord(bool _en)
 {
     m_vDisplayWorker->setVideoSavingState(_en);
 }
-
+void VDisplay::setShare(bool enable)
+{
+    m_vDisplayWorker->m_enShare = enable;
+}
 void VDisplay::stop()
 {
     printf("\nSTOP===============================================================");

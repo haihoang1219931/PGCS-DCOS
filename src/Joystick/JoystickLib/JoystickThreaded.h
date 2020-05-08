@@ -200,6 +200,7 @@ public:
     bool pic(){return m_pic;}
     void setPIC(bool pic){
         m_pic = pic;
+        printf("%s = %s\r\n",__func__,m_pic?"true":"false");
         Q_EMIT picChanged();
     }
     bool useJoystick(){return m_useJoystick;}

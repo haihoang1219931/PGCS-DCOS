@@ -48,9 +48,10 @@ void Vehicle::setJoystick(JoystickThreaded* joystick){
     connect(m_joystick,&JoystickThreaded::picChanged,this,&Vehicle::handlePIC);
     connect(m_joystick,&JoystickThreaded::useJoystickChanged,this,&Vehicle::handleUseJoystick);
 }
-void Vehicle::handlePIC(){
+void Vehicle::handlePIC(){    
     _pic = m_joystick->pic();
     Q_EMIT picChanged();
+    printf("%s = %s\r\n",__func__,_pic?"true":"false");
 }
 void Vehicle::handleUseJoystick(bool useJoystick){
     _useJoystick = useJoystick;

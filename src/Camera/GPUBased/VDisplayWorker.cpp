@@ -103,26 +103,21 @@ void VDisplayWorker::process()
         Q_EMIT receivedFrame(m_currID, frame);
         Q_EMIT readyDrawOnViewerID(m_imgShow,0);
         // Adding video saving and rtsp
-        GstBuffer *gstBuffRTSP = gst_buffer_new();
-        assert(gstBuffRTSP != NULL);
-        GstMemory *gstRTSPMem = gst_allocator_alloc(NULL, imgSize.width * imgSize.height * 3 / 2, NULL);
-        assert(gstRTSPMem != NULL);
-        gst_buffer_append_memory(gstBuffRTSP, gstRTSPMem);
-        GstMapInfo mapRTSP;
-        gst_buffer_map(gstBuffRTSP, &mapRTSP, GST_MAP_READ);
-        memcpy(mapRTSP.data, h_imageData, imgSize.width * imgSize.height * 3 / 2);
-        gst_buffer_unmap(gstBuffRTSP , &mapRTSP);
-        GstFrameCacheItem gstRTSP;
-        gstRTSP.setIndex(m_currID);
-        gstRTSP.setGstBuffer(gstBuffRTSP);
-        m_gstRTSPBuff->add(gstRTSP);
-//        if (m_enSaving) {
-//            GstFrameCacheItem gstEOSaving;
-//            gstEOSaving.setIndex(m_currID);
-//            gstEOSaving.setGstBuffer(gst_buffer_copy(gstBuffRTSP));
-//            m_gstEOSavingBuff->add(gstEOSaving);
-//        }
-
+        if(m_enShare){
+            GstBuffer *gstBuffRTSP = gst_buffer_new();
+            assert(gstBuffRTSP != NULL);
+            GstMemory *gstRTSPMem = gst_allocator_alloc(NULL, imgSize.width * imgSize.height * 3 / 2, NULL);
+            assert(gstRTSPMem != NULL);
+            gst_buffer_append_memory(gstBuffRTSP, gstRTSPMem);
+            GstMapInfo mapRTSP;
+            gst_buffer_map(gstBuffRTSP, &mapRTSP, GST_MAP_READ);
+            memcpy(mapRTSP.data, h_imageData, imgSize.width * imgSize.height * 3 / 2);
+            gst_buffer_unmap(gstBuffRTSP , &mapRTSP);
+            GstFrameCacheItem gstRTSP;
+            gstRTSP.setIndex(m_currID);
+            gstRTSP.setGstBuffer(gstBuffRTSP);
+            m_gstRTSPBuff->add(gstRTSP);
+        }
         //        frame = QVideoFrame(QImage((uchar *)m_imgShow.data, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888));
 
         //        Q_EMIT receivedFrame();

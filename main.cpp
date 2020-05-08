@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     FCSConfig trkConfig;
     trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
     engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);    
-    qmlRegisterType<ImageItem>("io.qdt.dev", 1, 0, "ImageItem");
+
 #ifdef USE_VIDEO_CPU
     //--- Camera controller
     qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
@@ -94,9 +94,11 @@ int main(int argc, char *argv[])
     pcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/pcs.conf");
     engine.rootContext()->setContextProperty("PCSConfig", &pcsConfig);
     qmlRegisterType<CameraController>("io.qdt.dev", 1, 0, "CameraController");
-    engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(true));
+    qmlRegisterType<ImageItem>("io.qdt.dev", 1, 0, "ImageItem");
+    engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(true));    
 #else
-    qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "GimbalNetwork");
+    qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "ImageItem");
+    qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "CameraController");
     engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(false));
 #endif
     qmlRegisterType<PlateLog>("io.qdt.dev", 1, 0, "PlateLog");
@@ -156,4 +158,6 @@ int main(int argc, char *argv[])
 * echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 * sudo sysctl fs.inotify.max_user_watches=582222 && sudo sysctl -p
 * convert -background none -resize 40x40 VTOLPlane.svg VTOLPlane.png
+======= install nodejs
+sudo apt install build-essential apt-transport-https lsb-release ca-certificates curl
 */
