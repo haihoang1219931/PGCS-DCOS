@@ -33,7 +33,7 @@ ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
     m_mapFlightModeOnGround.insert(LOITER,    "Loiter");
     m_mapFlightModeOnAir.insert(STABILIZE, "Stabilize");
     m_mapFlightModeOnAir.insert(LOITER,    "Loiter");
-    m_joystickTimer.setInterval(40);
+    m_joystickTimer.setInterval(50);
     m_joystickTimer.setSingleShot(false);
     m_joystickClearRCTimer.setInterval(20);
     m_joystickClearRCTimer.setSingleShot(false);
@@ -324,9 +324,10 @@ void ArduCopterFirmware::sendJoystickData(){
     if (m_vehicle == nullptr)
         return;
     if(m_vehicle->pic()){
-        if(m_vehicle->flightMode()!= "Loiter" && m_vehicle->flightMode()!= "RTL"){
-            m_vehicle->setFlightMode("Loiter");
-        }
+//        printf("m_vehicle->pic()=%s\r\n",m_vehicle->pic()?"true":"false");
+//        if(m_vehicle->flightMode()!= "Loiter" && m_vehicle->flightMode()!= "RTL"){
+//            m_vehicle->setFlightMode("Loiter");
+//        }
     }else{
 //        if(m_vehicle->flightMode()!= "Guided"){
 //            m_vehicle->setFlightMode("Guided");
