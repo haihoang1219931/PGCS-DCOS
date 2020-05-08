@@ -237,7 +237,7 @@ Rectangle {
                 isSync: true
                 btnText: "GCS\nStab"
                 color: UIConstants.bgAppColor
-                isOn: camState.gcsStab
+                isOn: camState.digitalStab
                 onClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         cameraController.gimbal.setDigitalStab(!camState.gcsStab)
