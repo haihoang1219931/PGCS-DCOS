@@ -179,7 +179,7 @@ Item {
             x: 9
             y: 9
             color: root.drawColor
-            text: "Stab: "+ (camState.gcsStab?"On":"Off")
+            text: "Stab: "+ (camState.digitalStab?"On":"Off")
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottomMargin: 8

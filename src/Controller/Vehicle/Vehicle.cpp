@@ -294,6 +294,9 @@ void Vehicle::_mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t tota
         _mavlinkReceivedCount   = totalReceived;
         _mavlinkLossCount       = totalLoss;
         _mavlinkLossPercent     = lossPercent;
+        #ifdef DEBUG
+        printf("%s _mavlinkLossPercent = %f\r\n",__func__,_mavlinkLossPercent);
+#endif
         Q_EMIT mavlinkStatusChanged();
     }
 }

@@ -91,8 +91,19 @@ void IOFlightController::handlePacket(QByteArray packet){
                 uint64_t totalSent = totalReceiveCounter[m_mavlinkChannel] + totalLossCounter[m_mavlinkChannel];
                 float receiveLossPercent = static_cast<float>(static_cast<double>(totalLossCounter[m_mavlinkChannel]) / static_cast<double>(totalSent));
                 receiveLossPercent *= 100.0f;
+                #ifdef DEBUG
+                printf("lossPercent before = %f\r\n",receiveLossPercent);
+#endif
                 receiveLossPercent = (receiveLossPercent * 0.5f) + (runningLossPercent[m_mavlinkChannel] * 0.5f);
                 runningLossPercent[m_mavlinkChannel] = receiveLossPercent;
+                #ifdef DEBUG
+                printf("lossPercent after = %f\r\n",receiveLossPercent);
+#endif
+                if(receiveLossPercent>100) receiveLossPercent = 100;
+                else if(receiveLossPercent<0) receiveLossPercent = 0;
+                #ifdef DEBUG
+                printf("lossPercent after limit = %f\r\n",receiveLossPercent);
+#endif
                 // Update MAVLink status on every 32th packet
                 if ((totalReceiveCounter[m_mavlinkChannel] & 0x1F) == 0) {
                     Q_EMIT mavlinkMessageStatus(_message.sysid, totalSent, totalReceiveCounter[m_mavlinkChannel], totalLossCounter[m_mavlinkChannel], receiveLossPercent);
