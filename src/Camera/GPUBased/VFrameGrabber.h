@@ -40,6 +40,8 @@ class VFrameGrabber : public QThread
 
         bool initPipeline();
 
+        void pause(bool pause);
+
         void stopPipeline();
 
         void run();

@@ -48,11 +48,9 @@ void VFrameGrabber::setSource(std::string _ip, int _port)
     m_ip = _ip;
     m_port = (uint16_t)_port;
 
-    if (m_pipeline != nullptr) {
-        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
-    }
-
+    pause(true);
     this->initPipeline();
+    pause(false);
 }
 
 bool VFrameGrabber::stop()
@@ -214,9 +212,19 @@ void VFrameGrabber::restartPipeline()
         return;
     }
 }
-
+void VFrameGrabber::pause(bool pause){
+    if(m_pipeline == nullptr) return;
+    if(pause){
+        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PAUSED);
+    }else{
+        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
+    }
+}
 bool VFrameGrabber::initPipeline()
 {
+    if (m_pipeline != nullptr) {
+        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
+    }
     m_filename =  getFileNameByTime();
 
     if (createFolder("flights")) {
