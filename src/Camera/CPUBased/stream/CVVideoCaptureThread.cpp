@@ -235,12 +235,6 @@ void CVVideoCaptureThread::disableObjectDetect(){
 void CVVideoCaptureThread::enableObjectDetect(){
 
 }
-void CVVideoCaptureThread::enVisualLock(){
-
-}
-void CVVideoCaptureThread::disVisualLock(){
-
-}
 void CVVideoCaptureThread::setDigitalStab(bool _en){
     m_process->m_stabEnable = _en;
 }

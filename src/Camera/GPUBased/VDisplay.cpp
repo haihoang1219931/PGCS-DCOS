@@ -20,7 +20,7 @@ VDisplay::VDisplay(VideoEngine *_parent) : VideoEngine(_parent)
             SLOT(onReceivedFrame()));
     connect(m_threadEODisplay, SIGNAL(started()), m_vDisplayWorker,
             SLOT(process()));
-    connect(m_vTrackWorker, &VTrackWorker::determinedTrackObjected,
+    connect(m_vTrackWorker, &VTrackWorker::trackStateFound,
             this, &VDisplay::slDeterminedTrackObjected);
     connect(m_vTrackWorker, SIGNAL(determinedPlateOnTracking(QString, QString)),
             this, SIGNAL(determinedPlateOnTracking(QString, QString)));
@@ -44,7 +44,10 @@ VDisplay::~VDisplay()
     m_vTrackWorker->deleteLater();
     m_vPreprocess->deleteLater();
 }
-
+void VDisplay::setGimbal(GimbalInterface* gimbal){
+    m_gimbal = gimbal;
+    m_vTrackWorker->m_gimbal = gimbal;
+}
 void VDisplay::init()
 {
     std::string names_file   = "../GPUBased/OD/yolo-setup/visdrone2019.names";
@@ -69,7 +72,6 @@ void VDisplay::init()
 
 void VDisplay::start()
 {
-
     m_vFrameGrabber->start();
     m_vPreprocess->start();
     m_vODWorker->start();
@@ -205,71 +207,14 @@ void VDisplay::enableObjectDetect()
     m_vSearchWorker->enableSearch();
 }
 void VDisplay::moveImage(float panRate,float tiltRate,float zoomRate,float alpha){
-    if(m_gimbal != nullptr){
-        if(m_gimbal->context()->m_lockMode == "TRACK" ||
-                m_gimbal->context()->m_lockMode == "VISUAL"){
-            float w = m_vTrackWorker->m_imgSize.width;
-            float h= m_vTrackWorker->m_imgSize.height;
-            float px = m_vTrackWorker->m_trackRect.x + m_vTrackWorker->m_trackRect.width/2;
-            float py = m_vTrackWorker->m_trackRect.y + m_vTrackWorker->m_trackRect.height/2;
-
-            if (m_vDisplayWorker->getDigitalStab()) {
-                int xStab, yStab;
-                xStab = px;
-                yStab = py;
-                cv::Mat stabMatrixInvert;
-                cv::invertAffineTransform(m_vTrackWorker->stabMatrix, stabMatrixInvert);
-                cv::Mat pointAfterStab(3, 1, CV_32F, cv::Scalar::all(0));
-                cv::Mat pointInStab(3, 1, CV_32F);
-                pointInStab.at<float>(0, 0) = (float)xStab;
-                pointInStab.at<float>(1, 0) = (float)yStab;
-                pointInStab.at<float>(2, 0) = 1;
-                pointAfterStab = m_vTrackWorker->stabMatrix * pointInStab;
-                px = (int)pointAfterStab.at<float>(0, 0);
-                py = (int)pointAfterStab.at<float>(1, 0);
-            }
-            printf("%s panRate = %.3f tiltRate= %.3f (px,py)/(w,h) = (%f,%f)/(%f,%f)\r\n",
-                   __func__,panRate,tiltRate,px,py,w,h);
-            float trackSize = m_vTrackWorker->trackSize();
-            if(fabs(panRate) > 0.001f){
-                px = px - panRate * trackSize;
-                if(px > w - trackSize){
-                    px = w - trackSize;
-                }
-                if(px < trackSize){
-                    px = trackSize;
-                }
-            }
-            if(fabs(tiltRate) > 0.001f){
-                py = py - tiltRate * trackSize;
-
-                if(py > h - trackSize){
-                    py = h - trackSize;
-                }
-                if(py < trackSize){
-                    py = trackSize;
-                }
-            }
-            if(fabs(panRate) > 0.001f || fabs(tiltRate) > 0.001f){
-                setTrackAt(m_frameID,
-                           px,
-                           py,
-                           w,h);
-            }
-            if(zoomRate > 0)
-                m_gimbal->setEOZoom("ZOOM_OUT",0);
-            else if(zoomRate < 0)
-                m_gimbal->setEOZoom("ZOOM_IN",0);
-            else
-                m_gimbal->setEOZoom("ZOOM_STOP",0);
-        }
-    }
+    m_vTrackWorker->moveImage(panRate,tiltRate,zoomRate,alpha);
 }
 void VDisplay::setTrackAt(int _id, double _px, double _py, double _w, double _h)
 {
     if(m_gimbal != nullptr){
         if(m_gimbal->context()->m_lockMode == "FREE"){
             m_gimbal->context()->m_lockMode = "TRACK";
+            m_vTrackWorker->m_trackEnable = true;
             m_enTrack = true;
             m_enSteer = false;
             int x = static_cast<int>(_px/_w*m_sourceSize.width());
@@ -281,28 +226,13 @@ void VDisplay::setTrackAt(int _id, double _px, double _py, double _w, double _h)
             addTrackObjectInfo(object);
         }
     }
-    m_vTrackWorker->hasNewTrack(_id, _px, _py, _w, _h, m_enSteer, m_vDisplayWorker->getDigitalStab());
+    m_vTrackWorker->setClick(_px, _py, _w, _h);
 }
 
 void VDisplay::setVideoSavingState(bool _state)
 {
 //    m_vDisplayWorker->setVideoSavingState(_state);
     m_vFrameGrabber->setVideoSavingState(_state);
-}
-
-void VDisplay::enVisualLock()
-{
-    m_enSteer = true;
-    m_enTrack = false;
-    m_vTrackWorker->hasNewTrack(-1, 1920 / 2, 1080 / 2, 1920, 1080, true, m_vDisplayWorker->getDigitalStab());
-}
-
-void VDisplay::disVisualLock()
-{
-    m_enSteer = false;
-    m_enTrack = false;
-    m_vTrackWorker->hasNewMode();
-    m_vTrackWorker->disSteer();
 }
 
 void VDisplay::setStab(bool _en)

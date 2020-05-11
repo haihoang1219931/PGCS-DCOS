@@ -17,7 +17,7 @@ void VDisplayWorker::init()
 
 void VDisplayWorker::process()
 {
-    m_matImageBuff = Cache::instance()->getProcessImageCache();
+    m_matImageBuff = Cache::instance()->getTrackImageCache();
     m_rbSearchObjs = Cache::instance()->getSearchCache();
     m_rbMOTObjs = Cache::instance()->getMOTCache();
 //    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
@@ -47,12 +47,12 @@ void VDisplayWorker::process()
     cv::Mat rgbaImg;
     cv::Size imgSize;
     cv::Mat stabMatrix;
-    float *h_stabMat;
+    cv::Mat h_stabMat;
     float *d_stabMat;
 
     while (true) {
         start = std::chrono::high_resolution_clock::now();
-        processImgItem = m_matImageBuff->at(m_matImageBuff->size() - 7);
+        processImgItem = m_matImageBuff->at(m_matImageBuff->size() - 1);
 
         if ((processImgItem.getIndex() == -1) ||
             (processImgItem.getIndex() == m_currID)) {
@@ -66,7 +66,7 @@ void VDisplayWorker::process()
         imgSize = processImgItem.getImageSize();
         // Warp I420 Image GPU
         h_stabMat = processImgItem.getHostStabMatrix();
-        stabMatrix = cv::Mat(2, 3, CV_32F, h_stabMat);
+        stabMatrix = h_stabMat(cv::Rect(0,0,3,2));
         //        d_stabMat = processImgItem.getDeviceStabMatrix();
         h_BRGAImage = fixedMemBRGA.getHeadHost();
         d_BRGAImage = fixedMemBRGA.getHeadDevice();

@@ -20,10 +20,19 @@
 #include "tracker/dando/ITrack.hpp"
 #include "tracker/dando/Utilities.hpp"
 #include "tracker/dando/HTrack/saliency.h"
+#include "tracker/mosse/tracker.h"
 class ClickTrack;
+class GimbalInterface;
 class OCR;
 using namespace rva;
-
+typedef struct {
+    int frameID;
+    float panRate;
+    float tiltRate;
+    float zoomRate;
+    float zoomStart;
+    float zoomStop;
+}joystickData;
 class VTrackWorker : public QThread
 {
     Q_OBJECT
@@ -34,14 +43,12 @@ public:
     void run();
 
 public:
+    void moveImage(float panRate,float tiltRate,float zoomRate, float alpha = 0);
     void stop();
-    void hasNewTrack(int _id, double _px, double _py, double _w, double _h, bool _enSteer, bool _enStab);
-    void hasNewMode();
-    bool isAcive();
     void changeTrackSize(float _trackSize);
     float trackSize(){return m_trackSize;}
-    void disSteer();
-
+    void setClick(float x, float y,float width,float height);
+    cv::Mat createPtzMatrix(float w, float h, float dx, float dy,float r,float alpha = 0);
 private:
     void init();
     void drawObjectBoundary(cv::Mat &_img, cv::Rect _objBoundary,
@@ -50,13 +57,17 @@ private:
                             const int _centerY, cv::Scalar _color);
 
 Q_SIGNALS:
-    void determinedTrackObjected(int _id, double _px, double _py, double _w, double _h, double _oW, double _oH);
+    void trackStateFound(int _id, double _px, double _py, double _w, double _h, double _oW, double _oH);
     void objectLost();
     void determinedPlateOnTracking(QString _imgPath, QString _plateID);
+    void zoomCalculateChanged(float zoomCalculate);
+    void zoomTargetChanged(float zoomTarget);
+    void zoomTargetChangStopped(float zoomTarget);
 private:
     bool m_running = true;
     index_type m_currID;
     RollBuffer_<ProcessImageCacheItem> *m_matImageBuff = nullptr;
+    RollBuffer_<ProcessImageCacheItem> *m_matTrackBuff = nullptr;
     //        RollBuffer<Eye::TrackResponse> *m_rbTrackResIR = nullptr;
     //        RollBuffer<Eye::TrackResponse> *m_rbTrackResEO = nullptr;
     //        RollBuffer<Eye::SystemStatus> *m_rbSystem = nullptr;
@@ -65,28 +76,85 @@ private:
     const float m_threshold = 0.3f;
 
     XPoint m_trackPoint;
-    bool m_hasNewTrack = false;
-    bool m_hasNewMode = false;
-    bool m_trackEn = false;
-    bool m_steerEn = false;
-    bool m_enStab = false;
     std::mutex m_mtx;
-    std::condition_variable m_cvHasNewTrack;
-
-    ITrack *m_tracker;
-    int m_trackSize = 100;
-
     // plate detection
     ClickTrack *m_clickTrack;
 public:
     cv::Mat stabMatrix;
-    cv::Rect m_trackRect;
     cv::Size m_imgSize;
     PlateLog* m_plateLog;
     QMap<QString,QString> m_mapPlates;
 public:
     void setClicktrackDetector(Detector *_detector);
     void setOCR(OCR* _OCR);
+public:
+    // queue joystick command
+    GimbalInterface* m_gimbal = nullptr;
+    std::deque<joystickData> m_jsQueue;
+    QMutex* m_mutexCommand = nullptr;
+    bool m_stop = false;
+    bool m_pause = false;
+    int m_frameID;
+    int SLEEP_TIME = 1;
+    bool m_captureSet = false;
+    bool m_startRollbackZoomSet = false;
+    bool m_stopRollBack = true;
+    cv::Mat m_img;
+    cv::Mat m_imgKeyPoints;
+    cv::Mat m_i420Img;
+    cv::Mat m_grayFrame;
+    cv::Mat m_grayFramePrev;
+    cv::Mat m_binaryFrame;
+    cv::Mat m_imgPrev;
+    cv::Mat m_imgDraw;
+    cv::Mat m_imgStab;
+    cv::Mat m_imgShow;
+    cv::Mat m_imgStartTrack;
+    vector<cv::Point2f> m_pointsStartOF;
+    vector<cv::Point2f> m_pointsPrevOF;
+    vector<cv::Point2f> m_pointsCurrentOF;
+    int m_pointPerDimension = 8;
+    int m_dimensionSize = 400;
+    float returnX = 0;
+    float returnY = 0;
+    bool m_usingIPC = true;
+    // ptz
+    float m_dx = -1;
+    float m_dy = -1;
+    float m_r = 1.0f;
+    float m_zoomDir = 0;
+    float m_movePanRate = 0;
+    float m_moveTiltRate = 0;
+    float m_moveZoomRate = 1;
+    float m_rotationAlpha = 0;
+    float m_zoomStart = 1.0f;
+    float m_zoomRateCalculate = 1;
+    float m_zoomRateCalculatePrev = 1;
+    float m_digitalZoomMax = 20;
+    float m_digitalZoomMin = 1;
+    int m_countRollBack = 0;
+    int m_countRollBackMax = 30;
+    cv::Mat m_ptzMatrix;
+    // track
+#ifdef TRACK_DANDO
+    ITrack *m_tracker;
+#else
+    Tracker *m_tracker;
+#endif
+    bool m_trackEnable = true;
+    bool m_trackSet = false;
+    cv::Point m_trackSetPoint;
+    cv::Rect m_trackRect;
+    cv::Rect m_trackRectPrev;
+    // stab
+    bool m_stabEnable = true;
+    std::string m_stabMode = "STAB_TRACK";
+    cv::Mat m_stabMatrix;
+    int m_trackSize = 200;
+    int m_zoomTimer = 0;
+    // click
+    bool m_clickSet = false;
+    cv::Point2f m_clickPoint;
 };
 
 #endif // VTRACKWORKER_H

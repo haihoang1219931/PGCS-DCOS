@@ -54,12 +54,12 @@ namespace rva
                 return m_imgSize;
             }
 
-            void setHostStabMatrix(float *_hStabMatrix)
+            void setHostStabMatrix(cv::Mat _hStabMatrix)
             {
-                m_hStabMat = _hStabMatrix;
+                m_hStabMat = _hStabMatrix.clone();
             }
 
-            float *getHostStabMatrix()
+            cv::Mat getHostStabMatrix()
             {
                 return m_hStabMat;
             }
@@ -100,10 +100,11 @@ namespace rva
             unsigned char *m_dImage = nullptr;
             unsigned char *m_hImage = nullptr;
             cv::Size m_imgSize;
-            float *m_hStabMat = nullptr;
+            cv::Mat m_hStabMat;
             float *m_dStabMat = nullptr;
             float *m_hGMEMat = nullptr;
             float *m_dGMEMat = nullptr;
+            cv::Rect m_trackRect;
     };
 } // namespace rva
 

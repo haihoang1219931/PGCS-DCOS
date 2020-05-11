@@ -321,11 +321,11 @@ bool VFrameGrabber::initPipeline()
     cbs.new_preroll = wrapperOnNewPreroll;
     gst_app_sink_set_callbacks(m_appsink, &cbs, (void *)this, NULL);
     // add call back received meta data
-    GstElement *vqueue = gst_bin_get_by_name(GST_BIN(m_pipeline), "myqueue");
-    GstPad *pad = gst_element_get_static_pad(vqueue, "sink");
-    gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER,
-                      (GstPadProbeCallback)wrapperPadDataMod, (void *)this, NULL);
-    gst_object_unref(pad);
+//    GstElement *vqueue = gst_bin_get_by_name(GST_BIN(m_pipeline), "myqueue");
+//    GstPad *pad = gst_element_get_static_pad(vqueue, "sink");
+//    gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER,
+//                      (GstPadProbeCallback)wrapperPadDataMod, (void *)this, NULL);
+//    gst_object_unref(pad);
     return true;
 }
 

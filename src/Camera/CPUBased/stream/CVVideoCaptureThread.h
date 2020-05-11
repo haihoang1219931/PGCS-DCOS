@@ -40,8 +40,6 @@ class CVVideoCaptureThread : public VideoEngine
         Q_INVOKABLE void setStreamMount(QString _streamMount) override;
         Q_INVOKABLE void disableObjectDetect() override;
         Q_INVOKABLE void enableObjectDetect() override;
-        Q_INVOKABLE void enVisualLock() override;
-        Q_INVOKABLE void disVisualLock() override;
         Q_INVOKABLE void setDigitalStab(bool _en) override;
         Q_INVOKABLE void setTrackAt(int _id, double _px, double _py, double _w, double _h) override;
         Q_INVOKABLE void setRecord(bool _en) override;

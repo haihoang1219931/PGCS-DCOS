@@ -46,12 +46,20 @@ class Cache
             return nullptr;
         }
 
+        RollBuffer_<ProcessImageCacheItem> *getTrackImageCache()
+        {
+            if (nullptr != m_instance) {
+                return m_matTrackBuff;
+            }
+
+            return nullptr;
+        }
+
 //        RollBuffer<Eye::SystemStatus> *getSystemStatusCache()
 //        {
 //            if (nullptr != m_instance) {
 //                return m_rbSystem;
 //            }
-
 //            return nullptr;
 //        }
 
@@ -60,7 +68,6 @@ class Cache
 //            if (nullptr != m_instance) {
 //                return m_rbIPCEO;
 //            }
-
 //            return nullptr;
 //        }
 
@@ -69,7 +76,6 @@ class Cache
 //            if (nullptr != m_instance) {
 //                return m_rbIPCIR;
 //            }
-
 //            return nullptr;
 //        }
 
@@ -78,7 +84,6 @@ class Cache
 //            if (nullptr != m_instance) {
 //                return m_rbTrackResEO;
 //            }
-
 //            return nullptr;
 //        }
 
@@ -87,7 +92,6 @@ class Cache
 //            if (nullptr != m_instance) {
 //                return m_rbXPointEO;
 //            }
-
 //            return nullptr;
 //        }
 
@@ -96,7 +100,6 @@ class Cache
 //            if (nullptr != m_instance) {
 //                return m_rbTrackResIR;
 //            }
-
 //            return nullptr;
 //        }
 
@@ -105,7 +108,6 @@ class Cache
 //            if (nullptr != m_instance) {
 //                return m_rbXPointIR;
 //            }
-
 //            return nullptr;
 //        }
 
@@ -170,6 +172,7 @@ class Cache
             m_gstIRSavingBuff = new RollBuffer_<GstFrameCacheItem>(10);
             m_gstEOSavingBuff = new RollBuffer_<GstFrameCacheItem>(10);
             m_matImageBuff = new RollBuffer_<ProcessImageCacheItem>(30);
+            m_matTrackBuff = new RollBuffer_<ProcessImageCacheItem>(20);
 //            m_rbSystem = new RollBuffer<Eye::SystemStatus>(60);
 //            m_rbIPCEO = new RollBuffer<Eye::MotionImage>(60);
 //            m_rbIPCIR = new RollBuffer<Eye::MotionImage>(60);
@@ -189,6 +192,7 @@ class Cache
         RollBuffer_<GstFrameCacheItem> *m_gstEOSavingBuff;
         RollBuffer_<GstFrameCacheItem> *m_gstIRSavingBuff;
         RollBuffer_<ProcessImageCacheItem> *m_matImageBuff;
+        RollBuffer_<ProcessImageCacheItem> *m_matTrackBuff;
 //        RollBuffer<Eye::SystemStatus> *m_rbSystem;
 //        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
 //        RollBuffer<Eye::MotionImage> *m_rbIPCIR;

@@ -164,7 +164,7 @@ public:
 
     QMap<int,bool>  freezeMap(){ return m_freezeMap; }
     GimbalInterface* gimbal();
-    void setGimbal(GimbalInterface* gimbal);
+    virtual void setGimbal(GimbalInterface* gimbal);
 public:
     QAbstractVideoSurface *videoSurface();
     void setVideoSurface(QAbstractVideoSurface *videoSurface);
@@ -194,8 +194,6 @@ public:
     Q_INVOKABLE virtual void disableObjectDetect(){}
     Q_INVOKABLE virtual void enableObjectDetect(){}
     Q_INVOKABLE virtual void moveImage(float panRate,float tiltRate,float zoomRate,float alpha = 0){}
-    Q_INVOKABLE virtual void enVisualLock(){}
-    Q_INVOKABLE virtual void disVisualLock(){}
     Q_INVOKABLE virtual void setDigitalStab(bool _en){}
     Q_INVOKABLE virtual void setTrackAt(int _id, double _px, double _py, double _w, double _h){}
 Q_SIGNALS:
