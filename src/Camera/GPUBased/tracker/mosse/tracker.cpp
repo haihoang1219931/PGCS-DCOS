@@ -72,10 +72,11 @@ void Tracker::initTrack(const cv::Mat &input_image, cv::Rect input_rect)
 
 void Tracker::SetRoi(cv::Rect input_ROI)
 {//Init ROI position and center
-
+printf("Begin %s\r\n",__func__);
     this->current_ROI.ROI = input_ROI;
     this->current_ROI.ROI_center.x = round(input_ROI.width / 2);
     this->current_ROI.ROI_center.y = round(input_ROI.height / 2);
+printf("End %s\r\n",__func__);
 }
 
 void Tracker::performTrack(const cv::Mat &input_image)
@@ -187,8 +188,16 @@ cv::Mat Tracker::ComputeDFT(const cv::Mat &input_image, bool preprocess)
     dft(gray_padded, complexI, cv::DFT_COMPLEX_OUTPUT);    //Compute Direct Fourier Transform
 
     //Crop the spectrum, if it has an odd number of rows or columns
-    complexI = complexI(cv::Rect(0, 0, complexI.cols & -2, complexI.rows & -2));
-
+    printf("Begin %s Crop the spectrum,\r\n",__func__);
+    cv::Rect cropRect = cv::Rect(0, 0, complexI.cols & -2, complexI.rows & -2);
+    if(cropRect.width > complexI.cols){
+        cropRect.width = complexI.cols;
+    }
+    if(cropRect.height > complexI.rows){
+        cropRect.height = complexI.rows;
+    }
+    complexI = complexI(cropRect);
+    printf("End %s Crop the spectrum,\r\n",__func__);
     return complexI;
 }
 

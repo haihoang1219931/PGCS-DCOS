@@ -238,7 +238,9 @@ void VTrackWorker::run()
         }
         if(m_trackEnable){
             if(m_tracker->isInitialized()){
+                printf("Before performTrack\r\n");
                 m_tracker->performTrack(m_grayFrame);
+                printf("After performTrack\r\n");
                 m_trackRect = m_tracker->getPosition();
                 m_dx = m_trackRect.x+m_trackRect.width/2;
                 m_dy = m_trackRect.y+m_trackRect.height/2;
@@ -281,7 +283,7 @@ void VTrackWorker::run()
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
-//        printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
+        printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
 //        std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
     }
 }
