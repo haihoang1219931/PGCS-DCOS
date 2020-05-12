@@ -716,6 +716,15 @@ ApplicationWindow {
                 Overlay{
                     id: videoOverlay
                     anchors.fill: parent
+                    Connections{
+                        target: cameraController.gimbal
+                        onZoomCalculatedChanged:{
+//                            if(viewIndex === 0)
+                            {
+                                videoOverlay.zoomCalculate = zoomCalculated;
+                            }
+                        }
+                    }
                 }
 
                 ObjectsOnScreen{

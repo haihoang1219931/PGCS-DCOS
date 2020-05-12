@@ -32,12 +32,15 @@ public:
         if(m_vDisplayWorker != nullptr)
             m_vDisplayWorker->m_plateLog = plateLog;
         m_vTrackWorker->m_plateLog = plateLog;
-    };
+    }
     void init();
-    void setGimbal(GimbalInterface* gimbal) override;
+    void setGimbal(GimbalInterface* gimbal) override;   
 public Q_SLOTS:
     void onReceivedFrame(int _id, QVideoFrame _frame);
     void onReceivedFrame();
+    void handleZoomTargetChangeStopped(float zoomTarget);
+    void handleZoomCalculateChanged(int index,float zoomCalculate);
+    void handleZoomTargetChanged(float zoomTarget);
 public:
     Q_INVOKABLE void moveImage(float panRate,float tiltRate,float zoomRate,float alpha = 0) override;
     Q_INVOKABLE void start() override;

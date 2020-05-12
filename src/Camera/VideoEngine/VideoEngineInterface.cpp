@@ -14,6 +14,8 @@ GimbalInterface* VideoEngine::gimbal(){
 }
 void VideoEngine::setGimbal(GimbalInterface* gimbal){
     m_gimbal = gimbal;
+    m_gimbal->setZoomTarget(m_gimbal->context()->m_zoom[0]);
+    m_gimbal->setZoomCalculated(0,m_gimbal->context()->m_zoom[0]);
 }
 void VideoEngine::loadConfig(Config* config){
     if(config != nullptr){

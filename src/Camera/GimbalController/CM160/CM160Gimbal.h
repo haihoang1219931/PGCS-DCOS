@@ -34,7 +34,7 @@ public Q_SLOTS:
     void setPanPos(float pos) override;
     void setTiltPos(float pos) override;
     void setGimbalPos(float panPos,float tiltPos) override;
-    void setEOZoom(QString command, int value) override;
+    void setEOZoom(QString command, float value) override;
     void setIRZoom(QString command) override;
     void changeSensor(QString sensorID) override;
     void snapShot() override;

@@ -39,7 +39,11 @@ class VTrackWorker : public QThread
 public:
     explicit VTrackWorker();
     ~VTrackWorker();
-
+    enum KEYPOINT_TYPE{
+            NET = 0,
+            CONTOURS = 1,
+            GOOD_FEATURES = 2,
+        };
     void run();
 
 public:
@@ -60,9 +64,9 @@ Q_SIGNALS:
     void trackStateFound(int _id, double _px, double _py, double _w, double _h, double _oW, double _oH);
     void objectLost();
     void determinedPlateOnTracking(QString _imgPath, QString _plateID);
-    void zoomCalculateChanged(float zoomCalculate);
+    void zoomCalculateChanged(int index,float zoomCalculate);
     void zoomTargetChanged(float zoomTarget);
-    void zoomTargetChangStopped(float zoomTarget);
+    void zoomTargetChangeStopped(float zoomTarget);
 private:
     bool m_running = true;
     index_type m_currID;
@@ -87,7 +91,17 @@ public:
 public:
     void setClicktrackDetector(Detector *_detector);
     void setOCR(OCR* _OCR);
+    void startRollbackZoom() {
+        for(unsigned int i=0; i< sizeof (m_stopRollBack); i++){
+            m_stopRollBack[i] = false;
+            m_zoomRateCalculate[i] = 1;
+        }
+    }
+    void createRoiKeypoints(cv::Mat &grayImg,cv::Mat &imgResult,vector<cv::Point2f>& listPoints,
+                                KEYPOINT_TYPE type= KEYPOINT_TYPE::NET,int pointPerDimension = 2,int dimensionSize = 200,
+                                int dx = 0, int dy = 0);
 public:
+
     // queue joystick command
     GimbalInterface* m_gimbal = nullptr;
     std::deque<joystickData> m_jsQueue;
@@ -98,7 +112,7 @@ public:
     int SLEEP_TIME = 1;
     bool m_captureSet = false;
     bool m_startRollbackZoomSet = false;
-    bool m_stopRollBack = true;
+    bool m_stopRollBack[10];
     cv::Mat m_img;
     cv::Mat m_imgKeyPoints;
     cv::Mat m_i420Img;
@@ -128,7 +142,7 @@ public:
     float m_moveZoomRate = 1;
     float m_rotationAlpha = 0;
     float m_zoomStart = 1.0f;
-    float m_zoomRateCalculate = 1;
+    float m_zoomRateCalculate[10];
     float m_zoomRateCalculatePrev = 1;
     float m_digitalZoomMax = 20;
     float m_digitalZoomMin = 1;
@@ -155,6 +169,8 @@ public:
     // click
     bool m_clickSet = false;
     cv::Point2f m_clickPoint;
+    float deadZone = 160;
+    float maxAxis = 32768.0f;
 };
 
 #endif // VTRACKWORKER_H

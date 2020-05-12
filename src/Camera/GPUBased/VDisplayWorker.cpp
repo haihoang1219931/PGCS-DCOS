@@ -20,13 +20,13 @@ void VDisplayWorker::process()
     m_matImageBuff = Cache::instance()->getTrackImageCache();
     m_rbSearchObjs = Cache::instance()->getSearchCache();
     m_rbMOTObjs = Cache::instance()->getMOTCache();
-//    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
-//    m_rbXPointEO = Cache::instance()->getEOSteeringCache();
-//    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
-//    m_rbXPointIR = Cache::instance()->getIRSteeringCache();
-//    m_rbSystem = Cache::instance()->getSystemStatusCache();
-//    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
-//    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
+    //    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
+    //    m_rbXPointEO = Cache::instance()->getEOSteeringCache();
+    //    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
+    //    m_rbXPointIR = Cache::instance()->getIRSteeringCache();
+    //    m_rbSystem = Cache::instance()->getSystemStatusCache();
+    //    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
+    //    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
     m_gstEOSavingBuff = Cache::instance()->getGstEOSavingCache();
     m_gstIRSavingBuff = Cache::instance()->getGstIRSavingCache();
     m_gstRTSPBuff = Cache::instance()->getGstRTSPCache();
@@ -47,7 +47,7 @@ void VDisplayWorker::process()
     cv::Mat rgbaImg;
     cv::Size imgSize;
     cv::Mat stabMatrix;
-    cv::Mat h_stabMat;
+    float* h_stabMat = nullptr;
     float *d_stabMat;
 
     while (true) {
@@ -55,7 +55,7 @@ void VDisplayWorker::process()
         processImgItem = m_matImageBuff->at(m_matImageBuff->size() - 1);
 
         if ((processImgItem.getIndex() == -1) ||
-            (processImgItem.getIndex() == m_currID)) {
+                (processImgItem.getIndex() == m_currID)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
@@ -66,7 +66,8 @@ void VDisplayWorker::process()
         imgSize = processImgItem.getImageSize();
         // Warp I420 Image GPU
         h_stabMat = processImgItem.getHostStabMatrix();
-        stabMatrix = h_stabMat(cv::Rect(0,0,3,2));
+        if(h_stabMat != nullptr)
+            stabMatrix = cv::Mat(2,3,CV_32FC1,h_stabMat);
         //        d_stabMat = processImgItem.getDeviceStabMatrix();
         h_BRGAImage = fixedMemBRGA.getHeadHost();
         d_BRGAImage = fixedMemBRGA.getHeadDevice();
@@ -75,6 +76,12 @@ void VDisplayWorker::process()
         //        m_imgShow = cv::Mat(imgSize.height, imgSize.width, CV_8UC4, d_BRGAImage);
         /***Warp Image CPU*******/
         m_imgShow = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
+        // draw zoom
+        char zoomText[100];
+        sprintf(zoomText,"zoom: %.02f\r\n",processImgItem.getZoom());
+//        cv::putText(m_imgShow,zoomText,cv::Point(100,100),
+//                    cv::FONT_HERSHEY_COMPLEX, 1.2, cv::Scalar(0, 0, 0,255), 2);
+
         cv::cvtColor(m_imgShow, m_imgShow, cv::COLOR_YUV2BGRA_I420);
         if(m_captureSet){
             m_captureMutex.lock();
@@ -85,17 +92,16 @@ void VDisplayWorker::process()
             printf("Save file %s\r\n", captureFile.c_str());
             cv::imwrite(captureFile, m_imgShow);
         }
-        //----------------------------- Draw EO object detected
-        DetectedObjectsCacheItem detectedObjsItem = m_rbSearchObjs->getElementById(m_currID);
-//        DetectedObjectsCacheItem detectedObjsItem = m_rbMOTObjs->getElementById(m_currID);
-        if (detectedObjsItem.getIndex() != -1)
-        {
+        if(m_enOD){
+            //----------------------------- Draw EO object detected
+            DetectedObjectsCacheItem detectedObjsItem = m_rbSearchObjs->last();
             std::vector<bbox_t> listObj = detectedObjsItem.getDetectedObjects();
             this->drawDetectedObjects(m_imgShow, listObj);
         }
-
-        if (m_enDigitalStab) {
-            cv::warpAffine(m_imgShow, m_imgShow, stabMatrix, imgSize, cv::INTER_LINEAR);
+        if (m_enDigitalStab) {            
+            if(stabMatrix.rows == 2 && stabMatrix.cols ==3 &&
+                    m_imgShow.cols > 0 && m_imgShow.rows > 0)
+                cv::warpAffine(m_imgShow, m_imgShow, stabMatrix, imgSize, cv::INTER_LINEAR);
         }
 
         memcpy(h_BRGAImage, m_imgShow.data, imgSize.width * imgSize.height * 4);
@@ -117,7 +123,14 @@ void VDisplayWorker::process()
             gstRTSP.setIndex(m_currID);
             gstRTSP.setGstBuffer(gstBuffRTSP);
             m_gstRTSPBuff->add(gstRTSP);
+//            if (m_enSaving) {
+//                GstFrameCacheItem gstEOSaving;
+//                gstEOSaving.setIndex(m_currID);
+//                gstEOSaving.setGstBuffer(gst_buffer_copy(gstBuffRTSP));
+//                m_gstEOSavingBuff->add(gstEOSaving);
+//            }
         }
+
         //        frame = QVideoFrame(QImage((uchar *)m_imgShow.data, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888));
 
         //        Q_EMIT receivedFrame();
@@ -127,7 +140,7 @@ void VDisplayWorker::process()
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
-//        printf("\nDisplay Worker: %d | %d - [%d - %d]", m_currID, (long)(timeSpan.count()), imgSize.width, imgSize.height);
+        //        printf("\nDisplay Worker: %d | %d - [%d - %d]", m_currID, (long)(timeSpan.count()), imgSize.width, imgSize.height);
         std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
     }
 }
@@ -207,7 +220,7 @@ index_type VDisplayWorker::readBarcode(const cv::Mat &_rgbImg)
 
     if (decodedObjects.size() > 0) {
         std::string frameID =
-            decodedObjects[0].data.substr(0, decodedObjects[0].data.length() - 1);
+                decodedObjects[0].data.substr(0, decodedObjects[0].data.length() - 1);
         res = (index_type)std::atoi(frameID.c_str());
         //    printf("\nBarcode str: % s | % d", decodedObjects.at(0).data.c_str(),
         //    res);
@@ -276,17 +289,17 @@ void VDisplayWorker::drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t
                 obj_name = /*std::to_string(i.track_id) + " - " + */ string_id;
 
             cv::Size const text_size = getTextSize(obj_name, cv::FONT_HERSHEY_COMPLEX_SMALL, 1.2, 2, nullptr);
-//			int max_width = (text_size.width > i.w + 2) ? text_size.width : (i.w + 2);
-//			max_width = std::max(max_width, (int)i.w + 2);
+            //			int max_width = (text_size.width > i.w + 2) ? text_size.width : (i.w + 2);
+            //			max_width = std::max(max_width, (int)i.w + 2);
             int max_width = text_size.width;
 
             if (!obj_name.empty()){
                 cv::Rect rectName(cv::Point2f(std::max((int)b.x - 1, 0), std::max((int)b.y - 35, 0)),
-                                    cv::Point2f(std::min((int)b.x + max_width, _img.cols - 1), std::min((int)b.y, _img.rows - 1)));
+                                  cv::Point2f(std::min((int)b.x + max_width, _img.cols - 1), std::min((int)b.y, _img.rows - 1)));
                 cv::rectangle(_img,rectName,
                               cv::Scalar(255, 255, 255,255), CV_FILLED, 8, 0);
                 cv::putText(_img, obj_name, cv::Point2f(b.x, b.y - 16), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.2, cv::Scalar(0, 0, 0,255), 2);
-//                printf("obj_name = %s\r\n",obj_name.c_str());
+                //                printf("obj_name = %s\r\n",obj_name.c_str());
 
                 QString qstrObjName = QString::fromStdString(obj_name);
                 qstrObjName.replace("/","-");

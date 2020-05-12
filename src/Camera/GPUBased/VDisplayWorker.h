@@ -91,6 +91,7 @@ class VDisplayWorker : public QObject
         bool m_enShare = true;
         bool m_enSaving = true;
         bool m_enDigitalStab = true;
+        bool m_enOD = false;
         QMap<QString,QString> m_mapPlates;
         PlateLog* m_plateLog;
         QMutex m_captureMutex;

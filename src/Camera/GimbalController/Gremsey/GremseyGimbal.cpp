@@ -50,13 +50,18 @@ GremseyGimbal::GremseyGimbal(GimbalInterface *parent) : GimbalInterface(parent)
     m_context->m_hfov[0] = m_context->m_hfovMax[0];
     m_context->m_hfov[1] = 17.7f;
     m_context->m_zoom[0] = 1;
+    setZoom(1.0f);
+    setZoomMax(20);
+    setZoomMin(1);
+    setZoomTarget(1);
+    Q_EMIT zoomCalculatedChanged(0,1);
 }
 void GremseyGimbal::setJoystick(JoystickThreaded* joystick){
     if(joystick == nullptr) return;
     m_joystick = joystick;
     connect(m_joystick,&JoystickThreaded::axisValueChanged,this,&GremseyGimbal::handleAxisValueChanged);
     connect(m_joystick,&JoystickThreaded::buttonStateChanged,this,&GremseyGimbal::handleButtonStateChanged);
-//    m_context->m_hfov[m_context->m_sensorID] = 62.9f;
+    //    m_context->m_hfov[m_context->m_sensorID] = 62.9f;
 }
 void GremseyGimbal::handleButtonStateChanged(int buttonID, bool pressed){
     if(m_joystick != nullptr){
@@ -75,7 +80,7 @@ void GremseyGimbal::handleButtonStateChanged(int buttonID, bool pressed){
             }else if(mapFunc == "VISUAL" || mapFunc == "FREE"){
                 setLockMode(mapFunc);
             }else if(mapFunc.contains("PRESET")){
-               setGimbalPreset(mapFunc);
+                setGimbalPreset(mapFunc);
             }else if(mapFunc == "DIGITAL_STAB"){
                 setDigitalStab(!m_context->m_videoStabMode);
             }else if(mapFunc == "RECORD"){
@@ -108,19 +113,22 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
         float hfov = m_context->m_hfov[m_context->m_sensorID];
         float panRateScale = (alphaSpeed * hfov * x / m_context->m_hfovMax[m_context->m_sensorID]);
         float tiltRateScale = (alphaSpeed *  hfov * y / m_context->m_hfovMax[m_context->m_sensorID]);
-//        printf("hfov[%.02f] hfovMax[%.02f] x[%.02f] y[%.02f] z[%.02f] panRateScale[%.02f] tiltRateScale[%.02f]\r\n",
-//               hfov,m_context->m_hfovMax[m_context->m_sensorID],
-//                x,y,z,
-//                panRateScale,tiltRateScale);
-        if(z > deadZone)
-            setEOZoom("ZOOM_OUT",0);
-        else if(z < -deadZone)
-            setEOZoom("ZOOM_IN",0);
-        else
-            setEOZoom("ZOOM_STOP",0);
+        //        printf("hfov[%.02f] hfovMax[%.02f] x[%.02f] y[%.02f] z[%.02f] panRateScale[%.02f] tiltRateScale[%.02f]\r\n",
+        //               hfov,m_context->m_hfovMax[m_context->m_sensorID],
+        //                x,y,z,
+        //                panRateScale,tiltRateScale);
+
         if(m_videoEngine == nullptr
                 || m_context->m_lockMode == "FREE"){
-            setGimbalRate((panRateScale),(tiltRateScale));            
+            setGimbalRate((panRateScale),(tiltRateScale));
+            if(m_joystick->axisZoom() == axisID){
+                if(z > deadZone)
+                    setEOZoom("ZOOM_OUT",0);
+                else if(z < -deadZone)
+                    setEOZoom("ZOOM_IN",0);
+                else
+                    setEOZoom("ZOOM_STOP",0);
+            }
         }else{
             m_videoEngine->moveImage(-invertPan * panRate,
                                      -invertTilt * tiltRate,
@@ -138,17 +146,18 @@ void GremseyGimbal::connectToGimbal(Config* config){
     m_config = config;
     m_gimbal = new GRGimbalController();
     printf("Gimbal[%s:%d]\r\n",m_config->value("Settings:GimbalIP:Value:data").toString().toStdString().c_str(),
-            m_config->value("Settings:GimbalPortIn:Value:data").toInt());
+           m_config->value("Settings:GimbalPortIn:Value:data").toInt());
     printf("Sensor[%s:%d]\r\n",m_config->value("Settings:SensorIP:Value:data").toString().toStdString().c_str(),
-            m_config->value("Settings:SensorPortIn:Value:data").toInt());
+           m_config->value("Settings:SensorPortIn:Value:data").toInt());
     m_gimbal->setupTCP(m_config->value("Settings:GimbalIP:Value:data").toString(),
-                        m_config->value("Settings:GimbalPortIn:Value:data").toInt());
+                       m_config->value("Settings:GimbalPortIn:Value:data").toInt());
     m_sensor = new SensorController();
     m_sensor->connectToHost(m_config->value("Settings:SensorIP:Value:data").toString(),
-            m_config->value("Settings:SensorPortIn:Value:data").toInt());
+                            m_config->value("Settings:SensorPortIn:Value:data").toInt());
     connect(m_timerQueryZoom,&QTimer::timeout,this,&GremseyGimbal::sendQueryZoom);
     connect(m_sensor,&SensorController::dataReceived,this,&GremseyGimbal::handleQuery);
     m_timerQueryZoom->start();
+    setEOZoom("",1);
 }
 void GremseyGimbal::disconnectGimbal(){
     if(m_gimbal==nullptr)
@@ -168,18 +177,44 @@ void GremseyGimbal::changeSensor(QString sensorID){
         }
     }
 }
-void GremseyGimbal::setEOZoom(QString command, int value){
+void GremseyGimbal::setEOZoom(QString command, float value){
     if(command == "ZOOM_IN"){
-        printf("%s %s\r\n",__func__,command.toStdString().c_str());
+        printf("GremseyGimbal::%s %s\r\n",__func__,command.toStdString().c_str());
         m_sensor->sendRawData("068101040727FF");
     }else if(command == "ZOOM_OUT"){
-        printf("%s %s\r\n",__func__,command.toStdString().c_str());
+        printf("GremseyGimbal::%s %s\r\n",__func__,command.toStdString().c_str());
         m_sensor->sendRawData("068101040737FF");
     }else if(command == "ZOOM_STOP"){
-        printf("%s %s\r\n",__func__,command.toStdString().c_str());
+        printf("GremseyGimbal::%s %s\r\n",__func__,command.toStdString().c_str());
         m_sensor->sendRawData("068101040700FF");
     }else {
-        printf("%s %s\r\n",__func__,command.toStdString().c_str());
+        printf("GremseyGimbal::%s %s\r\n",__func__,command.toStdString().c_str());
+        if(value>=1 && value<= 240){
+            int zoomPosition;
+            int zoomBegin = value<=20? static_cast<int>(value)-1: static_cast<int>(value/20)-1+19;
+            int zoomEnd = zoomBegin +1;
+            if(value<=20)
+                zoomPosition = m_zoom[zoomBegin] +
+                        (value-zoomBegin-1)/(zoomEnd-zoomBegin)*(m_zoom[zoomEnd]-m_zoom[zoomBegin]);
+            else{
+                zoomPosition = m_zoom[zoomBegin] +
+                        (value- ((zoomBegin-19)+1)*20)/((zoomEnd-zoomBegin) * 20.0f)*
+                        (m_zoom[zoomEnd]-m_zoom[zoomBegin]);
+            }
+            char cmd[32];
+            sprintf(cmd,"%04X",zoomPosition);
+
+            QString zoomPositionRaw = QString::fromStdString(std::string(cmd));
+            QString zoomPositionCommand = QString("0681010447") +
+                    QString("0") + zoomPositionRaw[0]+
+                    QString("0") + zoomPositionRaw[1]+
+                    QString("0") + zoomPositionRaw[2]+
+                    QString("0") + zoomPositionRaw[3]+"FF";
+            //            printf("zoom[%.02f] equal %s from zoomBegin[%d][%04X] to zoomEnd[%d][%04X] zoomPositionCommand=%s\r\n",
+            //                   value,cmd,zoomBegin,m_zoom[zoomBegin],zoomEnd,m_zoom[zoomEnd],
+            //                   zoomPositionCommand.toStdString().c_str());
+            m_sensor->sendRawData(zoomPositionCommand);
+        }
     }
 }
 void GremseyGimbal::setGimbalRate(float panRate,float tiltRate){
@@ -210,7 +245,6 @@ void GremseyGimbal::setDigitalStab(bool enable){
 void GremseyGimbal::setLockMode(QString mode, QPoint location){
     m_context->m_lockMode = mode;
     if(mode == "FREE"){
-
     }else if(mode == "TRACK"){
         m_videoEngine->setTrackAt(0,
                                   m_videoEngine->sourceSize().width()/2,
@@ -254,9 +288,6 @@ void GremseyGimbal::handleQuery(QString data){
                 break;
             }
         }
-//        printf("data = %s zoomPosition = %s %04X X%.02f %.02f deg\r\n",
-//               data.toStdString().c_str(),
-//               zoomPosition.toStdString().c_str(),zoomPos,zoomPosF,m_context->m_hfov[0]);
     }
 }
 void GremseyGimbal::enableDigitalZoom(bool enable){

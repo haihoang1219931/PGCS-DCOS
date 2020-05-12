@@ -14,17 +14,13 @@ import CustomViews.UIConstants 1.0
 import io.qdt.dev 1.0
 Item {
     id: root
-    property real zoomMin: 1.0
-    property real zoomMax: 20.0
-    property real digitalZoomMax: 12
-    property real trackMin: 10
-    property real trackMax: 255
-    property real zoomTarget: 1.7
-    property real zoomRatio: 1
+    property real zoomMin: cameraController.gimbal.zoomMin
+    property real zoomMax: cameraController.gimbal.zoomMax
+    property real zoomRatio: cameraController.gimbal.zoom
+    property real digitalZoomMax: cameraController.gimbal.digitalZoomMax
+    property real zoomTarget: cameraController.gimbal.zoomTarget
+    property real zoomCalculate
     property color drawColor: UIConstants.redColor
-    //    onZoomRatioChanged: {
-    //        cvsZoomTarget.requestPaint();
-    //    }
     Canvas{
         id: cvsCenter
         anchors.horizontalCenter: parent.horizontalCenter
@@ -75,10 +71,10 @@ Item {
                 width: parent.height*2
                 height: parent.height
                 anchors.bottom: parent.top
-                visible: false
                 anchors.bottomMargin: 0
-                //            anchors.left: parent.left
-                //            anchors.leftMargin: zoomTarget / zoomMax * parent.width - width/2
+                x: -width/2 + (root.zoomTarget <= root.zoomMax ?
+                                           root.zoomTarget / root.zoomMax * parent.width * 2 / 3:
+                                           parent.width * 2 / 3 + parent.width * 1 / 3 * (root.zoomTarget / root.zoomMax - 1) / (root.digitalZoomMax - 1))
                 onPaint: {
                     var ctx = getContext("2d");
                     ctx.strokeStyle = parent.border.color;
@@ -88,6 +84,17 @@ Item {
                     ctx.lineTo(width,0);
                     ctx.lineTo(0,0);
                     ctx.stroke();
+                }
+                Label{
+                    text: Number(root.zoomCalculate).toFixed(2) + "/" +Number(root.zoomTarget).toFixed(2)
+                    anchors.verticalCenter: parent.verticalCenter
+                    verticalAlignment: Label.AlignVCenter
+                    horizontalAlignment: Label.AlignLeft
+                    anchors.left: parent.right
+                    anchors.leftMargin: 8
+                    color: root.drawColor
+                    font.pixelSize: UIConstants.fontSize
+                    font.family: UIConstants.appFont
                 }
             }
             Canvas{
@@ -190,6 +197,24 @@ Item {
             horizontalAlignment: Text.AlignLeft
         }
     }
+    Row{
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 8
+        visible: false
+        SpinBox{
+            id: spbZoom
+            width: UIConstants.sRect * 5
+            height: UIConstants.sRect
+            editable: true
+            to: 240
+            from: 1
+            value: 1
+            onValueChanged: {
+                if(value > 0)
+                    cameraController.gimbal.setEOZoom("",value)
+            }
+        }
+    }
     Component.onCompleted: {
         cvsCenter.requestPaint();
         cvsZoomTarget.requestPaint();
@@ -202,3 +227,8 @@ Designer {
     D{i:0;autoSize:true;height:480;width:640}D{i:2;anchors_height:17;anchors_width:170;anchors_x:51;anchors_y:0}
 }
 ##^##*/
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

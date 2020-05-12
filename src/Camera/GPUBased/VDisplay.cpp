@@ -27,6 +27,9 @@ VDisplay::VDisplay(VideoEngine *_parent) : VideoEngine(_parent)
     connect(m_vTrackWorker, &VTrackWorker::objectLost,
             this, &VDisplay::slObjectLost);
     connect(m_vDisplayWorker,&VDisplayWorker::readyDrawOnViewerID,this,&VDisplay::drawOnViewerID);
+    connect(m_vTrackWorker, &VTrackWorker::zoomCalculateChanged, this,&VDisplay::handleZoomCalculateChanged);
+    connect(m_vTrackWorker, &VTrackWorker::zoomTargetChanged, this,&VDisplay::handleZoomTargetChanged);
+    connect(m_vTrackWorker, &VTrackWorker::zoomTargetChangeStopped, this,&VDisplay::handleZoomTargetChangeStopped);
     m_videoSurfaceSize.setWidth(-1);
     m_videoSurfaceSize.setHeight(-1);
     init();
@@ -47,6 +50,21 @@ VDisplay::~VDisplay()
 void VDisplay::setGimbal(GimbalInterface* gimbal){
     m_gimbal = gimbal;
     m_vTrackWorker->m_gimbal = gimbal;
+}
+void VDisplay::handleZoomTargetChangeStopped(float zoomTarget){
+    if(m_gimbal!= nullptr){
+        m_gimbal->setEOZoom("",zoomTarget);
+    }
+}
+void VDisplay::handleZoomCalculateChanged(int index,float zoomCalculate){
+    if(m_gimbal!= nullptr){
+        m_gimbal->setZoomCalculated(index,zoomCalculate);
+    }
+}
+void VDisplay::handleZoomTargetChanged(float zoomTarget){
+    if(m_gimbal!= nullptr){
+        m_gimbal->setZoomTarget(zoomTarget);
+    }
 }
 void VDisplay::init()
 {
@@ -139,6 +157,7 @@ void VDisplay::setVideo(QString _ip, int _port)
     m_vFrameGrabber->setSource(_ip.toStdString(), _port);
 }
 void VDisplay::setObjectDetect(bool enable){
+    m_vDisplayWorker->m_enOD = enable;
     if(enable){
         std::vector<int> classIDs;
         for (int i = 0; i < 12; i++) {
@@ -238,6 +257,7 @@ void VDisplay::setVideoSavingState(bool _state)
 void VDisplay::setStab(bool _en)
 {
     m_vDisplayWorker->setDigitalStab(_en);
+    m_vTrackWorker->m_stabEnable = _en;
 }
 
 void VDisplay::setRecord(bool _en)

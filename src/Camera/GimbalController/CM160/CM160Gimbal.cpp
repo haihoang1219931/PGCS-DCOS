@@ -143,7 +143,7 @@ void CM160Gimbal::setGimbalPos(float panPos,float tiltPos){
         _gimbalCommand->setPanTiltPosition(panPos,tiltPos);
     }
 }
-void CM160Gimbal::setEOZoom(QString command, int value){
+void CM160Gimbal::setEOZoom(QString command, float value){
 //    Q_UNUSED(command);
 
     if(_eoCommand!=nullptr){

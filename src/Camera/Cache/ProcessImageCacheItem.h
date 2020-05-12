@@ -44,6 +44,16 @@ namespace rva
                 return m_dImage;
             }
 
+            void setZoom(float zoom)
+            {
+                m_zoom = zoom;
+            }
+
+            float getZoom()
+            {
+                return m_zoom;
+            }
+
             void setImageSize(cv::Size &_imgSize)
             {
                 m_imgSize = _imgSize;
@@ -56,10 +66,18 @@ namespace rva
 
             void setHostStabMatrix(cv::Mat _hStabMatrix)
             {
-                m_hStabMat = _hStabMatrix.clone();
+                m_hStabMat[0] = _hStabMatrix.at<float>(0,0);
+                m_hStabMat[1] = _hStabMatrix.at<float>(0,1);
+                m_hStabMat[2] = _hStabMatrix.at<float>(0,2);
+                m_hStabMat[3] = _hStabMatrix.at<float>(1,0);
+                m_hStabMat[4] = _hStabMatrix.at<float>(1,1);
+                m_hStabMat[5] = _hStabMatrix.at<float>(1,2);
+                m_hStabMat[6] = _hStabMatrix.at<float>(2,0);
+                m_hStabMat[7] = _hStabMatrix.at<float>(2,1);
+                m_hStabMat[8] = _hStabMatrix.at<float>(2,2);
             }
 
-            cv::Mat getHostStabMatrix()
+            float* getHostStabMatrix()
             {
                 return m_hStabMat;
             }
@@ -100,7 +118,8 @@ namespace rva
             unsigned char *m_dImage = nullptr;
             unsigned char *m_hImage = nullptr;
             cv::Size m_imgSize;
-            cv::Mat m_hStabMat;
+            float m_hStabMat[9];
+            float m_zoom = 1.0f;
             float *m_dStabMat = nullptr;
             float *m_hGMEMat = nullptr;
             float *m_dGMEMat = nullptr;

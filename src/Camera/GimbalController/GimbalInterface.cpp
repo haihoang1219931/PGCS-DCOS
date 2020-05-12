@@ -83,7 +83,7 @@ void GimbalInterface::setGimbalPos(float panPos,float tiltPos){
     Q_UNUSED(panPos);
     Q_UNUSED(tiltPos);
 }
-void GimbalInterface::setEOZoom(QString command, int value){
+void GimbalInterface::setEOZoom(QString command, float value){
     Q_UNUSED(command);
     Q_UNUSED(value);
 }

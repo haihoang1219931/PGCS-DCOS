@@ -40,9 +40,7 @@ void VTrackWorker::setClick(float x, float y,float width,float height){
                m_clickPoint.x,m_clickPoint.y);
     }
 }
-void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float alpha){
-    float deadZone = 160;
-    float maxAxis = 32768.0f;
+void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float alpha){    
     m_moveZoomRate = -zoomRate / maxAxis;
     m_rotationAlpha = alpha;
     m_movePanRate = panRate / maxAxis * (m_grayFrame.cols/2) / 10;
@@ -53,7 +51,7 @@ void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float 
     temp.panRate = m_movePanRate;
     temp.tiltRate = m_moveTiltRate;
     temp.zoomRate = m_moveZoomRate;
-    printf("panRate,tiltRate = %f,%f\r\n",panRate,tiltRate);
+    //    printf("panRate,tiltRate = %f,%f\r\n",panRate,tiltRate);
     m_mutexCommand->lock();
     if(fabs(panRate) < deadZone &&
             fabs(tiltRate) < deadZone &&
@@ -62,20 +60,9 @@ void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float 
         temp.tiltRate = 0;
         temp.zoomRate = 0;
         m_jsQueue.clear();
-//        m_jsQueue.push_back(temp);
         m_zoomDir = (m_r - m_zoomStart)/fabs(m_r - m_zoomStart);
-        //        if(m_zoomDir > 0){
-        //            // zoom in
-        //            m_dimensionSize = 200;
-        //            m_pointPerDimension = 3;
-        //        }else{
-        //            // zoom out
-        //            m_dimensionSize = 400;
-        //            m_pointPerDimension = 10;
-        //        }
-        Q_EMIT zoomTargetChangStopped(m_r);
-        m_stopRollBack = false;
-        m_countRollBack = 0;
+        Q_EMIT zoomTargetChangeStopped(m_r);
+        startRollbackZoom();
         m_zoomStart = m_gimbal->context()->m_zoom[m_gimbal->context()->m_sensorID];
     }else{
         m_jsQueue.push_back(temp);
@@ -103,6 +90,58 @@ cv::Mat VTrackWorker::createPtzMatrix(float w, float h, float dx, float dy,float
     ptzMatrix.at<double>(2, 2) = 1;
     return ptzMatrix;
 }
+void VTrackWorker::createRoiKeypoints(
+        cv::Mat &grayImg,cv::Mat &imgResult,vector<cv::Point2f>& listPoints,
+        KEYPOINT_TYPE type,int pointPerDimension,int dimensionSize,
+        int dx, int dy){
+    listPoints.clear();
+    cv::Rect rectBound = cv::Rect(dx-dimensionSize/2,
+                                  dy-dimensionSize/2,
+                                  dimensionSize,dimensionSize);
+    switch (static_cast<int>(type)) {
+    case static_cast<int>(KEYPOINT_TYPE::CONTOURS):
+    {
+        cv::Mat binaryFrame;
+        cv::adaptiveThreshold(grayImg,binaryFrame,255,cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 12);
+        vector<vector<cv::Point>> contours;
+        vector<cv::Vec4i> hierarchy;
+        cv::RNG rng(12345);
+        findContours( binaryFrame(rectBound), contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
+        for( std::size_t i = 0; i< contours.size(); i++ )
+        {
+            cv::Scalar color = cv::Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+            drawContours( imgResult, contours, static_cast<int>(i), color, 5, 8, hierarchy, 0, cv::Point() );
+            for( std::size_t j = 0; j< contours[i].size(); j++ ){
+                cv::Point2f point(rectBound.x + contours[i][j].x,
+                                  rectBound.y + contours[i][j].y);
+                listPoints.push_back(
+                            point);
+            }
+        }
+    }
+        break;
+    case static_cast<int>(KEYPOINT_TYPE::GOOD_FEATURES):
+    {
+        cv::goodFeaturesToTrack(grayImg(rectBound),listPoints,200, 0.01, 30);
+        for( std::size_t i = 0; i< listPoints.size(); i++ ){
+            listPoints[i] = cv::Point2f(rectBound.x + listPoints[i].x,
+                                        rectBound.y + listPoints[i].y);
+            cv::circle(imgResult,listPoints[i],5,cv::Scalar(100,100,0),5);
+        }
+    }
+        break;
+    default:
+        for(int row = 0; row < pointPerDimension; row++){
+            for(int col =0; col < pointPerDimension; col ++){
+                cv::Point2f point(rectBound.x + rectBound.width/(pointPerDimension-1)*col,
+                                  rectBound.y + rectBound.height/(pointPerDimension-1)*row);
+                listPoints.push_back(
+                            point);
+                cv::circle(imgResult,point,5,cv::Scalar(255,100,0),5);
+            }
+        }
+    }
+}
 void VTrackWorker::run()
 {
     std::chrono::high_resolution_clock::time_point start, stop;
@@ -123,7 +162,9 @@ void VTrackWorker::run()
     float *d_stabMat;
     float *h_gmeMat;
     float *d_gmeMat;
-
+    for(unsigned int i=0; i< 10; i++){
+        m_zoomRateCalculate[i] = 1;
+    }
     while (m_running) {
         std::unique_lock<std::mutex> locker(m_mtx);
 
@@ -136,7 +177,14 @@ void VTrackWorker::run()
         }
 
         start = std::chrono::high_resolution_clock::now();
-
+        if(m_r < m_digitalZoomMin) {
+            m_r = m_digitalZoomMin;
+            Q_EMIT zoomTargetChanged(m_r);
+        }
+        if(m_r > m_digitalZoomMax) {
+            m_r = m_digitalZoomMax;
+            Q_EMIT zoomTargetChanged(m_r);
+        }
         m_currID = processImgItem.getIndex();
         d_i420Image = processImgItem.getDeviceImage();
         h_i420Image = processImgItem.getHostImage();
@@ -160,7 +208,10 @@ void VTrackWorker::run()
         if (m_dx < 0) m_dx = w/2;
         if (m_dy < 0) m_dy = h/2;
         // handle command
-//        printf("m_jsQueue.size() = %d\r\n",m_jsQueue.size());
+        //        printf("m_jsQueue.size() = %d\r\n",m_jsQueue.size());
+        if(m_gimbal->context()->m_lockMode == "FREE"){
+            m_trackEnable = false;
+        }
         if(m_clickSet || m_jsQueue.size()>0){
             if(m_clickSet){
                 m_clickSet=false;
@@ -172,6 +223,10 @@ void VTrackWorker::run()
                 pointInStab.at<double>(1,0) = static_cast<double>(m_clickPoint.y);
                 pointInStab.at<double>(2,0) = 1;
                 pointBeforeStab = ptzMatrixInvert*pointInStab;
+                if(!m_stabEnable){
+                    pointBeforeStab = pointInStab.clone();
+                }
+
                 cv::Point lockPoint(static_cast<int>(pointBeforeStab.at<double>(0,0)),
                                     static_cast<int>(pointBeforeStab.at<double>(1,0)));
                 if(m_trackEnable){
@@ -193,14 +248,17 @@ void VTrackWorker::run()
                 joystickData temp = m_jsQueue.front();
                 temp.panRate = m_movePanRate;
                 temp.tiltRate = m_moveTiltRate;
-                if(fabs(m_moveZoomRate) >= 0.1f){
-                    m_r+=m_moveZoomRate/3;
+                printf("m_moveZoomRate =%f\r\n",m_moveZoomRate);
+                if(fabs(m_moveZoomRate) >= deadZone/maxAxis){
+                    m_r+=m_moveZoomRate /3;
                     if(m_r > m_digitalZoomMax){
                         m_r = m_digitalZoomMax;
                     }else if(m_r < m_digitalZoomMin){
                         m_r = m_digitalZoomMin;
                     }
+                    printf("m_r =%f\r\n",m_r);
                     Q_EMIT zoomTargetChanged(m_r);
+                    Q_EMIT zoomTargetChangeStopped(m_r);
                 }
                 cv::Point lockPoint(static_cast<int>(m_dx +
                                                      temp.panRate),
@@ -226,7 +284,7 @@ void VTrackWorker::run()
                     if(m_tracker->isInitialized()){
                         m_tracker->resetTrack();
                     }
-//                    printf("Init new track\r\n");
+                    //                    printf("Init new track\r\n");
                     m_tracker->initTrack(m_grayFramePrev,trackRectTmp);
                 }
                 else{
@@ -238,9 +296,9 @@ void VTrackWorker::run()
         }
         if(m_trackEnable){
             if(m_tracker->isInitialized()){
-                printf("Before performTrack\r\n");
+                //                printf("Before performTrack\r\n");
                 m_tracker->performTrack(m_grayFrame);
-                printf("After performTrack\r\n");
+                //                printf("After performTrack\r\n");
                 m_trackRect = m_tracker->getPosition();
                 m_dx = m_trackRect.x+m_trackRect.width/2;
                 m_dy = m_trackRect.y+m_trackRect.height/2;
@@ -263,9 +321,56 @@ void VTrackWorker::run()
         }
 
         if(m_trackEnable){
-            cv::rectangle(m_i420Img,m_trackRect,cv::Scalar(255,255,0),2);
+            if(m_tracker->Get_State() == TRACK_INVISION){
+                cv::rectangle(m_i420Img,m_trackRect,cv::Scalar(255,255,0),2);
+            }else if(m_tracker->Get_State() == TRACK_OCCLUDED){
+                cv::rectangle(m_i420Img,m_trackRect,cv::Scalar(100,100,0),2);
+            }else{
+
+            }
         }
-//        m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_r/(m_zoomRateCalculate*m_zoomStart),0);
+        //        for(int i=0; i< 1;i++){
+        //            cv::Mat imgDebug = m_grayFrame.clone();
+        //            cv::Mat imgDebugWarp;
+        //            if(fabs(m_moveZoomRate) < deadZone/maxAxis && !m_stopRollBack[0]){
+        //                if(m_grayFramePrev.cols > 0 && m_grayFramePrev.rows > 0){
+        //                    vector<cv::Point2f> pointsPrevOF,pointsCurrentOF;
+        //                    // found zoom changed here
+
+        //                    // create set of keypoints from center
+        //                    createRoiKeypoints(m_grayFrame,imgDebug,pointsCurrentOF,static_cast<KEYPOINT_TYPE>(i),2,200,m_dx,m_dy);
+        //                    vector<uchar> status;
+        //                    vector<float> err;
+        //                    cv::TermCriteria criteria = cv::TermCriteria((cv::TermCriteria::COUNT) + (cv::TermCriteria::EPS), 10, 0.03);
+        //                    calcOpticalFlowPyrLK(m_grayFrame,m_grayFramePrev, pointsCurrentOF, pointsPrevOF, status, err, cv::Size(15,15), 2, criteria);
+        //                    cv::Mat rigidT = cv::estimateRigidTransform(pointsPrevOF, pointsCurrentOF, true);
+        //                    //#ifdef DEBUG
+        //                    //                std::cout << "rigid " << rigidT << std::endl;
+        //                    //#endif
+        //                    if(rigidT.rows >= 2 && rigidT.cols >=2){
+        //                        // compute scale and rotaion between start keypoints and current keypoints
+        //                        float zoomRateCalculatePrev = m_zoomRateCalculate[i];
+        //                        float zoomRateCalculateTemp = static_cast<float>(pow((
+        //                                                                                 pow(rigidT.at<double>(0,0),2) +pow(rigidT.at<double>(0,1),2)
+        //                                                                                 ),0.5
+        //                                                                             ));
+        //                        //                        printf("zoomRateCalculateTemp = %f zoomRateCalculatePrev=%f\r\n",
+        //                        //                               zoomRateCalculateTemp,zoomRateCalculatePrev);
+        //                        m_zoomRateCalculate[i] *= zoomRateCalculateTemp;
+        //                        Q_EMIT zoomCalculateChanged(i+1,m_zoomRateCalculate[i]*m_zoomStart);
+        //                    }
+        //                    printf("process[%d] m_r=%f m_zoomRateCalculate[%d]=%f m_zoomStart=%f pointsPrevOF.size=%d\r\n",
+        //                           i,m_r,i,m_zoomRateCalculate[i],m_zoomStart,pointsPrevOF.size());
+        //                }
+        //                if(m_zoomDir * (m_zoomRateCalculate[i]*m_zoomStart - m_r) > 0){
+        //                    m_stopRollBack[i] = true;
+        //                    m_zoomRateCalculate[i] = 1;
+        //                    m_zoomStart = m_r;
+        //                    Q_EMIT zoomCalculateChanged(i+1,m_zoomRateCalculate[i]*m_zoomStart);
+        //                }
+        //            }
+        //        }
+        //        m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_r/m_zoomRateCalculate[0]*m_zoomStart,0);
         m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1,0);
         //        std::cout << "hainh create m_ptzMatrix " << m_ptzMatrix << std::endl;
         // add data to display worker
@@ -278,13 +383,14 @@ void VTrackWorker::run()
         processImgItem.setDeviceStabMatrix(d_stabMat);
         processImgItem.setHostGMEMatrix(h_gmeMat);
         processImgItem.setDeviceGMEMatrix(d_gmeMat);
+        processImgItem.setZoom(m_gimbal->context()->m_zoom[m_gimbal->context()->m_sensorID]);
         m_matTrackBuff->add(processImgItem);
 
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
-        printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
-//        std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
+        //        printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
+        //        std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
     }
 }
 
