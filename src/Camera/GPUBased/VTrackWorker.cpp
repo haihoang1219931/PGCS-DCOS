@@ -42,7 +42,7 @@ void VTrackWorker::setClick(float x, float y,float width,float height){
 }
 void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float alpha){    
     m_moveZoomRate = -zoomRate / maxAxis;
-    m_rotationAlpha = alpha;
+//    m_rotationAlpha = alpha;
     m_movePanRate = panRate / maxAxis * (m_grayFrame.cols/2) / 10;
     m_moveTiltRate = tiltRate / maxAxis * (m_grayFrame.rows/2) / 10;
     joystickData temp;
@@ -261,9 +261,10 @@ void VTrackWorker::run()
                     Q_EMIT zoomTargetChangeStopped(m_r);
                 }
                 cv::Point lockPoint(static_cast<int>(m_dx +
-                                                     temp.panRate),
+                                                     (temp.panRate * cos(m_rotationAlpha) + temp.tiltRate * sin(m_rotationAlpha))/m_r),
                                     static_cast<int>(m_dy +
-                                                     temp.tiltRate));
+                                                     (-temp.panRate * sin(m_rotationAlpha) + temp.tiltRate * cos(m_rotationAlpha))/m_r)
+                                    );
                 if(m_trackEnable){
                     cv::Rect trackRectTmp(lockPoint.x-m_trackSize/2,
                                           lockPoint.y-m_trackSize/2,
@@ -371,8 +372,8 @@ void VTrackWorker::run()
         //            }
         //        }
         //        m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_r/m_zoomRateCalculate[0]*m_zoomStart,0);
-        m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1,0);
-        //        std::cout << "hainh create m_ptzMatrix " << m_ptzMatrix << std::endl;
+        m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1,m_rotationAlpha);
+        std::cout << "hainh create m_ptzMatrix " << m_ptzMatrix << std::endl;
         // add data to display worker
         ProcessImageCacheItem processImgItem;
         processImgItem.setIndex(m_currID);

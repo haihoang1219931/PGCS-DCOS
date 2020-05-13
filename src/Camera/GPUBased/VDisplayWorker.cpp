@@ -100,8 +100,10 @@ void VDisplayWorker::process()
         }
         if (m_enDigitalStab) {            
             if(stabMatrix.rows == 2 && stabMatrix.cols ==3 &&
-                    m_imgShow.cols > 0 && m_imgShow.rows > 0)
+                    m_imgShow.cols > 0 && m_imgShow.rows > 0){
+                std::cout << "hainh create stabMatrix " << stabMatrix << std::endl;
                 cv::warpAffine(m_imgShow, m_imgShow, stabMatrix, imgSize, cv::INTER_LINEAR);
+            }
         }
 
         memcpy(h_BRGAImage, m_imgShow.data, imgSize.width * imgSize.height * 4);

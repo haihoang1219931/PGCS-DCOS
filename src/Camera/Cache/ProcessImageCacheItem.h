@@ -66,15 +66,15 @@ namespace rva
 
             void setHostStabMatrix(cv::Mat _hStabMatrix)
             {
-                m_hStabMat[0] = _hStabMatrix.at<float>(0,0);
-                m_hStabMat[1] = _hStabMatrix.at<float>(0,1);
-                m_hStabMat[2] = _hStabMatrix.at<float>(0,2);
-                m_hStabMat[3] = _hStabMatrix.at<float>(1,0);
-                m_hStabMat[4] = _hStabMatrix.at<float>(1,1);
-                m_hStabMat[5] = _hStabMatrix.at<float>(1,2);
-                m_hStabMat[6] = _hStabMatrix.at<float>(2,0);
-                m_hStabMat[7] = _hStabMatrix.at<float>(2,1);
-                m_hStabMat[8] = _hStabMatrix.at<float>(2,2);
+                m_hStabMat[0] = static_cast<float>(_hStabMatrix.at<double>(0,0));
+                m_hStabMat[1] = static_cast<float>(_hStabMatrix.at<double>(0,1));
+                m_hStabMat[2] = static_cast<float>(_hStabMatrix.at<double>(0,2));
+                m_hStabMat[3] = static_cast<float>(_hStabMatrix.at<double>(1,0));
+                m_hStabMat[4] = static_cast<float>(_hStabMatrix.at<double>(1,1));
+                m_hStabMat[5] = static_cast<float>(_hStabMatrix.at<double>(1,2));
+                m_hStabMat[6] = static_cast<float>(_hStabMatrix.at<double>(2,0));
+                m_hStabMat[7] = static_cast<float>(_hStabMatrix.at<double>(2,1));
+                m_hStabMat[8] = static_cast<float>(_hStabMatrix.at<double>(2,2));
             }
 
             float* getHostStabMatrix()
