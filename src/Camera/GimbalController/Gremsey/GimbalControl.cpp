@@ -396,7 +396,7 @@ int GRGimbalController::set_control(int roll_speed, int tilt_speed, int pan_spee
       pan_speed = -1023;
     else if (pan_speed > 1023)
       pan_speed = 1023;
-
+    printf("pan_speed,tilt_speed = (%d,%d)\r\n",pan_speed,tilt_speed);
     /* Do not need to controll roll axis */
     Sbus_CH[SBUS_ROLL_CHANNEL] = ZERO_CONTROL;
 

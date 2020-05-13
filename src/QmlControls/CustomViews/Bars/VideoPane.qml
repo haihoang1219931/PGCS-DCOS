@@ -85,7 +85,7 @@ Item{
             to: 0
             from: 1
             orientation: Slider.SnapOnRelease
-            value: 0.1
+            value: 0.5
             onValueChanged: {
                 var newTrackSize = value*parseInt(lblMax.text);
                 cameraController.gimbal.changeTrackSize(newTrackSize);
@@ -114,7 +114,7 @@ Item{
             y: 212
             width: 40
             height: 17
-            text: qsTr("450")
+            text: qsTr("400")
             color: UIConstants.textColor
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont

@@ -30,38 +30,51 @@ void GimbalInterface::handleAxes(){
 
 }
 void GimbalInterface::lockScreenPoint(int _id,
-                double _px,double _py,double _oW,double _oH,
-                double _w,double _h){
+                                      double _px,double _py,double _oW,double _oH,
+                                      double _w,double _h){
+//    double deadRate = 8;
+//    if(fabs(m_panRate) > deadRate || fabs(m_tiltRate) > deadRate)
+    {
+        double px = (_px + _oW/2) - _w/2;
+        double py = (_py + _oH/2) - _h/2;
+        double hfov = static_cast<double>(m_context->m_hfov[m_context->m_sensorID])/180.0*M_PI;
+        printf("%s [%.0f, %.0f] hfov=%f\r\n",__func__,px,py,hfov);
+        double focalLength = _w / 2 / tan(hfov/2);
 
-    float px = (_px + _oW/2) - _w/2;
-    float py = (_py + _oH/2) - _h/2;
-//    printf("%s [%.0f, %.0f]\r\n",__func__,px,py);
-    float hfov = m_context->m_hfov[m_context->m_sensorID]/180.0*M_PI;
+        double deltaPan = atan(-px/focalLength) * 180.0 / M_PI;
 
-    float focalLength = _w / 2 / tan(hfov/2);
+        printf("delta pan: %.4f\r\n",deltaPan);
+        //            if(deltaPan > 10)deltaPan = 10
+        //            else if(deltaPan < -10)deltaPan = -10
+        m_iPan+=deltaPan/30.0;
+        m_cPan+=(m_panRate - m_uPan)/30.0;
+        double dPan = (deltaPan - m_dPanOld) * 30;
+        m_uPan = m_kpPan * deltaPan + m_kiPan * m_iPan + m_kdPan * dPan;
+        m_dPanOld = deltaPan;
 
-    float deltaPan = atan(-px/focalLength) * 180.0 / M_PI;
-//            if(deltaPan > 10)deltaPan = 10
-//            else if(deltaPan < -10)deltaPan = -10
-    m_iPan+=deltaPan/30.0;
-    m_cPan+=(m_panRate - m_uPan)/30.0;
-    float dPan = (deltaPan - m_dPanOld) * 30;
-    m_uPan = m_kpPan * deltaPan + m_kiPan * m_iPan + m_kdPan * dPan;
-    m_dPanOld = deltaPan;
+        m_panRate = m_uPan;
 
-    m_panRate = m_uPan;
+        double deltaTilt = atan(-py/focalLength) * 180.0 / M_PI;
+        //            if(deltaTilt > 10)deltaTilt = 10
+        //            else if(deltaTilt < -10)deltaTilt = -10
+        m_iTilt+=deltaTilt/30.0;
+        m_cTilt+=(m_tiltRate - m_uTilt)/30.0;
+        double dTilt = (deltaTilt - m_dTiltOld) * 30;
+        m_uTilt = m_kpTilt * deltaTilt + m_kiTilt * m_iTilt + m_kdTilt * dTilt;
+        m_dTiltOld = deltaTilt;
 
-    float deltaTilt = atan(-py/focalLength) * 180.0 / M_PI;
-//            if(deltaTilt > 10)deltaTilt = 10
-//            else if(deltaTilt < -10)deltaTilt = -10
-    m_iTilt+=deltaTilt/30.0;
-    m_cTilt+=(m_tiltRate - m_uTilt)/30.0;
-    float dTilt = (deltaTilt - m_dTiltOld) * 30;
-    m_uTilt = m_kpTilt * deltaTilt + m_kiTilt * m_iTilt + m_kdTilt * dTilt;
-    m_dTiltOld = deltaTilt;
+        m_tiltRate = m_uTilt;
+        printf("%s _px=%f _py=%f _oW=%f _oH=%f _w=%f _h=%f => panRate=%d tiltRate=%d\r\n",
+               __func__,_px,_py,_oW,_oH,_w,_h,
+               static_cast<int>(m_panRate),
+               static_cast<int>(m_tiltRate));
+        double pan_out = m_panRate;
+        if(deltaPan < 0.3 && deltaPan>-0.3)
+            pan_out = 5 * m_panRate;
+        setGimbalRate(static_cast<float>(pan_out),
+                      static_cast<float>(m_tiltRate));
+    }
 
-    m_tiltRate = m_uTilt;
-    setGimbalRate(m_panRate, m_tiltRate);
 }
 void GimbalInterface::setPanRate(float rate){
     Q_UNUSED(rate);

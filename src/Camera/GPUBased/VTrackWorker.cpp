@@ -29,6 +29,7 @@ void VTrackWorker::init()
 void VTrackWorker::changeTrackSize(float _trackSize)
 {
     m_trackSize = (int)_trackSize;
+    m_trackSizePrev = m_trackSize;
 }
 void VTrackWorker::setClick(float x, float y,float width,float height){
     if(!m_clickSet){
@@ -211,6 +212,17 @@ void VTrackWorker::run()
         //        printf("m_jsQueue.size() = %d\r\n",m_jsQueue.size());
         if(m_gimbal->context()->m_lockMode == "FREE"){
             m_trackEnable = false;
+        }else if(m_gimbal->context()->m_lockMode == "TRACK" ||
+                 m_gimbal->context()->m_lockMode == "VISUAL"){
+            m_trackEnable = true;
+            if(m_gimbal->context()->m_lockMode == "VISUAL"){
+                if( h/2 > m_trackSize)
+                    m_trackSize = h/2;
+            }else{
+                if(m_trackSizePrev != m_trackSize){
+                    m_trackSize = m_trackSizePrev;
+                }
+            }
         }
         if(m_clickSet || m_jsQueue.size()>0){
             if(m_clickSet){
@@ -248,15 +260,13 @@ void VTrackWorker::run()
                 joystickData temp = m_jsQueue.front();
                 temp.panRate = m_movePanRate;
                 temp.tiltRate = m_moveTiltRate;
-                printf("m_moveZoomRate =%f\r\n",m_moveZoomRate);
                 if(fabs(m_moveZoomRate) >= deadZone/maxAxis){
-                    m_r+=m_moveZoomRate /3;
-                    if(m_r > m_digitalZoomMax){
-                        m_r = m_digitalZoomMax;
-                    }else if(m_r < m_digitalZoomMin){
-                        m_r = m_digitalZoomMin;
-                    }
-                    printf("m_r =%f\r\n",m_r);
+//                    m_r+=m_moveZoomRate /3;
+//                    if(m_r > m_digitalZoomMax){
+//                        m_r = m_digitalZoomMax;
+//                    }else if(m_r < m_digitalZoomMin){
+//                        m_r = m_digitalZoomMin;
+//                    }
                     Q_EMIT zoomTargetChanged(m_r);
                     Q_EMIT zoomTargetChangeStopped(m_r);
                 }
@@ -266,9 +276,13 @@ void VTrackWorker::run()
                                                      (-temp.panRate * sin(m_rotationAlpha) + temp.tiltRate * cos(m_rotationAlpha))/m_r)
                                     );
                 if(m_trackEnable){
-                    cv::Rect trackRectTmp(lockPoint.x-m_trackSize/2,
-                                          lockPoint.y-m_trackSize/2,
-                                          m_trackSize,m_trackSize);
+                    int trackSizeTmp = m_trackSize;
+//                    if(trackSizeTmp > 200){
+//                        trackSizeTmp = 200;
+//                    }
+                    cv::Rect trackRectTmp(lockPoint.x-trackSizeTmp/2,
+                                          lockPoint.y-trackSizeTmp/2,
+                                          trackSizeTmp,trackSizeTmp);
                     int deadSpace = 10;
                     if(trackRectTmp.x < deadSpace){
                         trackRectTmp.x = deadSpace;
@@ -285,7 +299,6 @@ void VTrackWorker::run()
                     if(m_tracker->isInitialized()){
                         m_tracker->resetTrack();
                     }
-                    //                    printf("Init new track\r\n");
                     m_tracker->initTrack(m_grayFramePrev,trackRectTmp);
                 }
                 else{
@@ -300,14 +313,31 @@ void VTrackWorker::run()
                 //                printf("Before performTrack\r\n");
                 m_tracker->performTrack(m_grayFrame);
                 //                printf("After performTrack\r\n");
-                m_trackRect = m_tracker->getPosition();
-                m_dx = m_trackRect.x+m_trackRect.width/2;
-                m_dy = m_trackRect.y+m_trackRect.height/2;
+                cv::Rect trackRect = m_tracker->getPosition();
+                m_dx = trackRect.x+trackRect.width/2;
+                m_dy = trackRect.y+trackRect.height/2;
+                m_trackRect.x = static_cast<int>(
+                            static_cast<float>(m_dx) - static_cast<float>(m_trackSize)/2);
+                m_trackRect.y = static_cast<int>(
+                            static_cast<float>(m_dy) - static_cast<float>(m_trackSize)/2);
+                m_trackRect.width = m_trackSize;
+                m_trackRect.height = m_trackSize;
                 if(m_tracker->Get_State() == TRACK_INVISION || m_tracker->Get_State() == TRACK_OCCLUDED){
                     Q_EMIT trackStateFound(0,
-                                           static_cast<double>(m_trackRect.x),static_cast<double>(m_trackRect.y),
-                                           static_cast<double>(m_trackRect.width),static_cast<double>(m_trackRect.height),
-                                           w,h);
+                                           static_cast<double>(m_trackRect.x),
+                                           static_cast<double>(m_trackRect.y),
+                                           static_cast<double>(m_trackRect.width),
+                                           static_cast<double>(m_trackRect.height),
+                                           static_cast<double>(w),
+                                           static_cast<double>(h));
+                    printf("%s _px=%f _py=%f _oW=%f _oH=%f _w=%f _h=%f\r\n",
+                           __func__,
+                           static_cast<double>(m_trackRect.x),
+                           static_cast<double>(m_trackRect.y),
+                           static_cast<double>(m_trackRect.width),
+                           static_cast<double>(m_trackRect.height),
+                           static_cast<double>(w),
+                           static_cast<double>(h));
                 }else{
                     Q_EMIT objectLost();
                 }
@@ -321,15 +351,6 @@ void VTrackWorker::run()
             m_trackRect.height = m_trackSize;
         }
 
-        if(m_trackEnable){
-            if(m_tracker->Get_State() == TRACK_INVISION){
-                cv::rectangle(m_i420Img,m_trackRect,cv::Scalar(255,255,0),2);
-            }else if(m_tracker->Get_State() == TRACK_OCCLUDED){
-                cv::rectangle(m_i420Img,m_trackRect,cv::Scalar(100,100,0),2);
-            }else{
-
-            }
-        }
         //        for(int i=0; i< 1;i++){
         //            cv::Mat imgDebug = m_grayFrame.clone();
         //            cv::Mat imgDebugWarp;
@@ -373,7 +394,7 @@ void VTrackWorker::run()
         //        }
         //        m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_r/m_zoomRateCalculate[0]*m_zoomStart,0);
         m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1,m_rotationAlpha);
-        std::cout << "hainh create m_ptzMatrix " << m_ptzMatrix << std::endl;
+//        std::cout << "hainh create m_ptzMatrix " << m_ptzMatrix << std::endl;
         // add data to display worker
         ProcessImageCacheItem processImgItem;
         processImgItem.setIndex(m_currID);
@@ -384,6 +405,9 @@ void VTrackWorker::run()
         processImgItem.setDeviceStabMatrix(d_stabMat);
         processImgItem.setHostGMEMatrix(h_gmeMat);
         processImgItem.setDeviceGMEMatrix(d_gmeMat);
+        processImgItem.setLockMode(m_gimbal->context()->m_lockMode);
+        processImgItem.setTrackRect(m_trackRect);
+        processImgItem.setTrackStatus(m_tracker->Get_State());
         processImgItem.setZoom(m_gimbal->context()->m_zoom[m_gimbal->context()->m_sensorID]);
         m_matTrackBuff->add(processImgItem);
 

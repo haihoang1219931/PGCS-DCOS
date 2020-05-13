@@ -196,6 +196,10 @@ public:
     Q_INVOKABLE virtual void moveImage(float panRate,float tiltRate,float zoomRate,float alpha = 0){}
     Q_INVOKABLE virtual void setDigitalStab(bool _en){}
     Q_INVOKABLE virtual void setTrackAt(int _id, double _px, double _py, double _w, double _h){}
+    Q_INVOKABLE virtual void pause(bool pause){}
+    Q_INVOKABLE virtual void goToPosition(float percent){}
+    Q_INVOKABLE virtual void setSpeed(float speed){}
+    Q_INVOKABLE virtual qint64 getTime(QString type){return 0;}
 Q_SIGNALS:
     void listTrackObjectInfosChanged();
     void sourceSizeChanged(int newWidth, int newHeight);

@@ -29,7 +29,7 @@ VDisplay::VDisplay(VideoEngine *_parent) : VideoEngine(_parent)
     connect(m_vDisplayWorker,&VDisplayWorker::readyDrawOnViewerID,this,&VDisplay::drawOnViewerID);
     connect(m_vTrackWorker, &VTrackWorker::zoomCalculateChanged, this,&VDisplay::handleZoomCalculateChanged);
     connect(m_vTrackWorker, &VTrackWorker::zoomTargetChanged, this,&VDisplay::handleZoomTargetChanged);
-    connect(m_vTrackWorker, &VTrackWorker::zoomTargetChangeStopped, this,&VDisplay::handleZoomTargetChangeStopped);
+//    connect(m_vTrackWorker, &VTrackWorker::zoomTargetChangeStopped, this,&VDisplay::handleZoomTargetChangeStopped);
     m_videoSurfaceSize.setWidth(-1);
     m_videoSurfaceSize.setHeight(-1);
     init();
@@ -267,6 +267,22 @@ void VDisplay::setRecord(bool _en)
 void VDisplay::setShare(bool enable)
 {
     m_vDisplayWorker->m_enShare = enable;
+}
+void VDisplay::goToPosition(float percent){
+    m_vFrameGrabber->goToPosition(percent);
+}
+void VDisplay::setSpeed(float speed){
+    m_vFrameGrabber->setSpeed(speed);
+}
+qint64 VDisplay::getTime(QString type){
+    if(type == "TOTAL"){
+        return m_vFrameGrabber->getTotalTime();
+    }else if(type == "CURRENT"){
+        return m_vFrameGrabber->getPosCurrent();
+    }
+}
+void VDisplay::pause(bool pause){
+    m_vFrameGrabber->pause(pause);
 }
 void VDisplay::stop()
 {

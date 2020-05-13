@@ -190,7 +190,7 @@ GstPadProbeReturn VFrameGrabber::padDataMod(GstPad *_pad, GstPadProbeInfo *_info
 
 gint64 VFrameGrabber::getTotalTime()
 {
-    return 1800000000000;
+    return m_totalTime;
 }
 
 gint64 VFrameGrabber::getPosCurrent()
@@ -212,13 +212,46 @@ void VFrameGrabber::restartPipeline()
         return;
     }
 }
+void VFrameGrabber::setSpeed(float speed){
+    if(m_pipeline == NULL) {
+        printf("m_pipeline == NULL\r\n");
+        return;
+    }
+    printf("Change speed to %f\r\n",speed);
+    gint64 posCurrent = getPosCurrent();
+    printf("%ld = posCurrent\r\n",posCurrent);
+    m_speed = speed;
+    pause(true);
+    gst_element_seek(GST_ELEMENT(m_pipeline),speed,
+                            GST_FORMAT_TIME,
+                            GstSeekFlags(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE),
+                            GST_SEEK_TYPE_SET,(gint64)(posCurrent),
+                            GST_SEEK_TYPE_SET,GST_CLOCK_TIME_NONE);
+    pause(false);
+}
 void VFrameGrabber::pause(bool pause){
-    if(m_pipeline == nullptr) return;
+    if(m_pipeline == NULL) return;
     if(pause){
         gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PAUSED);
     }else{
         gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
     }
+}
+void VFrameGrabber::goToPosition(float percent){
+    printf("goToPosition %f%\r\n",percent);
+    if(m_pipeline == NULL) {
+        printf("m_pipeline == NULL\r\n");
+        return;
+    }
+    gint64 posNext = (gint64)((double)m_totalTime*(double)percent);
+//    printf("%ld = (gint64)(percent*100*GST_SECOND)\r\n",(gint64)(percent*100*GST_SECOND));
+//    printf("%ld = posNext\r\n",posNext);
+//    printf("%f = m_speed\r\n",m_speed);
+    gst_element_seek(GST_ELEMENT(m_pipeline),m_speed,
+                            GST_FORMAT_TIME,
+                            GstSeekFlags(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE),
+                            GST_SEEK_TYPE_SET,(gint64)(posNext),
+                            GST_SEEK_TYPE_SET,GST_CLOCK_TIME_NONE);
 }
 bool VFrameGrabber::initPipeline()
 {

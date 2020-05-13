@@ -8,6 +8,8 @@
 #include <chrono>
 #include <gst/app/gstappsink.h>
 #include <gst/gst.h>
+#include <gst/gstutils.h>
+#include <gst/gstsegment.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <string.h>
@@ -42,6 +44,14 @@ class VFrameGrabber : public QThread
 
         void pause(bool pause);
 
+        gint64 getTotalTime();
+
+        gint64 getPosCurrent();
+
+        void setSpeed(float speed);
+
+        void goToPosition(float percent);
+
         void stopPipeline();
 
         void run();
@@ -65,9 +75,6 @@ class VFrameGrabber : public QThread
         GstPadProbeReturn padDataMod(GstPad *_pad, GstPadProbeInfo *_info,
                                      gpointer _uData);
 
-        gint64 getTotalTime();
-
-        gint64 getPosCurrent();
 
         std::string getFileNameByTime();
 
@@ -77,7 +84,9 @@ class VFrameGrabber : public QThread
 
         bool checkIfFolderExist(std::string _folderName);
 
+
     private:
+        float m_speed = 1;
         GMainLoop *m_loop = nullptr;
         GstPipeline *m_pipeline = nullptr;
         std::string m_pipelineStr;
@@ -87,7 +96,7 @@ class VFrameGrabber : public QThread
         GstAppSink *m_appSink = nullptr;
         std::string m_ip;
         uint16_t m_port;
-        gint64 m_totalTime;
+        gint64 m_totalTime = 1800000000000;
         bool m_enSaving = true;
         bool m_stop = false;
         index_type m_currID;

@@ -58,6 +58,10 @@ public:
     Q_INVOKABLE void setRecord(bool _en) override;
     Q_INVOKABLE void changeTrackSize(int _val) override;
     Q_INVOKABLE void setShare(bool enable) override;
+    Q_INVOKABLE void pause(bool pause) override;
+    Q_INVOKABLE void goToPosition(float percent) override;
+    Q_INVOKABLE void setSpeed(float speed) override;
+    Q_INVOKABLE qint64 getTime(QString type) override;
 private:
     QThread *m_threadEODisplay;
     VDisplayWorker *m_vDisplayWorker;

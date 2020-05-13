@@ -130,8 +130,8 @@ Item {
         Label {
             id: lblZoomOptical
             text: "Zoom: "+(root.zoomRatio<= root.zoomMax?
-                                Number(root.zoomRatio).toFixed(2):
-                                Number(root.zoomMax).toFixed(2)) +"/"+Number(root.zoomMax).toFixed(0)
+                                Number(root.zoomRatio > 15? root.zoomRatio*1.5:root.zoomRatio).toFixed(2):
+                                Number(root.zoomMax*1.5).toFixed(2)) +"/"+Number(root.zoomMax*1.5).toFixed(0)
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors.bottom: parent.bottom
@@ -215,10 +215,119 @@ Item {
             }
         }
     }
+    Timer{
+        id: timerPause
+        interval: 1000
+        repeat: false
+        running: false
+        onTriggered: {
+            timer.running = false;
+        }
+        onRunningChanged: {
+            timer.running = true;
+        }
+    }
+    Timer{
+        id: timer
+        interval: 1000
+        repeat: true
+        running: false
+        onTriggered: {
+            var posCurrent = cameraController.videoEngine.getTime("CURRENT")/1000000000;
+            var totalTime = cameraController.videoEngine.getTime("TOTAL")/1000000000;
+            var value = posCurrent/totalTime;
+            //            console.log("time:"+posCurrent+"/"+totalTime+":"+value);
+            var totalTimeSeconds = Number(totalTime % 60).toFixed(0);
+            var totalTimeMinute = Number((totalTime - (totalTime % 60)) / 60).toFixed(0);
+            lblTimeTotal.text = totalTimeMinute.toString()+":"+totalTimeSeconds.toString();
+            var posCurrentSeconds = Number(posCurrent % 60).toFixed(0);
+            var posCurrentMinute = Number((posCurrent - (posCurrent % 60)) / 60).toFixed(0);
+            lblTimeCurrent.text = posCurrentMinute.toString()+":"+posCurrentSeconds.toString();
+                        sldTime.value = value;
+        }
+    }
+
+    Row{
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.leftMargin:  UIConstants.sRect * 2
+        anchors.right: parent.right
+        height: UIConstants.sRect
+        visible: false
+        spacing: 8
+        Button {
+            id: btnPause
+            width: UIConstants.sRect * 2
+            height: parent.height
+            text: pause === false?qsTr("Pause"):qsTr("Continue")
+            property bool pause: false
+            onClicked: {
+                pause = !pause;
+                cameraController.videoEngine.pause(pause);
+            }
+        }
+        ComboBox {
+            id: cbxSpeed
+            width: UIConstants.sRect * 2
+            height: parent.height
+            down: false
+            model: ["0.03x","0.25x","0.5x","1x","2x","4x","8x"]
+            currentIndex: 3
+            onCurrentTextChanged: {
+                var speed = 1;
+                switch(currentText){
+                case "0.03x": speed = 0.03; break;
+                case "0.25x": speed = 0.25; break;
+                case "0.5x": speed = 0.5; break;
+                case "1x": speed = 1; break;
+                case "2x": speed = 2; break;
+                case "4x": speed = 4; break;
+                case "8x": speed = 8; break;
+                }
+                if(timer.running)
+                    cameraController.videoEngine.setSpeed(speed);
+            }
+        }
+        Label {
+            id: lblTimeCurrent
+            width: parent.height * 3
+            height: parent.height
+            color: "#ffffff"
+            text: qsTr("00:00")
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
+
+        Slider {
+            id: sldTime
+            height: parent.height
+            width: parent.width - btnPause.width - cbxSpeed.width -
+                   lblTimeCurrent.width - lblTimeTotal.width - parent.spacing * 4
+            value: 0
+            onPressedChanged: {
+                console.log("pressed = "+pressed+" value change to "+value);
+                if(pressed == false){
+                    timerPause.start();
+                    cameraController.videoEngine.goToPosition(value);
+                }
+            }
+        }
+        Label {
+            id: lblTimeTotal
+            width: parent.height * 3
+            height: parent.height
+            color: "#ffffff"
+            text: qsTr("00:00")
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+    }
+
     Component.onCompleted: {
         cvsCenter.requestPaint();
         cvsZoomTarget.requestPaint();
         cvsZoomSpacing.requestPaint();
+        timer.start();
     }
 }
 

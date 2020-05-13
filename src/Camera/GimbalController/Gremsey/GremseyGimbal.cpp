@@ -113,26 +113,26 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
         float hfov = m_context->m_hfov[m_context->m_sensorID];
         float panRateScale = (alphaSpeed * hfov * x / m_context->m_hfovMax[m_context->m_sensorID]);
         float tiltRateScale = (alphaSpeed *  hfov * y / m_context->m_hfovMax[m_context->m_sensorID]);
-        //        printf("hfov[%.02f] hfovMax[%.02f] x[%.02f] y[%.02f] z[%.02f] panRateScale[%.02f] tiltRateScale[%.02f]\r\n",
-        //               hfov,m_context->m_hfovMax[m_context->m_sensorID],
-        //                x,y,z,
-        //                panRateScale,tiltRateScale);
+//                printf("hfov[%.02f] hfovMax[%.02f] x[%.02f] y[%.02f] z[%.02f] panRateScale[%.02f] tiltRateScale[%.02f]\r\n",
+//                       hfov,m_context->m_hfovMax[m_context->m_sensorID],
+//                        x,y,z,
+//                        panRateScale,tiltRateScale);
 
         if(m_videoEngine == nullptr
                 || m_context->m_lockMode == "FREE"){
-            setGimbalRate((panRateScale),(tiltRateScale));
-            if(m_joystick->axisZoom() == axisID){
-                if(z > deadZone)
-                    setEOZoom("ZOOM_OUT",0);
-                else if(z < -deadZone)
-                    setEOZoom("ZOOM_IN",0);
-                else
-                    setEOZoom("ZOOM_STOP",0);
-            }
+            setGimbalRate((panRateScale),(tiltRateScale));            
         }else{
             m_videoEngine->moveImage(-invertPan * panRate,
                                      -invertTilt * tiltRate,
                                      invertZoom * zoomRate);
+        }
+        if(m_joystick->axisZoom() == axisID){
+            if(z > deadZone)
+                setEOZoom("ZOOM_OUT",0);
+            else if(z < -deadZone)
+                setEOZoom("ZOOM_IN",0);
+            else
+                setEOZoom("ZOOM_STOP",0);
         }
     }
 }
@@ -251,6 +251,7 @@ void GremseyGimbal::setLockMode(QString mode, QPoint location){
                                   m_videoEngine->sourceSize().height()/2,
                                   m_videoEngine->sourceSize().width(),
                                   m_videoEngine->sourceSize().height());
+        resetTrackParam();
     }else if(mode == "VISUAL"){
 
     }

@@ -1,5 +1,6 @@
 #include "VDisplayWorker.h"
 Q_DECLARE_METATYPE(cv::Mat)
+#include "tracker/mosse/tracker.h"
 VDisplayWorker::VDisplayWorker(QObject *_parent) : QObject(_parent)
 {
     qRegisterMetaType< cv::Mat >("cv::Mat");
@@ -98,10 +99,36 @@ void VDisplayWorker::process()
             std::vector<bbox_t> listObj = detectedObjsItem.getDetectedObjects();
             this->drawDetectedObjects(m_imgShow, listObj);
         }
+        cv::Rect trackRect = processImgItem.trackRect();
+        cv::Scalar colorInvision(0,0,255,0);
+        cv::Scalar colorOccluded(0,0,0,0);
+        if(processImgItem.lockMode() == "TRACK"){
+            if(processImgItem.trackStatus() == TRACK_INVISION){
+                cv::rectangle(m_imgShow,trackRect,colorInvision,2);
+            }else if(processImgItem.trackStatus() == TRACK_OCCLUDED){
+                cv::rectangle(m_imgShow,trackRect,colorOccluded,2);
+            }else{
+
+            }
+        }else if(processImgItem.lockMode() == "VISUAL"){
+            if(processImgItem.trackStatus() == TRACK_INVISION){
+                drawSteeringCenter(m_imgShow,trackRect.width,
+                                   static_cast<int>(trackRect.x + trackRect.width/2),
+                                   static_cast<int>(trackRect.y + trackRect.height/2),
+                                   colorInvision);
+            }else if(processImgItem.trackStatus() == TRACK_OCCLUDED){
+                drawSteeringCenter(m_imgShow,trackRect.width,
+                                   static_cast<int>(trackRect.x + trackRect.width/2),
+                                   static_cast<int>(trackRect.y + trackRect.height/2),
+                                   colorOccluded);
+            }else{
+
+            }
+        }
         if (m_enDigitalStab) {            
             if(stabMatrix.rows == 2 && stabMatrix.cols ==3 &&
                     m_imgShow.cols > 0 && m_imgShow.rows > 0){
-                std::cout << "hainh create stabMatrix " << stabMatrix << std::endl;
+//                std::cout << "hainh create stabMatrix " << stabMatrix << std::endl;
                 cv::warpAffine(m_imgShow, m_imgShow, stabMatrix, imgSize, cv::INTER_LINEAR);
             }
         }

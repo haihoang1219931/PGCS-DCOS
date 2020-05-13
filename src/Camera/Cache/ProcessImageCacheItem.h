@@ -3,6 +3,7 @@
 
 #include "CacheItem.h"
 #include <opencv2/opencv.hpp>
+#include <QObject>
 #ifdef USE_VIDEO_GPU
     #include <cuda.h>
     #include <cuda_runtime_api.h>
@@ -112,8 +113,12 @@ namespace rva
                 return m_dGMEMat;
             }
 
-
-
+            QString lockMode() {return m_lockMode;}
+            void setLockMode(QString lockMode){m_lockMode = lockMode;}
+            cv::Rect trackRect() {return m_trackRect;}
+            void setTrackRect(cv::Rect trackRect){m_trackRect = trackRect;}
+            int trackStatus() {return m_trackStatus;}
+            void setTrackStatus(int trackStatus){m_trackStatus = trackStatus;}
         private:
             unsigned char *m_dImage = nullptr;
             unsigned char *m_hImage = nullptr;
@@ -123,7 +128,9 @@ namespace rva
             float *m_dStabMat = nullptr;
             float *m_hGMEMat = nullptr;
             float *m_dGMEMat = nullptr;
+            QString m_lockMode = "FREE";
             cv::Rect m_trackRect;
+            int m_trackStatus = 0;
     };
 } // namespace rva
 

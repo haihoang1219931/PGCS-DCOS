@@ -21,6 +21,7 @@
 #include "tracker/dando/Utilities.hpp"
 #include "tracker/dando/HTrack/saliency.h"
 #include "tracker/mosse/tracker.h"
+#define TRACK_DANDO
 class ClickTrack;
 class GimbalInterface;
 class OCR;
@@ -165,6 +166,7 @@ public:
     std::string m_stabMode = "STAB_TRACK";
     cv::Mat m_stabMatrix;
     int m_trackSize = 200;
+    int m_trackSizePrev = 200;
     int m_zoomTimer = 0;
     // click
     bool m_clickSet = false;
