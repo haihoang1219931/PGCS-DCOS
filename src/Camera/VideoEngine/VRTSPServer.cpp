@@ -88,7 +88,7 @@ GstFlowReturn VRTSPServer::need_data(GstElement *appsrc, guint unused, gpointer 
     if (m_gstRTSPBuff->size() == 0) {
         return GstFlowReturn::GST_FLOW_CUSTOM_SUCCESS;
     }
-
+//    printf("VRTSPServer::need_data\r\n");
     GstFrameCacheItem gstFrame = m_gstRTSPBuff->last();
     while ((gstFrame.getIndex() == -1) || (gstFrame.getIndex() == m_currID)) {
         gstFrame = m_gstRTSPBuff->last();
@@ -128,7 +128,7 @@ void VRTSPServer::media_configure(GstRTSPMediaFactory *factory, GstRTSPMedia *me
 {
     Q_UNUSED(factory);
     Q_UNUSED(user_data);
-    printf("media_configure media = %p\r\n", media);
+    printf("media_configure media = %p size(%d,%d)\r\n", media,m_width,m_height);
     this->media = media;
     element = gst_rtsp_media_get_element(media);
     appsrc = gst_bin_get_by_name_recurse_up(GST_BIN(element), "othersrc");

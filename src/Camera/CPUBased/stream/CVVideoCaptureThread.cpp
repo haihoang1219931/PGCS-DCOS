@@ -32,7 +32,6 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(pa
     m_processThread = new QThread(nullptr);
     m_mutexCapture = new QMutex();
     m_mutexProcess = new QMutex();
-    m_vRTSPServer = new VRTSPServer();
     m_vSavingWorker = new VSavingWorker();
     m_capture->moveToThread(m_captureThread);
     m_process->moveToThread(m_processThread);
@@ -43,8 +42,8 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(pa
     connect(m_process, SIGNAL(trackStateLost()), this, SLOT(slObjectLost()));
     connect(m_process, SIGNAL(trackStateFound(int, double, double, double, double, double, double)), this,
             SLOT(slDeterminedTrackObjected(int, double, double, double, double, double, double)));
-    connect(this, SIGNAL(sourceSizeChanged(int, int)),
-            this, SLOT(onStreamFrameSizeChanged(int, int)));
+    connect(this, &VideoEngine::sourceSizeChanged,
+            this, &VideoEngine::onStreamFrameSizeChanged);
     connect(m_process,&CVVideoProcess::readyDrawOnViewerID,this,&CVVideoCaptureThread::drawOnViewerID);
     //    connect(m_process,SIGNAL(objectSizeChange(float)),this,SLOT(doChangeZoom(float)));
     m_capture->m_imageQueue = &m_imageQueue;
@@ -81,14 +80,7 @@ CVVideoCaptureThread::~CVVideoCaptureThread()
     }
 
     printf("Process thread stopped\r\n");
-    m_vRTSPServer->wait(100);
-    m_vRTSPServer->quit();
-
-    if (!m_vRTSPServer->wait(100)) {
-        m_vRTSPServer->terminate();
-        m_vRTSPServer->wait(100);
-    }
-
+    stopRTSP();
     printf("RTSP thread stopped\r\n");
 
     m_vSavingWorker->wait(100);
@@ -102,7 +94,6 @@ CVVideoCaptureThread::~CVVideoCaptureThread()
     printf("Saving thread stopped\r\n");
 
     m_vSavingWorker->deleteLater();
-    m_vRTSPServer->deleteLater();
     m_processThread->deleteLater();
     m_process->deleteLater();
     m_captureThread->deleteLater();
@@ -146,7 +137,6 @@ void CVVideoCaptureThread::stop()
         printf("Process already stopped\r\n");
     }
 
-//    m_vRTSPServer->setStateRun(false);
     m_vSavingWorker->stopPipeline();
 }
 
@@ -157,6 +147,16 @@ void CVVideoCaptureThread::setStab(bool enable)
 void CVVideoCaptureThread::setShare(bool enable)
 {
     m_process->m_sharedEnable = enable;
+    if(enable){
+#ifdef USE_VIDEO_CPU
+    setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=1500000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
+                  8554,m_sourceSize.width(),m_sourceSize.height());
+#endif
+#ifdef USE_VIDEO_GPU
+    setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=1500000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
+                  8554,m_sourceSize.width(),m_sourceSize.height());
+#endif
+    }
 }
 void CVVideoCaptureThread::setTrackState(bool enable)
 {
@@ -254,18 +254,7 @@ void CVVideoCaptureThread::setRecord(bool _en){
 }
 void CVVideoCaptureThread::setStreamMount(QString _streamMount)
 {
-    m_vRTSPServer->setStreamMount(_streamMount.toStdString());
+    if(m_vRTSPServer!= nullptr)
+        m_vRTSPServer->setStreamMount(_streamMount);
 }
-void CVVideoCaptureThread::onStreamFrameSizeChanged(int width, int height)
-{
-    printf("%s [%dx%d]\r\n",__func__,width,height);
-    m_vRTSPServer->setStreamSize(width, height);
-    m_vSavingWorker->setStreamSize(width, height);
-    if (m_enStream) {
-        m_vRTSPServer->start();
-    }
 
-    if (m_enSaving) {
-        m_vSavingWorker->start();
-    }
-}

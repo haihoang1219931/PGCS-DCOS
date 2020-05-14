@@ -48,8 +48,6 @@ public Q_SLOTS:
         {
             m_process->setTrackType(trackType);
         }
-
-        void onStreamFrameSizeChanged(int width, int height) override;
         void doShowVideo() override;
 public:
         QThread *m_captureThread;

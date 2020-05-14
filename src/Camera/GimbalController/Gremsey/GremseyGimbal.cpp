@@ -50,10 +50,16 @@ GremseyGimbal::GremseyGimbal(GimbalInterface *parent) : GimbalInterface(parent)
     m_context->m_hfov[0] = m_context->m_hfovMax[0];
     m_context->m_hfov[1] = 17.7f;
     m_context->m_zoom[0] = 1;
-    setZoom(1.0f);
-    setZoomMax(20);
-    setZoomMin(1);
-    setZoomTarget(1);
+    setZoom(0,1.0f);
+    setZoomMax(0,20);
+    setZoomMin(0,1);
+    setZoomTarget(0,1);
+
+    setZoom(1,1.0f);
+    setZoomMax(1,1);
+    setZoomMin(1,1);
+    setZoomTarget(1,1);
+
     Q_EMIT zoomCalculatedChanged(0,1);
 }
 void GremseyGimbal::setJoystick(JoystickThreaded* joystick){

@@ -41,7 +41,9 @@ Item {
     }
     Label {
         color: messageIcon.color
-        text: vehicle ? ((100.0 - vehicle.mavlinkLossPercent).toFixed(0).toString() + "%") : ""
+        text: vehicle ? ( (!isNan(vehicle.mavlinkLossPercent)?
+                               Number(100.0 - vehicle.mavlinkLossPercent).toFixed(0).toString():"100")
+                         + "%") : "100%"
         anchors.top: parent.top
         anchors.topMargin: 2
         anchors.left: messageIcon.right

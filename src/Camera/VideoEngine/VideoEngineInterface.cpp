@@ -14,7 +14,7 @@ GimbalInterface* VideoEngine::gimbal(){
 }
 void VideoEngine::setGimbal(GimbalInterface* gimbal){
     m_gimbal = gimbal;
-    m_gimbal->setZoomTarget(m_gimbal->context()->m_zoom[0]);
+    m_gimbal->setZoomTarget(0,m_gimbal->context()->m_zoom[0]);
     m_gimbal->setZoomCalculated(0,m_gimbal->context()->m_zoom[0]);
 }
 void VideoEngine::loadConfig(Config* config){
@@ -24,11 +24,14 @@ void VideoEngine::loadConfig(Config* config){
         start();
     }
 }
-void VideoEngine::setSourceRTSP(QString source, int port){
+void VideoEngine::setSourceRTSP(QString source, int port, int width, int height){
+    printf("VideoEngine::setSourceRTSP source=%s\r\n",source.toStdString().c_str());
     stopRTSP();
     m_vRTSPServer = new VRTSPServer();
     m_vRTSPServer->m_source = source;
     m_vRTSPServer->m_port = port;
+    m_vRTSPServer->m_width = width;
+    m_vRTSPServer->m_height = height;
     m_vRTSPServer->start();
 }
 void VideoEngine::stopRTSP(){
@@ -150,4 +153,28 @@ void VideoEngine::update()
 QSize VideoEngine::sourceSize()
 {
     return m_sourceSize;
+}
+void VideoEngine::onStreamFrameSizeChanged(int width, int height)
+{
+    printf("%s [%dx%d]\r\n",__func__,width,height);
+    m_vSavingWorker->setStreamSize(width, height);
+    if (m_enStream) {
+        if(m_vRTSPServer == nullptr)
+        {
+    #ifdef USE_VIDEO_CPU
+        setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=1500000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
+                      8554,width,height);
+    #endif
+    #ifdef USE_VIDEO_GPU
+        setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=1500000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
+                      8554,width,height);
+    #endif
+        }else{
+            printf("m_vRTSPServer != nullptr\r\n");
+        }
+    }
+
+    if (m_enSaving) {
+        m_vSavingWorker->start();
+    }
 }

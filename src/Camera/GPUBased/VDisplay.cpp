@@ -9,7 +9,7 @@ VDisplay::VDisplay(VideoEngine *_parent) : VideoEngine(_parent)
     m_vMOTWorker = new VMOTWorker;
     m_vSearchWorker = new VSearchWorker;
     m_vTrackWorker = new VTrackWorker;
-    m_vSavingWorker = new VSavingWorker("EO");
+    m_vSavingWorker = new VSavingWorker();
     m_threadEODisplay = new QThread(0);
     m_vDisplayWorker = new VDisplayWorker(0);
     m_vDisplayWorker->moveToThread(m_threadEODisplay);
@@ -26,6 +26,8 @@ VDisplay::VDisplay(VideoEngine *_parent) : VideoEngine(_parent)
     connect(m_vTrackWorker, &VTrackWorker::objectLost,
             this, &VDisplay::slObjectLost);
     connect(m_vDisplayWorker,&VDisplayWorker::readyDrawOnViewerID,this,&VDisplay::drawOnViewerID);
+    connect(this, &VideoEngine::sourceSizeChanged,
+            this, &VideoEngine::onStreamFrameSizeChanged);
     connect(m_vTrackWorker, &VTrackWorker::zoomCalculateChanged, this,&VDisplay::handleZoomCalculateChanged);
     connect(m_vTrackWorker, &VTrackWorker::zoomTargetChanged, this,&VDisplay::handleZoomTargetChanged);
     //    connect(m_vTrackWorker, &VTrackWorker::zoomTargetChangeStopped, this,&VDisplay::handleZoomTargetChangeStopped);
@@ -62,7 +64,7 @@ void VDisplay::handleZoomCalculateChanged(int index,float zoomCalculate){
 }
 void VDisplay::handleZoomTargetChanged(float zoomTarget){
     if(m_gimbal!= nullptr){
-        m_gimbal->setZoomTarget(zoomTarget);
+        m_gimbal->setZoomTarget(m_gimbal->context()->m_sensorID,zoomTarget);
     }
 }
 void VDisplay::init()
@@ -97,21 +99,6 @@ void VDisplay::start()
     m_vSavingWorker->start();
     m_vTrackWorker->start();
     m_threadEODisplay->start();
-    // start rtsp
-    if(m_vRTSPServer == nullptr)
-    {
-#ifdef USE_VIDEO_CPU
-    setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=2000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
-                  8554);
-#endif
-#ifdef USE_VIDEO_GPU
-    setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=2000000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
-                  8554);
-//    setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=2000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
-//                  8554);
-#endif
-    }
-
 }
 
 
@@ -288,14 +275,12 @@ void VDisplay::setShare(bool enable)
     m_vDisplayWorker->m_enShare = enable;
     if(enable){
 #ifdef USE_VIDEO_CPU
-    setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=2000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
-                  8554);
+    setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=1500000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
+                  8554,m_sourceSize.width(),m_sourceSize.height());
 #endif
 #ifdef USE_VIDEO_GPU
-    setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=2000000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
-                  8554);
-//    setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=2000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
-//                  8554);
+    setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=1500000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
+                  8554,m_sourceSize.width(),m_sourceSize.height());
 #endif
     }
 }
@@ -326,19 +311,7 @@ void VDisplay::stop()
     m_vTrackWorker->stop();
     m_vPreprocess->stop();
     // stop rtsp
-    if(m_vRTSPServer!=nullptr && !(m_vRTSPServer->m_stop)){
-        m_vRTSPServer->m_stop = true;
-        m_vRTSPServer->setStateRun(false);
-        m_vRTSPServer->wait(1000);
-        m_vRTSPServer->quit();
-        if (!m_vRTSPServer->wait(1000)) {
-            m_vRTSPServer->terminate();
-            m_vRTSPServer->wait(1000);
-        }
-        delete m_vRTSPServer;
-        m_vRTSPServer = nullptr;
-        printf("Thread stopped\r\n");
-    }
+    stopRTSP();
     std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 void VDisplay::capture(){

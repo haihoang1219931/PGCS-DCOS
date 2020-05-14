@@ -58,7 +58,7 @@ public:
     int m_port = 8554;
     int m_width = 1920;
     int m_height = 1080;
-    int m_fps = 25;
+    int m_fps = 30;
     bool m_stop = false;
     QString m_source;
     GMainContext * context = nullptr;

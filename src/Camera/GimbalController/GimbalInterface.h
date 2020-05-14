@@ -13,11 +13,11 @@ class GimbalInterface : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(JoystickThreaded*    joystick                    READ joystick       WRITE setJoystick)
-    Q_PROPERTY(float digitalZoomMax READ digitalZoomMax WRITE setDigitalZoomMax NOTIFY digitalZoomMaxChanged)
-    Q_PROPERTY(float zoomMax READ zoomMax WRITE setZoomMax NOTIFY zoomMaxChanged)
-    Q_PROPERTY(float zoomMin READ zoomMin WRITE setZoomMin NOTIFY zoomMinChanged)
-    Q_PROPERTY(float zoom READ zoom WRITE setZoom NOTIFY zoomChanged)
-    Q_PROPERTY(float zoomTarget READ zoomTarget WRITE setZoomTarget NOTIFY zoomTargetChanged)
+    Q_PROPERTY(float digitalZoomMax READ digitalZoomMax NOTIFY digitalZoomMaxChanged)
+    Q_PROPERTY(float zoomMax READ zoomMax NOTIFY zoomMaxChanged)
+    Q_PROPERTY(float zoomMin READ zoomMin NOTIFY zoomMinChanged)
+    Q_PROPERTY(float zoom READ zoom NOTIFY zoomChanged)
+    Q_PROPERTY(float zoomTarget READ zoomTarget NOTIFY zoomTargetChanged)
 public:
     explicit GimbalInterface(QObject *parent = nullptr);
     GimbalData* context(){ return m_context; }
@@ -25,46 +25,58 @@ public:
     JoystickThreaded* joystick();
     virtual void setJoystick(JoystickThreaded* joystick);
     float digitalZoomMax(){
-        return m_context->m_zoomMax[0];
+        return m_context->m_zoomMax[m_context->m_sensorID];
     }
-    void setDigitalZoomMax(float digitalZoomMax){
-        m_context->m_digitalZoomMax[0] = digitalZoomMax;
-        Q_EMIT digitalZoomMaxChanged();
+    void setDigitalZoomMax(int sensorID, float digitalZoomMax){
+        if(sensorID >=0 && sensorID < MAX_SENSOR){
+            m_context->m_digitalZoomMax[sensorID] = digitalZoomMax;
+            Q_EMIT digitalZoomMaxChanged();
+        }
     }
     float zoomMax(){
-        return m_context->m_zoomMax[0];
+        return m_context->m_zoomMax[m_context->m_sensorID];
     }
-    void setZoomMax(float zoomMax){
-        m_context->m_zoomMax[0] = zoomMax;
-        Q_EMIT zoomMaxChanged();
+    void setZoomMax(int sensorID, float zoomMax){
+        if(sensorID >=0 && sensorID < MAX_SENSOR){
+            m_context->m_zoomMax[sensorID] = zoomMax;
+            Q_EMIT zoomMaxChanged();
+        }
     }
     float zoomMin(){
-        return m_context->m_zoomMin[0];
+        return m_context->m_zoomMin[m_context->m_sensorID];
     }
-    void setZoomMin(float zoomMin){
-        m_context->m_zoomMin[0] = zoomMin;
-        Q_EMIT zoomMinChanged();
+    void setZoomMin(int sensorID, float zoomMin){
+        if(sensorID >=0 && sensorID < MAX_SENSOR){
+            m_context->m_zoomMin[sensorID] = zoomMin;
+            Q_EMIT zoomMinChanged();
+        }
     }
     float zoom(){
-        return m_context->m_zoom[0];
+        return m_context->m_zoom[m_context->m_sensorID];
     }
-    void setZoom(float zoom){
-        m_context->m_zoom[0] = zoom;
-        Q_EMIT zoomChanged();
+    void setZoom(int sensorID, float zoom){
+        if(sensorID >=0 && sensorID < MAX_SENSOR){
+            m_context->m_zoom[sensorID] = zoom;
+            Q_EMIT zoomChanged();
+        }
     }
     float zoomTarget(){
-        return m_context->m_zoomTarget[0];
+        return m_context->m_zoomTarget[m_context->m_sensorID];
     }
-    void setZoomTarget(float zoomTarget){
-        m_context->m_zoomTarget[0] = zoomTarget;
-        Q_EMIT zoomTargetChanged();
+    void setZoomTarget(int sensorID, float zoomTarget){
+        if(sensorID >=0 && sensorID < MAX_SENSOR){
+            m_context->m_zoomTarget[sensorID] = zoomTarget;
+            Q_EMIT zoomTargetChanged();
+        }
     }
     float zoomCalculated(){
-        return m_context->m_zoomCalculated[0];
+        return m_context->m_zoomCalculated[m_context->m_sensorID];
     }
-    void setZoomCalculated(int index, float zoomCalculated){
-        m_context->m_zoomCalculated[index] = zoomCalculated;
-        Q_EMIT zoomCalculatedChanged(index,zoomCalculated);
+    void setZoomCalculated(int sensorID, float zoomCalculated){
+        if(sensorID >=0 && sensorID < MAX_SENSOR){
+            m_context->m_zoomCalculated[sensorID] = zoomCalculated;
+            Q_EMIT zoomCalculatedChanged(sensorID,zoomCalculated);
+        }
     }
 Q_SIGNALS:
     void digitalZoomMaxChanged();

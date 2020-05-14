@@ -173,7 +173,7 @@ public:
     void update();
     bool allThreadStopped();
     void loadConfig(Config* config);
-    void setSourceRTSP(QString source, int port);
+    void setSourceRTSP(QString source, int port, int width, int height);
     void stopRTSP();
 public:
     Q_INVOKABLE virtual int addSubViewer(ImageItem *viewer);
@@ -224,7 +224,7 @@ public Q_SLOTS:
     }
     virtual void slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h);
     virtual void slObjectLost();
-    virtual void onStreamFrameSizeChanged(int width, int height){}
+    virtual void onStreamFrameSizeChanged(int width, int height);
     virtual void doShowVideo(){}
     virtual void drawOnViewerID(cv::Mat img, int viewerID);
 protected:
@@ -254,8 +254,8 @@ protected:
     cv::Mat m_imgShow;
     std::string m_logFolder;
     std::string m_logFile;
-    VRTSPServer *m_vRTSPServer;
-    VSavingWorker *m_vSavingWorker;
+    VRTSPServer *m_vRTSPServer = nullptr;
+    VSavingWorker *m_vSavingWorker = nullptr;
 
     // OD
     bool m_enSteer = false;
