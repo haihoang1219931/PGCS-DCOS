@@ -41,13 +41,38 @@ Item {
     }
     Label {
         color: messageIcon.color
-        text: vehicle ? ( (!isNan(vehicle.mavlinkLossPercent)?
+        text: vehicle ? ( (!isNaN(vehicle.mavlinkLossPercent)?
                                Number(100.0 - vehicle.mavlinkLossPercent).toFixed(0).toString():"100")
                          + "%") : "100%"
         anchors.top: parent.top
         anchors.topMargin: 2
         anchors.left: messageIcon.right
         anchors.leftMargin: 2
+        font.family: UIConstants.appFont
+        font.pixelSize: UIConstants.fontSize
+        opacity: 0.6
+    }
+    Label {
+        color: messageIcon.color
+        text: "20"
+        horizontalAlignment: Text.AlignRight
+        anchors.right: messageIcon.left
+        anchors.rightMargin: 2
+        anchors.top: parent.top
+        anchors.topMargin: 2
+        font.family: UIConstants.appFont
+        font.pixelSize: UIConstants.fontSize
+        opacity: 0.6
+    }
+    Label {
+        color: messageIcon.color
+        text: "70"
+        anchors.bottom: messageIcon.bottom
+        anchors.bottomMargin: 2
+        anchors.right: messageIcon.left
+        anchors.rightMargin: 2
+        verticalAlignment: Text.AlignBottom
+        horizontalAlignment: Text.AlignRight
         font.family: UIConstants.appFont
         font.pixelSize: UIConstants.fontSize
         opacity: 0.6
