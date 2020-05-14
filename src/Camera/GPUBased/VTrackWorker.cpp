@@ -422,8 +422,8 @@ void VTrackWorker::run()
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
         std::this_thread::sleep_for(std::chrono::microseconds(1000));
-        printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
-        std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
+        //printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
+        //std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
     }
 }
 

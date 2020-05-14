@@ -1739,7 +1739,6 @@ ApplicationWindow {
             comTracker.loadConfig(TRKConfig);
             comTracker.connectLink();
             tracker.communication = comTracker;
-
             tracker.uav = vehicle;
             console.log("CAMERA_CONTROL = "+CAMERA_CONTROL)
             // --- Payload
@@ -1750,11 +1749,22 @@ ApplicationWindow {
             }
             if(UC_API)
             {
+                timerStartUC.start();
+            }
+        }
+    }
+    Timer{
+        id: timerStartUC
+        repeat: false
+        interval: 15000
+        running: false
+        onTriggered: {
+            if(UC_API)
+            {
                 UcApi.notifyQmlReady();
             }
         }
     }
-
     Component.onCompleted: {
         UIConstants.changeTheme(UIConstants.themeNormal);
         if(FCSConfig.value("Settings:MapDefault:Value:data") !== "")

@@ -45,11 +45,40 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     app.setOrganizationName("qdt");
     app.setOrganizationDomain("qdt");
+    QQmlApplicationEngine engine;
+    engine.addImportPath("qrc:/");
 #ifdef UC_API
     QtWebEngine::initialize();
 #endif
-    QQmlApplicationEngine engine;
-    engine.addImportPath("qrc:/");
+#ifdef UC_API
+    //--- UC Socket API
+    UCConfig ucConfig;
+    ucConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/uc.conf");
+    AppSocketApi *appSocketApi = AppSocketApi::connectToServer(
+                                     ucConfig.value("Settings:UCServerAddress:Value:data").toString(),
+                                     ucConfig.value("Settings:UCServerPort:Value:data").toInt(),
+                                     ucConfig.value("Settings:UCServerName:Value:data").toString());
+
+    appSocketApi->createNewRoom(
+        ucConfig.value("Settings:UCStreamSource:Value:data").toString(),
+        ucConfig.value("Settings:UCRoomName:Value:data").toString());
+    engine.rootContext()->setContextProperty("UcApi", appSocketApi);
+    engine.rootContext()->setContextProperty("UcApiConfig", &ucConfig);
+    //---  UC Data Binding
+    UC::UCDataModel *ucDataModel = UC::UCDataModel::instance();
+    engine.rootContext()->setContextProperty("UCDataModel", ucDataModel);
+    UCEventListener *ucEventListener = UCEventListener::instance();
+    engine.rootContext()->setContextProperty("UCEventListener", ucEventListener);
+    //- UC Enum Attributes
+    UC::UserAttribute::expose();
+    UC::UserRoles::expose();
+    UCEventEnums::expose();
+    UC::RedoActionAfterReloadWebView::expose();
+    engine.rootContext()->setContextProperty("UC_API", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("UC_API", QVariant(false));
+#endif
+
     //--- Flight controller
     qmlRegisterType<MissionItem>("io.qdt.dev", 1, 0,    "MissionItem");
     qmlRegisterType<ParamsController>("io.qdt.dev", 1, 0, "ParamsController");
@@ -102,34 +131,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(false));
 #endif
     qmlRegisterType<PlateLog>("io.qdt.dev", 1, 0, "PlateLog");
-#ifdef UC_API
-    //--- UC Socket API
-    UCConfig ucConfig;
-    ucConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/uc.conf");
-    AppSocketApi *appSocketApi = AppSocketApi::connectToServer(
-                                     ucConfig.value("Settings:UCServerAddress:Value:data").toString(),
-                                     ucConfig.value("Settings:UCServerPort:Value:data").toInt(),
-                                     ucConfig.value("Settings:UCServerName:Value:data").toString());
 
-    appSocketApi->createNewRoom(
-        ucConfig.value("Settings:UCStreamSource:Value:data").toString(),
-        ucConfig.value("Settings:UCRoomName:Value:data").toString());
-    engine.rootContext()->setContextProperty("UcApi", appSocketApi);
-    engine.rootContext()->setContextProperty("UcApiConfig", &ucConfig);
-    //---  UC Data Binding
-    UC::UCDataModel *ucDataModel = UC::UCDataModel::instance();
-    engine.rootContext()->setContextProperty("UCDataModel", ucDataModel);
-    UCEventListener *ucEventListener = UCEventListener::instance();
-    engine.rootContext()->setContextProperty("UCEventListener", ucEventListener);
-    //- UC Enum Attributes
-    UC::UserAttribute::expose();
-    UC::UserRoles::expose();
-    UCEventEnums::expose();
-    UC::RedoActionAfterReloadWebView::expose();
-    engine.rootContext()->setContextProperty("UC_API", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("UC_API", QVariant(false));
-#endif
     //--- Joystick
     JoystickThreaded::expose();
     //--- Other things

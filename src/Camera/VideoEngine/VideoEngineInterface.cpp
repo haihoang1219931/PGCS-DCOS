@@ -24,6 +24,27 @@ void VideoEngine::loadConfig(Config* config){
         start();
     }
 }
+void VideoEngine::setSourceRTSP(QString source, int port){
+    stopRTSP();
+    m_vRTSPServer = new VRTSPServer();
+    m_vRTSPServer->m_source = source;
+    m_vRTSPServer->m_port = port;
+    m_vRTSPServer->start();
+}
+void VideoEngine::stopRTSP(){
+    if(m_vRTSPServer!=nullptr && !(m_vRTSPServer->m_stop)){
+        m_vRTSPServer->m_stop = true;
+        m_vRTSPServer->setStateRun(false);
+        m_vRTSPServer->wait(1000);
+        m_vRTSPServer->quit();
+        if (!m_vRTSPServer->wait(1000)) {
+            m_vRTSPServer->terminate();
+            m_vRTSPServer->wait(1000);
+        }
+        delete m_vRTSPServer;
+        m_vRTSPServer = nullptr;
+    }
+}
 void VideoEngine::slObjectLost(){
     m_gimbal->setGimbalRate(0,0);
     m_gimbal->context()->m_lockMode = "FREE";

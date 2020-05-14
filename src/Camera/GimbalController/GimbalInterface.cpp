@@ -35,54 +35,73 @@ void GimbalInterface::lockScreenPoint(int _id,
 //    double deadRate = 8;
 //    if(fabs(m_panRate) > deadRate || fabs(m_tiltRate) > deadRate)
     {
+        m_beginTime = clock();
+
+        double T = static_cast<double>(m_beginTime - m_endTime)/CLOCKS_PER_SEC;
+        m_endTime = m_beginTime ;
+
+        double fps = 1/T;
+
         double px = (_px + _oW/2) - _w/2;
         double py = (_py + _oH/2) - _h/2;
         double hfov = static_cast<double>(m_context->m_hfov[m_context->m_sensorID])/180.0*M_PI;
-        printf("%s [%.0f, %.0f] hfov=%f\r\n",__func__,px,py,hfov);
+//        printf("%s [%.0f, %.0f] hfov=%f fps=%f\r\n",__func__,px,py,hfov,fps);
         double focalLength = _w / 2 / tan(hfov/2);
 
         double deltaPan = atan(-px/focalLength) * 180.0 / M_PI;
 
-        printf("delta pan: %.4f\r\n",deltaPan);
+//        printf("delta pan: %.4f\r\n",deltaPan);
         //            if(deltaPan > 10)deltaPan = 10
         //            else if(deltaPan < -10)deltaPan = -10
-        if(deltaPan<0.18 && deltaPan>-0.18)
-            m_iPan+=deltaPan/30.0;
+        if(deltaPan<0.1 && deltaPan>-0.1)
+            m_iPan+=deltaPan/fps;
         else
             m_iPan = 0;
-        m_cPan+=(m_panRate - m_uPan)/30.0;
-        double dPan = (deltaPan - m_dPanOld) * 30;
+        m_cPan+=(m_panRate - m_uPan)/fps;
+        double dPan = (deltaPan - m_dPanOld) * fps;
         m_uPan = m_kpPan * deltaPan + m_kiPan * m_iPan + m_kdPan * dPan;
         m_dPanOld = deltaPan;
 
         m_panRate = m_uPan;
 
-        printf("I pan: %.4f\r\n",m_kiPan * m_iPan);
+//        printf("I pan: %.4f\r\n",m_kiPan * m_iPan);
 
         double deltaTilt = atan(-py/focalLength) * 180.0 / M_PI;
         //            if(deltaTilt > 10)deltaTilt = 10
         //            else if(deltaTilt < -10)deltaTilt = -10
-        m_iTilt+=deltaTilt/30.0;
-        m_cTilt+=(m_tiltRate - m_uTilt)/30.0;
-        double dTilt = (deltaTilt - m_dTiltOld) * 30;
+        if(deltaTilt<0.1 && deltaTilt>-0.1)
+            m_iTilt+=deltaTilt/fps;
+        else
+            m_iTilt = 0;
+        m_cTilt+=(m_tiltRate - m_uTilt)/fps;
+        double dTilt = (deltaTilt - m_dTiltOld) * fps;
         m_uTilt = m_kpTilt * deltaTilt + m_kiTilt * m_iTilt + m_kdTilt * dTilt;
         m_dTiltOld = deltaTilt;
 
         m_tiltRate = m_uTilt;
 
-        if(m_panRate<8 && m_panRate >0.5)
+        if(m_panRate<8 && m_panRate >1)
         {
             m_panRate=8;
         }
-        else if(m_panRate> -8 && m_panRate <-0.5)
+        else if(m_panRate> -8 && m_panRate <-1)
         {
                m_panRate = -8;
-    }
+        }
 
-        printf("%s _px=%f _py=%f _oW=%f _oH=%f _w=%f _h=%f => panRate=%d tiltRate=%d\r\n",
-               __func__,_px,_py,_oW,_oH,_w,_h,
-               static_cast<int>(m_panRate),
-               static_cast<int>(m_tiltRate));
+        if(m_tiltRate<8 && m_tiltRate >1)
+        {
+            m_tiltRate=8;
+        }
+        else if(m_tiltRate> -8 && m_tiltRate <-1)
+        {
+               m_tiltRate = -8;
+        }
+
+//        printf("%s _px=%f _py=%f _oW=%f _oH=%f _w=%f _h=%f => panRate=%d tiltRate=%d\r\n",
+//               __func__,_px,_py,_oW,_oH,_w,_h,
+//               static_cast<int>(m_panRate),
+//               static_cast<int>(m_tiltRate));
 
         setGimbalRate(static_cast<float>(m_panRate),
                       static_cast<float>(m_tiltRate));

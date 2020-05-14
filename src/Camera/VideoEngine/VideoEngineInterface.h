@@ -125,6 +125,7 @@ public:
     void setEnStream(bool _enStream)
     {
         m_enStream = _enStream;
+
     }
     bool enStream()
     {
@@ -172,6 +173,8 @@ public:
     void update();
     bool allThreadStopped();
     void loadConfig(Config* config);
+    void setSourceRTSP(QString source, int port);
+    void stopRTSP();
 public:
     Q_INVOKABLE virtual int addSubViewer(ImageItem *viewer);
     Q_INVOKABLE virtual void removeSubViewer(int viewerID);

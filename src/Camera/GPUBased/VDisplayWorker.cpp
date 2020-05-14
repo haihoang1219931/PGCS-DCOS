@@ -315,11 +315,16 @@ void VDisplayWorker::capture(){
 void VDisplayWorker::drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t> &_listObj)
 {
     cv::Mat tmpImg = _img.clone();
-    int limitW = 30;
-    int limitH = 60;
+    unsigned int limitW = 30;
+    unsigned int limitH = 60;
     for (auto b : _listObj) {
-        cv::Rect rectObject = cv::Rect(b.x, b.y, b.w, b.h);
-        if(b.w * b.h < limitW * limitH){
+        cv::Rect rectObject = cv::Rect(
+                    static_cast<int>(b.x),
+                    static_cast<int>(b.y),
+                    static_cast<int>(b.w),
+                    static_cast<int>(b.h)
+                    );
+        if((b.w * b.h) < (limitW * limitH) ){
             continue;
         }
         cv::rectangle(_img, rectObject, cv::Scalar(255, 0, 0,255), 2);

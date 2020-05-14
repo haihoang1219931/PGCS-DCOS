@@ -168,11 +168,11 @@ void GremseyGimbal::changeSensor(QString sensorID){
     if(m_videoEngine!=nullptr){
         if(sensorID == "IR"){
             m_videoEngine->setVideo(m_config->value("Settings:StreamIR:Value:data").toString());
-            m_videoEngine->start();
+//            m_videoEngine->start();
             m_context->setSensorID(1);
         }else{
             m_videoEngine->setVideo(m_config->value("Settings:StreamEO:Value:data").toString());
-            m_videoEngine->start();
+//            m_videoEngine->start();
             m_context->setSensorID(0);
         }
     }

@@ -102,12 +102,7 @@ AppSocketApiImpl::AppSocketApiImpl(const QString& serverIp, const int& serverPor
     isQmlReady(false),
     sockInst(new sio::client("https://" + serverIp.toStdString() + ":" + std::to_string(serverPort)))
 {
-    qDebug("Init socket connection ....");
-    sockInst->connect();
-    sockInst->set_socket_open_listener(std::bind(&AppSocketApiImpl::onConnected, this, _1));
-    sockInst->set_close_listener(std::bind(&AppSocketApiImpl::onClosed, this, _1));
-    sockInst->set_fail_listener(std::bind(&AppSocketApiImpl::onFailed, this));
-    listenSeverSignal();
+
 }
 
 AppSocketApiImpl::~AppSocketApiImpl() {
@@ -121,6 +116,12 @@ bool AppSocketApiImpl::getConnectionStatus() {
 
 void AppSocketApiImpl::notifyQmlReady() {
     isQmlReady = true;
+    qDebug("Init socket connection ....");
+    sockInst->connect();
+    sockInst->set_socket_open_listener(std::bind(&AppSocketApiImpl::onConnected, this, _1));
+    sockInst->set_close_listener(std::bind(&AppSocketApiImpl::onClosed, this, _1));
+    sockInst->set_fail_listener(std::bind(&AppSocketApiImpl::onFailed, this));
+    listenSeverSignal();
 }
 
 void AppSocketApiImpl::createNewRoom(const QString &rtspLink, const QString &room) {
