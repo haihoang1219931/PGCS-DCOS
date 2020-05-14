@@ -94,10 +94,19 @@ void VDisplayWorker::process()
             cv::imwrite(captureFile, m_imgShow);
         }
         if(m_enOD){
-            //----------------------------- Draw EO object detected
-            DetectedObjectsCacheItem detectedObjsItem = m_rbSearchObjs->last();
-            std::vector<bbox_t> listObj = detectedObjsItem.getDetectedObjects();
-            this->drawDetectedObjects(m_imgShow, listObj);
+            if(m_countUpdateOD == 0){
+                //----------------------------- Draw EO object detected
+                DetectedObjectsCacheItem detectedObjsItem = m_rbSearchObjs->last();
+
+                if(abs(
+                    static_cast<int>(detectedObjsItem.getDetectedObjects().size() - 0)) > 1 | m_listObj.size() == 0)
+                m_listObj = detectedObjsItem.getDetectedObjects();
+            }
+            this->drawDetectedObjects(m_imgShow, m_listObj);
+            m_countUpdateOD ++;
+            if(m_countUpdateOD > 15){
+                m_countUpdateOD = 0;
+            }
         }
         cv::Rect trackRect = processImgItem.trackRect();
         cv::Scalar colorInvision(0,0,255,0);
@@ -306,8 +315,13 @@ void VDisplayWorker::capture(){
 void VDisplayWorker::drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t> &_listObj)
 {
     cv::Mat tmpImg = _img.clone();
+    int limitW = 30;
+    int limitH = 60;
     for (auto b : _listObj) {
         cv::Rect rectObject = cv::Rect(b.x, b.y, b.w, b.h);
+        if(b.w * b.h < limitW * limitH){
+            continue;
+        }
         cv::rectangle(_img, rectObject, cv::Scalar(255, 0, 0,255), 2);
         {
             std::string obj_name;

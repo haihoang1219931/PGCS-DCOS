@@ -21,6 +21,17 @@ Item {
     property real zoomTarget: cameraController.gimbal.zoomTarget
     property real zoomCalculate
     property color drawColor: UIConstants.redColor
+    function convertZoom(zoom){
+        var zoomInput = zoom;
+        if(zoomInput < zoomMin){
+            zoomInput = zoomMin
+        }else if(zoomInput > zoomMax){
+            zoomInput = zoomMax
+        }
+        var zoomOutput = (zoomInput - zoomMin)/(zoomMax - zoomMin) * (30 - zoomMin) + zoomMin;
+        return zoomOutput;
+    }
+
     Canvas{
         id: cvsCenter
         anchors.horizontalCenter: parent.horizontalCenter
@@ -130,8 +141,8 @@ Item {
         Label {
             id: lblZoomOptical
             text: "Zoom: "+(root.zoomRatio<= root.zoomMax?
-                                Number(root.zoomRatio > 15? root.zoomRatio*1.5:root.zoomRatio).toFixed(2):
-                                Number(root.zoomMax*1.5).toFixed(2)) +"/"+Number(root.zoomMax*1.5).toFixed(0)
+                                Number(convertZoom(root.zoomRatio)).toFixed(2):
+                                Number(convertZoom(root.zoomMax)).toFixed(2)) +"/"+Number(convertZoom(root.zoomMax)).toFixed(0)
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors.bottom: parent.bottom

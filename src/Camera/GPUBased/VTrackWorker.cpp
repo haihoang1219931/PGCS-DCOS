@@ -32,6 +32,10 @@ void VTrackWorker::changeTrackSize(float _trackSize)
     m_trackSizePrev = m_trackSize;
 }
 void VTrackWorker::setClick(float x, float y,float width,float height){
+    if(m_grayFrame.cols <= 0 || m_grayFrame.rows <= 0
+            || fabs(width) < 20 || fabs(height) < 20){
+        return;
+    }
     if(!m_clickSet){
         m_clickSet = true;
         m_clickPoint.x = x/width*static_cast<float>(m_grayFrame.cols);
@@ -42,8 +46,11 @@ void VTrackWorker::setClick(float x, float y,float width,float height){
     }
 }
 void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float alpha){    
+    if(m_grayFrame.cols <= 0 || m_grayFrame.rows <= 0){
+        return;
+    }
     m_moveZoomRate = -zoomRate / maxAxis;
-//    m_rotationAlpha = alpha;
+    //    m_rotationAlpha = alpha;
     m_movePanRate = panRate / maxAxis * (m_grayFrame.cols/2) / 10;
     m_moveTiltRate = tiltRate / maxAxis * (m_grayFrame.rows/2) / 10;
     joystickData temp;
@@ -261,12 +268,12 @@ void VTrackWorker::run()
                 temp.panRate = m_movePanRate;
                 temp.tiltRate = m_moveTiltRate;
                 if(fabs(m_moveZoomRate) >= deadZone/maxAxis){
-//                    m_r+=m_moveZoomRate /3;
-//                    if(m_r > m_digitalZoomMax){
-//                        m_r = m_digitalZoomMax;
-//                    }else if(m_r < m_digitalZoomMin){
-//                        m_r = m_digitalZoomMin;
-//                    }
+                    //                    m_r+=m_moveZoomRate /3;
+                    //                    if(m_r > m_digitalZoomMax){
+                    //                        m_r = m_digitalZoomMax;
+                    //                    }else if(m_r < m_digitalZoomMin){
+                    //                        m_r = m_digitalZoomMin;
+                    //                    }
                     Q_EMIT zoomTargetChanged(m_r);
                     Q_EMIT zoomTargetChangeStopped(m_r);
                 }
@@ -277,9 +284,9 @@ void VTrackWorker::run()
                                     );
                 if(m_trackEnable){
                     int trackSizeTmp = m_trackSize;
-//                    if(trackSizeTmp > 200){
-//                        trackSizeTmp = 200;
-//                    }
+                    //                    if(trackSizeTmp > 200){
+                    //                        trackSizeTmp = 200;
+                    //                    }
                     cv::Rect trackRectTmp(lockPoint.x-trackSizeTmp/2,
                                           lockPoint.y-trackSizeTmp/2,
                                           trackSizeTmp,trackSizeTmp);
@@ -394,7 +401,7 @@ void VTrackWorker::run()
         //        }
         //        m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_r/m_zoomRateCalculate[0]*m_zoomStart,0);
         m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1,m_rotationAlpha);
-//        std::cout << "hainh create m_ptzMatrix " << m_ptzMatrix << std::endl;
+        //        std::cout << "hainh create m_ptzMatrix " << m_ptzMatrix << std::endl;
         // add data to display worker
         ProcessImageCacheItem processImgItem;
         processImgItem.setIndex(m_currID);
@@ -414,8 +421,9 @@ void VTrackWorker::run()
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
-        //        printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
-        //        std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
+        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+        printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
+        std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
     }
 }
 

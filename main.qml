@@ -1138,7 +1138,9 @@ ApplicationWindow {
                 onFunctionHandled:{
                     toastFlightControler.callActionAppearance = false;
                     toastFlightControler.rejectButtonAppearance = false;
-                    toastFlightControler.toastContent = message;
+                    toastFlightControler.toastContent = message + " " +
+                            Number(vehicle.coordinate.latitude).toFixed(7) + "," +
+                            Number(vehicle.coordinate.longitude).toFixed(7);
                     toastFlightControler.show();
                 }
             }

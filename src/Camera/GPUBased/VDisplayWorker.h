@@ -96,5 +96,7 @@ class VDisplayWorker : public QObject
         PlateLog* m_plateLog;
         QMutex m_captureMutex;
         bool m_captureSet = false;
+        int m_countUpdateOD = 0;
+        std::vector<bbox_t> m_listObj;
 };
 #endif // VDISPLAYWORKER_H

@@ -126,17 +126,17 @@ protected:
     double m_dPanOld= 0 ;
     double m_panRate= 0 ;
     double m_uPan= 0 ;
-    double m_kpPan = 45.0;
-    double m_kiPan = 1.0;//1.0
-    double m_kdPan = 0.05;
+    double m_kpPan = 30.0;
+    double m_kiPan = 1;//1.0
+    double m_kdPan = 0.3;
     double m_iTilt= 0 ;
     double m_cTilt= 0 ;
     double m_dTiltOld= 0 ;
     double m_tiltRate= 0 ;
     double m_uTilt= 0 ;
-    double m_kpTilt = 50.0;
-    double m_kiTilt = 5.0;
-    double m_kdTilt= 0.05;
+    double m_kpTilt = 80.0;
+    double m_kiTilt = 15.0;
+    double m_kdTilt= 0.08;
 };
 
 #endif // GIMBALINTERFACE_H
