@@ -118,7 +118,6 @@ protected:
     bool m_isGimbalConnected = false;
     Config* m_config = nullptr;
     JoystickThreaded*  m_joystick = nullptr;
-
 protected:
     void  resetTrackParam(){
         m_iPan = 0.0;
@@ -138,17 +137,17 @@ protected:
     double m_dPanOld= 0 ;
     double m_panRate= 0 ;
     double m_uPan= 0 ;
-    double m_kpPan = 30.0;
-    double m_kiPan = 2;//1.0
-    double m_kdPan = 0.3;
+    double m_kpPan = 70.0;
+    double m_kiPan = 3.0;//1.0
+    double m_kdPan = 0;
     double m_iTilt= 0 ;
     double m_cTilt= 0 ;
     double m_dTiltOld= 0 ;
     double m_tiltRate= 0 ;
     double m_uTilt= 0 ;
-    double m_kpTilt = 40.0;
-    double m_kiTilt = 2;
-    double m_kdTilt= 0.2;
+    double m_kpTilt = 90.0;
+    double m_kiTilt = 3.0;
+    double m_kdTilt= 0.0;
 
     clock_t m_beginTime=0;
     clock_t m_endTime=0;

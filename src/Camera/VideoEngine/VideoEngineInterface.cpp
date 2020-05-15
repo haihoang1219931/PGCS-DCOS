@@ -166,7 +166,9 @@ void VideoEngine::onStreamFrameSizeChanged(int width, int height)
                       8554,width,height);
     #endif
     #ifdef USE_VIDEO_GPU
-        setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=1500000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
+//        setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=1500000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
+//                      8554,width,height);
+        setSourceRTSP("( appsrc name=othersrc ! videoscale ! video/x-raw,width=1280,height=720 ! avenc_mpeg4 bitrate=2000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
                       8554,width,height);
     #endif
         }else{

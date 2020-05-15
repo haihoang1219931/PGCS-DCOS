@@ -31,6 +31,7 @@
 #include "MessageManager.h"
 #include "../../Log/LogController.h"
 #include "../../Files/FileControler.h"
+#include "../Telemetry/Com/com_proxy.hpp"
 //#define DEBUG
 #define BUFFER_LENGTH 8192
 //#define MAVLINK_PARSE_CUSTOM
@@ -49,10 +50,12 @@ public:
     void setVersion(unsigned version);
     QString getLogFile();
 Q_SIGNALS:
+    void teleDataReceived(QString srcAddr, QString dataType, int value);
     void receivePacket(QByteArray msg);
     void messageReceived(mavlink_message_t message);
     void mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t totalReceived, uint64_t totalLoss, float lossPercent);
 public Q_SLOTS:
+    void handleDataReceived(QString srcAddr, QString dataType, int value);
     void loadConfig(Config* linkConfig);
     void connectLink();
     void disConnectLink();
@@ -61,6 +64,9 @@ public Q_SLOTS:
     bool isConnected();
     LinkInterface * getInterface(){ return m_linkInterface;}
 public:
+    Proxy::Com* m_comNetLocal = nullptr;
+    Proxy::Com* m_comNetRemote = nullptr;
+    Config* m_linkConfig = nullptr;
     QMutex* m_mutexProcess = nullptr;
     QWaitCondition *m_pauseCond = nullptr;
     LinkInterface *m_linkInterface = nullptr;
@@ -70,6 +76,12 @@ public:
     bool m_pause = false;
     bool m_stop = false;
     int m_timeCount = 0;
+    int m_localSNR = -1;
+    int m_localRSSI = -1;
+    int m_localDIS = -1;
+    int m_remoteSNR = -1;
+    int m_remoteRSSI = -1;
+    int m_remoteDIS = -1;
     const int SLEEP_TIME = 10;
     // mavlink
     bool        m_enable_version_check;                         ///< Enable checking of version match of MAV and QGC

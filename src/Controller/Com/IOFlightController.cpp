@@ -6,8 +6,7 @@ IOFlightController::IOFlightController(QObject *parent) : QObject(parent)
     m_msgManager = new MessageManager();
     m_mutexProcess = new QMutex();
     m_pauseCond = new QWaitCondition();
-    m_linkInterfaceManager = new LinkInterfaceManager();
-
+    m_linkInterfaceManager = new LinkInterfaceManager();    
     qRegisterMetaType<mavlink_message_t>("mavlink_message_t");
 }
 IOFlightController::~IOFlightController(){
@@ -151,6 +150,7 @@ bool IOFlightController::isConnected(){
     return m_linkInterface->isOpen();
 }
 void IOFlightController::loadConfig(Config* linkConfig){
+    m_linkConfig = linkConfig;
     if(linkConfig->value("Settings:LinkType:Value:data").toString() == "TCP"){
         m_linkInterface = m_linkInterfaceManager->linkForAPConnection(
                     LinkInterfaceManager::CONNECTION_TYPE::MAV_TCP);
@@ -171,6 +171,53 @@ void IOFlightController::loadConfig(Config* linkConfig){
         m_logFile = QString::fromStdString("logs/"+
                                            linkConfig->value("Settings:LinkName:Value:data").toString().toStdString()+" "+
                                            FileController::get_day()+" "+FileController::get_time()+".tlog");
+    }
+    m_comNetLocal = Proxy::Com::createInstance(Worker::ComRole::CLIENT, Worker::SocketType::SOCKET_TCP, 0);
+    m_comNetRemote = Proxy::Com::createInstance(Worker::ComRole::CLIENT, Worker::SocketType::SOCKET_TCP, 0);
+    m_comNetLocal->setTCPServerInfo(linkConfig->value("Settings:TeleLocalIP:Value:data").toString(),
+                                    linkConfig->value("Settings:TeleLocalPort:Value:data").toInt(),
+                                    linkConfig->value("Settings:TeleLocalUser:Value:data").toString(),
+                                    linkConfig->value("Settings:TeleLocalPass:Value:data").toString());
+    m_comNetLocal->start();
+//    m_comNetRemote->setTCPServerInfo(linkConfig->value("Settings:TeleRemoteIP:Value:data").toString(),
+//                                     linkConfig->value("Settings:TeleRemotePort:Value:data").toInt(),
+//                                     linkConfig->value("Settings:TeleRemoteUser:Value:data").toString(),
+//                                     linkConfig->value("Settings:TeleRemotePass:Value:data").toString());
+//    m_comNetRemote->start();
+    connect(m_comNetLocal,&Proxy::Com::dataReceived,this,&IOFlightController::handleDataReceived);
+    connect(m_comNetRemote,&Proxy::Com::dataReceived,this,&IOFlightController::handleDataReceived);
+}
+void IOFlightController::handleDataReceived(QString srcAddr, QString dataType, int value){
+//    printf("%s srcAddr=[%s] [%s] %d\r\n",__func__,
+//           srcAddr.toStdString().c_str(),
+//           dataType.toStdString().c_str(),
+//           value);
+    if(srcAddr == m_linkConfig->value("Settings:TeleLocalIP:Value:data").toString()){
+        if(dataType == "SNR"){
+            m_localSNR = value;
+        }else if(dataType == "RSSI"){
+            m_localRSSI = value;
+        }else if(dataType == "DISTANCE"){
+            m_localDIS = value;
+        }
+        Q_EMIT teleDataReceived("LOCAL",
+//                                "DIS:"+QString::fromStdString(std::to_string(m_localDIS)) +
+                                " RSSI:"+QString::fromStdString(std::to_string(m_localRSSI)) +
+                                " SNR:"+QString::fromStdString(std::to_string(m_localSNR))
+                                ,0);
+    }else if(srcAddr == m_linkConfig->value("Settings:TeleRemoteIP:Value:data").toString()){
+        if(dataType == "SNR"){
+            m_remoteSNR = value;
+        }else if(dataType == "RSSI"){
+            m_remoteRSSI = value;
+        }else if(dataType == "DISTANCE"){
+            m_remoteDIS = value;
+        }
+        Q_EMIT teleDataReceived("REMOTE",
+//                                "DIS:"+QString::fromStdString(std::to_string(m_remoteDIS)) +
+                                " RSSI:"+QString::fromStdString(std::to_string(m_remoteRSSI)) +
+                                " SNR:"+QString::fromStdString(std::to_string(m_remoteSNR))
+                                ,0);
     }
 }
 void IOFlightController::connectLink(){

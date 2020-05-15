@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("FCSConfig", &fcsConfig);
     FCSConfig trkConfig;
     trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
-    engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);    
+    engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);
 
 #ifdef USE_VIDEO_CPU
     //--- Camera controller
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("PCSConfig", &pcsConfig);
     qmlRegisterType<CameraController>("io.qdt.dev", 1, 0, "CameraController");
     qmlRegisterType<ImageItem>("io.qdt.dev", 1, 0, "ImageItem");
-    engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(true));    
+    engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(true));
 #else
     qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "ImageItem");
     qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "CameraController");

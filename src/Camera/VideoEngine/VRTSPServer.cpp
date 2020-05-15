@@ -33,7 +33,10 @@ void VRTSPServer::wrap_clientClosed(GstRTSPClient* client, gpointer user){
 }
 void VRTSPServer::clientClosed(GstRTSPClient* client, gpointer user)
 {
-    g_print("client closed - count: %u\n", --m_clientCount);
+    if(m_clientCount > 0){
+        m_clientCount -- ;
+    }
+    g_print("client closed - count: %u\n", m_clientCount);
 }
 void VRTSPServer::wrap_clientConnected(GstRTSPServer* server, GstRTSPClient* client, gpointer user){
     VRTSPServer *itself = static_cast<VRTSPServer *>(user);
@@ -45,7 +48,8 @@ void VRTSPServer::clientConnected(GstRTSPServer* server, GstRTSPClient* client, 
 
     g_signal_connect(client, "closed", reinterpret_cast<GCallback>(wrap_clientClosed), this);
 
-    g_print("client-connected -- count: %u\n", ++m_clientCount);
+    m_clientCount ++ ;
+    g_print("client-connected -- count: %u\n", m_clientCount);
 }
 
 /// @brief Closes clients, called by the app
@@ -83,6 +87,7 @@ void VRTSPServer::enough_data(GstElement *appsrc, guint unused, gpointer user_da
     printf("Enough Data\r\n");
 }
 
+static int numFrame = 0;
 GstFlowReturn VRTSPServer::need_data(GstElement *appsrc, guint unused, gpointer user_data)
 {
     if (m_gstRTSPBuff->size() == 0) {
@@ -90,11 +95,11 @@ GstFlowReturn VRTSPServer::need_data(GstElement *appsrc, guint unused, gpointer 
     }
 //    printf("VRTSPServer::need_data\r\n");
     GstFrameCacheItem gstFrame = m_gstRTSPBuff->last();
-    while ((gstFrame.getIndex() == -1) || (gstFrame.getIndex() == m_currID)) {
-        gstFrame = m_gstRTSPBuff->last();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        continue;
-    }
+//    while ((gstFrame.getIndex() == -1) || (gstFrame.getIndex() == m_currID)) {
+//        gstFrame = m_gstRTSPBuff->last();
+//        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+//        continue;
+//    }
 
     m_currID = gstFrame.getIndex();
     GstFlowReturn ret = GstFlowReturn::GST_FLOW_OK;
@@ -102,18 +107,52 @@ GstFlowReturn VRTSPServer::need_data(GstElement *appsrc, guint unused, gpointer 
     {
         GstBuffer *img_stream = gstFrame.getGstBuffer();
         if(img_stream != nullptr){
-            gsize bufSize = gst_buffer_get_size(img_stream);
-//            printf("===> RTSP Stream: [%d] -%d\r\n",gstFrame.getIndex(),bufSize);
-            if(static_cast<int>(bufSize) >= (m_width * m_height * 3/2))
-            img_stream->pts = static_cast<GstClockTime>(timestamp);
-            img_stream->duration = gst_util_uint64_scale_int(1, GST_SECOND, m_fps);
-            timestamp += img_stream->duration;
+//            gsize bufSize = gst_buffer_get_size(img_stream);
+//            if(static_cast<int>(bufSize) >= (m_width * m_height * 3/2))
+//            img_stream->pts = static_cast<GstClockTime>(timestamp);
+//            img_stream->duration = gst_util_uint64_scale_int(1, GST_SECOND, m_fps);
+//            timestamp += img_stream->duration;
+//            printf("===> RTSP Stream: [%d] - %ld - img_stream->pts[%ld] img_stream->duration[%ld] timestamp[%ld]\r\n",
+//                   gstFrame.getIndex(),
+//                   bufSize,
+//                   img_stream->pts,
+//                   img_stream->duration,
+//                   timestamp);
+//            g_signal_emit_by_name(appsrc, "push-buffer", img_stream, &ret);
+            GstClockTime duration = GST_SECOND / (double) m_fps;
+            GstClockTime timestamp = duration * numFrame;
+            GST_BUFFER_PTS(img_stream) = timestamp;
+            GST_BUFFER_DURATION(img_stream) = duration;
+            GST_BUFFER_OFFSET(img_stream) = numFrame++;
             g_signal_emit_by_name(appsrc, "push-buffer", img_stream, &ret);
         }
 
     }
     return ret;
 }
+//GstFlowReturn  VRTSPServer::need_data (GstElement * appsrc, guint unused, gpointer user_data)
+//{
+//  GstBuffer *buffer;
+//  guint size;
+//  GstFlowReturn ret;
+
+//  size = 1921 * 1280 * 3/2;
+
+//  buffer = gst_buffer_new_allocate (NULL, size, NULL);
+
+//  /* this makes the image black/white */
+//  gst_buffer_memset (buffer, 0, 0x0, size);
+
+////  ctx->white = !ctx->white;
+
+//  /* increment the timestamp every 1/2 second */
+//  GST_BUFFER_PTS (buffer) = timestamp;
+//  GST_BUFFER_DURATION (buffer) = gst_util_uint64_scale_int (1, GST_SECOND, m_fps);
+//  timestamp += GST_BUFFER_DURATION (buffer);
+
+//  g_signal_emit_by_name (appsrc, "push-buffer", buffer, &ret);
+//  gst_buffer_unref (buffer);
+//}
 gboolean VRTSPServer::seek_data(GstElement *object,  guint64 arg0, gpointer user_data)
 {
     printf("User Data\r\n");
@@ -142,10 +181,11 @@ void VRTSPServer::media_configure(GstRTSPMediaFactory *factory, GstRTSPMedia *me
                                      "framerate", GST_TYPE_FRACTION, m_fps, 1, NULL), NULL);
     /* install the callback that will be called when a buffer is needed */
     g_signal_connect(appsrc, "need-data", (GCallback) wrap_need_data, this);
-    g_signal_connect(appsrc, "enough-data", (GCallback) wrap_enough_data, this);
-    g_signal_connect(appsrc, "seek-data", (GCallback) wrap_seek_data, this);
-    //    gst_object_unref (appsrc);
-    //    gst_object_unref (element);
+//    g_signal_connect(appsrc, "enough-data", (GCallback) wrap_enough_data, this);
+//    g_signal_connect(appsrc, "seek-data", (GCallback) wrap_seek_data, this);
+
+    gst_object_unref (appsrc);
+    gst_object_unref (element);
 }
 bool VRTSPServer::gstreamer_pipeline_operate()
 {
@@ -157,11 +197,11 @@ bool VRTSPServer::gstreamer_pipeline_operate()
     mounts = gst_rtsp_server_get_mount_points(server);
     factory = gst_rtsp_media_factory_new();
     gst_rtsp_media_factory_set_launch(factory, m_source.toStdString().c_str());
-    //    gst_rtsp_media_factory_set_launch(factory, "( ximagesrc ! video/x-raw,framerate=30/1 ! videoconvert ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay name=pay0 pt=96 )");
-    //    gst_rtsp_media_factory_set_launch(factory, "( videotestsrc ! video/x-raw,width=352,height=288,framerate=15/1 ! x264enc ! rtph264pay name=pay0 pt=96 )");
-    printf("gstreamer_pipeline_operate user_data %p\r\n", this);
     g_signal_connect(factory, "media-configure", (GCallback) wrap_media_configure, this);
-    gst_rtsp_media_factory_set_shared(factory, TRUE);
+//    gst_rtsp_media_factory_set_launch(factory, "( ximagesrc ! video/x-raw,framerate=30/1 ! videoconvert ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay name=pay0 pt=96 )");
+//    gst_rtsp_media_factory_set_launch(factory, "( videotestsrc ! video/x-raw,width=1920,height=1080,framerate=30/1 ! nvh264enc bitrate=4000000 ! rtph264pay name=pay0 pt=96 )");
+
+    gst_rtsp_media_factory_set_shared(factory, FALSE);
     gst_rtsp_mount_points_add_factory(mounts, (const gchar *)m_streamMount.data(), factory);
     g_object_unref(mounts);
     m_rtspAttachID = gst_rtsp_server_attach(server, NULL);
@@ -194,6 +234,43 @@ bool VRTSPServer::gstreamer_pipeline_operate()
         loop = nullptr;
     }
 }
+//bool VRTSPServer::gstreamer_pipeline_operate(){
+//    loop = g_main_loop_new (NULL, FALSE);
+
+//      /* create a server instance */
+//      server = gst_rtsp_server_new ();
+
+//      /* get the mount points for this server, every server has a default object
+//       * that be used to map uri mount points to media factories */
+//      mounts = gst_rtsp_server_get_mount_points (server);
+
+//      /* make a media factory for a test stream. The default media factory can use
+//       * gst-launch syntax to create pipelines.
+//       * any launch line works as long as it contains elements named pay%d. Each
+//       * element with pay%d names will be a stream */
+//      factory = gst_rtsp_media_factory_new ();
+//      gst_rtsp_media_factory_set_launch (factory,
+//          "( appsrc name=othersrc ! nvh264enc ! rtph264pay name=pay0 pt=96 )");
+
+//      /* notify when our media is ready, This is called whenever someone asks for
+//       * the media and a new pipeline with our appsrc is created */
+//      g_signal_connect (factory, "media-configure", (GCallback) wrap_media_configure,
+//          this);
+
+//      /* attach the test factory to the /test url */
+//      gst_rtsp_mount_points_add_factory (mounts, "/stream", factory);
+
+//      /* don't need the ref to the mounts anymore */
+//      g_object_unref (mounts);
+
+//      /* attach the server to the default maincontext */
+//      gst_rtsp_server_attach (server, NULL);
+
+//      /* start serving */
+//      g_print ("stream ready at rtsp://127.0.0.1:8554/stream\n");
+//      g_main_loop_run (loop);
+//      return true;
+//}
 void VRTSPServer::setStateRun(bool running)
 {
     if(!running){

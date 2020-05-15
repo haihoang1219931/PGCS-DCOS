@@ -29,6 +29,9 @@ void GimbalInterface::changeSensor(QString sensorID){
 void GimbalInterface::handleAxes(){
 
 }
+
+
+
 void GimbalInterface::lockScreenPoint(int _id,
                                       double _px,double _py,double _oW,double _oH,
                                       double _w,double _h){
@@ -50,10 +53,10 @@ void GimbalInterface::lockScreenPoint(int _id,
 
         double deltaPan = atan(-px/focalLength) * 180.0 / M_PI;
 
-//        printf("delta pan: %.4f\r\n",deltaPan);
+        printf("delta pan: %.4f\r\n",deltaPan);
         //            if(deltaPan > 10)deltaPan = 10
         //            else if(deltaPan < -10)deltaPan = -10
-        if(deltaPan<0.1 && deltaPan>-0.1)
+        if(deltaPan<0.15 && deltaPan>-0.15)
             m_iPan+=deltaPan/fps;
         else
             m_iPan = 0;
@@ -69,7 +72,7 @@ void GimbalInterface::lockScreenPoint(int _id,
         double deltaTilt = atan(-py/focalLength) * 180.0 / M_PI;
         //            if(deltaTilt > 10)deltaTilt = 10
         //            else if(deltaTilt < -10)deltaTilt = -10
-        if(deltaTilt<0.1 && deltaTilt>-0.1)
+        if(deltaTilt<0.15 && deltaTilt>-0.15)
             m_iTilt+=deltaTilt/fps;
         else
             m_iTilt = 0;
@@ -108,6 +111,7 @@ void GimbalInterface::lockScreenPoint(int _id,
     }
 
 }
+
 void GimbalInterface::setPanRate(float rate){
     Q_UNUSED(rate);
 }

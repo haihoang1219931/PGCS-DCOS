@@ -23,16 +23,20 @@ CONFIG += use_ucapi
 
 CONFIG += use_camera_control
 
-#CONFIG += use_video_gpu
+CONFIG += use_video_gpu
 
-CONFIG += use_video_cpu
+#CONFIG += use_video_cpu
 
 QML_IMPORT_PATH += \
     $$PWD \
     $$PWD/src/QmlControls \
     $$PWD/src/Controller
 SOURCES += \
-    main.cpp
+    main.cpp \
+    src/Controller/Telemetry/Com/Network/IPv4.cpp \
+    src/Controller/Telemetry/Com/Network/NetworkAdapter.cpp \
+    src/Controller/Telemetry/Com/Network/Socket.cpp \
+    src/Controller/Telemetry/Com/com_proxy.cpp
 INCLUDEPATH += $$PWD/src
 # Flight controller
 use_flight_control{
@@ -735,6 +739,17 @@ HEADERS += \
     src/Camera/CPUBased/tracker/dando/ITrack.hpp \
     src/Camera/CPUBased/tracker/dando/Utilities.hpp
 }
+
+HEADERS += \
+    src/Controller/Telemetry/Com/Network/Endian.hpp \
+    src/Controller/Telemetry/Com/Network/IPv4.hpp \
+    src/Controller/Telemetry/Com/Network/NetworkAdapter.hpp \
+    src/Controller/Telemetry/Com/Network/Socket.hpp \
+    src/Controller/Telemetry/Com/com_proxy.hpp \
+    src/Controller/Telemetry/Com/socket_input_params.hpp \
+    src/Controller/Telemetry/LogFile/file_utils.hpp \
+    src/Controller/Telemetry/LogFile/helper.hpp \
+    src/Controller/Telemetry/LogFile/log_file.hpp
 
 
 

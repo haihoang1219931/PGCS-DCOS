@@ -47,17 +47,18 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: 2
         anchors.left: messageIcon.right
-        anchors.leftMargin: 2
+        anchors.leftMargin: 5
         font.family: UIConstants.appFont
         font.pixelSize: UIConstants.fontSize
         opacity: 0.6
     }
     Label {
+        id: lblSNRRemote
         color: messageIcon.color
-        text: "20"
+        text: ""
         horizontalAlignment: Text.AlignRight
         anchors.right: messageIcon.left
-        anchors.rightMargin: 2
+        anchors.rightMargin: 5
         anchors.top: parent.top
         anchors.topMargin: 2
         font.family: UIConstants.appFont
@@ -65,16 +66,26 @@ Item {
         opacity: 0.6
     }
     Label {
+        id: lblSNRLocal
         color: messageIcon.color
-        text: "70"
+        text: ""
         anchors.bottom: messageIcon.bottom
-        anchors.bottomMargin: 2
         anchors.right: messageIcon.left
-        anchors.rightMargin: 2
+        anchors.rightMargin: 5
         verticalAlignment: Text.AlignBottom
         horizontalAlignment: Text.AlignRight
         font.family: UIConstants.appFont
         font.pixelSize: UIConstants.fontSize
         opacity: 0.6
+    }
+    Connections{
+        target: comVehicle
+        onTeleDataReceived:{
+            if(srcAddr === "LOCAL"){
+                lblSNRLocal.text = dataType;
+            }else if(srcAddr === "REMOTE"){
+                lblSNRRemote.text = dataType;
+            }
+        }
     }
 }
