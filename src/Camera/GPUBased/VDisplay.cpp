@@ -49,9 +49,9 @@ VDisplay::~VDisplay()
     m_vPreprocess->deleteLater();
 }
 void VDisplay::setdigitalZoom(float value){
-    if(m_vTrackWorker->m_r >= 1 &&
-            m_vTrackWorker->m_r <=8)
-        m_vTrackWorker->m_r = value;
+    if(value >= 1 &&
+            value <=8)
+        m_vTrackWorker->m_zoomIR = value;
 }
 void VDisplay::setGimbal(GimbalInterface* gimbal){
     m_gimbal = gimbal;
