@@ -48,6 +48,11 @@ VDisplay::~VDisplay()
     m_vTrackWorker->deleteLater();
     m_vPreprocess->deleteLater();
 }
+void VDisplay::setdigitalZoom(float value){
+    if(m_vTrackWorker->m_r >= 1 &&
+            m_vTrackWorker->m_r <=8)
+        m_vTrackWorker->m_r = value;
+}
 void VDisplay::setGimbal(GimbalInterface* gimbal){
     m_gimbal = gimbal;
     m_vTrackWorker->m_gimbal = gimbal;
@@ -250,6 +255,7 @@ void VDisplay::setTrackAt(int _id, double _px, double _py, double _w, double _h)
             object->setIsSelected(true);
             addTrackObjectInfo(object);
         }
+        m_gimbal->setDigitalStab(true);
     }
     m_vTrackWorker->setClick(_px, _py, _w, _h);
 }

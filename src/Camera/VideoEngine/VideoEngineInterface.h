@@ -175,6 +175,7 @@ public:
     void loadConfig(Config* config);
     void setSourceRTSP(QString source, int port, int width, int height);
     void stopRTSP();
+    virtual void setdigitalZoom(float value){}
 public:
     Q_INVOKABLE virtual int addSubViewer(ImageItem *viewer);
     Q_INVOKABLE virtual void removeSubViewer(int viewerID);

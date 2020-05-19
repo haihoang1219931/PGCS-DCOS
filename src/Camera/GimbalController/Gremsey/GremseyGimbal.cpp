@@ -223,6 +223,20 @@ void GremseyGimbal::setEOZoom(QString command, float value){
         }
     }
 }
+void GremseyGimbal::setIRZoom(QString command){
+    float zoomDigital = 1;
+    if(command == "1x"){
+        zoomDigital = 1;
+    }else if(command == "2x"){
+        zoomDigital = 2;
+    }else if(command == "4x"){
+        zoomDigital = 4;
+    }else if(command == "8x"){
+        zoomDigital = 8;
+    }
+    printf("%s %f\r\n",__func__,zoomDigital);
+    m_videoEngine->setdigitalZoom(zoomDigital);
+}
 void GremseyGimbal::setGimbalRate(float panRate,float tiltRate){
     if(m_gimbal->getConnectionStatus() == 1){
         m_gimbal->set_Mode(e_control_gimbal_mode::GIMBAL_LOCK_MODE);
@@ -244,13 +258,16 @@ void GremseyGimbal::changeTrackSize(float trackSize){
 }
 void GremseyGimbal::setDigitalStab(bool enable){
     if(m_videoEngine!=nullptr){
-        m_videoEngine->setStab(enable);
+        m_videoEngine->setStab(enable);        
+    }
+    if(m_context != nullptr){
         m_context->m_videoStabMode = enable;
     }
 }
 void GremseyGimbal::setLockMode(QString mode, QPoint location){
     m_context->m_lockMode = mode;
     if(mode == "FREE"){
+        setDigitalStab(false);
     }else if(mode == "TRACK"){
         m_videoEngine->setTrackAt(0,
                                   m_videoEngine->sourceSize().width()/2,
@@ -258,8 +275,9 @@ void GremseyGimbal::setLockMode(QString mode, QPoint location){
                                   m_videoEngine->sourceSize().width(),
                                   m_videoEngine->sourceSize().height());
         resetTrackParam();
+        setDigitalStab(true);
     }else if(mode == "VISUAL"){
-
+        setDigitalStab(true);
     }
 }
 void GremseyGimbal::setRecord(bool enable){

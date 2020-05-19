@@ -35,6 +35,7 @@ public:
     }
     void init();
     void setGimbal(GimbalInterface* gimbal) override;   
+    void setdigitalZoom(float value) override;
 public Q_SLOTS:
     void onReceivedFrame(int _id, QVideoFrame _frame);
     void onReceivedFrame();

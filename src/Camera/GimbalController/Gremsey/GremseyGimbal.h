@@ -20,6 +20,7 @@ public:
     void changeSensor(QString sensorID) override;
     void setGimbalRate(float panRate,float tiltRate) override;
     void setEOZoom(QString command, float value = 0) override;
+    void setIRZoom(QString command) override;
     void snapShot() override;
     void changeTrackSize(float trackSize) override;
     void setDigitalStab(bool enable) override;

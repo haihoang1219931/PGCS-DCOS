@@ -57,13 +57,30 @@ Item {
         }
     }
     Item {
-        id: element
+        id: irZoom
+        width: UIConstants.sRect * 3
+        height: UIConstants.sRect * 1.5
+        anchors.bottomMargin: 8
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        visible: camState.sensorID === camState.sensorIDIR
+        ComboBox{
+            anchors.fill: parent
+            down: false
+            model: ["1x","2x","4x","8x"]
+            onCurrentTextChanged: {
+                cameraController.gimbal.setIRZoom(currentText);
+            }
+        }
+    }
+    Item {
+        id: eoZoom
         width: UIConstants.sRect * 12
         height: UIConstants.sRect * 2
         anchors.bottomMargin: 8
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-
+        visible: camState.sensorID === camState.sensorIDEO
         Rectangle {
             id: rectZoom
             color: "#00000000"

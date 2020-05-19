@@ -400,7 +400,11 @@ void VTrackWorker::run()
         //            }
         //        }
         //        m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_r/m_zoomRateCalculate[0]*m_zoomStart,0);
-        m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1,m_rotationAlpha);
+        if(m_gimbal->context()->m_sensorID == 0){
+            m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1,m_rotationAlpha);
+        }else{
+            m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_r,m_rotationAlpha);
+        }
         //        std::cout << "hainh create m_ptzMatrix " << m_ptzMatrix << std::endl;
         // add data to display worker
         ProcessImageCacheItem processImgItem;
