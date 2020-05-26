@@ -181,6 +181,7 @@ public:
     Q_INVOKABLE virtual void removeSubViewer(int viewerID);
     Q_INVOKABLE virtual void setObjectDetect(bool enable){}
     Q_INVOKABLE virtual void setPowerLineDetect(bool enable){}
+    Q_INVOKABLE virtual void setPowerLineDetectRect(QRect rect){}
     Q_INVOKABLE virtual void start(){}
     Q_INVOKABLE virtual void play(){}
     Q_INVOKABLE virtual void stop(){}

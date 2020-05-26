@@ -4,6 +4,8 @@
 #include "CacheItem.h"
 #include <opencv2/opencv.hpp>
 #include <QObject>
+#include <vector>
+#include <iostream>
 #ifdef USE_VIDEO_GPU
     #include <cuda.h>
     #include <cuda_runtime_api.h>
@@ -119,6 +121,16 @@ namespace rva
             void setTrackRect(cv::Rect trackRect){m_trackRect = trackRect;}
             int trackStatus() {return m_trackStatus;}
             void setTrackStatus(int trackStatus){m_trackStatus = trackStatus;}
+            cv::Rect powerlineDetectRect() {return m_powerlineDetectRect;}
+            void setPowerlineDetectRect(cv::Rect powerlineDetectRect){m_powerlineDetectRect = powerlineDetectRect;}
+            bool powerlineDetectEnable() {return m_powerlineDetectEnable;}
+            void setPowerlineDetectEnable(bool powerlineDetectEnable){
+                m_powerlineDetectEnable = powerlineDetectEnable;
+            }
+            std::vector<cv::Scalar> powerLineList(){return m_powerLineList;}
+            void setPowerLineList(std::vector<cv::Scalar>& powerLineList){
+                m_powerLineList = powerLineList;
+            }
         private:
             unsigned char *m_dImage = nullptr;
             unsigned char *m_hImage = nullptr;
@@ -131,6 +143,9 @@ namespace rva
             QString m_lockMode = "FREE";
             cv::Rect m_trackRect;
             int m_trackStatus = 0;
+            bool m_powerlineDetectEnable = false;
+            cv::Rect m_powerlineDetectRect;
+            std::vector<cv::Scalar> m_powerLineList;
     };
 } // namespace rva
 

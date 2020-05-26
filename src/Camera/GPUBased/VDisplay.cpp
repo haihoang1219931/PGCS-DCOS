@@ -190,6 +190,10 @@ void VDisplay::setObjectDetect(bool enable){
 }
 void VDisplay::setPowerLineDetect(bool enable){
     m_enPD = enable;
+    m_vTrackWorker->setPowerLineDetect(m_enPD);
+}
+void VDisplay::setPowerLineDetectRect(QRect rect){
+    m_vTrackWorker->setPowerLineDetectRect(rect);
 }
 void VDisplay::searchByClass(QVariantList _classList)
 {

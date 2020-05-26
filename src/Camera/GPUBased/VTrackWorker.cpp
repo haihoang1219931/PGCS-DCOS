@@ -3,6 +3,7 @@
 #include "Clicktrack/clicktrack.h"
 #include "OD/yolo_v2_class.hpp"
 #include "src/Camera/GimbalController/GimbalInterface.h"
+
 VTrackWorker::VTrackWorker()
 {
     this->init();
@@ -44,6 +45,24 @@ void VTrackWorker::setClick(float x, float y,float width,float height){
                x,y,width,height,
                m_clickPoint.x,m_clickPoint.y);
     }
+}
+void VTrackWorker::setPowerLineDetect(bool enable){
+    m_powerLineDetectEnable = enable;
+    if(enable){
+        if(m_grayFrame.cols <= 0 || m_grayFrame.rows <= 0){
+            return;
+        }
+        m_powerLineDetectRect.x = 50;
+        m_powerLineDetectRect.y = m_grayFrame.rows / 2;
+        m_powerLineDetectRect.width = m_grayFrame.cols - 100;
+        m_powerLineDetectRect.height = m_grayFrame.rows / 2 - 50;
+    }
+}
+void VTrackWorker::setPowerLineDetectRect(QRect rect){
+    m_powerLineDetectRect.x = rect.x();
+    m_powerLineDetectRect.y = rect.y();
+    m_powerLineDetectRect.width = rect.width();
+    m_powerLineDetectRect.height = rect.height();
 }
 void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float alpha){    
     if(m_grayFrame.cols <= 0 || m_grayFrame.rows <= 0){
@@ -210,6 +229,9 @@ void VTrackWorker::run()
             continue;
         }
         cv::cvtColor(m_i420Img, m_grayFrame, CV_YUV2GRAY_YV12);
+        if(m_plrEngine == nullptr){
+            m_plrEngine = my_pli::createPlrEngine(m_grayFrame.size());
+        }
         //TODO: Perfrom tracking
         float w = static_cast<float>(m_grayFrame.cols);
         float h = static_cast<float>(m_grayFrame.rows);
@@ -358,54 +380,14 @@ void VTrackWorker::run()
             m_trackRect.height = m_trackSize;
         }
 
-        //        for(int i=0; i< 1;i++){
-        //            cv::Mat imgDebug = m_grayFrame.clone();
-        //            cv::Mat imgDebugWarp;
-        //            if(fabs(m_moveZoomRate) < deadZone/maxAxis && !m_stopRollBack[0]){
-        //                if(m_grayFramePrev.cols > 0 && m_grayFramePrev.rows > 0){
-        //                    vector<cv::Point2f> pointsPrevOF,pointsCurrentOF;
-        //                    // found zoom changed here
-
-        //                    // create set of keypoints from center
-        //                    createRoiKeypoints(m_grayFrame,imgDebug,pointsCurrentOF,static_cast<KEYPOINT_TYPE>(i),2,200,m_dx,m_dy);
-        //                    vector<uchar> status;
-        //                    vector<float> err;
-        //                    cv::TermCriteria criteria = cv::TermCriteria((cv::TermCriteria::COUNT) + (cv::TermCriteria::EPS), 10, 0.03);
-        //                    calcOpticalFlowPyrLK(m_grayFrame,m_grayFramePrev, pointsCurrentOF, pointsPrevOF, status, err, cv::Size(15,15), 2, criteria);
-        //                    cv::Mat rigidT = cv::estimateRigidTransform(pointsPrevOF, pointsCurrentOF, true);
-        //                    //#ifdef DEBUG
-        //                    //                std::cout << "rigid " << rigidT << std::endl;
-        //                    //#endif
-        //                    if(rigidT.rows >= 2 && rigidT.cols >=2){
-        //                        // compute scale and rotaion between start keypoints and current keypoints
-        //                        float zoomRateCalculatePrev = m_zoomRateCalculate[i];
-        //                        float zoomRateCalculateTemp = static_cast<float>(pow((
-        //                                                                                 pow(rigidT.at<double>(0,0),2) +pow(rigidT.at<double>(0,1),2)
-        //                                                                                 ),0.5
-        //                                                                             ));
-        //                        //                        printf("zoomRateCalculateTemp = %f zoomRateCalculatePrev=%f\r\n",
-        //                        //                               zoomRateCalculateTemp,zoomRateCalculatePrev);
-        //                        m_zoomRateCalculate[i] *= zoomRateCalculateTemp;
-        //                        Q_EMIT zoomCalculateChanged(i+1,m_zoomRateCalculate[i]*m_zoomStart);
-        //                    }
-        //                    printf("process[%d] m_r=%f m_zoomRateCalculate[%d]=%f m_zoomStart=%f pointsPrevOF.size=%d\r\n",
-        //                           i,m_r,i,m_zoomRateCalculate[i],m_zoomStart,pointsPrevOF.size());
-        //                }
-        //                if(m_zoomDir * (m_zoomRateCalculate[i]*m_zoomStart - m_r) > 0){
-        //                    m_stopRollBack[i] = true;
-        //                    m_zoomRateCalculate[i] = 1;
-        //                    m_zoomStart = m_r;
-        //                    Q_EMIT zoomCalculateChanged(i+1,m_zoomRateCalculate[i]*m_zoomStart);
-        //                }
-        //            }
-        //        }
-        //        m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_r/m_zoomRateCalculate[0]*m_zoomStart,0);
+        if(m_powerLineDetectEnable){
+            m_plrEngine->init_track_plr(m_grayFrame,m_powerLineDetectRect,m_powerLineList,m_plrRR);
+        }
         if(m_gimbal->context()->m_sensorID == 0){
             m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1,m_rotationAlpha);
         }else{
             m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_zoomIR,m_rotationAlpha);
         }
-        //        std::cout << "hainh create m_ptzMatrix " << m_ptzMatrix << std::endl;
         // add data to display worker
         ProcessImageCacheItem processImgItem;
         processImgItem.setIndex(m_currID);
@@ -420,6 +402,9 @@ void VTrackWorker::run()
         processImgItem.setTrackRect(m_trackRect);
         processImgItem.setTrackStatus(m_tracker->Get_State());
         processImgItem.setZoom(m_gimbal->context()->m_zoom[m_gimbal->context()->m_sensorID]);
+        processImgItem.setPowerlineDetectEnable(m_powerLineDetectEnable);
+        processImgItem.setPowerlineDetectRect(m_powerLineDetectRect);
+        processImgItem.setPowerLineList(m_powerLineList);
         m_matTrackBuff->add(processImgItem);
 
         stop = std::chrono::high_resolution_clock::now();

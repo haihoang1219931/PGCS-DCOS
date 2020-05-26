@@ -49,6 +49,7 @@ public:
     Q_INVOKABLE void capture() override;
     Q_INVOKABLE void setObjectDetect(bool enable) override;
     Q_INVOKABLE void setPowerLineDetect(bool enable) override;
+    Q_INVOKABLE void setPowerLineDetectRect(QRect rect) override;
     Q_INVOKABLE void searchByClass(QVariantList _classList);
     Q_INVOKABLE void setTrackAt(int _id, double _px, double _py, double _w, double _h) override;
     Q_INVOKABLE void disableObjectDetect() override;

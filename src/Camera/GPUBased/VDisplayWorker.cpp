@@ -50,7 +50,7 @@ void VDisplayWorker::process()
     cv::Mat stabMatrix;
     float* h_stabMat = nullptr;
     float *d_stabMat;
-
+    cv::Scalar line_color(255,0,255,255);
     while (true) {
         start = std::chrono::high_resolution_clock::now();
         processImgItem = m_matImageBuff->at(m_matImageBuff->size() - 1);
@@ -65,6 +65,10 @@ void VDisplayWorker::process()
         d_imageData = processImgItem.getDeviceImage();
         h_imageData = processImgItem.getHostImage();
         imgSize = processImgItem.getImageSize();
+
+        if(imgSize.width <=0 || imgSize.height <=0){
+            continue;
+        }
         // Warp I420 Image GPU
         h_stabMat = processImgItem.getHostStabMatrix();
         if(h_stabMat != nullptr)
@@ -76,6 +80,7 @@ void VDisplayWorker::process()
         //        assert(gpu_i420ToRGBA(d_I420Image, d_BRGAImage, imgSize.width, imgSize.height, 0, 0, imgSize.width, imgSize.height) == cudaSuccess);
         //        m_imgShow = cv::Mat(imgSize.height, imgSize.width, CV_8UC4, d_BRGAImage);
         /***Warp Image CPU*******/
+        printf("imgSize[%dx%d]\r\n",imgSize.width,imgSize.height);
         m_imgShow = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
         // draw zoom
         char zoomText[100];
@@ -108,6 +113,7 @@ void VDisplayWorker::process()
                 m_countUpdateOD = 0;
             }
         }
+        // draw track
         cv::Rect trackRect = processImgItem.trackRect();
         cv::Scalar colorInvision(0,0,255,0);
         cv::Scalar colorOccluded(0,0,0,0);
@@ -134,10 +140,21 @@ void VDisplayWorker::process()
 
             }
         }
+        // draw powerline
+        if(processImgItem.powerlineDetectEnable()){
+            cv::Rect rect = processImgItem.powerlineDetectRect();
+            cv::rectangle(m_imgShow,rect,
+                          cv::Scalar(0,255,0,255),2);
+            vector<cv::Scalar> plr_lines = processImgItem.powerLineList();
+            for(int i = 0;i < (int)plr_lines.size();i ++){
+                cv::Point2d pt1(plr_lines[i].val[0],plr_lines[i].val[1]);
+                cv::Point2d pt2(plr_lines[i].val[2],plr_lines[i].val[3]);
+                cv::line(m_imgShow,pt1,pt2,line_color,4,cv::LINE_AA);
+            }
+        }
         if (m_enDigitalStab) {            
             if(stabMatrix.rows == 2 && stabMatrix.cols ==3 &&
                     m_imgShow.cols > 0 && m_imgShow.rows > 0){
-//                std::cout << "hainh create stabMatrix " << stabMatrix << std::endl;
                 cv::warpAffine(m_imgShow, m_imgShow, stabMatrix, imgSize, cv::INTER_LINEAR);
             }
         }
@@ -171,7 +188,7 @@ void VDisplayWorker::process()
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
-        printf("\nDisplay Worker: %d | %d - [%d - %d]", m_currID, (long)(timeSpan.count()), imgSize.width, imgSize.height);
+//        printf("\nDisplay Worker: %d | %d - [%d - %d]", m_currID, (long)(timeSpan.count()), imgSize.width, imgSize.height);
         std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
     }
 }

@@ -14,13 +14,15 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 #include <string.h>
-
+#include <QRect>
 #include "Files/FileControler.h"
 #include "Files/PlateLog.h"
 #include "tracker/dando/ITrack.hpp"
 #include "tracker/dando/Utilities.hpp"
 #include "tracker/dando/HTrack/saliency.h"
 #include "tracker/mosse/tracker.h"
+
+#include <S_PowerLineDetect/power_line_scan.hpp>
 #define TRACK_DANDO
 class ClickTrack;
 class GimbalInterface;
@@ -54,6 +56,8 @@ public:
     float trackSize(){return m_trackSize;}
     void setClick(float x, float y,float width,float height);
     cv::Mat createPtzMatrix(float w, float h, float dx, float dy,float r,float alpha = 0);
+    void setPowerLineDetect(bool enable);
+    void setPowerLineDetectRect(QRect rect);
 private:
     void init();
     void drawObjectBoundary(cv::Mat &_img, cv::Rect _objBoundary,
@@ -174,6 +178,12 @@ public:
     cv::Point2f m_clickPoint;
     float deadZone = 160;
     float maxAxis = 32768.0f;
+    // powerline detect
+    bool m_powerLineDetectEnable = false;
+    cv::Rect m_powerLineDetectRect;
+    my_pli::plr_engine* m_plrEngine = nullptr;
+    std::vector<cv::Scalar> m_powerLineList;
+    cv::RotatedRect m_plrRR;
 };
 
 #endif // VTRACKWORKER_H

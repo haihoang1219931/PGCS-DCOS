@@ -27,16 +27,17 @@ CONFIG += use_video_gpu
 
 #CONFIG += use_video_cpu
 
+CONFIG += use_line_detector
+
+CONFIG += use_telemetry_log
+
 QML_IMPORT_PATH += \
     $$PWD \
     $$PWD/src/QmlControls \
     $$PWD/src/Controller
 SOURCES += \
-    main.cpp \
-    src/Controller/Telemetry/Com/Network/IPv4.cpp \
-    src/Controller/Telemetry/Com/Network/NetworkAdapter.cpp \
-    src/Controller/Telemetry/Com/Network/Socket.cpp \
-    src/Controller/Telemetry/Com/com_proxy.cpp
+    main.cpp
+
 INCLUDEPATH += $$PWD/src
 # Flight controller
 use_flight_control{
@@ -740,6 +741,26 @@ HEADERS += \
     src/Camera/CPUBased/tracker/dando/Utilities.hpp
 }
 
+use_line_detector{
+
+# Default rules for deployment.
+unix {
+    target.path = /usr/lib
+}
+!isEmpty(target.path): INSTALLS += target
+
+#============= myUnilitis lib
+INCLUDEPATH += $$HOME/power_line_inspecter/power_line_inspecter/src
+LIBS += -L$$HOME/power_line_inspecter/power_line_inspecter/src/build -lpli_lib
+}
+
+
+use_telemetry_log{
+SOURCES += \
+    src/Controller/Telemetry/Com/Network/IPv4.cpp \
+    src/Controller/Telemetry/Com/Network/NetworkAdapter.cpp \
+    src/Controller/Telemetry/Com/Network/Socket.cpp \
+    src/Controller/Telemetry/Com/com_proxy.cpp
 HEADERS += \
     src/Controller/Telemetry/Com/Network/Endian.hpp \
     src/Controller/Telemetry/Com/Network/IPv4.hpp \
@@ -750,9 +771,4 @@ HEADERS += \
     src/Controller/Telemetry/LogFile/file_utils.hpp \
     src/Controller/Telemetry/LogFile/helper.hpp \
     src/Controller/Telemetry/LogFile/log_file.hpp
-
-
-
-
-
-
+}
