@@ -174,11 +174,11 @@ void IOFlightController::loadConfig(Config* linkConfig){
     }
     m_comNetLocal = Proxy::Com::createInstance(Worker::ComRole::CLIENT, Worker::SocketType::SOCKET_TCP, 0);
     m_comNetRemote = Proxy::Com::createInstance(Worker::ComRole::CLIENT, Worker::SocketType::SOCKET_TCP, 0);
-//    m_comNetLocal->setTCPServerInfo(linkConfig->value("Settings:TeleLocalIP:Value:data").toString(),
-//                                    linkConfig->value("Settings:TeleLocalPort:Value:data").toInt(),
-//                                    linkConfig->value("Settings:TeleLocalUser:Value:data").toString(),
-//                                    linkConfig->value("Settings:TeleLocalPass:Value:data").toString());
-//    m_comNetLocal->start();
+    m_comNetLocal->setTCPServerInfo(linkConfig->value("Settings:TeleLocalIP:Value:data").toString(),
+                                    linkConfig->value("Settings:TeleLocalPort:Value:data").toInt(),
+                                    linkConfig->value("Settings:TeleLocalUser:Value:data").toString(),
+                                    linkConfig->value("Settings:TeleLocalPass:Value:data").toString());
+    m_comNetLocal->start();
 //    m_comNetRemote->setTCPServerInfo(linkConfig->value("Settings:TeleRemoteIP:Value:data").toString(),
 //                                     linkConfig->value("Settings:TeleRemotePort:Value:data").toInt(),
 //                                     linkConfig->value("Settings:TeleRemoteUser:Value:data").toString(),
