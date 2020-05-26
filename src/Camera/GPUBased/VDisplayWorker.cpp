@@ -147,7 +147,10 @@ void VDisplayWorker::process()
         Q_EMIT receivedFrame(m_currID, frame);
         Q_EMIT readyDrawOnViewerID(m_imgShow,0);
         // Adding video saving and rtsp
-        if(m_enShare){
+        if(m_enShare &&
+                (m_imgShow.cols > 0 && m_imgShow.rows > 0)){
+            cv::Mat imgRTSP;
+            cv::cvtColor(m_imgShow, imgRTSP, cv::COLOR_BGRA2YUV_I420);
             GstBuffer *gstBuffRTSP = gst_buffer_new();
             assert(gstBuffRTSP != NULL);
             GstMemory *gstRTSPMem = gst_allocator_alloc(NULL, imgSize.width * imgSize.height * 3 / 2, NULL);
@@ -155,30 +158,20 @@ void VDisplayWorker::process()
             gst_buffer_append_memory(gstBuffRTSP, gstRTSPMem);
             GstMapInfo mapRTSP;
             gst_buffer_map(gstBuffRTSP, &mapRTSP, GST_MAP_READ);
-            memcpy(mapRTSP.data, h_imageData, imgSize.width * imgSize.height * 3 / 2);
+            memcpy(mapRTSP.data, imgRTSP.data, imgRTSP.cols * imgRTSP.rows);
             gst_buffer_unmap(gstBuffRTSP , &mapRTSP);
             GstFrameCacheItem gstRTSP;
             gstRTSP.setIndex(m_currID);
             gstRTSP.setGstBuffer(gstBuffRTSP);
             m_gstRTSPBuff->add(gstRTSP);
-//            if (m_enSaving) {
-//                GstFrameCacheItem gstEOSaving;
-//                gstEOSaving.setIndex(m_currID);
-//                gstEOSaving.setGstBuffer(gst_buffer_copy(gstBuffRTSP));
-//                m_gstEOSavingBuff->add(gstEOSaving);
-//            }
         }
-
-        //        frame = QVideoFrame(QImage((uchar *)m_imgShow.data, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888));
-
-        //        Q_EMIT receivedFrame();
         //-----------------------------
         fixedMemBRGA.notifyAddOne();
         //        fixedMemI420Stab.notifyAddOne();
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
-        //        printf("\nDisplay Worker: %d | %d - [%d - %d]", m_currID, (long)(timeSpan.count()), imgSize.width, imgSize.height);
+        printf("\nDisplay Worker: %d | %d - [%d - %d]", m_currID, (long)(timeSpan.count()), imgSize.width, imgSize.height);
         std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
     }
 }

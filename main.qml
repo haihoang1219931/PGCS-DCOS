@@ -1367,11 +1367,11 @@ ApplicationWindow {
                     isShowConfirm = true;
                     console.log("Do Altitude changed");
                     var minValue = 10;
-                    var maxValue = 400;
+                    var maxValue = 500;
                     var currentValue = 0;
                     if(vehicle.vehicleType === 2 || vehicle.vehicleType == 14){
                         minValue = 10;
-                        maxValue = 400;
+                        maxValue = 500;
                     }else {
                         minValue = 150;
                         maxValue = 3000;

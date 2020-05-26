@@ -179,11 +179,11 @@ void IOFlightController::loadConfig(Config* linkConfig){
                                     linkConfig->value("Settings:TeleLocalUser:Value:data").toString(),
                                     linkConfig->value("Settings:TeleLocalPass:Value:data").toString());
     m_comNetLocal->start();
-//    m_comNetRemote->setTCPServerInfo(linkConfig->value("Settings:TeleRemoteIP:Value:data").toString(),
-//                                     linkConfig->value("Settings:TeleRemotePort:Value:data").toInt(),
-//                                     linkConfig->value("Settings:TeleRemoteUser:Value:data").toString(),
-//                                     linkConfig->value("Settings:TeleRemotePass:Value:data").toString());
-//    m_comNetRemote->start();
+    m_comNetRemote->setTCPServerInfo(linkConfig->value("Settings:TeleRemoteIP:Value:data").toString(),
+                                     linkConfig->value("Settings:TeleRemotePort:Value:data").toInt(),
+                                     linkConfig->value("Settings:TeleRemoteUser:Value:data").toString(),
+                                     linkConfig->value("Settings:TeleRemotePass:Value:data").toString());
+    m_comNetRemote->start();
     connect(m_comNetLocal,&Proxy::Com::dataReceived,this,&IOFlightController::handleDataReceived);
     connect(m_comNetRemote,&Proxy::Com::dataReceived,this,&IOFlightController::handleDataReceived);
 }

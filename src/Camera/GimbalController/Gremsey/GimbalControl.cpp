@@ -382,20 +382,21 @@ int GRGimbalController::set_control(int roll_speed, int tilt_speed, int pan_spee
     {
         return 0;
     }
-    if (roll_speed < -1023)
-      roll_speed = -1023;
-    else if (roll_speed > 1023)
-      roll_speed = 1023;
+    int maxRate = 1023;
+    if (roll_speed < -maxRate)
+      roll_speed = -maxRate;
+    else if (roll_speed > maxRate)
+      roll_speed = maxRate;
 
-    if (tilt_speed < -1023)
-      tilt_speed = -1023;
-    else if (tilt_speed > 1023)
-      tilt_speed = 1023;
+    if (tilt_speed < -maxRate)
+      tilt_speed = -maxRate;
+    else if (tilt_speed > maxRate)
+      tilt_speed = maxRate;
 
-    if (pan_speed < -1023)
-      pan_speed = -1023;
-    else if (pan_speed > 1023)
-      pan_speed = 1023;
+    if (pan_speed < -maxRate)
+      pan_speed = -maxRate;
+    else if (pan_speed > maxRate)
+      pan_speed = maxRate;
     printf("pan_speed,tilt_speed = (%d,%d)\r\n",pan_speed,tilt_speed);
     /* Do not need to controll roll axis */
     Sbus_CH[SBUS_ROLL_CHANNEL] = ZERO_CONTROL;
@@ -487,6 +488,18 @@ int16_t GRGimbalController::s16_Comm_Send_Message(uint16_t u16_msg_type, uint8_t
     *((uint32_t*)&au8_tx_buff[u16_len]) = u32_crc;
 
     _socket->write((const char *)au8_tx_buff, u16_len + 4);
+    //send little edian
+//    uint8_t au8_tx_buff_inverse[COMM_MAX_BUFF_SIZE];
+//    memcpy(au8_tx_buff_inverse,au8_tx_buff,u16_len + 4);
+//    for (int i = 0; i < 16; i++) {
+//        uint8_t byte0 = au8_tx_buff_inverse[6 + i * 2];
+//        uint8_t byte1 = au8_tx_buff_inverse[6 + i * 2 + 1];
+//        au8_tx_buff_inverse[6 + i * 2] = byte1;
+//        au8_tx_buff_inverse[6 + i * 2 + 1] = byte0;
+//    }
+
+//    //    printf("Send [%d] byte Little edian\r\n",u16_len+4);
+//    _socket->write((const char *)au8_tx_buff_inverse, u16_len + 4);
     return 0;
 }
 
