@@ -53,11 +53,16 @@ void VDisplayWorker::process()
     cv::Scalar line_color(255,0,255,255);
     while (true) {
         start = std::chrono::high_resolution_clock::now();
-        processImgItem = m_matImageBuff->at(m_matImageBuff->size() - 1);
-
+        int index = m_matImageBuff->size() - 1;
+        if(index < 0 || index >= m_matImageBuff->size()){
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+            continue;
+        }
+//        printf("process[%d/%d]\r\n",index,m_matImageBuff->size());
+        processImgItem = m_matImageBuff->at(index);
         if ((processImgItem.getIndex() == -1) ||
                 (processImgItem.getIndex() == m_currID)) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
             continue;
         }
 
