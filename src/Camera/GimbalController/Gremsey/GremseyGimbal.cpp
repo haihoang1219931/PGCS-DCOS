@@ -54,11 +54,13 @@ GremseyGimbal::GremseyGimbal(GimbalInterface *parent) : GimbalInterface(parent)
     setZoomMax(0,20);
     setZoomMin(0,1);
     setZoomTarget(0,1);
+    setDigitalZoomMax(0,12);
 
     setZoom(1,1.0f);
     setZoomMax(1,1);
     setZoomMin(1,1);
     setZoomTarget(1,1);
+    setDigitalZoomMax(1,8);
 
     Q_EMIT zoomCalculatedChanged(0,1);
 }

@@ -25,7 +25,7 @@ public:
     JoystickThreaded* joystick();
     virtual void setJoystick(JoystickThreaded* joystick);
     float digitalZoomMax(){
-        return m_context->m_zoomMax[m_context->m_sensorID];
+        return m_context->m_digitalZoomMax[m_context->m_sensorID];
     }
     void setDigitalZoomMax(int sensorID, float digitalZoomMax){
         if(sensorID >=0 && sensorID < MAX_SENSOR){

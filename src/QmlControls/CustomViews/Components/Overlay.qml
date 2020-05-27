@@ -31,7 +31,6 @@ Item {
         var zoomOutput = (zoomInput - zoomMin)/(zoomMax - zoomMin) * (30 - zoomMin) + zoomMin;
         return zoomOutput;
     }
-
     Canvas{
         id: cvsCenter
         anchors.horizontalCenter: parent.horizontalCenter
@@ -151,6 +150,7 @@ Item {
                 anchors.leftMargin: 0
             }
         }
+
         Rectangle{
             anchors.top: parent.top
         }
