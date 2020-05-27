@@ -126,7 +126,7 @@ void TelemetryController::handlePacketReceived(){
             parseData(command);
             //            m_buffer.clear();
         }
-        if(m_buffer.size()>512){
+        while(m_buffer.size()>512){
             m_buffer.remove(0,m_buffer.size()-512);
         }
     }
