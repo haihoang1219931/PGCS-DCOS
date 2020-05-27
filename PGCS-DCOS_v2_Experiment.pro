@@ -757,18 +757,7 @@ LIBS += -L$$HOME/power_line_inspecter/power_line_inspecter/src/build -lpli_lib
 
 use_telemetry_log{
 SOURCES += \
-    src/Controller/Telemetry/Com/Network/IPv4.cpp \
-    src/Controller/Telemetry/Com/Network/NetworkAdapter.cpp \
-    src/Controller/Telemetry/Com/Network/Socket.cpp \
-    src/Controller/Telemetry/Com/com_proxy.cpp
+    src/Controller/Telemetry/TelemetryController.cpp
 HEADERS += \
-    src/Controller/Telemetry/Com/Network/Endian.hpp \
-    src/Controller/Telemetry/Com/Network/IPv4.hpp \
-    src/Controller/Telemetry/Com/Network/NetworkAdapter.hpp \
-    src/Controller/Telemetry/Com/Network/Socket.hpp \
-    src/Controller/Telemetry/Com/com_proxy.hpp \
-    src/Controller/Telemetry/Com/socket_input_params.hpp \
-    src/Controller/Telemetry/LogFile/file_utils.hpp \
-    src/Controller/Telemetry/LogFile/helper.hpp \
-    src/Controller/Telemetry/LogFile/log_file.hpp
+    src/Controller/Telemetry/TelemetryController.h
 }

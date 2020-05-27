@@ -5,7 +5,7 @@ TelemetryController::TelemetryController(QObject *parent) : QObject(parent)
     m_socket = new QTcpSocket();
     m_timerRequest = new QTimer();
     m_timerRequest->setSingleShot(true);
-    m_timerRequest->setInterval(500);
+    m_timerRequest->setInterval(1000);
     connect(m_timerRequest,&QTimer::timeout,this,&TelemetryController::handleRequestTimeout);
     m_timerWriteLog = new QTimer();
     m_timerWriteLog->setSingleShot(false);
@@ -18,11 +18,13 @@ TelemetryController::~TelemetryController(){
         m_socket->deleteLater();
     }
 }
-void TelemetryController::connectToHost(QString ip, int port){
+void TelemetryController::connectToHost(QString ip, int port,QString user, QString pass){
     printf("Connect to %s:%d\r\n",ip.toStdString().c_str(),port);
     m_socket->connectToHost(ip,port);
     m_ip = ip;
     m_port = port;
+    m_user = user;
+    m_pass = pass;
     connect(m_socket, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));
@@ -95,18 +97,18 @@ void TelemetryController::handlePacketReceived(){
         m_socket->read(buffer.data(), buffer.size());
         m_buffer.push_back(buffer);
         QString command(m_buffer);
-        printf("TCP Received: %s\r\n",command.toStdString().c_str());
+//        printf("TCP Received: %s\r\n",command.toStdString().c_str());
         if(!m_authenticated){
             if(command.contains("UserDevice login: ")){
                 if(!m_sendUser){
-                    QString response = "admin\n";
+                    QString response = m_user+ QString("\n");
                     m_socket->write(response.toStdString().c_str(),response.length());
                     m_sendUser = true;
                 }
                 m_buffer.clear();
             }else if(command.contains("Password: ")){
                 if(!m_sendPass){
-                    QString response = "ttuav\n";
+                    QString response = m_pass+ QString("\n");
                     m_socket->write(response.toStdString().c_str(),response.length());
                     m_sendPass = true;
                 }
@@ -131,42 +133,33 @@ void TelemetryController::handlePacketReceived(){
 }
 void TelemetryController::handleRequestTimeout(){
     m_timerRequest->stop();
-    if(m_countRequest %2 != 0){
-        QString response = "AT+MWDISTANCE\n";
-        m_socket->write(response.toStdString().c_str(),response.length());
-    }else{
-        //        QString response = "AT+MWSTATUS\n";
-        //        m_socket->write(response.toStdString().c_str(),response.length());
-    }
-
-    m_countRequest ++;
-    if(m_countRequest>2){
-        m_countRequest = 0;
-    }
+    QString response = "AT+MWSTATUS\n";
+    m_socket->write(response.toStdString().c_str(),response.length());
     m_timerRequest->start();
 }
 void TelemetryController::handleWriteLogTimeout(){
-    Q_EMIT writeLogTimeout(m_snr,m_rssi);
+//    printf("[%s:%d] [RSSI:%d] [SNR:%d]\r\n",
+//           m_ip.toStdString().c_str(),
+//           m_port,
+//           m_rssi,
+//           m_snr);
+    Q_EMIT writeLogTimeout(m_ip,m_snr,m_rssi);
 }
 void TelemetryController::parseData(QString data){
-    printf("%s [%s]\r\n",__func__,data.toStdString().c_str());
     if(data.contains("SNR")){
         QRegularExpression re("SNR[ ]+\\(dB\\)[ ]+:[ ]+([-]*\\d+)");
         QRegularExpressionMatch match = re.match(data);
         if (match.hasMatch()) {
-            printf("Found SNR\r\n");
             QString value = match.captured(1);
             m_snr = value.toInt();
-            printf("m_snr=%d\r\n",m_snr);
         }
-    }else if(data.contains("RSSI")){
+    }
+    if(data.contains("RSSI")){
         QRegularExpression re("RSSI[ ]+\\(dBm\\)[ ]+:[ ]+([-]*\\d+)");
         QRegularExpressionMatch match = re.match(data);
         if (match.hasMatch()) {
-            printf("Found RSSI\r\n");
             QString value = match.captured(1);
             m_rssi = value.toInt();
-            printf("m_rssi=%d\r\n",m_rssi);
         }
     }
 }

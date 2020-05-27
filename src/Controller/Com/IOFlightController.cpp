@@ -172,53 +172,58 @@ void IOFlightController::loadConfig(Config* linkConfig){
                                            linkConfig->value("Settings:LinkName:Value:data").toString().toStdString()+" "+
                                            FileController::get_day()+" "+FileController::get_time()+".tlog");
     }
-    m_comNetLocal = Proxy::Com::createInstance(Worker::ComRole::CLIENT, Worker::SocketType::SOCKET_TCP, 0);
-    m_comNetRemote = Proxy::Com::createInstance(Worker::ComRole::CLIENT, Worker::SocketType::SOCKET_TCP, 0);
-    m_comNetLocal->setTCPServerInfo(linkConfig->value("Settings:TeleLocalIP:Value:data").toString(),
+    m_comNetLocal = new TelemetryController();
+    m_comNetRemote = new TelemetryController();
+    m_comNetLocal->connectToHost(linkConfig->value("Settings:TeleLocalIP:Value:data").toString(),
                                     linkConfig->value("Settings:TeleLocalPort:Value:data").toInt(),
                                     linkConfig->value("Settings:TeleLocalUser:Value:data").toString(),
                                     linkConfig->value("Settings:TeleLocalPass:Value:data").toString());
-    m_comNetLocal->start();
-//    m_comNetRemote->setTCPServerInfo(linkConfig->value("Settings:TeleRemoteIP:Value:data").toString(),
-//                                     linkConfig->value("Settings:TeleRemotePort:Value:data").toInt(),
-//                                     linkConfig->value("Settings:TeleRemoteUser:Value:data").toString(),
-//                                     linkConfig->value("Settings:TeleRemotePass:Value:data").toString());
-//    m_comNetRemote->start();
-//    connect(m_comNetLocal,&Proxy::Com::dataReceived,this,&IOFlightController::handleDataReceived);
-//    connect(m_comNetRemote,&Proxy::Com::dataReceived,this,&IOFlightController::handleDataReceived);
+    m_comNetRemote->connectToHost(linkConfig->value("Settings:TeleRemoteIP:Value:data").toString(),
+                                     linkConfig->value("Settings:TeleRemotePort:Value:data").toInt(),
+                                     linkConfig->value("Settings:TeleRemoteUser:Value:data").toString(),
+                                     linkConfig->value("Settings:TeleRemotePass:Value:data").toString());
+    connect(m_comNetLocal,&TelemetryController::writeLogTimeout,this,&IOFlightController::handleDataReceived);
+    connect(m_comNetRemote,&TelemetryController::writeLogTimeout,this,&IOFlightController::handleDataReceived);
 }
-void IOFlightController::handleDataReceived(QString srcAddr, QString dataType, int value){
-//    printf("%s srcAddr=[%s] [%s] %d\r\n",__func__,
-//           srcAddr.toStdString().c_str(),
-//           dataType.toStdString().c_str(),
-//           value);
-    if(srcAddr == m_linkConfig->value("Settings:TeleLocalIP:Value:data").toString()){
-        if(dataType == "SNR"){
-            m_localSNR = value;
-        }else if(dataType == "RSSI"){
-            m_localRSSI = value;
-        }else if(dataType == "DISTANCE"){
-            m_localDIS = value;
-        }
+void IOFlightController::handleDataReceived(QString ip, int snr, int rssi){
+    if(ip == m_linkConfig->value("Settings:TeleLocalIP:Value:data").toString()){
+        m_localSNR = snr;
+        m_localRSSI = rssi;
         Q_EMIT teleDataReceived("LOCAL",
-//                                "DIS:"+QString::fromStdString(std::to_string(m_localDIS)) +
-                                " RSSI:"+QString::fromStdString(std::to_string(m_localRSSI)) +
-                                " SNR:"+QString::fromStdString(std::to_string(m_localSNR))
+                                QString("[G]")+
+//                                " R["+QString::fromStdString(std::to_string(m_localRSSI)) + "]"
+                                " S["+QString::fromStdString(std::to_string(m_localSNR)) + "]"
                                 ,0);
-    }else if(srcAddr == m_linkConfig->value("Settings:TeleRemoteIP:Value:data").toString()){
-        if(dataType == "SNR"){
-            m_remoteSNR = value;
-        }else if(dataType == "RSSI"){
-            m_remoteRSSI = value;
-        }else if(dataType == "DISTANCE"){
-            m_remoteDIS = value;
-        }
+    }else if(ip == m_linkConfig->value("Settings:TeleRemoteIP:Value:data").toString()){
+        m_remoteSNR = snr;
+        m_remoteRSSI = rssi;
         Q_EMIT teleDataReceived("REMOTE",
-//                                "DIS:"+QString::fromStdString(std::to_string(m_remoteDIS)) +
-                                " RSSI:"+QString::fromStdString(std::to_string(m_remoteRSSI)) +
-                                " SNR:"+QString::fromStdString(std::to_string(m_remoteSNR))
+                                QString("[A]")+
+//                                "R["+QString::fromStdString(std::to_string(m_remoteRSSI)) + "]"
+                                " S["+QString::fromStdString(std::to_string(m_remoteSNR)) + "]"
                                 ,0);
     }
+    mavlink_message_t msg;
+    mavlink_msg_radio_pack_chan(systemId(),
+                                componentId(),
+                                mavlinkChannel(),
+                                &msg,
+                                static_cast<uint8_t>(m_localRSSI),
+                                static_cast<uint8_t>(m_remoteRSSI),
+                                0,
+                                static_cast<uint8_t>(m_localSNR),
+                                static_cast<uint8_t>(m_remoteSNR),
+                                0,0);
+    uint8_t buf[MAVLINK_MAX_PACKET_LEN+sizeof(quint64)];
+    quint64 time = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch() * 1000);
+    qToBigEndian(time, buf);
+    // Then write the message to the buffer
+    int len = mavlink_msg_to_send_buffer(buf + sizeof(quint64), &msg);
+
+    // Determine how many bytes were written by adding the timestamp size to the message size
+    len += sizeof(quint64);
+    QByteArray b(reinterpret_cast<const char*>(buf), len);
+    LogController::writeBinaryLog(m_logFile,b);
 }
 void IOFlightController::connectLink(){
     m_linkInterface->connect2host();

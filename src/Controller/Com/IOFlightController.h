@@ -31,7 +31,8 @@
 #include "MessageManager.h"
 #include "../../Log/LogController.h"
 #include "../../Files/FileControler.h"
-#include "../Telemetry/Com/com_proxy.hpp"
+//#include "../Telemetry/Com/com_proxy.hpp"
+#include "../Telemetry/TelemetryController.h"
 //#define DEBUG
 #define BUFFER_LENGTH 8192
 //#define MAVLINK_PARSE_CUSTOM
@@ -55,7 +56,7 @@ Q_SIGNALS:
     void messageReceived(mavlink_message_t message);
     void mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t totalReceived, uint64_t totalLoss, float lossPercent);
 public Q_SLOTS:
-    void handleDataReceived(QString srcAddr, QString dataType, int value);
+    void handleDataReceived(QString ip, int snr, int rssi);
     void loadConfig(Config* linkConfig);
     void connectLink();
     void disConnectLink();
@@ -64,8 +65,8 @@ public Q_SLOTS:
     bool isConnected();
     LinkInterface * getInterface(){ return m_linkInterface;}
 public:
-    Proxy::Com* m_comNetLocal = nullptr;
-    Proxy::Com* m_comNetRemote = nullptr;
+    TelemetryController* m_comNetLocal = nullptr;
+    TelemetryController* m_comNetRemote = nullptr;
     Config* m_linkConfig = nullptr;
     QMutex* m_mutexProcess = nullptr;
     QWaitCondition *m_pauseCond = nullptr;

@@ -18,13 +18,13 @@ public:
     int getConnectionStatus();
 public:
     Q_INVOKABLE void sendRawData(QString command);
-    Q_INVOKABLE void connectToHost(QString ip, int port);
+    Q_INVOKABLE void connectToHost(QString ip, int port,QString user, QString pass);
     Q_INVOKABLE void disconnectFromHost();
     void parseData(QString data);
 Q_SIGNALS:
     void dataReceived(QString data);
     void dataSend(QString data);
-    void writeLogTimeout(float snr, float rssi);
+    void writeLogTimeout(QString ip, int snr, int rssi);
 public Q_SLOTS:
     void handlePacketReceived();
     void onConnected();
@@ -39,6 +39,8 @@ private:
     int m_status;
     QString m_ip;
     int m_port;
+    QString m_user;
+    QString m_pass;
     QTcpSocket* m_socket = nullptr;
     QTimer* m_timerRequest = nullptr;
     QTimer* m_timerWriteLog = nullptr;

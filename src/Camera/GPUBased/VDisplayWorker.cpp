@@ -80,7 +80,7 @@ void VDisplayWorker::process()
         //        assert(gpu_i420ToRGBA(d_I420Image, d_BRGAImage, imgSize.width, imgSize.height, 0, 0, imgSize.width, imgSize.height) == cudaSuccess);
         //        m_imgShow = cv::Mat(imgSize.height, imgSize.width, CV_8UC4, d_BRGAImage);
         /***Warp Image CPU*******/
-        printf("imgSize[%dx%d]\r\n",imgSize.width,imgSize.height);
+//        printf("imgSize[%dx%d]\r\n",imgSize.width,imgSize.height);
         m_imgShow = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
         // draw zoom
         char zoomText[100];

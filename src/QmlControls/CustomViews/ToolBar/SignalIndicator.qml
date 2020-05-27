@@ -69,7 +69,8 @@ Item {
         id: lblSNRLocal
         color: messageIcon.color
         text: ""
-        anchors.bottom: messageIcon.bottom
+        anchors.topMargin: UIConstants.sRect/4
+        anchors.top: lblSNRRemote.bottom
         anchors.right: messageIcon.left
         anchors.rightMargin: 5
         verticalAlignment: Text.AlignBottom
