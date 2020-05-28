@@ -465,7 +465,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.vibeSignal
+                color: vehicle.vibeSignal !== "green"? vehicle.vibeSignal: UIConstants.greenColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor
