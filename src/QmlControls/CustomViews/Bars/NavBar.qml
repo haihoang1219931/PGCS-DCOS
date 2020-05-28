@@ -386,8 +386,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 3
                 height: parent.height
-//                color: vehicle.link?"green":"red"
-                color: vehicle.link?"green":"red"
+                color: vehicle.link?UIConstants.greenColor:UIConstants.redColor
                 radius: UIConstants.rectRadius
                 property var timeCount: 0 // time count in second
                 Label{
@@ -432,7 +431,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.gpsSignal?"green":"red"
+                color: vehicle.gpsSignal?UIConstants.greenColor:UIConstants.redColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor
@@ -449,7 +448,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.ekfSignal
+                color: vehicle.ekfSignal !== "green"? vehicle.ekfSignal: UIConstants.greenColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor

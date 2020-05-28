@@ -151,7 +151,7 @@ QtObject {
     readonly property color orangeColor:             "orange"
     readonly property color redColor:             "red"
     readonly property color grayLighterColor:      "#808080"
-    readonly property color greenColor:            "green"
+    readonly property color greenColor:            "#4cd137"
     readonly property color activeNav:             "#222f3e"
     property int defaultFontPixelWidth:             5
     property int defaultFontPixelHeight:            UIConstants.fontSize

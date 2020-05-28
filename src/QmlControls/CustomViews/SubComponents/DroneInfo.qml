@@ -123,7 +123,7 @@ Rectangle {
         height: 7
         text: UIConstants.iEnabled
         anchors.rightMargin: 15
-        color: "green"
+        color: UIConstants.greenColor
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         font.pixelSize: 7

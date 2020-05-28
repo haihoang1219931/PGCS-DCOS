@@ -31,7 +31,7 @@ Rectangle{
     property string pcdName: "PM A"
     property bool smallSize: true
     property bool showCam: false
-    property color pcdStateColor: "green"
+    property color pcdStateColor: UIConstants.greenColor
     signal showOnTop(var show);
     border.color: "gray"
     border.width: 1

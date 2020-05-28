@@ -387,7 +387,7 @@ Item {
                         bottomValue: "m"
                         isEnable: vehicle.link
                                   &&
-                                  ((vehicle.vehicleType === 2 && vehicle.flightMode === "Guided")
+                                  (((vehicle.vehicleType === 2 || vehicle.vehicleType === 14) && vehicle.flightMode === "Guided")
                                    ||
                                    (vehicle.vehicleType === 1))
                         Connections{
@@ -428,12 +428,12 @@ Item {
                         Layout.alignment: Qt.AlignTop
                         topValue: Math.round(vehicle.paramAirSpeed*3.6)
                         middleValue: (vehicle?Math.round(
-                                                   (vehicle.vehicleType === 2?vehicle.groundSpeed:vehicle.airSpeed)
+                                                   ((vehicle.vehicleType === 2 || vehicle.vehicleType === 14)?vehicle.groundSpeed:vehicle.airSpeed)
                                                    *3.6).toString():"0")
                         bottomValue: "km/h"
                         isEnable: vehicle.link
                                   &&
-                                  ((vehicle.vehicleType === 2 && vehicle.flightMode === "Guided")
+                                  (((vehicle.vehicleType === 2 || vehicle.vehicleType === 14) && vehicle.flightMode === "Guided")
                                    ||
                                    (vehicle.vehicleType === 1))
                         onClicked: {
