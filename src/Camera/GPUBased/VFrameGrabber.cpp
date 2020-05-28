@@ -10,6 +10,7 @@ VFrameGrabber::VFrameGrabber()
     gst_init(0, NULL);
     m_loop = g_main_loop_new(NULL, FALSE);
     m_gstFrameBuff = Cache::instance()->getGstFrameCache();
+    m_gstEOSavingBuff = Cache::instance()->getGstEOSavingCache();
     m_ip = "232.4.130.146";
     m_port = 18888;
 }
@@ -47,11 +48,9 @@ void VFrameGrabber::setSource(std::string _ip, int _port)
     m_ip = _ip;
     m_port = (uint16_t)_port;
 
-    if (m_pipeline != nullptr) {
-        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
-    }
-
+    pause(true);
     this->initPipeline();
+    pause(false);
 }
 
 bool VFrameGrabber::stop()
@@ -117,14 +116,29 @@ GstFlowReturn VFrameGrabber::onNewSample(GstAppSink *_vsink, gpointer _uData)
     }
 
     m_currID++;
+    GstBuffer *gstItem = gst_sample_get_buffer(sample);
+
+
     GstFrameCacheItem gstFrame;
     gstFrame.setIndex(m_currID);
-    gstFrame.setGstBuffer(gst_buffer_copy(gst_sample_get_buffer(sample)));
+    gstFrame.setGstBuffer(gst_buffer_copy(gstItem));
     m_gstFrameBuff->add(gstFrame);
+    if (m_enSaving) {
+        GstFrameCacheItem gstEOSaving;
+        gstEOSaving.setIndex(m_currID);
+        gstEOSaving.setGstBuffer(gst_buffer_copy(gstItem));
+        m_gstEOSavingBuff->add(gstEOSaving);
+    }
     //    printf("\nReadFrame %d - %d", m_currID, gst_buffer_get_size(gst_sample_get_buffer(sample)));
     gst_sample_unref(sample);
     return GST_FLOW_OK;
 }
+
+void VFrameGrabber::setVideoSavingState(bool _state)
+{
+    m_enSaving = _state;
+}
+
 
 void VFrameGrabber::onEOS(_GstAppSink *_sink, void *_uData)
 {
@@ -176,7 +190,7 @@ GstPadProbeReturn VFrameGrabber::padDataMod(GstPad *_pad, GstPadProbeInfo *_info
 
 gint64 VFrameGrabber::getTotalTime()
 {
-    return 1800000000000;
+    return m_totalTime;
 }
 
 gint64 VFrameGrabber::getPosCurrent()
@@ -198,9 +212,52 @@ void VFrameGrabber::restartPipeline()
         return;
     }
 }
-
+void VFrameGrabber::setSpeed(float speed){
+    if(m_pipeline == NULL) {
+        printf("m_pipeline == NULL\r\n");
+        return;
+    }
+    printf("Change speed to %f\r\n",speed);
+    gint64 posCurrent = getPosCurrent();
+    printf("%ld = posCurrent\r\n",posCurrent);
+    m_speed = speed;
+    pause(true);
+    gst_element_seek(GST_ELEMENT(m_pipeline),speed,
+                            GST_FORMAT_TIME,
+                            GstSeekFlags(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE),
+                            GST_SEEK_TYPE_SET,(gint64)(posCurrent),
+                            GST_SEEK_TYPE_SET,GST_CLOCK_TIME_NONE);
+    pause(false);
+}
+void VFrameGrabber::pause(bool pause){
+    if(m_pipeline == NULL) return;
+    if(pause){
+        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PAUSED);
+    }else{
+        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
+    }
+}
+void VFrameGrabber::goToPosition(float percent){
+    printf("goToPosition %f%\r\n",percent);
+    if(m_pipeline == NULL) {
+        printf("m_pipeline == NULL\r\n");
+        return;
+    }
+    gint64 posNext = (gint64)((double)m_totalTime*(double)percent);
+//    printf("%ld = (gint64)(percent*100*GST_SECOND)\r\n",(gint64)(percent*100*GST_SECOND));
+//    printf("%ld = posNext\r\n",posNext);
+//    printf("%f = m_speed\r\n",m_speed);
+    gst_element_seek(GST_ELEMENT(m_pipeline),m_speed,
+                            GST_FORMAT_TIME,
+                            GstSeekFlags(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE),
+                            GST_SEEK_TYPE_SET,(gint64)(posNext),
+                            GST_SEEK_TYPE_SET,GST_CLOCK_TIME_NONE);
+}
 bool VFrameGrabber::initPipeline()
 {
+    if (m_pipeline != nullptr) {
+        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
+    }
     m_filename =  getFileNameByTime();
 
     if (createFolder("flights")) {
@@ -237,7 +294,10 @@ bool VFrameGrabber::initPipeline()
     //        "appsink  name=mysink sync=false async=false ";
     //----- 4
     //    m_pipelineStr = "rtspsrc location=" + m_ip + " ! queue ! rtph265depay ! h265parse ! nvh265dec ! glcolorconvert ! video/x-raw(memory:GLMemory),format=I420 ! appsink name=mysink sync=false async=false";
-    m_pipelineStr = m_ip + " ! appsink name=mysink sync=true async=true";
+    if(QString::fromStdString(m_ip).contains("filesrc"))
+        m_pipelineStr = m_ip + " ! appsink name=mysink sync=true async=true";
+    else
+        m_pipelineStr = m_ip + " ! appsink name=mysink sync=false async=false";
 //    m_pipelineStr = "filesrc location=/home/pgcs-04/Videos/vt/vt5.mp4 ! decodebin ! appsink name=mysink sync=true async=true";
     //
     //------ 2
@@ -294,11 +354,11 @@ bool VFrameGrabber::initPipeline()
     cbs.new_preroll = wrapperOnNewPreroll;
     gst_app_sink_set_callbacks(m_appsink, &cbs, (void *)this, NULL);
     // add call back received meta data
-    GstElement *vqueue = gst_bin_get_by_name(GST_BIN(m_pipeline), "myqueue");
-    GstPad *pad = gst_element_get_static_pad(vqueue, "sink");
-    gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER,
-                      (GstPadProbeCallback)wrapperPadDataMod, (void *)this, NULL);
-    gst_object_unref(pad);
+//    GstElement *vqueue = gst_bin_get_by_name(GST_BIN(m_pipeline), "myqueue");
+//    GstPad *pad = gst_element_get_static_pad(vqueue, "sink");
+//    gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER,
+//                      (GstPadProbeCallback)wrapperPadDataMod, (void *)this, NULL);
+//    gst_object_unref(pad);
     return true;
 }
 

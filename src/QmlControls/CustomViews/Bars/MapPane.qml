@@ -550,7 +550,7 @@ Item {
     }
     property var vehicleSymbolLink: {
         "MAV_TYPE_QUADROTOR":"qrc:/qmlimages/uavIcons/QuadRotorX.png",
-        "MAV_TYPE_COAXIAL":"qrc:/qmlimages/uavIcons/QuadRotorX.png",
+        "MAV_TYPE_OCTOROTOR":"qrc:/qmlimages/uavIcons/QuadRotorX.png",
         "MAV_TYPE_VTOL_QUADROTOR":"qrc:/qmlimages/uavIcons/VTOLPlane.png",
         "MAV_TYPE_FIXED_WING":"qrc:/qmlimages/uavIcons/Plane.png",
         "MAV_TYPE_GENERIC":"qrc:/qmlimages/uavIcons/Unknown.png"
@@ -558,7 +558,8 @@ Item {
     signal clicked(real lat,real lon,real alt)
     signal mapClicked(bool isMap)
     signal mapMoved()
-    signal homePositionChanged(real lat, real lon, real alt);
+    signal homePositionChanged(real lat, real lon, real alt)
+    signal showAdvancedConfigChanged()
     Computer{
         id: cInfo
     }
@@ -945,10 +946,10 @@ Item {
             waypointEditor.vehicleType = rootItem.vehicleType;
             vehicleSymbolUrl = vehicleSymbolLink["MAV_TYPE_QUADROTOR"];
             break;
-        case 3:
-            rootItem.vehicleType = "MAV_TYPE_COAXIAL";
+        case 14:
+            rootItem.vehicleType = "MAV_TYPE_OCTOROTOR";
             waypointEditor.vehicleType = rootItem.vehicleType;
-            vehicleSymbolUrl = vehicleSymbolLink["MAV_TYPE_COAXIAL"];
+            vehicleSymbolUrl = vehicleSymbolLink["MAV_TYPE_OCTOROTOR"];
             break;
         case 20:
             rootItem.vehicleType = "MAV_TYPE_VTOL_QUADROTOR";
@@ -1761,9 +1762,6 @@ Item {
                 changeWPCommand(selectedWP.attributes.attributeValue("command"),
                             param1,param2,param3,param4);
             }
-            var pointLatLon = Conv.mercatorToLatLon(
-                        selectedWP.geometry.extent.center.x,
-                        selectedWP.geometry.extent.center.y);
             if(selectedWP.attributes.attributeValue("id") === 0){
                 if(newPosition.altitude !== selectedWP.attributes.attributeValue("altitude")){
                     homePositionChanged(selectedWP.attributes.attributeValue("latitude"),
@@ -2232,6 +2230,10 @@ Item {
                 rootItem.setFocus(true);
             }else if(event.key === Qt.Key_C){
                 clearFlightPath();
+            }else if(rootItem.ctrlPress && event.key === Qt.Key_F6){
+                rootItem.showAdvancedConfigChanged();
+                console.log("showAdvancedConfigChanged");
+                rootItem.ctrlPress = false;
             }
 
         }
@@ -2725,7 +2727,8 @@ Item {
                         waypointEditor.changeASL(asl);
                         waypointEditor.changeCoordinate(waypointCoordinate);
                         updateWPDoJump();
-                        isMapSync = false;
+                        if(selectedWP.attributes.attributeValue("id") > 0)
+                            isMapSync = false;
                     }
                 }
                 onPressAndHold: {

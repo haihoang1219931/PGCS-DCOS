@@ -251,6 +251,7 @@ QtObject {
     readonly property string iGCSRecord:            "\uf03d"
     readonly property string iGimbalStab:           "\uf2b5"
     readonly property string iVisualLock:           "\uf05b"
+    readonly property string iFree:                 "\uf067"
     readonly property string iDigitalStab:          "\uf529"
     readonly property string iGCSStab:              "\uf5cb"
     readonly property string iHUD:                  "\uf037"

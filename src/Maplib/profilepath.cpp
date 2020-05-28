@@ -148,8 +148,8 @@ void ProfilePath::drawPlot(QPainter *painter)
     }
 
     points[0]=QPointF(points[1].rx(),0);
-    points[index++]=QPointF(points[index-2].rx(),0);
-    painter->drawConvexPolygon(points, index);
+    points[index]=QPointF(points[index-1].rx(),0);
+    painter->drawConvexPolygon(points, index+1);
 
     //end plot
 

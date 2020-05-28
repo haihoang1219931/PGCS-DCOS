@@ -3,15 +3,62 @@
 #include "VRTSPServer.h"
 #include "VSavingWorker.h"
 #include "../Cache/TrackObject.h"
-VideoEngineInterface::VideoEngineInterface(QObject *parent) : QObject(parent)
+#include "Joystick/JoystickLib/JoystickThreaded.h"
+#include "../GimbalController/GimbalInterface.h"
+VideoEngine::VideoEngine(QObject *parent) : QObject(parent)
 {
 
 }
-void VideoEngineInterface::slObjectLost(){
+GimbalInterface* VideoEngine::gimbal(){
+    return m_gimbal;
+}
+void VideoEngine::setGimbal(GimbalInterface* gimbal){
+    m_gimbal = gimbal;
+    m_gimbal->setZoomTarget(0,m_gimbal->context()->m_zoom[0]);
+    m_gimbal->setZoomCalculated(0,m_gimbal->context()->m_zoom[0]);
+}
+void VideoEngine::loadConfig(Config* config){
+    if(config != nullptr){
+        m_config = config;
+        setVideo(m_config->value("Settings:StreamEO:Value:data").toString());
+        start();
+    }
+}
+void VideoEngine::setSourceRTSP(QString source, int port, int width, int height){
+    printf("VideoEngine::setSourceRTSP source=%s\r\n",source.toStdString().c_str());
+    stopRTSP();
+    m_vRTSPServer = new VRTSPServer();
+    m_vRTSPServer->m_source = source;
+    m_vRTSPServer->m_port = port;
+    m_vRTSPServer->m_width = width;
+    m_vRTSPServer->m_height = height;
+    m_vRTSPServer->start();
+}
+void VideoEngine::stopRTSP(){
+    if(m_vRTSPServer!=nullptr && !(m_vRTSPServer->m_stop)){
+        m_vRTSPServer->m_stop = true;
+        m_vRTSPServer->setStateRun(false);
+        m_vRTSPServer->wait(1000);
+        m_vRTSPServer->quit();
+        if (!m_vRTSPServer->wait(1000)) {
+            m_vRTSPServer->terminate();
+            m_vRTSPServer->wait(1000);
+        }
+        delete m_vRTSPServer;
+        m_vRTSPServer = nullptr;
+    }
+}
+void VideoEngine::slObjectLost(){
+    m_gimbal->setGimbalRate(0,0);
+    m_gimbal->context()->m_lockMode = "FREE";
     removeTrackObjectInfo(0);
     Q_EMIT objectLost();
 }
-void VideoEngineInterface::slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h){
+void VideoEngine::slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h){
+//    printf("%s]\r\n",__func__);
+    if(m_gimbal != nullptr){
+        m_gimbal->lockScreenPoint(_id,_px,_py,_oW,_oH,_w,_h);
+    }
     updateTrackObjectInfo("Object","RECT",QVariant(QRect(
                                                        static_cast<int>(_px-_oW/2),
                                                        static_cast<int>(_py-_oH/2),
@@ -24,30 +71,30 @@ void VideoEngineInterface::slDeterminedTrackObjected(int _id, double _px, double
     updateTrackObjectInfo("Object","ANGLE",QVariant(_px));
     Q_EMIT determinedTrackObjected(_id,_px,_py,_oW, _oH, _w, _h);
 }
-void VideoEngineInterface::updateVideoSurface(int width, int height){
+void VideoEngine::updateVideoSurface(int width, int height){
     m_updateCount = 0;
     m_updateVideoSurface = true;
     m_videoSurfaceSize.setWidth(width);
     m_videoSurfaceSize.setHeight(height);
 }
-int VideoEngineInterface::addSubViewer(ImageItem *viewer){
+int VideoEngine::addSubViewer(ImageItem *viewer){
     printf("%s[%d] %p\r\n",__func__,m_listSubViewer.size(),viewer);
     this->freezeMap()[m_listSubViewer.size()] = true;
     m_listSubViewer.append(viewer);
     return m_listSubViewer.size() -1;
 }
-void VideoEngineInterface::removeSubViewer(int viewerID){
+void VideoEngine::removeSubViewer(int viewerID){
      printf("%s[%d] %d\r\n",__func__,m_listSubViewer.size(),viewerID);
     if(viewerID >= 0 && viewerID < m_listSubViewer.size()){
         this->freezeMap().remove(viewerID);
         m_listSubViewer.removeAt(viewerID);
     }
 }
-QAbstractVideoSurface *VideoEngineInterface::videoSurface()
+QAbstractVideoSurface *VideoEngine::videoSurface()
 {
     return m_videoSurface;
 }
-void VideoEngineInterface::drawOnViewerID(cv::Mat img, int viewerID){
+void VideoEngine::drawOnViewerID(cv::Mat img, int viewerID){
     if(viewerID >=0 && viewerID < m_listSubViewer.size()){
         ImageItem* tmpViewer = m_listSubViewer[viewerID];
         if(tmpViewer != nullptr){
@@ -78,7 +125,7 @@ void VideoEngineInterface::drawOnViewerID(cv::Mat img, int viewerID){
     }
 }
 
-void VideoEngineInterface::setVideoSurface(QAbstractVideoSurface *_videoSurface)
+void VideoEngine::setVideoSurface(QAbstractVideoSurface *_videoSurface)
 {
     printf("setVideoSurface");
 
@@ -87,7 +134,7 @@ void VideoEngineInterface::setVideoSurface(QAbstractVideoSurface *_videoSurface)
         update();
     }
 }
-void VideoEngineInterface::update()
+void VideoEngine::update()
 {
     printf("Update video surface(%d,%d)\r\n",
            m_videoSurfaceSize.width(),
@@ -103,7 +150,33 @@ void VideoEngineInterface::update()
         }
     }
 }
-QSize VideoEngineInterface::sourceSize()
+QSize VideoEngine::sourceSize()
 {
     return m_sourceSize;
+}
+void VideoEngine::onStreamFrameSizeChanged(int width, int height)
+{
+    printf("%s [%dx%d]\r\n",__func__,width,height);
+    m_vSavingWorker->setStreamSize(width, height);
+    if (m_enStream) {
+        if(m_vRTSPServer == nullptr)
+        {
+    #ifdef USE_VIDEO_CPU
+        setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=1500000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
+                      8554,width,height);
+    #endif
+    #ifdef USE_VIDEO_GPU
+//        setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=1500000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
+//                      8554,width,height);
+        setSourceRTSP("( appsrc name=othersrc ! videoscale ! video/x-raw,width=1280,height=720 ! avenc_mpeg4 bitrate=2000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
+                      8554,width,height);
+    #endif
+        }else{
+            printf("m_vRTSPServer != nullptr\r\n");
+        }
+    }
+
+    if (m_enSaving) {
+        m_vSavingWorker->start();
+    }
 }

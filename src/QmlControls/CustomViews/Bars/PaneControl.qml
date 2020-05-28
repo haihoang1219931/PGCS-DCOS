@@ -240,7 +240,7 @@ Item{
                 isShowRect: false
                 isSolid: true
                 iconSize: UIConstants.sRect
-                iconColor: camState.gcsStab?UIConstants.greenColor:UIConstants.textColor
+                iconColor: camState.digitalStab?UIConstants.greenColor:UIConstants.textColor
                 onClicked: {
                     rootItem.gcsStabClicked();
                 }
@@ -254,7 +254,7 @@ Item{
                 isShowRect: false
                 isSolid: true
                 iconSize: UIConstants.sRect
-                iconColor: camState.gcsRecord?UIConstants.greenColor:UIConstants.textColor
+                iconColor: camState.record?UIConstants.greenColor:UIConstants.textColor
                 onClicked: {
                     rootItem.gcsRecordClicked();
                 }

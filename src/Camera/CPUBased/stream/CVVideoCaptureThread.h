@@ -1,18 +1,18 @@
 #ifndef CVVIDEOCAPTURETHREAD_H
 #define CVVIDEOCAPTURETHREAD_H
 
-#include "../../ControllerLib/Buffer/RollBuffer.h"
-#include "../../Cache/TrackObject.h"
-#include "../../VideoEngine/VideoEngineInterface.h"
+#include "Camera/Buffer/RollBuffer.h"
+#include "Camera/Cache/TrackObject.h"
+#include "Camera/VideoEngine/VideoEngineInterface.h"
 #include "CVVideoCapture.h"
 #include "CVVideoProcess.h"
 #include "CVRecord.h"
-class CVVideoCaptureThread : public VideoEngineInterface
+class CVVideoCaptureThread : public VideoEngine
 {
         Q_OBJECT
         /*Edit for getting motion data*/
     public:
-        explicit CVVideoCaptureThread(VideoEngineInterface *parent = 0);
+        explicit CVVideoCaptureThread(VideoEngine *parent = 0);
         ~CVVideoCaptureThread();
 
         PlateLog* plateLog() override{return m_process->m_plateLog;};
@@ -30,7 +30,6 @@ class CVVideoCaptureThread : public VideoEngineInterface
         Q_INVOKABLE void stop() override;
         Q_INVOKABLE void setVideo(QString _ip, int _port=0) override;
         Q_INVOKABLE void setStab(bool enable) override;
-        Q_INVOKABLE void setRecord(bool enable) override;
         Q_INVOKABLE void setShare(bool enable) override;
         Q_INVOKABLE void setTrackState(bool enable) override;
         Q_INVOKABLE void capture() override;
@@ -41,17 +40,14 @@ class CVVideoCaptureThread : public VideoEngineInterface
         Q_INVOKABLE void setStreamMount(QString _streamMount) override;
         Q_INVOKABLE void disableObjectDetect() override;
         Q_INVOKABLE void enableObjectDetect() override;
-        Q_INVOKABLE void enVisualLock() override;
-        Q_INVOKABLE void disVisualLock() override;
         Q_INVOKABLE void setDigitalStab(bool _en) override;
         Q_INVOKABLE void setTrackAt(int _id, double _px, double _py, double _w, double _h) override;
+        Q_INVOKABLE void setRecord(bool _en) override;
 public Q_SLOTS:
         void setTrackType(QString trackType) override
         {
             m_process->setTrackType(trackType);
         }
-
-        void onStreamFrameSizeChanged(int width, int height) override;
         void doShowVideo() override;
 public:
         QThread *m_captureThread;

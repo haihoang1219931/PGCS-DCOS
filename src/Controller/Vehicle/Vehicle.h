@@ -39,6 +39,11 @@ class Vehicle : public QObject
     Q_PROPERTY(QStringList          flightModesOnAir            READ flightModesOnAir                               NOTIFY flightModesOnAirChanged)
     Q_PROPERTY(QStringList          flightModesOnGround         READ flightModesOnGround                            NOTIFY flightModesOnGroundChanged)
     Q_PROPERTY(QString              flightMode                  READ flightMode         WRITE setFlightMode         NOTIFY flightModeChanged)
+    Q_PROPERTY(float                rcinChan1                   READ rcinChan1                                      NOTIFY rcinChan1Changed)
+    Q_PROPERTY(float                rcinChan2                   READ rcinChan2                                      NOTIFY rcinChan2Changed)
+    Q_PROPERTY(float                rcinChan3                   READ rcinChan3                                      NOTIFY rcinChan3Changed)
+    Q_PROPERTY(float                rcinChan4                   READ rcinChan4                                      NOTIFY rcinChan4Changed)
+    Q_PROPERTY(bool                 useJoystick                 READ useJoystick        WRITE setUseJoystick        NOTIFY useJoystickChanged)
     Q_PROPERTY(bool                 pic                         READ pic                                            NOTIFY picChanged)
     Q_PROPERTY(bool                 armed                       READ armed                                          NOTIFY armedChanged)
     Q_PROPERTY(bool                 landed                      READ landed                                         NOTIFY landedChanged)
@@ -270,6 +275,10 @@ public:
     float pressABS(){ return _pressABS; }
     float sonarRange(){ return _sonarRange; }
     int temperature(){ return _temperature; }
+    float rcinChan1(){return _rcinChan1;}
+    float rcinChan2(){return _rcinChan2;}
+    float rcinChan3(){return _rcinChan3;}
+    float rcinChan4(){return _rcinChan4;}
 public:
     /// Command vehicle to change loiter time
     Q_INVOKABLE void commandLoiterRadius(float radius);
@@ -365,6 +374,8 @@ public:
     IOFlightController* communication();
     void setCommunication(IOFlightController* com);
     ParamsController* params();
+    bool useJoystick(void);
+    void setUseJoystick(bool enable);
     bool pic(void);
     bool armed(void) { return _armed; }
     Q_INVOKABLE void setArmed(bool armed);
@@ -459,6 +470,7 @@ Q_SIGNALS:
     void mavCommandResult(int vehicleId, int component, int command, int result, bool noReponseFromVehicle);
     void homePositionChanged(const QGeoCoordinate& currentHomePosition);
     void picChanged();
+    void useJoystickChanged(bool enable);
     void armedChanged(bool armed);
     void landedChanged();
     void flightModeChanged(const QString& flightMode);
@@ -532,8 +544,13 @@ Q_SIGNALS:
     void propertiesModelChanged();
     void propertiesShowCountChanged();
     void paramsModelChanged();
+    void rcinChan1Changed();
+    void rcinChan2Changed();
+    void rcinChan3Changed();
+    void rcinChan4Changed();
 public Q_SLOTS:
     void handlePIC();
+    void handleUseJoystick(bool useJoystick);
     void _loadDefaultParamsShow();
     void _setPropertyValue(QString name,QString value,QString unit);
     void _sendMessageOnLink(IOFlightController* link, mavlink_message_t message);
@@ -723,7 +740,12 @@ private:
     float       _mavlinkLossPercent     = 100.0f;
     float _pressABS = 0;
     int _temperature = 0;    
+    float _rcinChan1 = 0;
+    float _rcinChan2 = 0;
+    float _rcinChan3 = 0;
+    float _rcinChan4 = 0;
     bool _pic = false;
+    bool _useJoystick = true;
     QList<Fact*> _propertiesModel;
     QList<Fact*> _paramsModel;
     QMap<QString,int> _paramsMap;

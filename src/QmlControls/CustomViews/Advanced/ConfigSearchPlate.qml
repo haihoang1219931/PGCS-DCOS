@@ -38,17 +38,21 @@ Rectangle {
             model: ListModel {
                 ListElement {
                     name: "51F-68057"
+                    need: false
                 }
 
                 ListElement {
                     name: "42A-13541"
+                    need: false
                 }
 
                 ListElement {
                     name: "12G-98620"
+                    need: false
                 }
 
                 ListElement {
+                    name: ""
                     need: true
                 }
             }

@@ -29,8 +29,8 @@ void VSearchWorker::run()
     m_matImageBuff = Cache::instance()->getProcessImageCache();     /**< */
     m_rbMOTObjs = Cache::instance()->getMOTCache();                 /**< */
     m_rbSearchObjs = Cache::instance()->getSearchCache();           /**< */
-    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();         /**< */
-    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();         /**< */
+//    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();         /**< */
+//    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();         /**< */
     ProcessImageCacheItem processImgItem;                           /**< */
     DetectedObjectsCacheItem motCacheItem;                          /**< */
     int prevID = -1;

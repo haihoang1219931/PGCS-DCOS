@@ -37,9 +37,9 @@ void Tracker::initTrack(const cv::Mat &input_image, cv::Point topLeft, cv::Point
 {//Init tracker from user selection
 
     this->initTrack(input_image,
-        cv::Rect(topLeft.x, topLeft.y,
-        bottomRight.x - topLeft.x,
-        bottomRight.y - topLeft.y));
+                    cv::Rect(topLeft.x, topLeft.y,
+                             bottomRight.x - topLeft.x,
+                             bottomRight.y - topLeft.y));
 
 }
 
@@ -72,10 +72,11 @@ void Tracker::initTrack(const cv::Mat &input_image, cv::Rect input_rect)
 
 void Tracker::SetRoi(cv::Rect input_ROI)
 {//Init ROI position and center
-
+    //printf("Begin %s\r\n",__func__);
     this->current_ROI.ROI = input_ROI;
     this->current_ROI.ROI_center.x = round(input_ROI.width / 2);
     this->current_ROI.ROI_center.y = round(input_ROI.height / 2);
+    //printf("End %s\r\n",__func__);
 }
 
 void Tracker::performTrack(const cv::Mat &input_image)
@@ -187,8 +188,16 @@ cv::Mat Tracker::ComputeDFT(const cv::Mat &input_image, bool preprocess)
     dft(gray_padded, complexI, cv::DFT_COMPLEX_OUTPUT);    //Compute Direct Fourier Transform
 
     //Crop the spectrum, if it has an odd number of rows or columns
-    complexI = complexI(cv::Rect(0, 0, complexI.cols & -2, complexI.rows & -2));
-
+//    printf("Begin %s Crop the spectrum,\r\n",__func__);
+    cv::Rect cropRect = cv::Rect(0, 0, complexI.cols & -2, complexI.rows & -2);
+    if(cropRect.width > complexI.cols){
+        cropRect.width = complexI.cols;
+    }
+    if(cropRect.height > complexI.rows){
+        cropRect.height = complexI.rows;
+    }
+    complexI = complexI(cropRect);
+//    printf("End %s Crop the spectrum,\r\n",__func__);
     return complexI;
 }
 
@@ -384,7 +393,7 @@ void Tracker::InitFilter()
     //Create the the desired output - 2D Gaussian
     cv::Mat Mask_gauss = cv::Mat::zeros(this->prev_img.real_image.size(), CV_32F);
     MaskDesiredG(Mask_gauss, round(this->current_ROI.ROI.width / 2),
-        round(this->current_ROI.ROI.height / 2));
+                 round(this->current_ROI.ROI.height / 2));
 
 
     temp_FG = cv::Mat::zeros(this->prev_img.opti_dft_comp_rows, this->prev_img.opti_dft_comp_cols, this->prev_img.image_spectrum.type());
@@ -499,7 +508,7 @@ void Tracker::MaskDesiredG(cv::Mat &output, int u_x, int u_y, double sigma, bool
         for (int j = 0; j<output.cols; j++)
         {
             output.at<float>(i, j) = 255 * exp((-(i - u_y)*(i - u_y) / (2 * sigma)) +
-                (-(j - u_x)*(j - u_x) / (2 * sigma)));
+                                               (-(j - u_x)*(j - u_x) / (2 * sigma)));
         }
     }
 
@@ -602,7 +611,7 @@ void Tracker::dftDiv(const cv::Mat &dft_a, const cv::Mat &dft_b, cv::Mat &output
 {//Compute complex divison
 
     assert(dft_a.size() == dft_b.size() && dft_a.type() == dft_b.type() &&
-        dft_a.channels() == dft_b.channels() && dft_a.channels() == 2);
+           dft_a.channels() == dft_b.channels() && dft_a.channels() == 2);
 
     cv::Mat out_temp = cv::Mat::zeros(dft_a.rows, dft_a.cols, dft_a.type());
 
@@ -611,14 +620,14 @@ void Tracker::dftDiv(const cv::Mat &dft_a, const cv::Mat &dft_b, cv::Mat &output
         for (int y = 0; y<dft_a.cols; y++)
         {
             out_temp.at<cv::Vec2f>(x, y)[0] = ((dft_a.at<cv::Vec2f>(x, y)[0] * dft_b.at<cv::Vec2f>(x, y)[0]) +
-                (dft_a.at<cv::Vec2f>(x, y)[1] * dft_b.at<cv::Vec2f>(x, y)[1])) /
-                ((dft_b.at<cv::Vec2f>(x, y)[0] * dft_b.at<cv::Vec2f>(x, y)[0]) +
-                (dft_b.at<cv::Vec2f>(x, y)[1] * dft_b.at<cv::Vec2f>(x, y)[1]));
+                    (dft_a.at<cv::Vec2f>(x, y)[1] * dft_b.at<cv::Vec2f>(x, y)[1])) /
+                    ((dft_b.at<cv::Vec2f>(x, y)[0] * dft_b.at<cv::Vec2f>(x, y)[0]) +
+                    (dft_b.at<cv::Vec2f>(x, y)[1] * dft_b.at<cv::Vec2f>(x, y)[1]));
 
             out_temp.at<cv::Vec2f>(x, y)[1] = ((dft_a.at<cv::Vec2f>(x, y)[1] * dft_b.at<cv::Vec2f>(x, y)[0]) -
-                (dft_a.at<cv::Vec2f>(x, y)[0] * dft_b.at<cv::Vec2f>(x, y)[1])) /
-                ((dft_b.at<cv::Vec2f>(x, y)[0] * dft_b.at<cv::Vec2f>(x, y)[0]) +
-                (dft_b.at<cv::Vec2f>(x, y)[1] * dft_b.at<cv::Vec2f>(x, y)[1]));
+                    (dft_a.at<cv::Vec2f>(x, y)[0] * dft_b.at<cv::Vec2f>(x, y)[1])) /
+                    ((dft_b.at<cv::Vec2f>(x, y)[0] * dft_b.at<cv::Vec2f>(x, y)[0]) +
+                    (dft_b.at<cv::Vec2f>(x, y)[1] * dft_b.at<cv::Vec2f>(x, y)[1]));
         }
     }
 

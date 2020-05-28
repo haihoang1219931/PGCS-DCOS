@@ -154,20 +154,11 @@ Rectangle {
                          [camState.language[camState.fd_icon]]
                 color: UIConstants.bgAppColor
                 onClicked: {
-                    if(camState.sensorID === camState.sensorIDEO){
-                        camState.sensorID = camState.sensorIDIR;
-                    }else{
-                        camState.sensorID = camState.sensorIDEO;
-                    }
-                    console.log("Change sensor ID to ["+camState.sensorID+"]");
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        var config = PCSConfig.getData();
-                        if(camState.sensorID === "EO"){
-                            videoPane.player.setVideo(config["CAM_STREAM_EO"]);
-                            videoPane.player.start()
+                        if(camState.sensorID === camState.sensorIDIR){
+                            cameraController.gimbal.changeSensor("EO");
                         }else{
-                            videoPane.player.setVideo(config["CAM_STREAM_IR"]);
-                            videoPane.player.start()
+                            cameraController.gimbal.changeSensor("IR");
                         }
                     }
                     if(CAMERA_CONTROL){
@@ -209,7 +200,7 @@ Rectangle {
                 color: UIConstants.bgAppColor
                 onClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.capture();
+                        cameraController.gimbal.snapShot();
                     }
                 }
             }
@@ -246,11 +237,10 @@ Rectangle {
                 isSync: true
                 btnText: "GCS\nStab"
                 color: UIConstants.bgAppColor
-                isOn: camState.gcsStab
+                isOn: camState.digitalStab
                 onClicked: {
-                    camState.gcsStab =! camState.gcsStab;
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.setDigitalStab(camState.gcsStab)
+                        cameraController.gimbal.setDigitalStab(!camState.gcsStab)
                     }
                 }
             }
@@ -268,7 +258,7 @@ Rectangle {
 
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.setRecord(camState.gcsRecord);
+                        cameraController.gimbal.setRecord(camState.gcsRecord);
                     }
                 }
             }
@@ -285,7 +275,7 @@ Rectangle {
                     camState.gcsOD=!camState.gcsOD;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.setObjectDetect(camState.gcsOD);
+                        cameraController.videoEngine.setObjectDetect(camState.gcsOD);
                     }
                 }
             }
@@ -302,21 +292,11 @@ Rectangle {
                     camState.gcsPD=!camState.gcsPD;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        videoPane.player.setPowerLineDetect(camState.gcsPD);
+                        cameraController.videoEngine.setPowerLineDetect(camState.gcsPD);
                     }
                 }
             }
-            FooterButton {
-                id: btnInvertTilt
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: parent.width
-                icon: UIConstants.iInvertTilt
-                btnText: "Invert\ntilt"
-                color: UIConstants.bgAppColor
-                onClicked: {
-                    camState.invertTilt = -camState.invertTilt;
-                }
-            }
+
 //            SwitchFlatButton {
 //                id: btnVisualLock
 //                Layout.preferredWidth: parent.width
@@ -334,7 +314,7 @@ Rectangle {
 //                    }else{
 //                        camState.changeLockMode("VISUAL")
 //                            if(gimbalNetwork.isGimbalConnected === true)
-//                        gimbalNetwork.ipcCommands.doSceneSteering(videoPane.player.frameID);
+//                        gimbalNetwork.ipcCommands.doSceneSteering(cameraController.gimbal.frameID);
 //                    }
 //                }
 //            }
@@ -391,91 +371,72 @@ Rectangle {
                         camState.gcsExportVideo = true;
                 }
             }
-
-//            SwitchFlatButton {
-//                id: btnVisualLock
-//                Layout.preferredWidth: parent.width
-//                Layout.preferredHeight: parent.width
-//                icon: UIConstants.iVisualLock
-//                isSync: true
-//                btnText: "Visual\nlock"
-//                color: UIConstants.bgAppColor
-//                isOn: camState.lockMode === "VISUAL"
-//                onClicked: {
-//                    if(isOn){
-//                        camState.changeLockMode("FREE")
-//                        if(gimbalNetwork.isGimbalConnected === true)
-//                            gimbalNetwork.ipcCommands.changeLockMode("LOCK_FREE", "GEOLOCATION_OFF");
-//                    }else{
-//                        camState.changeLockMode("VISUAL")
-//                            if(gimbalNetwork.isGimbalConnected === true)
-//                        gimbalNetwork.ipcCommands.doSceneSteering(videoPane.player.frameID);
-//                    }
-//                }
-//            }
-
-//            SwitchFlatButton {
-//                id: btnDigitalStab
-//                Layout.preferredWidth: parent.width
-//                Layout.preferredHeight: parent.width
-//                icon: UIConstants.iDigitalStab
-//                isSync: true
-//                btnText: "Digital\nStab"
-//                color: UIConstants.bgAppColor
-//                isOn: camState.digitalStab
-//                onClicked: {
-//                    if(gimbalNetwork.isGimbalConnected){
-//                        console.log("set digital stab to "+!isOn);
-//                        gimbalNetwork.ipcCommands.enableImageStab(!isOn?"ISTAB_ON":"ISTAB_OFF", !isOn?0.2:0.0);
-//                    }
-//                }
-//            }
-
-//            SwitchFlatButton {
-//                id: btnGCSStab
-//                Layout.preferredWidth: parent.width
-//                Layout.preferredHeight: parent.width
-//                icon: UIConstants.iGCSStab
-//                btnText: "GCS\nStab"
-//                color: UIConstants.bgAppColor
-//                onClicked: {
-//            if(USE_VIDEO_CPU){
-//                camState.digitalStab = !camState.digitalStab
-//                videoPane.player.setStab(camState.digitalStab);
-//            }
-//                }
-//            }
-//            SwitchFlatButton {
-//                id: btnHUD
-//                Layout.preferredWidth: parent.width
-//                Layout.preferredHeight: parent.width
-//                icon: UIConstants.iHUD
-//                btnText: "HUD"
-//                color: UIConstants.bgAppColor
-//                onClicked: {
-//                }
-//            }
-//            FooterButton {
-//                id: btnInvertTilt
-//                Layout.preferredWidth: parent.width
-//                Layout.preferredHeight: parent.width
-//                icon: UIConstants.iInvertTilt
-//                btnText: "Invert\ntilt"
-//                color: UIConstants.bgAppColor
-//                onClicked: {
-//                }
-//            }
-//            FooterButton {
-//                id: btnVideoConfig
-//                Layout.preferredWidth: parent.width
-//                Layout.preferredHeight: parent.width
-//                icon: UIConstants.iVideoConfig
-//                btnText: "Video\nconfig"
-//                color: UIConstants.bgAppColor
-//                onClicked: {
-//                    configPane.visible = !configPane.visible;
-//                }
-//            }
+            SwitchFlatButton {
+                id: btnVisualLock
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iVisualLock
+                btnText: "Visual\nLock"
+                color: UIConstants.bgAppColor
+                isSync: true
+                isOn: camState.lockMode === "VISUAL"
+                onClicked: {
+                    if(camState.lockMode === "VISUAL"){
+                        camState.lockMode = "FREE"
+                    }else{
+                        camState.lockMode = "VISUAL"
+                    }
+                    cameraController.gimbal.setLockMode(camState.lockMode);
+                }
+            }
+            FooterButton {
+                id: btnFree
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iFree
+                btnText: "FREE"
+                color: UIConstants.bgAppColor
+                onClicked: {
+                    camState.lockMode = "FREE";
+                    cameraController.gimbal.setLockMode(camState.lockMode);
+                }
+            }
+            FooterButton {
+                id: btnInvertPan
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iInvertPan
+                btnText: "Invert\npan"
+                color: UIConstants.bgAppColor
+                onClicked: {
+                    camState.invertPan = !camState.invertPan;
+                    joystick.setInvert("PAN",camState.invertPan);
+                }
+            }
+            FooterButton {
+                id: btnInvertTilt
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iInvertTilt
+                btnText: "Invert\ntilt"
+                color: UIConstants.bgAppColor
+                onClicked: {
+                    camState.invertTilt = !camState.invertTilt;
+                    joystick.setInvert("TILT",camState.invertTilt);
+                }
+            }
+            FooterButton {
+                id: btnInvertZoom
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iZoomIn
+                btnText: "Invert\nzoom"
+                color: UIConstants.bgAppColor
+                onClicked: {
+                    camState.invertZoom = !camState.invertZoom;
+                    joystick.setInvert("ZOOM",camState.invertZoom);
+                }
+            }
         }
         ColumnLayout {
             id: group3

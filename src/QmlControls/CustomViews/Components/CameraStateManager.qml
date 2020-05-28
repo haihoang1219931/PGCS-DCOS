@@ -6,6 +6,7 @@ Item {
     property bool isJoystickConnected: false
     property bool isConnected: true
     property bool isPingOk: true
+    property bool objectLocalization: false
     property string camIP: ""
     property string joyID: ""
     property int defaultWidth: 1366
@@ -54,8 +55,9 @@ Item {
     property real alphaSpeed: 3
     property real hfov: 63
     property real vfov: 27
-    property int invertPan: 1
-    property int invertTilt: 1
+    property bool invertPan: false
+    property bool invertTilt: false
+    property bool invertZoom: false
     property real latitude: 21.120457
     property real longitude: 105.120457
     property real altitude: 400.12
@@ -69,6 +71,7 @@ Item {
     property bool gimbalStab: false
     property bool gcsStab: true
     property bool gcsRecord: true
+    property bool record: true
     property bool gcsOD: false
     property bool gcsPD: false
     property bool gcsExportVideo: false
@@ -184,9 +187,6 @@ Item {
     function changeGimbalMode(gimbalMode){
         root.gimbalMode = gimbalMode
 
-    }
-    function changeRecordMode(recordMode){
-        root.recordMode = recordMode
     }
     function changeGimbalStab(enable){
         gimbalStab = enable;

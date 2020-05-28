@@ -43,11 +43,19 @@ void Vehicle::setJoystick(JoystickThreaded* joystick){
     m_joystick = joystick;
     _pic = m_joystick->pic();
     Q_EMIT picChanged();
+    _useJoystick = m_joystick->useJoystick();
+    Q_EMIT useJoystickChanged(_useJoystick);
     connect(m_joystick,&JoystickThreaded::picChanged,this,&Vehicle::handlePIC);
+    connect(m_joystick,&JoystickThreaded::useJoystickChanged,this,&Vehicle::handleUseJoystick);
 }
-void Vehicle::handlePIC(){
+void Vehicle::handlePIC(){    
     _pic = m_joystick->pic();
     Q_EMIT picChanged();
+    printf("%s = %s\r\n",__func__,_pic?"true":"false");
+}
+void Vehicle::handleUseJoystick(bool useJoystick){
+    _useJoystick = useJoystick;
+    Q_EMIT useJoystickChanged(_useJoystick);
 }
 ParamsController *Vehicle::paramsController()
 {
@@ -286,6 +294,9 @@ void Vehicle::_mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t tota
         _mavlinkReceivedCount   = totalReceived;
         _mavlinkLossCount       = totalLoss;
         _mavlinkLossPercent     = lossPercent;
+        #ifdef DEBUG
+        printf("%s _mavlinkLossPercent = %f\r\n",__func__,_mavlinkLossPercent);
+#endif
         Q_EMIT mavlinkStatusChanged();
     }
 }
@@ -298,14 +309,13 @@ void Vehicle::motorTest(int motor, int percent)
 void Vehicle::setHomeLocation(float lat, float lon){
     if(m_firmwarePlugin != nullptr){
         if(m_planController->m_missionItems.size() > 0)
-            m_firmwarePlugin->setHomeHere(lat, lon, _homeAltitude);
+            m_firmwarePlugin->setHomeHere(lat, lon, _altitudeAMSL - _altitudeRelative);
     }
 }
 void Vehicle::setAltitudeRTL(float alt){
     if(m_firmwarePlugin != nullptr){
         if (m_paramsController != nullptr) {
-            if(static_cast<int>(alt) != static_cast<int>(_homeAltitude))
-                m_paramsController->_writeParameterRaw(m_firmwarePlugin->rtlAltParamName(),QVariant::fromValue(alt*100));
+            m_paramsController->_writeParameterRaw(m_firmwarePlugin->rtlAltParamName(),QVariant::fromValue(alt*100));
         }
     }
 }
@@ -810,7 +820,7 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
     if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID) {
         //        printf("_handleHeartbeat\r\n");
 
-//        if(_landed != ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY))
+        if(_landed != ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY))
         {
             _landed = ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY);
             _setPropertyValue("Landed",((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY)?"True":"False","");
@@ -954,6 +964,14 @@ void Vehicle::_handleRCIn(mavlink_message_t& message)
     _setPropertyValue("RCIN_chan16",QString::fromStdString(std::to_string(rcIn.chan16_raw)),"us");
     _setPropertyValue("RCIN_chan17",QString::fromStdString(std::to_string(rcIn.chan17_raw)),"us");
     _setPropertyValue("RCIN_chan18",QString::fromStdString(std::to_string(rcIn.chan18_raw)),"us");
+    _rcinChan1 = rcIn.chan1_raw;
+    Q_EMIT rcinChan1Changed();
+    _rcinChan2 = rcIn.chan2_raw;
+    Q_EMIT rcinChan2Changed();
+    _rcinChan3 = rcIn.chan3_raw;
+    Q_EMIT rcinChan3Changed();
+    _rcinChan4 = rcIn.chan4_raw;
+    Q_EMIT rcinChan4Changed();
 }
 
 void Vehicle::_handleServoOut(mavlink_message_t& message)
@@ -1644,6 +1662,16 @@ QStringList Vehicle::unhealthySensors(void) const
     }
 
     return sensorList;
+}
+bool Vehicle::useJoystick(void){
+    return _useJoystick;
+}
+void Vehicle::setUseJoystick(bool enable){
+    if(_useJoystick != enable){
+        _useJoystick = enable;
+        printf("%s [%s]\r\n",__func__, enable?"true":"false");
+        Q_EMIT useJoystickChanged(enable);
+    }
 }
 bool Vehicle::pic(void){
     return _pic;

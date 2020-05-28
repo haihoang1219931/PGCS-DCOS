@@ -36,8 +36,8 @@ class VODWorker : public QThread
         index_type m_currID;
         RollBuffer_<ProcessImageCacheItem> *m_matImageBuff;
         RollBuffer_<DetectedObjectsCacheItem> *m_rbDetectedObjs;
-        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
-        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
+//        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
+//        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
         bool m_running = true;
         std::mutex m_mtx;
         std::condition_variable m_cvEnOD;

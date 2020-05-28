@@ -5,6 +5,7 @@ ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
 {
     m_vehicle = vehicle;
     connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&ArduCopterFirmware::handleJSButton);
+    connect(m_vehicle,&Vehicle::useJoystickChanged,this,&ArduCopterFirmware::handleUseJoystick);
     loadFromFile("conf/Properties.conf");
     m_rtlAltParamName = "RTL_ALT";
     m_airSpeedParamName = "WPNAV_SPEED";
@@ -32,9 +33,12 @@ ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
     m_mapFlightModeOnGround.insert(LOITER,    "Loiter");
     m_mapFlightModeOnAir.insert(STABILIZE, "Stabilize");
     m_mapFlightModeOnAir.insert(LOITER,    "Loiter");
-    m_joystickTimer.setInterval(40);
+    m_joystickTimer.setInterval(50);
     m_joystickTimer.setSingleShot(false);
+    m_joystickClearRCTimer.setInterval(20);
+    m_joystickClearRCTimer.setSingleShot(false);
     connect(&m_joystickTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendJoystickData);
+    connect(&m_joystickClearRCTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendClearRC);
     m_joystickTimer.start();
     if(m_vehicle->joystick()!=nullptr){
         m_vehicle->setFlightMode(m_vehicle->pic()?"Loiter":"Guided");
@@ -126,8 +130,8 @@ void ArduCopterFirmware::commandTakeoff( double altitudeRelative)
         return;
     double minimumAltitude = minimumTakeoffAltitude();
     double vehicleAltitudeAMSL = m_vehicle->altitudeAMSL();
-    double takeoffAltRel = vehicleAltitudeAMSL > minimumAltitude ?
-                vehicleAltitudeAMSL : minimumAltitude;
+    double takeoffAltRel = altitudeRelative > minimumAltitude ?
+                altitudeRelative : minimumAltitude;
     m_vehicle->sendMavCommand(m_vehicle->defaultComponentId(),
                               MAV_CMD_NAV_TAKEOFF,
                               true, // show error
@@ -317,22 +321,22 @@ void ArduCopterFirmware::setHomeHere(float lat, float lon, float alt){
                               0,0,0,0, lat,lon,alt);
 }
 void ArduCopterFirmware::sendJoystickData(){
-
     if (m_vehicle == nullptr)
         return;
-    if(m_vehicle->joystick()->axisCount()<4){
+    if(m_vehicle->pic()){
+//        printf("m_vehicle->pic()=%s\r\n",m_vehicle->pic()?"true":"false");
+//        if(m_vehicle->flightMode()!= "Loiter" && m_vehicle->flightMode()!= "RTL"){
+//            m_vehicle->setFlightMode("Loiter");
+//        }
+    }else{
+        if(m_vehicle->flightMode() == "Loiter"){
+            m_vehicle->setFlightMode("Guided");
+        }
+    }
+    if(m_vehicle->joystick()== nullptr){
         return;
     }
-    if(m_vehicle->pic()){
-        if(m_vehicle->flightMode()!= "Loiter" && m_vehicle->flightMode()!= "RTL"){
-            m_vehicle->setFlightMode("Loiter");
-        }
-    }else{
-//        if(m_vehicle->flightMode()!= "Guided"){
-//            m_vehicle->setFlightMode("Guided");
-//        }
-    }
-    if(m_vehicle->joystick()->axisCount() < 4){
+    if(m_vehicle->joystick()->axisCount() < 4 || !m_vehicle->joystick()->useJoystick()){
         return;
     }
     mavlink_message_t msg;
@@ -373,10 +377,48 @@ void ArduCopterFirmware::sendJoystickData(){
                 );
     m_vehicle->sendMessageOnLink(m_vehicle->communication(),msg);
 }
+void ArduCopterFirmware::sendClearRC(){
+    if(m_sendClearRCCount == m_sendClearRCMax){
+        m_joystickClearRCTimer.stop();
+    }else{
+        printf("%s\r\n",__func__);
+        mavlink_message_t msg;
+        mavlink_msg_rc_channels_override_pack_chan(
+                    m_vehicle->communication()->systemId(),
+                    m_vehicle->communication()->componentId(),
+                    m_vehicle->communication()->mavlinkChannel(),
+                    &msg,
+                    m_vehicle->id(),
+                    m_vehicle->_compID,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                    );
+        m_vehicle->sendMessageOnLink(m_vehicle->communication(),msg);
+    }
+    m_sendClearRCCount++;
+}
 void ArduCopterFirmware::handleJSButton(int id, bool clicked){
     if(m_vehicle != nullptr && m_vehicle->joystick() != nullptr){
         if(id>=0 && id < m_vehicle->joystick()->buttonCount()){
+
             JSButton* button = m_vehicle->joystick()->button(id);
+            printf("%s[%id] %s\r\n",__func__,id,clicked?"true":"false");
             if(m_mapFlightMode.values().contains(button->mapFunc())){
                 if(m_vehicle->pic()){
                     if(button->mapFunc() == "RTL")
@@ -384,11 +426,21 @@ void ArduCopterFirmware::handleJSButton(int id, bool clicked){
                 }else{
                     m_vehicle->setFlightMode(button->mapFunc());
                 }
-            }else if(button->mapFunc() == "PIC/CIC"){
-                m_vehicle->setFlightMode(clicked?"Loiter":"Guided");
+            }else if(button->mapFunc() == "PIC/CIC" || button->mapFunc() == "CIC/PIC"){
+                m_vehicle->setFlightMode((clicked)?"Loiter":"Guided");
             }
-
         }
+    }
+}
+void ArduCopterFirmware::handleUseJoystick(bool enable) {
+    if(enable){        
+        connect(&m_joystickTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendJoystickData);
+        m_joystickTimer.start();
+    }else{        
+        disconnect(&m_joystickTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendJoystickData);
+        m_joystickTimer.stop();
+        m_sendClearRCCount = 0;
+        m_joystickClearRCTimer.start();
     }
 }
 float ArduCopterFirmware::convertRC(float input, int channel){

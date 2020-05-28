@@ -41,13 +41,52 @@ Item {
     }
     Label {
         color: messageIcon.color
-        text: vehicle ? ((100.0 - vehicle.mavlinkLossPercent).toFixed(0).toString() + "%") : ""
+        text: vehicle ? ( (!isNaN(vehicle.mavlinkLossPercent)?
+                               Number(100.0 - vehicle.mavlinkLossPercent).toFixed(0).toString():"100")
+                         + "%") : "100%"
         anchors.top: parent.top
         anchors.topMargin: 2
         anchors.left: messageIcon.right
-        anchors.leftMargin: 2
+        anchors.leftMargin: 5
         font.family: UIConstants.appFont
         font.pixelSize: UIConstants.fontSize
         opacity: 0.6
+    }
+    Label {
+        id: lblSNRRemote
+        color: messageIcon.color
+        text: ""
+        horizontalAlignment: Text.AlignRight
+        anchors.right: messageIcon.left
+        anchors.rightMargin: 5
+        anchors.top: parent.top
+        anchors.topMargin: 2
+        font.family: UIConstants.appFont
+        font.pixelSize: UIConstants.fontSize
+        opacity: 0.6
+    }
+    Label {
+        id: lblSNRLocal
+        color: messageIcon.color
+        text: ""
+        anchors.topMargin: UIConstants.sRect/4
+        anchors.top: lblSNRRemote.bottom
+        anchors.right: messageIcon.left
+        anchors.rightMargin: 5
+        verticalAlignment: Text.AlignBottom
+        horizontalAlignment: Text.AlignRight
+        font.family: UIConstants.appFont
+        font.pixelSize: UIConstants.fontSize
+        opacity: 0.6
+    }
+    Connections{
+        target: comVehicle
+        onTeleDataReceived:{
+            if(srcAddr === "LOCAL"){
+                lblSNRLocal.text = dataType;
+            }else if(srcAddr === "REMOTE"){
+                lblSNRRemote.text = dataType;
+            }
+        }
     }
 }

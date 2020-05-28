@@ -30,20 +30,23 @@
 #include <QQmlListProperty>
 #include <QList>
 #include <QRect>
-#include "../ControllerLib/Buffer/RollBuffer.h"
-#include "../ControllerLib/Buffer/RollBuffer_.h"
+#include "Camera/Buffer/RollBuffer.h"
+#include "Camera/Buffer/RollBuffer_.h"
 #include "../Cache/TrackObject.h"
 #include "../Cache/GstFrameCacheItem.h"
 #include "../../../Files/PlateLog.h"
 #include <opencv2/core.hpp>
+#include "Setting/config.h"
 class VRTSPServer;
 class VSavingWorker;
 class ImageItem;
 class TrackObjectInfo;
-class VideoEngineInterface : public QObject
+class GimbalInterface;
+class VideoEngine : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<TrackObjectInfo> listTrackObjectInfos READ listTrackObjectInfos NOTIFY listTrackObjectInfosChanged);
+    Q_PROPERTY(GimbalInterface*    gimbal   READ gimbal       WRITE setGimbal)
     Q_PROPERTY(QAbstractVideoSurface *videoSurface READ videoSurface WRITE setVideoSurface)
     Q_PROPERTY(QSize sourceSize READ sourceSize NOTIFY sourceSizeChanged)
     Q_PROPERTY(bool enStream READ enStream WRITE setEnStream)
@@ -55,7 +58,7 @@ class VideoEngineInterface : public QObject
     Q_PROPERTY(bool enTrack READ enTrack)
     Q_PROPERTY(bool enSteer READ enSteer)
 public:
-    explicit VideoEngineInterface(QObject *parent = nullptr);
+    explicit VideoEngine(QObject *parent = nullptr);
 
     QQmlListProperty<TrackObjectInfo> listTrackObjectInfos()
     {
@@ -122,6 +125,7 @@ public:
     void setEnStream(bool _enStream)
     {
         m_enStream = _enStream;
+
     }
     bool enStream()
     {
@@ -160,17 +164,24 @@ public:
     }
 
     QMap<int,bool>  freezeMap(){ return m_freezeMap; }
+    GimbalInterface* gimbal();
+    virtual void setGimbal(GimbalInterface* gimbal);
 public:
     QAbstractVideoSurface *videoSurface();
     void setVideoSurface(QAbstractVideoSurface *videoSurface);
     QSize sourceSize();
     void update();
     bool allThreadStopped();
+    void loadConfig(Config* config);
+    void setSourceRTSP(QString source, int port, int width, int height);
+    void stopRTSP();
+    virtual void setdigitalZoom(float value){}
 public:
     Q_INVOKABLE virtual int addSubViewer(ImageItem *viewer);
     Q_INVOKABLE virtual void removeSubViewer(int viewerID);
     Q_INVOKABLE virtual void setObjectDetect(bool enable){}
     Q_INVOKABLE virtual void setPowerLineDetect(bool enable){}
+    Q_INVOKABLE virtual void setPowerLineDetectRect(QRect rect){}
     Q_INVOKABLE virtual void start(){}
     Q_INVOKABLE virtual void play(){}
     Q_INVOKABLE virtual void stop(){}
@@ -187,10 +198,13 @@ public:
     Q_INVOKABLE virtual void setStreamMount(QString _streamMount){}
     Q_INVOKABLE virtual void disableObjectDetect(){}
     Q_INVOKABLE virtual void enableObjectDetect(){}
-    Q_INVOKABLE virtual void enVisualLock(){}
-    Q_INVOKABLE virtual void disVisualLock(){}
+    Q_INVOKABLE virtual void moveImage(float panRate,float tiltRate,float zoomRate,float alpha = 0){}
     Q_INVOKABLE virtual void setDigitalStab(bool _en){}
     Q_INVOKABLE virtual void setTrackAt(int _id, double _px, double _py, double _w, double _h){}
+    Q_INVOKABLE virtual void pause(bool pause){}
+    Q_INVOKABLE virtual void goToPosition(float percent){}
+    Q_INVOKABLE virtual void setSpeed(float speed){}
+    Q_INVOKABLE virtual qint64 getTime(QString type){return 0;}
 Q_SIGNALS:
     void listTrackObjectInfosChanged();
     void sourceSizeChanged(int newWidth, int newHeight);
@@ -212,7 +226,7 @@ public Q_SLOTS:
     }
     virtual void slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h);
     virtual void slObjectLost();
-    virtual void onStreamFrameSizeChanged(int width, int height){}
+    virtual void onStreamFrameSizeChanged(int width, int height);
     virtual void doShowVideo(){}
     virtual void drawOnViewerID(cv::Mat img, int viewerID);
 protected:
@@ -221,6 +235,7 @@ protected:
         Q_UNUSED(plateLog);
     }
 protected:
+    GimbalInterface* m_gimbal = nullptr;
     // === sub viewer
     QList<ImageItem*> m_listSubViewer;
     QMutex imageDataMutex[10];
@@ -235,16 +250,14 @@ protected:
     int m_updateMax = 2;
     QSize m_videoSurfaceSize;
     bool m_enStream = true;
-    bool m_enSaving = false;
+    bool m_enSaving = true;
     int m_sensorMode = -1;
     int m_frameID;
     cv::Mat m_imgShow;
     std::string m_logFolder;
     std::string m_logFile;
-    VRTSPServer *m_vRTSPServer;
-    VSavingWorker *m_vSavingWorker;
-    RollBuffer_<rva::GstFrameCacheItem> *m_gstRTSPBuff;
-    RollBuffer_<rva::GstFrameCacheItem> *m_buffVideoSaving;
+    VRTSPServer *m_vRTSPServer = nullptr;
+    VSavingWorker *m_vSavingWorker = nullptr;
 
     // OD
     bool m_enSteer = false;
@@ -252,6 +265,9 @@ protected:
     bool m_enOD = false;
     bool m_enPD = false;
     QList<TrackObjectInfo *> m_listTrackObjectInfos;
+
+    // Config
+    Config* m_config = nullptr;
 };
 
 #endif // VIDEOENGINEINTERFACE_H

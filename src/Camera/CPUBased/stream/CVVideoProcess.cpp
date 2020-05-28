@@ -1,7 +1,10 @@
 #include "CVVideoProcess.h"
 #include "../../VideoDisplay/ImageItem.h"
+Q_DECLARE_METATYPE(cv::Mat)
 CVVideoProcess::CVVideoProcess(QObject *parent): QObject(parent)
 {
+    m_gstRTSPBuff = Cache::instance()->getGstRTSPCache();
+    m_buffVideoSaving = Cache::instance()->getGstEOSavingCache();
     qRegisterMetaType< cv::Mat >("cv::Mat");
     m_stabilizer = new stab_gcs_kiir::vtx_KIIRStabilizer();
     m_stabilizer->setMotionEstimnator(GOOD_FEATURE, RIGID_TRANSFORM);
@@ -399,6 +402,7 @@ void CVVideoProcess::doWork()
             gstFrame.setIndex(*m_frameID);
             gstFrame.setGstBuffer(rtspImage);
             m_gstRTSPBuff->add(gstFrame);
+//            printf("Adding rtsp frame m_gstRTSPBuff->size()=%d\r\n",m_gstRTSPBuff->size());
             //add to saving
             GstFrameCacheItem gstFrameSaving;
             gstFrameSaving.setIndex(*m_frameID);

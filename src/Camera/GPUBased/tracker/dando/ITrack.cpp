@@ -397,6 +397,9 @@ void ITrack::initTrack( cv::Mat &_image, cv::Rect _selRoi )
 #define DEBUG_PERFORMANCE_OFF
 void ITrack::performTrack( cv::Mat &_image )
 {
+    cv::Point2f objCenterPrev(
+                static_cast<float>(m_objRoi.x) + static_cast<float>(m_objRoi.width)/2,
+                static_cast<float>(m_objRoi.y) + static_cast<float>(m_objRoi.height)/2);
 #ifdef  DEBUG_PERFORMANCE
                 std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 #endif
@@ -635,7 +638,14 @@ void ITrack::performTrack( cv::Mat &_image )
     std::chrono::high_resolution_clock::time_point stop  = std::chrono::high_resolution_clock::now();
     dur = std::chrono::duration_cast<std::chrono::microseconds>(stop -start).count() / 1000.0f;
     std::cout << "Total Tracking time: " << dur << " ms\n";
-#endif
+#endif     
+//    cv::Point2f objCenter(
+//            static_cast<float>(m_objRoi.x) + static_cast<float>(m_objRoi.width)/2,
+//            static_cast<float>(m_objRoi.y) + static_cast<float>(m_objRoi.height)/2);
+//    objCenter.x = objCenterPrev.x * 0.7f + objCenter.x * 0.3f;
+//    objCenter.y = objCenterPrev.y * 0.7f + objCenter.y * 0.3f;
+//    m_objRoi.x = static_cast<int>(objCenter.x - m_objRoi.width / 2);
+//    m_objRoi.y = static_cast<int>(objCenter.y - m_objRoi.height / 2);
 }
 
 
@@ -654,7 +664,7 @@ cv::Rect ITrack::getPosition()
 //! \brief ITrack::trackStatus
 //! \return
 //!
-int ITrack::trackStatus()
+int ITrack::Get_State()
 {
     return m_trackStatus;
 }

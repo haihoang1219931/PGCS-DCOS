@@ -3,6 +3,9 @@
 
 #include "CacheItem.h"
 #include <opencv2/opencv.hpp>
+#include <QObject>
+#include <vector>
+#include <iostream>
 #ifdef USE_VIDEO_GPU
     #include <cuda.h>
     #include <cuda_runtime_api.h>
@@ -44,6 +47,16 @@ namespace rva
                 return m_dImage;
             }
 
+            void setZoom(float zoom)
+            {
+                m_zoom = zoom;
+            }
+
+            float getZoom()
+            {
+                return m_zoom;
+            }
+
             void setImageSize(cv::Size &_imgSize)
             {
                 m_imgSize = _imgSize;
@@ -54,12 +67,20 @@ namespace rva
                 return m_imgSize;
             }
 
-            void setHostStabMatrix(float *_hStabMatrix)
+            void setHostStabMatrix(cv::Mat _hStabMatrix)
             {
-                m_hStabMat = _hStabMatrix;
+                m_hStabMat[0] = static_cast<float>(_hStabMatrix.at<double>(0,0));
+                m_hStabMat[1] = static_cast<float>(_hStabMatrix.at<double>(0,1));
+                m_hStabMat[2] = static_cast<float>(_hStabMatrix.at<double>(0,2));
+                m_hStabMat[3] = static_cast<float>(_hStabMatrix.at<double>(1,0));
+                m_hStabMat[4] = static_cast<float>(_hStabMatrix.at<double>(1,1));
+                m_hStabMat[5] = static_cast<float>(_hStabMatrix.at<double>(1,2));
+                m_hStabMat[6] = static_cast<float>(_hStabMatrix.at<double>(2,0));
+                m_hStabMat[7] = static_cast<float>(_hStabMatrix.at<double>(2,1));
+                m_hStabMat[8] = static_cast<float>(_hStabMatrix.at<double>(2,2));
             }
 
-            float *getHostStabMatrix()
+            float* getHostStabMatrix()
             {
                 return m_hStabMat;
             }
@@ -94,16 +115,37 @@ namespace rva
                 return m_dGMEMat;
             }
 
-
-
+            QString lockMode() {return m_lockMode;}
+            void setLockMode(QString lockMode){m_lockMode = lockMode;}
+            cv::Rect trackRect() {return m_trackRect;}
+            void setTrackRect(cv::Rect trackRect){m_trackRect = trackRect;}
+            int trackStatus() {return m_trackStatus;}
+            void setTrackStatus(int trackStatus){m_trackStatus = trackStatus;}
+            cv::Rect powerlineDetectRect() {return m_powerlineDetectRect;}
+            void setPowerlineDetectRect(cv::Rect powerlineDetectRect){m_powerlineDetectRect = powerlineDetectRect;}
+            bool powerlineDetectEnable() {return m_powerlineDetectEnable;}
+            void setPowerlineDetectEnable(bool powerlineDetectEnable){
+                m_powerlineDetectEnable = powerlineDetectEnable;
+            }
+            std::vector<cv::Scalar> powerLineList(){return m_powerLineList;}
+            void setPowerLineList(std::vector<cv::Scalar>& powerLineList){
+                m_powerLineList = powerLineList;
+            }
         private:
             unsigned char *m_dImage = nullptr;
             unsigned char *m_hImage = nullptr;
             cv::Size m_imgSize;
-            float *m_hStabMat = nullptr;
+            float m_hStabMat[9];
+            float m_zoom = 1.0f;
             float *m_dStabMat = nullptr;
             float *m_hGMEMat = nullptr;
             float *m_dGMEMat = nullptr;
+            QString m_lockMode = "FREE";
+            cv::Rect m_trackRect;
+            int m_trackStatus = 0;
+            bool m_powerlineDetectEnable = false;
+            cv::Rect m_powerlineDetectRect;
+            std::vector<cv::Scalar> m_powerLineList;
     };
 } // namespace rva
 

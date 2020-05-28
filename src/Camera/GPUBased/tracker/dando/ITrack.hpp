@@ -125,9 +125,9 @@ public:
 
     void initTrack( cv::Mat &_image, cv::Rect _selRoi );
     void performTrack( cv::Mat &_image );
-    cv::Rect getPosition( );
+    cv::Rect getPosition();
     int getZoomDirection();
-    int trackStatus( );
+    int Get_State();
     bool isInitialized();
     void resetTrack();
     bool isRunning();
