@@ -22,11 +22,7 @@ Item {
     property real zoomCalculate
     property color drawColor: UIConstants.redColor
     function convertZoom(zoom){
-        console.log(camState.sensorID+" convertZoom "+zoom);
         var zoomInput = zoom;
-//        console.log(camState.sensorID+" zoomMax "+zoomMax);
-//        console.log(camState.sensorID+" zoomMin "+zoomMin);
-//        console.log(camState.sensorID+" zoomRatio "+zoomRatio);
         if(camState.sensorID === camState.sensorIDEO){
             if(zoomInput < zoomMin){
                 zoomInput = zoomMin

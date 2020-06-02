@@ -72,6 +72,7 @@ void VDisplayWorker::process()
         imgSize = processImgItem.getImageSize();
 
         if(imgSize.width <=0 || imgSize.height <=0){
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
             continue;
         }
         // Warp I420 Image GPU
@@ -138,8 +139,8 @@ void VDisplayWorker::process()
                                                         stabMatrix);
             trackRect.x = pointAfterStab.x - trackRect.width/2;
             trackRect.y = pointAfterStab.y - trackRect.height/2;
-            cv::Scalar colorInvision(0,0,255,0);
-            cv::Scalar colorOccluded(0,0,0,0);
+            cv::Scalar colorInvision(0,0,255,255);
+            cv::Scalar colorOccluded(0,0,0,255);
             if(processImgItem.lockMode() == "TRACK"){
                 if(processImgItem.trackStatus() == TRACK_INVISION){
                     cv::rectangle(m_imgShow,trackRect,colorInvision,2);
@@ -177,15 +178,13 @@ void VDisplayWorker::process()
                     }
                     cv::Point2d pt2(plr_lines[i].val[2],plr_lines[i].val[3]);
                     {
-                        cv::Point pointAfterStab = convertPoint(pt1,stabMatrix);
-                        pt1 = pointAfterStab;
+                        cv::Point pointAfterStab = convertPoint(pt2,stabMatrix);
+                        pt2 = pointAfterStab;
                     }
                     cv::line(m_imgShow,pt1,pt2,line_color,4,cv::LINE_AA);
                 }
             }
         }
-
-
 
         memcpy(h_BRGAImage, m_imgShow.data, imgSize.width * imgSize.height * 4);
         frame = QVideoFrame(QImage((uchar *)h_BRGAImage, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888));

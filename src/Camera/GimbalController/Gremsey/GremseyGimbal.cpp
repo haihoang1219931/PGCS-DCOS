@@ -195,16 +195,13 @@ void GremseyGimbal::changeSensor(QString sensorID){
 }
 void GremseyGimbal::setEOZoom(QString command, float value){
     if(command == "ZOOM_IN"){
-        printf("GremseyGimbal::%s %s\r\n",__func__,command.toStdString().c_str());
         m_sensor->sendRawData("068101040727FF");
     }else if(command == "ZOOM_OUT"){
-        printf("GremseyGimbal::%s %s\r\n",__func__,command.toStdString().c_str());
         m_sensor->sendRawData("068101040737FF");
     }else if(command == "ZOOM_STOP"){
-        printf("GremseyGimbal::%s %s\r\n",__func__,command.toStdString().c_str());
         m_sensor->sendRawData("068101040700FF");
     }else {
-        printf("GremseyGimbal::%s %s\r\n",__func__,command.toStdString().c_str());
+//        printf("GremseyGimbal::%s %s\r\n",__func__,command.toStdString().c_str());
         if(value>=1 && value<= 240){
             int zoomPosition;
             int zoomBegin = value<=20? static_cast<int>(value)-1: static_cast<int>(value/20)-1+19;
