@@ -78,7 +78,8 @@ void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float 
     temp.panRate = m_movePanRate;
     temp.tiltRate = m_moveTiltRate;
     temp.zoomRate = m_moveZoomRate;
-    //    printf("panRate,tiltRate = %f,%f\r\n",panRate,tiltRate);
+    //    printf("panRate,tiltRate,zoomRate = %f,%f,%f\r\n",
+    //           panRate,tiltRate,zoomRate);
     m_mutexCommand->lock();
     if(fabs(panRate) < deadZone &&
             fabs(tiltRate) < deadZone &&
@@ -99,10 +100,6 @@ void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float 
 
     }
     m_mutexCommand->unlock();
-    //    if(m_trackEnable){
-    //        setTrack(static_cast<int>(m_movePanRate/m_digitalZoomMax)+m_img.cols/2,
-    //                 static_cast<int>(m_moveTiltRate/m_digitalZoomMax)+m_img.rows/2);
-    //    }
 }
 cv::Mat VTrackWorker::createPtzMatrix(float w, float h, float dx, float dy,float r,float alpha){
     cv::Mat ptzMatrix = cv::Mat(3, 3, CV_64FC1,cv::Scalar::all(0));
@@ -290,14 +287,26 @@ void VTrackWorker::run()
                 temp.panRate = m_movePanRate;
                 temp.tiltRate = m_moveTiltRate;
                 if(fabs(m_moveZoomRate) >= deadZone/maxAxis){
-                    //                    m_r+=m_moveZoomRate /3;
-                    //                    if(m_r > m_digitalZoomMax){
-                    //                        m_r = m_digitalZoomMax;
-                    //                    }else if(m_r < m_digitalZoomMin){
-                    //                        m_r = m_digitalZoomMin;
-                    //                    }
-                    Q_EMIT zoomTargetChanged(m_r);
-                    Q_EMIT zoomTargetChangeStopped(m_r);
+                    if(m_gimbal->context()->m_sensorID == 1){
+                        m_zoomIR+=m_moveZoomRate /3;
+                        if(m_zoomIR > m_gimbal->context()->m_digitalZoomMax[1]){
+                            m_zoomIR = m_gimbal->context()->m_digitalZoomMax[1];
+                        }else if(m_zoomIR < 1){
+                            m_zoomIR = 1;
+                        }
+                        m_gimbal->context()->m_zoom[1]= m_zoomIR;
+                        m_gimbal->context()->m_hfov[1] = atanf(
+                                    tan(m_gimbal->context()->m_hfovMax[1]/2/180*M_PI)/m_zoomIR
+                                )/M_PI*180*2;
+                        //                        printf("IR zoomMin[%f] zoomMax[%f] zoomRatio[%f] digitalZoomMax[%f]\r\n",
+                        //                               m_gimbal->zoomMin(),
+                        //                               m_gimbal->zoomMax(),
+                        //                               m_gimbal->zoom(),
+                        //                               m_gimbal->digitalZoomMax());
+                    }
+
+                    //                    Q_EMIT zoomTargetChanged(m_r);
+                    //                    Q_EMIT zoomTargetChangeStopped(m_r);
                 }
                 cv::Point lockPoint(static_cast<int>(m_dx +
                                                      (temp.panRate * cos(m_rotationAlpha) + temp.tiltRate * sin(m_rotationAlpha))/m_r),
@@ -383,11 +392,20 @@ void VTrackWorker::run()
         if(m_powerLineDetectEnable){
             m_plrEngine->init_track_plr(m_grayFrame,m_powerLineDetectRect,m_powerLineList,m_plrRR);
         }
-        if(m_gimbal->context()->m_sensorID == 0){
-            m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1,m_rotationAlpha);
+        if(m_stabEnable){
+            if(m_gimbal->context()->m_sensorID == 0){
+                m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1 * m_scale,m_rotationAlpha);
+            }else{
+                m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_zoomIR * m_scale,m_rotationAlpha);
+            }
         }else{
-            m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_zoomIR,m_rotationAlpha);
+            if(m_gimbal->context()->m_sensorID == 0){
+                m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,1,m_rotationAlpha);
+            }else{
+                m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,m_zoomIR,m_rotationAlpha);
+            }
         }
+
         // add data to display worker
         ProcessImageCacheItem processImgItem;
         processImgItem.setIndex(m_currID);

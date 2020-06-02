@@ -272,7 +272,6 @@ void VDisplay::setVideoSavingState(bool _state)
 
 void VDisplay::setStab(bool _en)
 {
-    m_vDisplayWorker->setDigitalStab(_en);
     m_vTrackWorker->m_stabEnable = _en;
 }
 

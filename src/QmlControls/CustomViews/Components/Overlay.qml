@@ -22,14 +22,22 @@ Item {
     property real zoomCalculate
     property color drawColor: UIConstants.redColor
     function convertZoom(zoom){
+        console.log(camState.sensorID+" convertZoom "+zoom);
         var zoomInput = zoom;
-        if(zoomInput < zoomMin){
-            zoomInput = zoomMin
-        }else if(zoomInput > zoomMax){
-            zoomInput = zoomMax
+//        console.log(camState.sensorID+" zoomMax "+zoomMax);
+//        console.log(camState.sensorID+" zoomMin "+zoomMin);
+//        console.log(camState.sensorID+" zoomRatio "+zoomRatio);
+        if(camState.sensorID === camState.sensorIDEO){
+            if(zoomInput < zoomMin){
+                zoomInput = zoomMin
+            }else if(zoomInput > zoomMax){
+                zoomInput = zoomMax
+            }
+            var zoomOutput = (zoomInput - zoomMin)/(zoomMax - zoomMin) * (30 - zoomMin) + zoomMin;
+        }else{
+
         }
-        var zoomOutput = (zoomInput - zoomMin)/(zoomMax - zoomMin) * (30 - zoomMin) + zoomMin;
-        return zoomOutput;
+        return (isNaN(zoomOutput)?1:Number(zoomOutput));
     }
     Canvas{
         id: cvsCenter
@@ -56,30 +64,12 @@ Item {
         }
     }
     Item {
-        id: irZoom
-        width: UIConstants.sRect * 3
-        height: UIConstants.sRect * 1.5
-        anchors.bottomMargin: 8
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        visible: camState.sensorID === camState.sensorIDIR
-        ComboBox{
-            anchors.fill: parent
-            down: false
-            model: ["1x","2x","4x","8x"]
-            onCurrentTextChanged: {
-                cameraController.gimbal.setIRZoom(currentText);
-            }
-        }
-    }
-    Item {
         id: eoZoom
         width: UIConstants.sRect * 12
         height: UIConstants.sRect * 2
         anchors.bottomMargin: 8
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        visible: camState.sensorID === camState.sensorIDEO
         Rectangle {
             id: rectZoom
             color: "#00000000"
@@ -99,6 +89,7 @@ Item {
                 height: parent.height
                 anchors.bottom: parent.top
                 anchors.bottomMargin: 0
+                visible: false
                 x: -width/2 + (root.zoomTarget <= root.zoomMax ?
                                            root.zoomTarget / root.zoomMax * parent.width * 2 / 3:
                                            parent.width * 2 / 3 + parent.width * 1 / 3 * (root.zoomTarget / root.zoomMax - 1) / (root.digitalZoomMax - 1))
@@ -157,7 +148,7 @@ Item {
 
         Label {
             id: lblZoomOptical
-            text: "Zoom: "+(root.zoomRatio<= root.zoomMax?
+            text: "Zoom: "+(root.zoomRatio <= root.zoomMax?
                                 Number(convertZoom(root.zoomRatio)).toFixed(2):
                                 Number(convertZoom(root.zoomMax)).toFixed(2)) +"/"+Number(convertZoom(root.zoomMax)).toFixed(0)
             horizontalAlignment: Text.AlignLeft
