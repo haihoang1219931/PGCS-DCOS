@@ -295,9 +295,9 @@ void VTrackWorker::run()
                             m_zoomIR = 1;
                         }
                         m_gimbal->context()->m_zoom[1]= m_zoomIR;
-                        m_gimbal->context()->m_hfov[1] = atanf(
-                                    tan(m_gimbal->context()->m_hfovMax[1]/2/180*M_PI)/m_zoomIR
-                                )/M_PI*180*2;
+//                        m_gimbal->context()->m_hfov[1] = atanf(
+//                                    tan(m_gimbal->context()->m_hfovMax[1]/2/180*M_PI)/m_zoomIR
+//                                )/M_PI*180*2;
                         //                        printf("IR zoomMin[%f] zoomMax[%f] zoomRatio[%f] digitalZoomMax[%f]\r\n",
                         //                               m_gimbal->zoomMin(),
                         //                               m_gimbal->zoomMax(),
@@ -315,9 +315,6 @@ void VTrackWorker::run()
                                     );
                 if(m_trackEnable){
                     int trackSizeTmp = m_trackSize;
-                    //                    if(trackSizeTmp > 200){
-                    //                        trackSizeTmp = 200;
-                    //                    }
                     cv::Rect trackRectTmp(lockPoint.x-trackSizeTmp/2,
                                           lockPoint.y-trackSizeTmp/2,
                                           trackSizeTmp,trackSizeTmp);
