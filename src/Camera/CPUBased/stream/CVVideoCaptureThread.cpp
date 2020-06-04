@@ -106,6 +106,9 @@ void CVVideoCaptureThread::setGimbal(GimbalInterface* gimbal){
     m_gimbal = gimbal;
     m_process->m_gimbal = gimbal;
 }
+void CVVideoCaptureThread::moveImage(float panRate,float tiltRate,float zoomRate,float alpha){
+    m_process->moveImage(panRate,tiltRate,zoomRate,alpha);
+}
 void CVVideoCaptureThread::setVideo(QString _ip, int _port)
 {
     m_capture->m_ip = _ip.toStdString();

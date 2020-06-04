@@ -23,6 +23,7 @@ class CVVideoCaptureThread : public VideoEngine
         }
         void setGimbal(GimbalInterface* gimbal) override;
     public:
+        Q_INVOKABLE void moveImage(float panRate,float tiltRate,float zoomRate,float alpha = 0) override;
         Q_INVOKABLE void setObjectDetect(bool enable) override{}
         Q_INVOKABLE void setPowerLineDetect(bool enable) override{}
         Q_INVOKABLE void start() override;

@@ -13,6 +13,7 @@ CVVideoProcess::CVVideoProcess(QObject *parent): QObject(parent)
 #else
     m_tracker = new Tracker();
 #endif
+    m_mutexCommand = new QMutex();
     m_mutex = new QMutex();
     m_pauseCond = new QWaitCondition();
 }
@@ -425,6 +426,7 @@ void CVVideoProcess::doWork()
         }
 
         cv::Mat _imgOtherFunc;
+        cv::Mat _imgResize;
         cv::cvtColor(*m_imgShow, _imgOtherFunc, CV_BGRA2YUV_I420);
         if(m_sharedEnable && m_recordEnable){
             GstBuffer *rtspImage = gst_buffer_new();
