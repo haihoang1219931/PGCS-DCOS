@@ -1,6 +1,6 @@
 #include "VDisplayWorker.h"
 Q_DECLARE_METATYPE(cv::Mat)
-#include "tracker/mosse/tracker.h"
+#include "Camera/Algorithms/tracker/mosse/tracker.h"
 VDisplayWorker::VDisplayWorker(QObject *_parent) : QObject(_parent)
 {
     qRegisterMetaType< cv::Mat >("cv::Mat");
