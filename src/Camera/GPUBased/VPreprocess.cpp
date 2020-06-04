@@ -2,8 +2,6 @@
 
 VPreprocess::VPreprocess()
 {
-    m_stabilizer = new stab_gcs_kiir::vtx_KIIRStabilizer();
-    m_stabilizer->setMotionEstimnator(GOOD_FEATURE, RIGID_TRANSFORM);
     m_gstFrameBuff = Cache::instance()->getGstFrameCache();
     m_matImageBuff = Cache::instance()->getProcessImageCache();
     m_currID = 0;
