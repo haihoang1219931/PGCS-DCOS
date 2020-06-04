@@ -85,7 +85,7 @@ Q_SIGNALS:
     void zoomChanged();
     void zoomTargetChanged();
     void zoomCalculatedChanged(int viewIndex,float zoomCalculated);
-    void functionHandled(QString message);
+    void functionHandled(QString message);    
 public Q_SLOTS:
     virtual void connectToGimbal(Config* config = nullptr);
     virtual void disconnectGimbal();

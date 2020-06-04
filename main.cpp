@@ -103,12 +103,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("FCSConfig", &fcsConfig);
     FCSConfig trkConfig;
     trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
-<<<<<<< HEAD
-    engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);    
-=======
     engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);
->>>>>>> 2b0521f269deafa8813d3118031e0a5161267012
-
 #ifdef USE_VIDEO_CPU
     //--- Camera controller
     qmlRegisterType<ImageItem>("io.qdt.dev", 1, 0, "ImageItem");

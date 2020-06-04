@@ -19,68 +19,60 @@
 #include <map>
 #include "../../../Files/PlateLog.h"
 #include "../utils/filenameutils.h"
-#include "../stabilizer/dando_02/stab_gcs_kiir.hpp"
-#include "../tracker/dando/thresholding.hpp"
-#include "../tracker/dando/SKCF/skcf.h"
-#include "../tracker/dando/ITrack.hpp"
-#include "../tracker/dando/Utilities.hpp"
-#include "../tracker/dando/HTrack/saliency.h"
-#include "../detector/movingObject.hpp"
-#include "../tracker/dando/InitTracking.hpp"
+#include "Camera/Algorithms/stabilizer/dando_02/stab_gcs_kiir.hpp"
+#include "Camera/Algorithms/tracker/dando/ITrack.hpp"
+#include "Camera/Algorithms/tracker/dando/Utilities.hpp"
+#include "Camera/Algorithms/tracker/dando/HTrack/saliency.h"
+#include "Camera/Algorithms/tracker/mosse/tracker.h"
 #include "../../Cache/Cache.h"
 #include <chrono>
-#define MOVE_CLICK_TRACK
-//#define USE_SALIENCY
 #define DEBUG_TIME_OFF
+//#define TRACK_DANDO
+class GimbalInterface;
 using namespace rva;
+typedef struct {
+    int frameID;
+    float panRate;
+    float tiltRate;
+    float zoomRate;
+    float zoomStart;
+    float zoomStop;
+}joystickData;
 class  CVVideoProcess : public QObject
 {
         Q_OBJECT
     public:
         explicit CVVideoProcess(QObject *parent = 0);
         virtual ~CVVideoProcess();
-        void setTrackType(QString trackType);
     public:
         stab_gcs_kiir::vtx_KIIRStabilizer *m_stabilizer;
-        ThresholdingTracker *thresh_tracker;
-        InitTracking *ClickTrackObj;
-        KTrackers *k_tracker;
-        ITrack *m_tracker;
-        MovingDetector *m_detector;
         cv::Rect object_position;
         std::deque<std::pair<int, GstSample *>> *m_imageQueue;
         cv::Mat *m_imgShow;
         QMutex *m_mutexCapture;
         QMutex *m_mutexProcess;
-        //    cv::Mat m_imgRaw;
+        // queue joystick command
+        GimbalInterface* m_gimbal = nullptr;
+        std::deque<joystickData> m_jsQueue;
+        QMutex* m_mutexCommand = nullptr;
+        QMutex* m_mutex = nullptr;
+        QWaitCondition* m_pauseCond = nullptr;
         int *m_frameID;
         const int SLEEP_TIME = 1;
         cv::Mat m_img;
-        cv::Mat m_imgStab;
-        cv::Mat m_imgTrack;
-        cv::Mat grayFrame;
-        cv::Mat enhancedFrame;
-        cv::Mat m_img_get;
+        cv::Mat m_i420Img;
+        cv::Mat m_grayFrame;
+        cv::Mat m_grayFramePrev;
         QString m_trackType = "sKCF";
         QString m_sensorTrack = "EO";
         float m_irFOV = 0;
         float m_eoFOV = 0;
         bool m_stop = false;
+        bool m_pause = false;
         bool m_usingIPC = true;
-        bool m_trackEnable = true;
-        bool m_stabEnable = true;
         bool m_recordEnable = true;
         bool m_sharedEnable = true;
         bool m_setTrack = false;
-        bool GlobalTrackInited;
-        cv::Point m_pointSetTrack;
-        float m_cropRatio = 1.0f;
-        int m_trackSize = 50;
-        bool m_detectEnable = false;
-        int m_detectSize = 100;
-        int m_objectArea = 50;
-        int m_zoomTimer = 0;
-
         std::string m_logFolder;
         std::string m_logFile;
         RollBuffer_<GstFrameCacheItem> *m_gstRTSPBuff;
@@ -89,8 +81,58 @@ class  CVVideoProcess : public QObject
         int m_streamWidth = -1;
         int m_streamHeight = - 1;
         PlateLog* m_plateLog;
+
+        // ptz
+        float m_dx = -1;
+        float m_dy = -1;
+        float m_r = 1.0f;
+        float m_scale = 1.0f;
+        float m_zoomIR = 1.0f;
+        float m_zoomDir = 0;
+        float m_movePanRate = 0;
+        float m_moveTiltRate = 0;
+        float m_moveZoomRate = 1;
+        float m_rotationAlpha = 0;
+        float m_zoomStart = 1.0f;
+        float m_zoomRateCalculate[10];
+        float m_zoomRateCalculatePrev = 1;
+        float m_digitalZoomMax = 20;
+        float m_digitalZoomMin = 1;
+        int m_countRollBack = 0;
+        int m_countRollBackMax = 30;
+        cv::Mat m_ptzMatrix;
+        // track
+    #ifdef TRACK_DANDO
+        ITrack *m_tracker;
+    #else
+        Tracker *m_tracker;
+    #endif
+        bool m_trackEnable = true;
+        bool m_trackSet = false;
+        cv::Point m_trackSetPoint;
+        cv::Rect m_trackRect;
+        cv::Rect m_trackRectPrev;
+        // stab
+        bool m_stabEnable = true;
+        std::string m_stabMode = "STAB_TRACK";
+        cv::Mat m_stabMatrix;
+        int m_trackSize = 200;
+        int m_trackSizePrev = 200;
+        int m_zoomTimer = 0;
+        // click
+        bool m_clickSet = false;
+        cv::Point2f m_clickPoint;
+        float deadZone = 160;
+        float maxAxis = 32768.0f;
     public:
-        void setTrack(int x, int y);
+        void moveImage(float panRate,float tiltRate,float zoomRate, float alpha = 0);
+        void stop();
+        void changeTrackSize(float _trackSize);
+        float trackSize(){return m_trackSize;}
+        void setClick(float x, float y,float width,float height);
+        cv::Mat createPtzMatrix(float w, float h, float dx, float dy,float r,float alpha = 0);
+        void pause(bool _pause);
+        cv::Point convertPoint(cv::Point originPoint, cv::Mat stabMatrix);
     Q_SIGNALS:
         void processDone();
         void stopped();
@@ -107,6 +149,9 @@ class  CVVideoProcess : public QObject
         void doWork();
     public:
         void msleep(int ms);
+        void drawSteeringCenter(cv::Mat &_img, int _wBoundary,
+                                int _centerX, int _centerY,
+                                cv::Scalar _color);
 };
 
 #endif // CVVIDEOPROCESS_H

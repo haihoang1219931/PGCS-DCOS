@@ -21,6 +21,16 @@ Item {
     property real zoomTarget: cameraController.gimbal.zoomTarget
     property real zoomCalculate
     property color drawColor: UIConstants.redColor
+    function loadVideo(isVideo){
+        if(isVideo){
+            timer.start();
+            rowVideoOptions.visible = true;
+        }else{
+            timer.stop();
+            rowVideoOptions.visible = false;
+        }
+    }
+
     function convertZoom(zoom){
         var zoomInput = zoom;
         if(camState.sensorID === camState.sensorIDEO){
@@ -263,6 +273,7 @@ Item {
     }
 
     Row{
+        id: rowVideoOptions
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.leftMargin:  UIConstants.sRect * 2
@@ -337,12 +348,18 @@ Item {
             verticalAlignment: Text.AlignVCenter
         }
     }
+    Connections{
+        target: cameraController.videoEngine
+        onSourceLinkChanged:{
+            loadVideo(isVideo);
+        }
+    }
 
     Component.onCompleted: {
         cvsCenter.requestPaint();
         cvsZoomTarget.requestPaint();
         cvsZoomSpacing.requestPaint();
-        timer.start();
+
     }
 }
 

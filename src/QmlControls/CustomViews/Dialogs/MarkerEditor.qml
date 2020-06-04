@@ -59,8 +59,8 @@ Rectangle {
             cdeTxt[i].changeAllFocus(enable);
         }
         for(var i =0; i < lstTxt.length; i++){
-            if(lstTxt[i].editting !== enable)
-                lstTxt[i].editting = enable;
+            lstTxt[i].editting = enable;
+            lstTxt[i].changeFocus(enable);
         }
     }
     function changeCoordinate(_coordinate){
@@ -68,6 +68,8 @@ Rectangle {
         root.latitude = _coordinate.latitude;
         root.longitude = _coordinate.longitude;
         root.agl = _coordinate.altitude;
+        cdeLat.value = root.latitude;
+        cdeLon.value = root.longitude;
     }
 
     function loadInfo(_coordinate,_type,text){

@@ -19,15 +19,15 @@ HOME = $$system(echo $HOME)
 message($$HOME)
 CONFIG += use_flight_control
 
-#CONFIG += use_ucapi
+CONFIG += use_ucapi
 
-#CONFIG += use_camera_control
+CONFIG += use_camera_control
 
-CONFIG += use_video_gpu
+#CONFIG += use_video_gpu
 
-#CONFIG += use_video_cpu
+CONFIG += use_video_cpu
 
-CONFIG += use_line_detector
+#CONFIG += use_line_detector
 
 CONFIG += use_telemetry_log
 
@@ -499,6 +499,24 @@ HEADERS += \
     src/Camera/GimbalController/Gremsey/GremseyGimbal.h \
     src/Camera/GimbalController/Gremsey/SensorController.h \
     src/Camera/GimbalController/Treron/TreronGimbal.h
+HEADERS += \
+    src/Camera/Algorithms/stabilizer/dando_02/stab_gcs_kiir.hpp \
+    src/Camera/Algorithms/tracker/dando/HTrack/ffttools.hpp \
+    src/Camera/Algorithms/tracker/dando/HTrack/fhog.hpp \
+    src/Camera/Algorithms/tracker/dando/HTrack/saliency.h \
+    src/Camera/Algorithms/tracker/dando/LME/lme.hpp \
+    src/Camera/Algorithms/tracker/dando/ITrack.hpp \
+    src/Camera/Algorithms/tracker/dando/Utilities.hpp \
+    src/Camera/Algorithms/tracker/mosse/tracker.h
+SOURCES += \
+    src/Camera/Algorithms/stabilizer/dando_02/stab_gcs_kiir.cpp \
+    src/Camera/Algorithms/tracker/dando/HTrack/ffttools.cpp \
+    src/Camera/Algorithms/tracker/dando/HTrack/fhog.cpp \
+    src/Camera/Algorithms/tracker/dando/HTrack/saliency.cpp \
+    src/Camera/Algorithms/tracker/dando/LME/lme.cpp \
+    src/Camera/Algorithms/tracker/dando/ITrack.cpp \
+    src/Camera/Algorithms/tracker/dando/Utilities.cpp \
+    src/Camera/Algorithms/tracker/mosse/tracker.cpp
 }
 
 
@@ -571,14 +589,6 @@ CONFIG+=link_pkgconfig
 PKGCONFIG+=zbar
 HEADERS += \
     src/Zbar/ZbarLibs.h \
-    src/Camera/GPUBased/stabilizer/dando_02/stab_gcs_kiir.hpp \
-    src/Camera/GPUBased/tracker/dando/HTrack/ffttools.hpp \
-    src/Camera/GPUBased/tracker/dando/HTrack/fhog.hpp \
-    src/Camera/GPUBased/tracker/dando/HTrack/saliency.h \
-    src/Camera/GPUBased/tracker/dando/LME/lme.hpp \
-    src/Camera/GPUBased/tracker/dando/ITrack.hpp \
-    src/Camera/GPUBased/tracker/dando/Utilities.hpp \
-    src/Camera/GPUBased/tracker/mosse/tracker.h \
     src/Camera/GPUBased/VDisplay.h \
     src/Camera/GPUBased/VDisplayWorker.h \
     src/Camera/GPUBased/VFrameGrabber.h \
@@ -602,14 +612,6 @@ HEADERS += \
 
 SOURCES += \
     src/Zbar/ZbarLibs.cpp \
-    src/Camera/GPUBased/stabilizer/dando_02/stab_gcs_kiir.cpp \
-    src/Camera/GPUBased/tracker/dando/HTrack/ffttools.cpp \
-    src/Camera/GPUBased/tracker/dando/HTrack/fhog.cpp \
-    src/Camera/GPUBased/tracker/dando/HTrack/saliency.cpp \
-    src/Camera/GPUBased/tracker/dando/LME/lme.cpp \
-    src/Camera/GPUBased/tracker/dando/ITrack.cpp \
-    src/Camera/GPUBased/tracker/dando/Utilities.cpp \
-    src/Camera/GPUBased/tracker/mosse/tracker.cpp \
     src/Camera/GPUBased/Clicktrack/clicktrack.cpp \
     src/Camera/GPUBased/Clicktrack/platedetector.cpp \
     src/Camera/GPUBased/Clicktrack/preprocessing.cpp \
@@ -675,34 +677,17 @@ SOURCES += \
     src/Camera/CPUBased/convert/VideoConverterThread.cpp \
     src/Camera/CPUBased/copy/FileCopy.cpp \
     src/Camera/CPUBased/copy/filecopythread.cpp \
-    src/Camera/CPUBased/detector/movingObject.cpp \
     src/Camera/CPUBased/recorder/gstsaver.cpp \
     src/Camera/CPUBased/recorder/gstutility.cpp \
     src/Camera/CPUBased/stream/CVRecord.cpp \
     src/Camera/CPUBased/stream/CVVideoCapture.cpp \
     src/Camera/CPUBased/stream/CVVideoCaptureThread.cpp \
-    src/Camera/CPUBased/stream/CVVideoProcess.cpp \
-    src/Camera/CPUBased/stabilizer/dando_02/stab_gcs_kiir.cpp \
-    src/Camera/CPUBased/tracker/dando/LME/lme.cpp \
-    src/Camera/CPUBased/tracker/dando/HTrack/ffttools.cpp \
-    src/Camera/CPUBased/tracker/dando/HTrack/fhog.cpp \
-    src/Camera/CPUBased/tracker/dando/HTrack/saliency.cpp \
-    src/Camera/CPUBased/tracker/dando/SKCF/gradient.cpp \
-    src/Camera/CPUBased/tracker/dando/SKCF/skcf.cpp \
-    src/Camera/CPUBased/tracker/dando/ITrack.cpp \
-    src/Camera/CPUBased/tracker/dando/Utilities.cpp \
-    src/Camera/CPUBased/tracker/dando/movdetection/kltwrapper.cpp \
-    src/Camera/CPUBased/tracker/dando/movdetection/mcdwrapper.cpp \
-    src/Camera/CPUBased/tracker/dando/InitTracking.cpp \
-    src/Camera/CPUBased/tracker/dando/kalman.cpp \
-    src/Camera/CPUBased/tracker/dando/thresholding.cpp \
-    src/Camera/CPUBased/tracker/dando/image_utils.cpp
+    src/Camera/CPUBased/stream/CVVideoProcess.cpp
 HEADERS += \
     src/Camera/CPUBased/convert/VideoConverter.h \
     src/Camera/CPUBased/convert/VideoConverterThread.h \
     src/Camera/CPUBased/copy/FileCopy.h \
     src/Camera/CPUBased/copy/filecopythread.h \
-    src/Camera/CPUBased/detector/movingObject.hpp \
     src/Camera/CPUBased/packet/Common_type.h \
     src/Camera/CPUBased/packet/EyephoenixProtocol.h \
     src/Camera/CPUBased/packet/KLV.h \
@@ -718,27 +703,7 @@ HEADERS += \
     src/Camera/CPUBased/stream/CVVideoCapture.h \
     src/Camera/CPUBased/stream/CVVideoCaptureThread.h \
     src/Camera/CPUBased/stream/CVVideoProcess.h \
-    src/Camera/CPUBased/stream/gstreamer_element.h \
-    src/Camera/CPUBased/stabilizer/dando_02/stab_gcs_kiir.hpp \
-    src/Camera/CPUBased/tracker/dando/SKCF/gradient.h \
-    src/Camera/CPUBased/tracker/dando/SKCF/skcf.h \
-    src/Camera/CPUBased/tracker/dando/ITrack.hpp \
-    src/Camera/CPUBased/tracker/dando/Utilities.hpp \
-    src/Camera/CPUBased/tracker/dando/ktracker.h \
-    src/Camera/CPUBased/tracker/dando/movdetection/kltwrapper.hpp \
-    src/Camera/CPUBased/tracker/dando/movdetection/mcdwrapper.hpp \
-    src/Camera/CPUBased/tracker/dando/movdetection/params.hpp \
-    src/Camera/CPUBased/tracker/dando/movdetection/prob_model.hpp \
-    src/Camera/CPUBased/tracker/dando/InitTracking.hpp \
-    src/Camera/CPUBased/tracker/dando/kalman.hpp \
-    src/Camera/CPUBased/tracker/dando/thresholding.hpp \
-    src/Camera/CPUBased/tracker/dando/image_utils.hpp \
-    src/Camera/CPUBased/tracker/dando/LME/lme.hpp \
-    src/Camera/CPUBased/tracker/dando/HTrack/ffttools.hpp \
-    src/Camera/CPUBased/tracker/dando/HTrack/fhog.hpp \
-    src/Camera/CPUBased/tracker/dando/HTrack/saliency.h \
-    src/Camera/CPUBased/tracker/dando/ITrack.hpp \
-    src/Camera/CPUBased/tracker/dando/Utilities.hpp
+    src/Camera/CPUBased/stream/gstreamer_element.h
 }
 
 use_line_detector{

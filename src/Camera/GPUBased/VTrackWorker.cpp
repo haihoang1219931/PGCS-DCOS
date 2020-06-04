@@ -16,6 +16,8 @@ VTrackWorker::VTrackWorker()
     m_clickTrack = new ClickTrack();
     m_currID = -1;
     m_mutexCommand = new QMutex();
+    m_mutex = new QMutex();
+    m_pauseCond = new QWaitCondition();
 }
 
 VTrackWorker::~VTrackWorker()
@@ -166,6 +168,18 @@ void VTrackWorker::createRoiKeypoints(
         }
     }
 }
+void VTrackWorker::pause(bool _pause){
+    if(_pause == true){
+        m_mutex->lock();
+        m_pause = true;
+        m_mutex->unlock();
+    }else{
+        m_mutex->lock();
+        m_pause = false;
+        m_mutex->unlock();
+        m_pauseCond->wakeAll();
+    }
+}
 void VTrackWorker::run()
 {
     std::chrono::high_resolution_clock::time_point start, stop;
@@ -190,6 +204,10 @@ void VTrackWorker::run()
         m_zoomRateCalculate[i] = 1;
     }
     while (m_running) {
+        m_mutex->lock();
+        if(m_pause)
+            m_pauseCond->wait(m_mutex); // in this place, your thread will stop to execute until someone calls resume
+        m_mutex->unlock();
         std::unique_lock<std::mutex> locker(m_mtx);
 
         processImgItem = m_matImageBuff->last();
@@ -369,7 +387,7 @@ void VTrackWorker::run()
                                            static_cast<double>(w),
                                            static_cast<double>(h));                    
                 }else{
-                    Q_EMIT objectLost();
+                    Q_EMIT trackStateLost();
                 }
             }else{
 
