@@ -141,6 +141,7 @@ public:
     float m_dx = -1;
     float m_dy = -1;
     float m_r = 1.0f;
+    float m_scale = 1.0f;
     float m_zoomIR = 1.0f;
     float m_zoomDir = 0;
     float m_movePanRate = 0;

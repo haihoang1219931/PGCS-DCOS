@@ -34,9 +34,6 @@ class VDisplayWorker : public QObject
         ~VDisplayWorker();
         void setListObjClassID(std::vector<int> _listObjClassID);
         void setVideoSavingState(bool _state);
-        bool isOnDigitalStab();
-        int setDigitalStab(bool _enStab);
-        bool getDigitalStab();
         void capture();
     public Q_SLOTS:
         void process();
@@ -64,8 +61,7 @@ class VDisplayWorker : public QObject
 
         bool checkIDExisted(int _idx);
 
-
-
+        cv::Point convertPoint(cv::Point originPoint, cv::Mat stabMatrix);
     public:
         index_type m_currID;
         RollBuffer_<ProcessImageCacheItem> *m_matImageBuff;
@@ -90,7 +86,6 @@ class VDisplayWorker : public QObject
         std::vector<int> m_listObjClassID;
         bool m_enShare = true;
         bool m_enSaving = true;
-        bool m_enDigitalStab = true;
         bool m_enOD = false;
         QMap<QString,QString> m_mapPlates;
         PlateLog* m_plateLog;

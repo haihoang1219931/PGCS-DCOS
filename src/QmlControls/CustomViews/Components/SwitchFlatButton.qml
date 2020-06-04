@@ -117,7 +117,7 @@ Rectangle {
         font{ pixelSize: iconSize / 2;
             weight: Font.Bold;
             family: ExternalFontLoader.solidFont}
-        color: rootItem.isOn?"green":"gray"
+        color: rootItem.isOn?UIConstants.greenColor:UIConstants.grayColor
         rotation: 0
     }
     //--- Button background

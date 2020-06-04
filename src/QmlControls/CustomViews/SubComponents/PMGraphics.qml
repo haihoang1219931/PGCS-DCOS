@@ -28,7 +28,7 @@ Item {
     height: UIConstants.sRect * 2
 
     property color bgColor: "white"
-    property color iconColor: "green"
+    property color iconColor: UIConstants.greenColor
     Rectangle{
         anchors.fill: parent
         radius: UIConstants.sRect

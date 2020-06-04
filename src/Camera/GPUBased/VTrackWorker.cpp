@@ -78,7 +78,8 @@ void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float 
     temp.panRate = m_movePanRate;
     temp.tiltRate = m_moveTiltRate;
     temp.zoomRate = m_moveZoomRate;
-    //    printf("panRate,tiltRate = %f,%f\r\n",panRate,tiltRate);
+    //    printf("panRate,tiltRate,zoomRate = %f,%f,%f\r\n",
+    //           panRate,tiltRate,zoomRate);
     m_mutexCommand->lock();
     if(fabs(panRate) < deadZone &&
             fabs(tiltRate) < deadZone &&
@@ -99,10 +100,6 @@ void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float 
 
     }
     m_mutexCommand->unlock();
-    //    if(m_trackEnable){
-    //        setTrack(static_cast<int>(m_movePanRate/m_digitalZoomMax)+m_img.cols/2,
-    //                 static_cast<int>(m_moveTiltRate/m_digitalZoomMax)+m_img.rows/2);
-    //    }
 }
 cv::Mat VTrackWorker::createPtzMatrix(float w, float h, float dx, float dy,float r,float alpha){
     cv::Mat ptzMatrix = cv::Mat(3, 3, CV_64FC1,cv::Scalar::all(0));
@@ -244,6 +241,9 @@ void VTrackWorker::run()
         }else if(m_gimbal->context()->m_lockMode == "TRACK" ||
                  m_gimbal->context()->m_lockMode == "VISUAL"){
             m_trackEnable = true;
+            if(!m_tracker->isInitialized()){
+                setClick(w/2,h/2,w,h);
+            }
             if(m_gimbal->context()->m_lockMode == "VISUAL"){
                 if( h/2 > m_trackSize)
                     m_trackSize = h/2;
@@ -290,14 +290,26 @@ void VTrackWorker::run()
                 temp.panRate = m_movePanRate;
                 temp.tiltRate = m_moveTiltRate;
                 if(fabs(m_moveZoomRate) >= deadZone/maxAxis){
-                    //                    m_r+=m_moveZoomRate /3;
-                    //                    if(m_r > m_digitalZoomMax){
-                    //                        m_r = m_digitalZoomMax;
-                    //                    }else if(m_r < m_digitalZoomMin){
-                    //                        m_r = m_digitalZoomMin;
-                    //                    }
-                    Q_EMIT zoomTargetChanged(m_r);
-                    Q_EMIT zoomTargetChangeStopped(m_r);
+                    if(m_gimbal->context()->m_sensorID == 1){
+                        m_zoomIR+=m_moveZoomRate /3;
+                        if(m_zoomIR > m_gimbal->context()->m_digitalZoomMax[1]){
+                            m_zoomIR = m_gimbal->context()->m_digitalZoomMax[1];
+                        }else if(m_zoomIR < 1){
+                            m_zoomIR = 1;
+                        }
+                        m_gimbal->context()->m_zoom[1]= m_zoomIR;
+//                        m_gimbal->context()->m_hfov[1] = atanf(
+//                                    tan(m_gimbal->context()->m_hfovMax[1]/2/180*M_PI)/m_zoomIR
+//                                )/M_PI*180*2;
+                        //                        printf("IR zoomMin[%f] zoomMax[%f] zoomRatio[%f] digitalZoomMax[%f]\r\n",
+                        //                               m_gimbal->zoomMin(),
+                        //                               m_gimbal->zoomMax(),
+                        //                               m_gimbal->zoom(),
+                        //                               m_gimbal->digitalZoomMax());
+                    }
+
+                    //                    Q_EMIT zoomTargetChanged(m_r);
+                    //                    Q_EMIT zoomTargetChangeStopped(m_r);
                 }
                 cv::Point lockPoint(static_cast<int>(m_dx +
                                                      (temp.panRate * cos(m_rotationAlpha) + temp.tiltRate * sin(m_rotationAlpha))/m_r),
@@ -306,9 +318,6 @@ void VTrackWorker::run()
                                     );
                 if(m_trackEnable){
                     int trackSizeTmp = m_trackSize;
-                    //                    if(trackSizeTmp > 200){
-                    //                        trackSizeTmp = 200;
-                    //                    }
                     cv::Rect trackRectTmp(lockPoint.x-trackSizeTmp/2,
                                           lockPoint.y-trackSizeTmp/2,
                                           trackSizeTmp,trackSizeTmp);
@@ -358,15 +367,7 @@ void VTrackWorker::run()
                                            static_cast<double>(m_trackRect.width),
                                            static_cast<double>(m_trackRect.height),
                                            static_cast<double>(w),
-                                           static_cast<double>(h));
-                    printf("%s _px=%f _py=%f _oW=%f _oH=%f _w=%f _h=%f\r\n",
-                           __func__,
-                           static_cast<double>(m_trackRect.x),
-                           static_cast<double>(m_trackRect.y),
-                           static_cast<double>(m_trackRect.width),
-                           static_cast<double>(m_trackRect.height),
-                           static_cast<double>(w),
-                           static_cast<double>(h));
+                                           static_cast<double>(h));                    
                 }else{
                     Q_EMIT objectLost();
                 }
@@ -383,11 +384,20 @@ void VTrackWorker::run()
         if(m_powerLineDetectEnable){
             m_plrEngine->init_track_plr(m_grayFrame,m_powerLineDetectRect,m_powerLineList,m_plrRR);
         }
-        if(m_gimbal->context()->m_sensorID == 0){
-            m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1,m_rotationAlpha);
+        if(m_stabEnable){
+            if(m_gimbal->context()->m_sensorID == 0){
+                m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1 * m_scale,m_rotationAlpha);
+            }else{
+                m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_zoomIR * m_scale,m_rotationAlpha);
+            }
         }else{
-            m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_zoomIR,m_rotationAlpha);
+            if(m_gimbal->context()->m_sensorID == 0){
+                m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,1,m_rotationAlpha);
+            }else{
+                m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,m_zoomIR,m_rotationAlpha);
+            }
         }
+
         // add data to display worker
         ProcessImageCacheItem processImgItem;
         processImgItem.setIndex(m_currID);
@@ -410,7 +420,7 @@ void VTrackWorker::run()
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
-        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+        std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
         //printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
         //std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
     }

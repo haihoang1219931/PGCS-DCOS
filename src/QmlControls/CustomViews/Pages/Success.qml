@@ -68,7 +68,7 @@ Rectangle{
         anchors.top: parent.top
         anchors.topMargin: 195
         border.width: 4
-        border.color: "green"
+        border.color: UIConstants.greenColor
 
         Label {
             id: label2

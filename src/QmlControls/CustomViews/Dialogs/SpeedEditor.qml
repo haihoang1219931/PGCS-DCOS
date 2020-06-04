@@ -100,7 +100,7 @@ Rectangle {
         width: UIConstants.sRect * 4
         icon: UIConstants.iChecked
         isSolid: true
-        color: isEnable?"green":"gray"
+        color: isEnable?UIConstants.greenColor:UIConstants.grayColor
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.bottom: parent.bottom

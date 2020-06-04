@@ -62,7 +62,7 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 2
             source: "qrc:/assets/images/icons/Quad.svg"
-            color: "green"
+            color: UIConstants.greenColor
         }
 
         Label {
@@ -113,7 +113,7 @@ Rectangle {
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 2
-            color: "green"
+            color: UIConstants.greenColor
             iconSize: UIConstants.sRect
             icon:  UIConstants.iPatrolMan
         }
@@ -163,7 +163,7 @@ Rectangle {
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 2
-            color: "green"
+            color: UIConstants.greenColor
             iconSize: UIConstants.sRect
             icon:  UIConstants.iCenterCommander
         }

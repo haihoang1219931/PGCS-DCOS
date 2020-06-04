@@ -809,7 +809,7 @@ Rectangle {
         width: UIConstants.sRect * 4
         icon: UIConstants.iChecked
         isSolid: true
-        color: (root.latitude !== 0 && root.longitude !== 0)?"green":"gray"
+        color: (root.latitude !== 0 && root.longitude !== 0)?UIConstants.greenColor:UIConstants.grayColor
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.bottom: parent.bottom

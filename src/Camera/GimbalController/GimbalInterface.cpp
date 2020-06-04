@@ -30,8 +30,6 @@ void GimbalInterface::handleAxes(){
 
 }
 
-
-
 void GimbalInterface::lockScreenPoint(int _id,
                                       double _px,double _py,double _oW,double _oH,
                                       double _w,double _h){
@@ -53,7 +51,7 @@ void GimbalInterface::lockScreenPoint(int _id,
 
         double deltaPan = atan(-px/focalLength) * 180.0 / M_PI;
 
-        printf("delta pan: %.4f\r\n",deltaPan);
+//        printf("delta pan: %.4f\r\n",deltaPan);
         //            if(deltaPan > 10)deltaPan = 10
         //            else if(deltaPan < -10)deltaPan = -10
         if(deltaPan<0.15 && deltaPan>-0.15)

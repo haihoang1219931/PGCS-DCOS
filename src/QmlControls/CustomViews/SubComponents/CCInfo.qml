@@ -92,7 +92,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
         icon: UIConstants.iConnect
-        iconColor: isConnected?"green":"gray"
+        iconColor: isConnected?UIConstants.greenColor:UIConstants.grayColor
         anchors.right: parent.right
         anchors.rightMargin: 0
         onClicked: {

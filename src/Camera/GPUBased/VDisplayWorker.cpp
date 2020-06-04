@@ -72,12 +72,13 @@ void VDisplayWorker::process()
         imgSize = processImgItem.getImageSize();
 
         if(imgSize.width <=0 || imgSize.height <=0){
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
             continue;
         }
         // Warp I420 Image GPU
         h_stabMat = processImgItem.getHostStabMatrix();
         if(h_stabMat != nullptr)
-            stabMatrix = cv::Mat(2,3,CV_32FC1,h_stabMat);
+            stabMatrix = cv::Mat(3,3,CV_32FC1,h_stabMat);
         //        d_stabMat = processImgItem.getDeviceStabMatrix();
         h_BRGAImage = fixedMemBRGA.getHeadHost();
         d_BRGAImage = fixedMemBRGA.getHeadDevice();
@@ -103,64 +104,85 @@ void VDisplayWorker::process()
             printf("Save file %s\r\n", captureFile.c_str());
             cv::imwrite(captureFile, m_imgShow);
         }
-        if(m_enOD){
-            if(m_countUpdateOD == 0){
-                //----------------------------- Draw EO object detected
-                DetectedObjectsCacheItem detectedObjsItem = m_rbSearchObjs->last();
 
-                if(abs(
-                    static_cast<int>(detectedObjsItem.getDetectedObjects().size() - 0)) > 1 | m_listObj.size() == 0)
-                m_listObj = detectedObjsItem.getDetectedObjects();
-            }
-            this->drawDetectedObjects(m_imgShow, m_listObj);
-            m_countUpdateOD ++;
-            if(m_countUpdateOD > 15){
-                m_countUpdateOD = 0;
-            }
-        }
-        // draw track
-        cv::Rect trackRect = processImgItem.trackRect();
-        cv::Scalar colorInvision(0,0,255,0);
-        cv::Scalar colorOccluded(0,0,0,0);
-        if(processImgItem.lockMode() == "TRACK"){
-            if(processImgItem.trackStatus() == TRACK_INVISION){
-                cv::rectangle(m_imgShow,trackRect,colorInvision,2);
-            }else if(processImgItem.trackStatus() == TRACK_OCCLUDED){
-                cv::rectangle(m_imgShow,trackRect,colorOccluded,2);
-            }else{
+        if(stabMatrix.rows == 3 && stabMatrix.cols ==3 &&
+                m_imgShow.cols > 0 && m_imgShow.rows > 0){
+            cv::Mat warpMatrix = cv::Mat(2,3,CV_32FC1,h_stabMat);
+            cv::warpAffine(m_imgShow, m_imgShow, warpMatrix, imgSize, cv::INTER_LINEAR);
+            if(m_enOD){
+                if(m_countUpdateOD == 0){
+                    //----------------------------- Draw EO object detected
+                    DetectedObjectsCacheItem detectedObjsItem = m_rbSearchObjs->last();
 
+                    if(abs(
+                        static_cast<int>(detectedObjsItem.getDetectedObjects().size() - 0)) > 1 | m_listObj.size() == 0)
+                    m_listObj = detectedObjsItem.getDetectedObjects();
+                    for(int i=0; i< m_listObj.size(); i++){
+                        bbox_t objBeforeStab = m_listObj[i];
+                        cv::Point pointAfterStab = convertPoint(cv::Point(objBeforeStab.x+objBeforeStab.w/2,
+                                                                          objBeforeStab.y+objBeforeStab.h/2),
+                                                                stabMatrix);
+                        m_listObj[i].x = pointAfterStab.x - objBeforeStab.w/2;
+                        m_listObj[i].y = pointAfterStab.y - objBeforeStab.w/2;
+                    }
+                }
+                this->drawDetectedObjects(m_imgShow, m_listObj);
+                m_countUpdateOD ++;
+                if(m_countUpdateOD > 15){
+                    m_countUpdateOD = 0;
+                }
             }
-        }else if(processImgItem.lockMode() == "VISUAL"){
-            if(processImgItem.trackStatus() == TRACK_INVISION){
-                drawSteeringCenter(m_imgShow,trackRect.width,
-                                   static_cast<int>(trackRect.x + trackRect.width/2),
-                                   static_cast<int>(trackRect.y + trackRect.height/2),
-                                   colorInvision);
-            }else if(processImgItem.trackStatus() == TRACK_OCCLUDED){
-                drawSteeringCenter(m_imgShow,trackRect.width,
-                                   static_cast<int>(trackRect.x + trackRect.width/2),
-                                   static_cast<int>(trackRect.y + trackRect.height/2),
-                                   colorOccluded);
-            }else{
+            // draw track
+            cv::Rect trackRect = processImgItem.trackRect();
+            cv::Point pointAfterStab = convertPoint(cv::Point(trackRect.x+trackRect.width/2,
+                                                                  trackRect.y+trackRect.height/2),
+                                                        stabMatrix);
+            trackRect.x = pointAfterStab.x - trackRect.width/2;
+            trackRect.y = pointAfterStab.y - trackRect.height/2;
+            cv::Scalar colorInvision(0,0,255,255);
+            cv::Scalar colorOccluded(0,0,0,255);
+            if(processImgItem.lockMode() == "TRACK"){
+                if(processImgItem.trackStatus() == TRACK_INVISION){
+                    cv::rectangle(m_imgShow,trackRect,colorInvision,2);
+                }else if(processImgItem.trackStatus() == TRACK_OCCLUDED){
+                    cv::rectangle(m_imgShow,trackRect,colorOccluded,2);
+                }else{
 
+                }
+            }else if(processImgItem.lockMode() == "VISUAL"){
+                if(processImgItem.trackStatus() == TRACK_INVISION){
+                    drawSteeringCenter(m_imgShow,trackRect.width,
+                                       static_cast<int>(trackRect.x + trackRect.width/2),
+                                       static_cast<int>(trackRect.y + trackRect.height/2),
+                                       colorInvision);
+                }else if(processImgItem.trackStatus() == TRACK_OCCLUDED){
+                    drawSteeringCenter(m_imgShow,trackRect.width,
+                                       static_cast<int>(trackRect.x + trackRect.width/2),
+                                       static_cast<int>(trackRect.y + trackRect.height/2),
+                                       colorOccluded);
+                }else{
+
+                }
             }
-        }
-        // draw powerline
-        if(processImgItem.powerlineDetectEnable()){
-            cv::Rect rect = processImgItem.powerlineDetectRect();
-            cv::rectangle(m_imgShow,rect,
-                          cv::Scalar(0,255,0,255),2);
-            vector<cv::Scalar> plr_lines = processImgItem.powerLineList();
-            for(int i = 0;i < (int)plr_lines.size();i ++){
-                cv::Point2d pt1(plr_lines[i].val[0],plr_lines[i].val[1]);
-                cv::Point2d pt2(plr_lines[i].val[2],plr_lines[i].val[3]);
-                cv::line(m_imgShow,pt1,pt2,line_color,4,cv::LINE_AA);
-            }
-        }
-        if (m_enDigitalStab) {            
-            if(stabMatrix.rows == 2 && stabMatrix.cols ==3 &&
-                    m_imgShow.cols > 0 && m_imgShow.rows > 0){
-                cv::warpAffine(m_imgShow, m_imgShow, stabMatrix, imgSize, cv::INTER_LINEAR);
+            // draw powerline
+            if(processImgItem.powerlineDetectEnable()){
+                cv::Rect rect = processImgItem.powerlineDetectRect();
+                cv::rectangle(m_imgShow,rect,
+                              cv::Scalar(0,255,0,255),2);
+                vector<cv::Scalar> plr_lines = processImgItem.powerLineList();
+                for(int i = 0;i < (int)plr_lines.size();i ++){
+                    cv::Point2d pt1(plr_lines[i].val[0],plr_lines[i].val[1]);
+                    {
+                        cv::Point pointAfterStab = convertPoint(pt1,stabMatrix);
+                        pt1 = pointAfterStab;
+                    }
+                    cv::Point2d pt2(plr_lines[i].val[2],plr_lines[i].val[3]);
+                    {
+                        cv::Point pointAfterStab = convertPoint(pt2,stabMatrix);
+                        pt2 = pointAfterStab;
+                    }
+                    cv::line(m_imgShow,pt1,pt2,line_color,4,cv::LINE_AA);
+                }
             }
         }
 
@@ -197,7 +219,30 @@ void VDisplayWorker::process()
         std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
     }
 }
-
+cv::Point VDisplayWorker::convertPoint(cv::Point originPoint, cv::Mat stabMatrix){
+    cv::Point result(originPoint);
+    if(stabMatrix.rows == 3 && stabMatrix.cols == 3){
+        cv::Mat stabMatrixD(3, 3, CV_64FC1,cv::Scalar::all(0));
+        stabMatrixD.at<double>(0,0) = static_cast<double>(stabMatrix.at<float>(0,0));
+        stabMatrixD.at<double>(0,1) = static_cast<double>(stabMatrix.at<float>(0,1));
+        stabMatrixD.at<double>(0,2) = static_cast<double>(stabMatrix.at<float>(0,2));
+        stabMatrixD.at<double>(1,0) = static_cast<double>(stabMatrix.at<float>(1,0));
+        stabMatrixD.at<double>(1,1) = static_cast<double>(stabMatrix.at<float>(1,1));
+        stabMatrixD.at<double>(1,2) = static_cast<double>(stabMatrix.at<float>(1,2));
+        stabMatrixD.at<double>(2,0) = static_cast<double>(stabMatrix.at<float>(2,0));
+        stabMatrixD.at<double>(2,1) = static_cast<double>(stabMatrix.at<float>(2,1));
+        stabMatrixD.at<double>(2,2) = static_cast<double>(stabMatrix.at<float>(2,2));
+        cv::Mat pointBeforeStab(3, 1, CV_64FC1,cv::Scalar::all(0));
+        pointBeforeStab.at<double>(0,0) = static_cast<double>(originPoint.x);
+        pointBeforeStab.at<double>(1,0) = static_cast<double>(originPoint.y);
+        pointBeforeStab.at<double>(2,0) = 1;
+        cv::Mat pointInStab(3, 1, CV_64FC1);
+        pointInStab = stabMatrixD*pointBeforeStab;
+        result.x = pointInStab.at<double>(0,0);
+        result.y = pointInStab.at<double>(1,0);
+    }
+    return result;
+}
 void VDisplayWorker::drawSteeringCenter(cv::Mat &_img, int _wBoundary,
                                         int _centerX, int _centerY,
                                         cv::Scalar _color)
@@ -307,20 +352,6 @@ void VDisplayWorker::setVideoSavingState(bool _state)
     m_enSaving = _state;
 }
 
-bool VDisplayWorker::isOnDigitalStab()
-{
-    return m_enDigitalStab;
-}
-
-int VDisplayWorker::setDigitalStab(bool _enStab)
-{
-    m_enDigitalStab = _enStab;
-}
-
-bool VDisplayWorker::getDigitalStab()
-{
-    return m_enDigitalStab;
-}
 void VDisplayWorker::capture(){
     m_captureMutex.lock();
     m_captureSet = true;

@@ -409,7 +409,7 @@ Item {
                             height:         width
                             border.width:   1
                             border.color:   UIConstants.grayColor
-                            color:          pressed ? "green" : UIConstants.transparentColor
+                            color:          pressed ? UIConstants.greenColor : UIConstants.transparentColor
                             Label {
                                 anchors.fill:           parent
                                 horizontalAlignment:    Text.AlignHCenter
