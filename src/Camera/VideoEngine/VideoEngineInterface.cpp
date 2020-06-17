@@ -48,13 +48,13 @@ void VideoEngine::stopRTSP(){
         m_vRTSPServer = nullptr;
     }
 }
-void VideoEngine::slObjectLost(){
+void VideoEngine::slTrackStateLost(){
     m_gimbal->setGimbalRate(0,0);
     m_gimbal->context()->m_lockMode = "FREE";
     removeTrackObjectInfo(0);
-    Q_EMIT objectLost();
+    Q_EMIT trackStateLost();
 }
-void VideoEngine::slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h){
+void VideoEngine::slTrackStateFound(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h){
 //    printf("%s]\r\n",__func__);
     if(m_gimbal != nullptr){
         m_gimbal->lockScreenPoint(_id,_px,_py,_oW,_oH,_w,_h);
@@ -69,7 +69,7 @@ void VideoEngine::slDeterminedTrackObjected(int _id, double _px, double _py, dou
     updateTrackObjectInfo("Object","LONGIITUDE",QVariant(105.307680+_py/1000000));
     updateTrackObjectInfo("Object","SPEED",QVariant(_py));
     updateTrackObjectInfo("Object","ANGLE",QVariant(_px));
-    Q_EMIT determinedTrackObjected(_id,_px,_py,_oW, _oH, _w, _h);
+    Q_EMIT trackStateFound(_id,_px,_py,_oW, _oH, _w, _h);
 }
 void VideoEngine::updateVideoSurface(int width, int height){
     m_updateCount = 0;

@@ -91,12 +91,12 @@ Q_SIGNALS:
     void zoomCalculatedChanged(int viewIndex,float zoomCalculated);
     void functionHandled(QString message);
     void presetChanged(bool result);
-
 public Q_SLOTS:
     virtual void connectToGimbal(Config* config = nullptr);
     virtual void disconnectGimbal();
     virtual void discoverOnLan();
     virtual void changeSensor(QString sensorID);
+    virtual void setSensorColor(QString sensorID,QString colorMode);
     virtual void handleAxes();
     virtual void lockScreenPoint(int _id,double _px,double _py,double _oW,double _oH,double _w,double _h);
     virtual void setPanRate(float rate);

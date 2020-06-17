@@ -188,11 +188,11 @@ public:
     Q_INVOKABLE virtual void setVideo(QString _ip,int _port = 0){}
     Q_INVOKABLE virtual void setStab(bool enable){}
     Q_INVOKABLE virtual void setRecord(bool enable){}
+    Q_INVOKABLE virtual void setSensorColor(QString colorMode){}
     Q_INVOKABLE virtual void setShare(bool enable){}
     Q_INVOKABLE virtual void setTrackState(bool enable){}
     Q_INVOKABLE virtual void capture(){}
     Q_INVOKABLE virtual void updateFOV(float irFOV, float eoFOV){}
-    Q_INVOKABLE virtual void stopTrack(bool enable){}
     Q_INVOKABLE virtual void changeTrackSize(int newSize){}
     Q_INVOKABLE virtual bool getTrackEnable(){}
     Q_INVOKABLE virtual void setStreamMount(QString _streamMount){}
@@ -206,11 +206,12 @@ public:
     Q_INVOKABLE virtual void setSpeed(float speed){}
     Q_INVOKABLE virtual qint64 getTime(QString type){return 0;}
 Q_SIGNALS:
+    void sourceLinkChanged(bool isVideo);
     void listTrackObjectInfosChanged();
     void sourceSizeChanged(int newWidth, int newHeight);
     void readyToRead();
-    void determinedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h);
-    void objectLost();
+    void trackStateFound(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h);
+    void trackStateLost();
     void needZoomChange(float deltaFOV);
     void started();
     void stopped();
@@ -224,8 +225,8 @@ public Q_SLOTS:
     {
         Q_UNUSED(trackType);
     }
-    virtual void slDeterminedTrackObjected(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h);
-    virtual void slObjectLost();
+    virtual void slTrackStateFound(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h);
+    virtual void slTrackStateLost();
     virtual void onStreamFrameSizeChanged(int width, int height);
     virtual void doShowVideo(){}
     virtual void drawOnViewerID(cv::Mat img, int viewerID);

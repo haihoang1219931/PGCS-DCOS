@@ -61,7 +61,13 @@ class CVVideoCapture : public QObject
         void msleep(int ms);
         void stop();
         void setSource(std::string source);
+        void pause(bool pause);
+        gint64 getTotalTime();
+        gint64 getPosCurrent();
+        void setSpeed(float speed);
+        void goToPosition(float percent);
     public:
+        float m_speed = 1;
         int m_frameID = 0;
         std::deque<std::pair<int, GstSample *>> *m_imageQueue;
         QMutex *m_mutexCapture;
@@ -76,13 +82,11 @@ class CVVideoCapture : public QObject
         GMainLoop *loop  = NULL;
         GstPipeline *pipeline = NULL;
         GstElement *vsink = NULL;
-        GstElement *mPipeline = NULL;
+        GstElement *m_pipeline = NULL;
         GstClockTime m_time_bef = 0;
         GstClockTime m_time = 0 ;
         int m_frameCaptureID = 0;
-
-
-
+        gint64 m_totalTime = 1800000000000;
 };
 
 #endif // CVVIDEOCAPTURE_H

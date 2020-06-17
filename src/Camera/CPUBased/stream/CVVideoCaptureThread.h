@@ -21,8 +21,9 @@ class CVVideoCaptureThread : public VideoEngine
                 m_process->m_plateLog = plateLog;
             }
         }
-
+        void setGimbal(GimbalInterface* gimbal) override;
     public:
+        Q_INVOKABLE void moveImage(float panRate,float tiltRate,float zoomRate,float alpha = 0) override;
         Q_INVOKABLE void setObjectDetect(bool enable) override{}
         Q_INVOKABLE void setPowerLineDetect(bool enable) override{}
         Q_INVOKABLE void start() override;
@@ -34,7 +35,6 @@ class CVVideoCaptureThread : public VideoEngine
         Q_INVOKABLE void setTrackState(bool enable) override;
         Q_INVOKABLE void capture() override;
         Q_INVOKABLE void updateFOV(float irFOV, float eoFOV) override;
-        Q_INVOKABLE void stopTrack(bool enable) override;
         Q_INVOKABLE void changeTrackSize(int newSize) override;
         Q_INVOKABLE bool getTrackEnable() override;
         Q_INVOKABLE void setStreamMount(QString _streamMount) override;
@@ -43,11 +43,11 @@ class CVVideoCaptureThread : public VideoEngine
         Q_INVOKABLE void setDigitalStab(bool _en) override;
         Q_INVOKABLE void setTrackAt(int _id, double _px, double _py, double _w, double _h) override;
         Q_INVOKABLE void setRecord(bool _en) override;
+        Q_INVOKABLE void pause(bool pause) override;
+        Q_INVOKABLE void goToPosition(float percent) override;
+        Q_INVOKABLE void setSpeed(float speed) override;
+        Q_INVOKABLE qint64 getTime(QString type) override;
 public Q_SLOTS:
-        void setTrackType(QString trackType) override
-        {
-            m_process->setTrackType(trackType);
-        }
         void doShowVideo() override;
 public:
         QThread *m_captureThread;

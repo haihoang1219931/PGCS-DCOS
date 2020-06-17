@@ -32,11 +32,12 @@ void GimbalInterface::discoverOnLan(){
 void GimbalInterface::changeSensor(QString sensorID){
 
 }
+void GimbalInterface::setSensorColor(QString sensorID,QString colorMode){
+
+}
 void GimbalInterface::handleAxes(){
 
 }
-
-
 
 void GimbalInterface::lockScreenPoint(int _id,
                                       double _px,double _py,double _oW,double _oH,

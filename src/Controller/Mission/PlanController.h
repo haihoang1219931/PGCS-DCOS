@@ -2,7 +2,8 @@
 #define PLANCONTROLLER_H
 
 #include <QObject>
-#include "../Vehicle/Vehicle.h"
+#include <mavlink_types.h>
+#include <mavlink.h>
 #include "MissionItem.h"
 #include <QQmlListProperty>
 #include <QVector>

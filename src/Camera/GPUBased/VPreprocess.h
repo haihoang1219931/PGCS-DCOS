@@ -11,7 +11,6 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <string.h>
-#include "stabilizer/dando_02/stab_gcs_kiir.hpp"
 using namespace rva;
 
 class VPreprocess : public QThread
@@ -31,7 +30,6 @@ class VPreprocess : public QThread
         index_type m_currID;
         RollBuffer_<GstFrameCacheItem> *m_gstFrameBuff;
         RollBuffer_<ProcessImageCacheItem> *m_matImageBuff;
-        stab_gcs_kiir::vtx_KIIRStabilizer *m_stabilizer;
         bool m_enStab = true;
         bool m_running = true;
 

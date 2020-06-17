@@ -27,10 +27,12 @@
 #endif
 //--- Payload controller
 #ifdef USE_VIDEO_CPU
+    #include "src/Camera/VideoDisplay/ImageItem.h"
     #include "src/Camera/CPUBased/stream/CVVideoCaptureThread.h"
 #endif
 //--- GPU Process
 #ifdef USE_VIDEO_GPU
+    #include "src/Camera/VideoDisplay/ImageItem.h"
     #include "src/Camera/GPUBased/VDisplay.h"
 #endif
 //--- Joystick
@@ -112,9 +114,9 @@ int main(int argc, char *argv[])
     FCSConfig trkConfig;
     trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
     engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);
-
 #ifdef USE_VIDEO_CPU
     //--- Camera controller
+    qmlRegisterType<ImageItem>("io.qdt.dev", 1, 0, "ImageItem");
     qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
     qmlRegisterType<CVVideoCaptureThread>("io.qdt.dev", 1, 0, "Player");
     engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(true));
@@ -122,6 +124,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(false));
 #endif
 #ifdef USE_VIDEO_GPU
+    qmlRegisterType<ImageItem>("io.qdt.dev", 1, 0, "ImageItem");
+
     qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
     qmlRegisterType<VDisplay>("io.qdt.dev", 1, 0, "Player");
     engine.rootContext()->setContextProperty("USE_VIDEO_GPU", QVariant(true));

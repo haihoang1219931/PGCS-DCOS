@@ -8,6 +8,7 @@
 #include <QPoint>
 #include <QObject>
 #include <QThread>
+#include <QWaitCondition>
 #include <chrono>
 #include <gst/gst.h>
 #include <iostream>
@@ -17,10 +18,11 @@
 #include <QRect>
 #include "Files/FileControler.h"
 #include "Files/PlateLog.h"
-#include "tracker/dando/ITrack.hpp"
-#include "tracker/dando/Utilities.hpp"
-#include "tracker/dando/HTrack/saliency.h"
-#include "tracker/mosse/tracker.h"
+#include "Camera/Algorithms/stabilizer/dando_02/stab_gcs_kiir.hpp"
+#include "Camera/Algorithms/tracker/dando/ITrack.hpp"
+#include "Camera/Algorithms/tracker/dando/Utilities.hpp"
+#include "Camera/Algorithms/tracker/dando/HTrack/saliency.h"
+#include "Camera/Algorithms/tracker/mosse/tracker.h"
 
 #include <S_PowerLineDetect/power_line_scan.hpp>
 #define TRACK_DANDO
@@ -48,7 +50,7 @@ public:
             GOOD_FEATURES = 2,
         };
     void run();
-
+    void pause(bool _pause);
 public:
     void moveImage(float panRate,float tiltRate,float zoomRate, float alpha = 0);
     void stop();
@@ -58,6 +60,7 @@ public:
     cv::Mat createPtzMatrix(float w, float h, float dx, float dy,float r,float alpha = 0);
     void setPowerLineDetect(bool enable);
     void setPowerLineDetectRect(QRect rect);
+    void setSensorColor(QString colorMode);
 private:
     void init();
     void drawObjectBoundary(cv::Mat &_img, cv::Rect _objBoundary,
@@ -67,7 +70,7 @@ private:
 
 Q_SIGNALS:
     void trackStateFound(int _id, double _px, double _py, double _w, double _h, double _oW, double _oH);
-    void objectLost();
+    void trackStateLost();
     void determinedPlateOnTracking(QString _imgPath, QString _plateID);
     void zoomCalculateChanged(int index,float zoomCalculate);
     void zoomTargetChanged(float zoomTarget);
@@ -111,6 +114,8 @@ public:
     GimbalInterface* m_gimbal = nullptr;
     std::deque<joystickData> m_jsQueue;
     QMutex* m_mutexCommand = nullptr;
+    QMutex* m_mutex = nullptr;
+    QWaitCondition* m_pauseCond = nullptr;
     bool m_stop = false;
     bool m_pause = false;
     int m_frameID;
@@ -141,6 +146,7 @@ public:
     float m_dx = -1;
     float m_dy = -1;
     float m_r = 1.0f;
+    float m_scale = 1.0f;
     float m_zoomIR = 1.0f;
     float m_zoomDir = 0;
     float m_movePanRate = 0;
@@ -184,6 +190,8 @@ public:
     my_pli::plr_engine* m_plrEngine = nullptr;
     std::vector<cv::Scalar> m_powerLineList;
     cv::RotatedRect m_plrRR;
+    // color mode
+    QString m_colorMode = "WHITE_HOT";
 };
 
 #endif // VTRACKWORKER_H

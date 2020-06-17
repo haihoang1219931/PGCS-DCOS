@@ -20,11 +20,11 @@ VDisplay::VDisplay(VideoEngine *_parent) : VideoEngine(_parent)
     connect(m_threadEODisplay, SIGNAL(started()), m_vDisplayWorker,
             SLOT(process()));
     connect(m_vTrackWorker, &VTrackWorker::trackStateFound,
-            this, &VDisplay::slDeterminedTrackObjected);
+            this, &VDisplay::slTrackStateFound);
     connect(m_vTrackWorker, SIGNAL(determinedPlateOnTracking(QString, QString)),
             this, SIGNAL(determinedPlateOnTracking(QString, QString)));
-    connect(m_vTrackWorker, &VTrackWorker::objectLost,
-            this, &VDisplay::slObjectLost);
+    connect(m_vTrackWorker, &VTrackWorker::trackStateLost,
+            this, &VDisplay::slTrackStateLost);
     connect(m_vDisplayWorker,&VDisplayWorker::readyDrawOnViewerID,this,&VDisplay::drawOnViewerID);
     connect(this, &VideoEngine::sourceSizeChanged,
             this, &VideoEngine::onStreamFrameSizeChanged);
@@ -165,7 +165,15 @@ void VDisplay::onReceivedFrame()
 void VDisplay::setVideo(QString _ip, int _port)
 {
     printf("%s - %s\r\n",__func__,_ip.toStdString().c_str());
+    if(_ip.contains("filesrc")){
+        Q_EMIT sourceLinkChanged(true);
+    }else{
+        Q_EMIT sourceLinkChanged(false);
+    }
     m_vFrameGrabber->setSource(_ip.toStdString(), _port);
+}
+void VDisplay::setSensorColor(QString colorMode){
+    m_vTrackWorker->setSensorColor(colorMode);
 }
 void VDisplay::setObjectDetect(bool enable){
     m_vDisplayWorker->m_enOD = enable;
@@ -272,7 +280,6 @@ void VDisplay::setVideoSavingState(bool _state)
 
 void VDisplay::setStab(bool _en)
 {
-    m_vDisplayWorker->setDigitalStab(_en);
     m_vTrackWorker->m_stabEnable = _en;
 }
 
@@ -313,6 +320,7 @@ qint64 VDisplay::getTime(QString type){
 }
 void VDisplay::pause(bool pause){
     m_vFrameGrabber->pause(pause);
+    m_vTrackWorker->pause(pause);
 }
 void VDisplay::stop()
 {

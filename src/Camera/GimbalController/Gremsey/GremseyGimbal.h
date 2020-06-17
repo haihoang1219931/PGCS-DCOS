@@ -18,6 +18,7 @@ public:
     void connectToGimbal(Config* config = nullptr) override;
     void disconnectGimbal() override;
     void changeSensor(QString sensorID) override;
+    void setSensorColor(QString sensorID,QString colorMode) override;
     void setGimbalRate(float panRate,float tiltRate) override;
     void setEOZoom(QString command, float value = 0) override;
     void setIRZoom(QString command) override;

@@ -220,7 +220,26 @@ Rectangle {
                     }
                 }
             }
-
+            FooterButton {
+                id: btnSensorColor
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iSnapshot
+                btnText: camState.sensorID === camState.sensorIDEO ? "EO color":"IR color"
+                color: UIConstants.bgAppColor
+                property string colorMode: "WHITE_HOT"
+                onClicked: {
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
+                        var nextColor = colorMode;
+                        if(colorMode === "WHITE_HOT"){
+                            nextColor = "COLOR";
+                        }else{
+                            nextColor = "WHITE_HOT";
+                        }
+                        cameraController.gimbal.setSensorColor(camState.sensorID,nextColor);
+                    }
+                }
+            }
             FooterButton {
                 id: btnSnapshot
                 Layout.preferredWidth: parent.width
@@ -258,22 +277,7 @@ Rectangle {
 //                        gimbalNetwork.ipcCommands.changeRecordMode(!isOn?"RECORD_OFF":"RECORD_FULL",0,0);
 //                    }
 //                }
-//            }
-            SwitchFlatButton {
-                id: btnGimbalStab
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: parent.width
-                icon: UIConstants.iGCSStab
-                isSync: true
-                btnText: "GCS\nStab"
-                color: UIConstants.bgAppColor
-                isOn: camState.digitalStab
-                onClicked: {
-                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setDigitalStab(!camState.gcsStab)
-                    }
-                }
-            }
+//            }            
             SwitchFlatButton {
                 id: btnGCSRecord
                 Layout.preferredWidth: parent.width
@@ -419,16 +423,19 @@ Rectangle {
                     cameraController.gimbal.setLockMode(camState.lockMode);
                 }
             }
-            FooterButton {
-                id: btnFree
+            SwitchFlatButton {
+                id: btnDigitalStab
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: parent.width
-                icon: UIConstants.iFree
-                btnText: "FREE"
+                icon: UIConstants.iGCSStab
+                isSync: true
+                btnText: "GCS\nStab"
                 color: UIConstants.bgAppColor
+                isOn: camState.digitalStab
                 onClicked: {
-                    camState.lockMode = "FREE";
-                    cameraController.gimbal.setLockMode(camState.lockMode);
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
+                        cameraController.gimbal.setDigitalStab(!camState.gcsStab)
+                    }
                 }
             }
             FooterButton {

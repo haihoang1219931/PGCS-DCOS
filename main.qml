@@ -777,11 +777,6 @@ ApplicationWindow {
                             cameraController.gimbal.changeSensor("IR");
                         }
                     }
-                    //                    if(CAMERA_CONTROL){
-                    //                        if(camState.isConnected && camState.isPingOk && gimbalNetwork.isGimbalConnected){
-                    //                            gimbalNetwork.ipcCommands.changeSensorID(camState.sensorID);
-                    //                        }
-                    //                    }
                 }
                 onGcsSnapshotClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){

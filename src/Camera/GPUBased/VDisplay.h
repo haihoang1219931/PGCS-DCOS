@@ -56,6 +56,7 @@ public:
     Q_INVOKABLE void enableObjectDetect() override;
     Q_INVOKABLE void setVideoSavingState(bool _state);
     Q_INVOKABLE void setVideo(QString _ip, int _port = 0) override;
+    Q_INVOKABLE void setSensorColor(QString colorMode) override;
     Q_INVOKABLE void setStab(bool _en) override;
     Q_INVOKABLE void setRecord(bool _en) override;
     Q_INVOKABLE void changeTrackSize(int _val) override;

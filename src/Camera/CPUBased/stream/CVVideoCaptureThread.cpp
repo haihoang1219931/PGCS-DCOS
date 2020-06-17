@@ -1,6 +1,7 @@
 #include "CVVideoCaptureThread.h"
 #include "Camera/VideoEngine/VRTSPServer.h"
 #include "Camera/VideoEngine/VSavingWorker.h"
+#include "src/Camera/GimbalController/GimbalInterface.h"
 CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(parent)
 {
     char cmd[100];
@@ -39,9 +40,9 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(pa
     connect(m_processThread, SIGNAL(started()), m_process, SLOT(doWork()));
     connect(m_process, SIGNAL(trackInitSuccess(bool, int, int, int, int)), this, SIGNAL(trackInitSuccess(bool, int, int, int, int)));
     connect(m_process, SIGNAL(processDone()), this, SLOT(doShowVideo()));
-    connect(m_process, SIGNAL(trackStateLost()), this, SLOT(slObjectLost()));
+    connect(m_process, SIGNAL(trackStateLost()), this, SLOT(slTrackStateLost()));
     connect(m_process, SIGNAL(trackStateFound(int, double, double, double, double, double, double)), this,
-            SLOT(slDeterminedTrackObjected(int, double, double, double, double, double, double)));
+            SLOT(slTrackStateFound(int, double, double, double, double, double, double)));
     connect(this, &VideoEngine::sourceSizeChanged,
             this, &VideoEngine::onStreamFrameSizeChanged);
     connect(m_process,&CVVideoProcess::readyDrawOnViewerID,this,&CVVideoCaptureThread::drawOnViewerID);
@@ -101,11 +102,23 @@ CVVideoCaptureThread::~CVVideoCaptureThread()
     delete m_mutexCapture;
     delete m_mutexProcess;
 }
+void CVVideoCaptureThread::setGimbal(GimbalInterface* gimbal){
+    m_gimbal = gimbal;
+    m_process->m_gimbal = gimbal;
+}
+void CVVideoCaptureThread::moveImage(float panRate,float tiltRate,float zoomRate,float alpha){
+    m_process->moveImage(panRate,tiltRate,zoomRate,alpha);
+}
 void CVVideoCaptureThread::setVideo(QString _ip, int _port)
 {
     m_capture->m_ip = _ip.toStdString();
     m_capture->m_port = _port;
     m_capture->setSource(_ip.toStdString() + " ! appsink name=mysink sync=true async=true");
+    if(_ip.contains("filesrc")){
+        Q_EMIT sourceLinkChanged(true);
+    }else{
+        Q_EMIT sourceLinkChanged(false);
+    }
 }
 void CVVideoCaptureThread::start()
 {
@@ -171,30 +184,6 @@ void CVVideoCaptureThread::updateFOV(float eoFOV, float irFOV)
     m_process->m_eoFOV = eoFOV;
     m_process->m_irFOV = irFOV;
 }
-void CVVideoCaptureThread::stopTrack(bool enable)
-{
-    m_process->m_trackEnable = enable;
-
-    if (m_process->m_tracker->isInitialized()) {
-        while (m_process->m_tracker->isRunning());
-
-        m_process->m_tracker->resetTrack();
-    }
-
-    if (m_process->k_tracker->isInititalized()) {
-        while (m_process->k_tracker->isRunning());
-
-        m_process->k_tracker->resetTrack();
-    }
-
-    if (m_process->thresh_tracker->isInitialized()) {
-        while (m_process->thresh_tracker->isRunning());
-
-        m_process->thresh_tracker->resetTrack();
-    }
-
-    m_process->object_position = cv::Rect(0, 0, 0, 0);
-}
 bool CVVideoCaptureThread::getTrackEnable()
 {
     return (m_process->m_tracker->isInitialized() || m_process->m_tracker->isRunning());
@@ -240,14 +229,23 @@ void CVVideoCaptureThread::setDigitalStab(bool _en){
 }
 void CVVideoCaptureThread::setTrackAt(int _id, double _px, double _py, double _w, double _h)
 {
-    int x = static_cast<int>(_px/_w*m_sourceSize.width());
-    int y = static_cast<int>(_py/_h*m_sourceSize.height());
-    m_process->setTrack(x,y);
-    printf("%s at (%dx%d)\r\n",__func__,x,y);
-    removeTrackObjectInfo(0);
-    TrackObjectInfo *object = new TrackObjectInfo(m_sourceSize,QRect(x-20,y-20,40,40),"Object",20.975092,105.307680,0,0,"Track");
-    object->setIsSelected(true);
-    addTrackObjectInfo(object);
+    if(m_gimbal != nullptr){
+        if(m_gimbal->context()->m_lockMode == "FREE"){
+            m_gimbal->context()->m_lockMode = "TRACK";
+            m_process->m_trackEnable = true;
+            m_enTrack = true;
+            m_enSteer = false;
+            int x = static_cast<int>(_px/_w*m_sourceSize.width());
+            int y = static_cast<int>(_py/_h*m_sourceSize.height());
+            printf("%s at (%dx%d)\r\n",__func__,x,y);
+            removeTrackObjectInfo(0);
+            TrackObjectInfo *object = new TrackObjectInfo(m_sourceSize,QRect(x-20,y-20,40,40),"Object",20.975092,105.307680,0,0,"Track");
+            object->setIsSelected(true);
+            addTrackObjectInfo(object);
+        }
+        m_gimbal->setDigitalStab(true);
+    }
+    m_process->setClick(_px, _py, _w, _h);
 }
 void CVVideoCaptureThread::setRecord(bool _en){
     m_process->m_recordEnable = _en;
@@ -258,3 +256,20 @@ void CVVideoCaptureThread::setStreamMount(QString _streamMount)
         m_vRTSPServer->setStreamMount(_streamMount);
 }
 
+void CVVideoCaptureThread::goToPosition(float percent){
+    m_capture->goToPosition(percent);
+}
+void CVVideoCaptureThread::setSpeed(float speed){
+    m_capture->setSpeed(speed);
+}
+qint64 CVVideoCaptureThread::getTime(QString type){
+    if(type == "TOTAL"){
+        return m_capture->getTotalTime();
+    }else if(type == "CURRENT"){
+        return m_capture->getPosCurrent();
+    }
+}
+void CVVideoCaptureThread::pause(bool pause){
+    m_capture->pause(pause);
+    m_process->pause(pause);
+}
