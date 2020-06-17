@@ -6,7 +6,8 @@
 #include <QPoint>
 #include "GimbalData.h"
 #include "Setting/config.h"
-
+#include "../../Controller/Vehicle/Vehicle.h"
+#include "Camera/TargetLocation/TargetLocalization.h"
 class VideoEngine;
 class JoystickThreaded;
 class GimbalInterface : public QObject
@@ -22,6 +23,9 @@ public:
     explicit GimbalInterface(QObject *parent = nullptr);
     GimbalData* context(){ return m_context; }
     void setVideoEngine(VideoEngine* videoEngine);
+
+    virtual void setVehicle(Vehicle* vehicle);
+
     JoystickThreaded* joystick();
     virtual void setJoystick(JoystickThreaded* joystick);
     float digitalZoomMax(){
@@ -86,6 +90,8 @@ Q_SIGNALS:
     void zoomTargetChanged();
     void zoomCalculatedChanged(int viewIndex,float zoomCalculated);
     void functionHandled(QString message);
+    void presetChanged(bool result);
+
 public Q_SLOTS:
     virtual void connectToGimbal(Config* config = nullptr);
     virtual void disconnectGimbal();
@@ -112,13 +118,18 @@ public Q_SLOTS:
     virtual void setGCSRecorder(bool enable);
     virtual void setLockMode(QString mode,QPoint location = QPoint(0,0));
     virtual void setGeoLockPosition(QPoint location);
+
+    virtual void handleGimbalModeChanged(QString mode);
+    virtual void handleGimbalSetModeFail();
 protected:
     GimbalData* m_context = nullptr;
     VideoEngine* m_videoEngine = nullptr;
     bool m_isGimbalConnected = false;
     Config* m_config = nullptr;
     JoystickThreaded*  m_joystick = nullptr;
+    TargetLocalization* m_targetLocation = nullptr;
 protected:
+
     void  resetTrackParam(){
         m_iPan = 0.0;
         m_cPan = 0.0;
@@ -137,16 +148,16 @@ protected:
     double m_dPanOld= 0 ;
     double m_panRate= 0 ;
     double m_uPan= 0 ;
-    double m_kpPan = 70.0;
-    double m_kiPan = 3.0;//1.0
+    double m_kpPan = 1.4;
+    double m_kiPan = 0.02;//1.0
     double m_kdPan = 0;
     double m_iTilt= 0 ;
     double m_cTilt= 0 ;
     double m_dTiltOld= 0 ;
     double m_tiltRate= 0 ;
     double m_uTilt= 0 ;
-    double m_kpTilt = 90.0;
-    double m_kiTilt = 3.0;
+    double m_kpTilt = 1.3;
+    double m_kiTilt = 0.02;
     double m_kdTilt= 0.0;
 
     clock_t m_beginTime=0;

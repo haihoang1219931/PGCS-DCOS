@@ -1,29 +1,30 @@
 ﻿#include "symbolmodel.h"
 
 #include <QDebug>
-void SymbolModel::addSymbol(const int id,const int type,const int alt,const int toWP,const int repeat,const int dirCircle,const int timeCircle, const QGeoCoordinate coordinate)
+
+void SymbolModel::addSymbol(const int id, const int type, const int param1, const int param2, const int param3, const int param4, const QString text, const QGeoCoordinate coordinate)
 {
     //beginResetModel();
     int length = _msymbol.length();
     beginInsertRows(QModelIndex(),length,length);
 
-    _msymbol.push_back(symbol(id,type,alt,toWP,repeat,dirCircle,timeCircle,coordinate));
+    _msymbol.push_back(symbol(id,type,param1,param2,param3,param4,text,coordinate));
 
     endInsertRows();
     Q_EMIT symbolModelChanged();
     //endResetModel();
 }
 
-void SymbolModel::editSymbol(const int id, const int type, const int alt, const int toWP, const int repeat, const int dirCircle, const int timeCircle, const QGeoCoordinate coordinate)
+void SymbolModel::editSymbol(const int id, const int type, const int param1, const int param2, const int param3, const int param4, const QString text, const QGeoCoordinate coordinate)
 {
-//    if(id>-1)
-//    {   beginResetModel();
-//        _msymbol.removeAt(id);
-//        refreshIndexSymbol();
-//        endResetModel();
-//        Q_EMIT symbolModelChanged();
-//    }
+    if(_msymbol.length()>id && id >= 0)
+         _msymbol[id] = symbol(id,type,param1,param2,param3,param4,text,coordinate);
+//    endResetModel();
+    refreshModel();
+    Q_EMIT symbolModelChanged();
 }
+
+
 
 void SymbolModel::deleteSymbol(const int id)
 {
@@ -41,8 +42,13 @@ void SymbolModel::moveSymbol(const int id,const QGeoCoordinate coordinate)
 {
 //    beginResetModel();
     if(_msymbol.length()>id)
+    {
          _msymbol[id].Coordinate = coordinate;
-//    endResetModel();
+         double alt =0;
+         alt = coordinate.altitude();
+        // printf("alt changed: %f",alt);
+    }
+//    endResetModel();  
     Q_EMIT symbolModelChanged();
 }
 
@@ -93,20 +99,20 @@ QVariant SymbolModel::data(const QModelIndex &index, int role) const
             if ( role == TypeRole )
                 return _msymbol[index.row()].Type;
 
-            if ( role == AltRole )
-                return _msymbol[index.row()].Alt;
+            if ( role == Param1Role )
+                return _msymbol[index.row()].Param1;
 
-            if ( role == ToWPRole )
-                return _msymbol[index.row()].ToWP;
+            if ( role == Param2Role )
+                return _msymbol[index.row()].Param2;
 
-            if ( role == RepeatRole )
-                return _msymbol[index.row()].Repeat;
+            if ( role == Param3Role )
+                return _msymbol[index.row()].Param3;
 
-            if ( role == DirCircleRole )
-                return _msymbol[index.row()].DirCircle;
+            if ( role == Param4Role )
+                return _msymbol[index.row()].Param4;
 
-            if ( role == TimeCircleRole )
-                return _msymbol[index.row()].TimeCircle;
+            if ( role == TextRole )
+                return _msymbol[index.row()].Text;
 
             if ( role == CoordinateRole )
                 return QVariant::fromValue(_msymbol[index.row()].Coordinate);

@@ -113,6 +113,9 @@ public:
     ///     @param lon: longitude
     ///     @param alt: altitude
     void setHomeHere(float lat, float lon, float alt) override;
+
+    void setGimbalMode(QString mode) override;
+
 Q_SIGNALS:
 
 public Q_SLOTS:

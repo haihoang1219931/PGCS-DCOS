@@ -27,6 +27,11 @@ public:
     void setLockMode(QString mode, QPoint location = QPoint(0,0)) override;
     void setRecord(bool enable) override;
     void setShare(bool enable) override;
+    void setGimbalPreset(QString mode) override;
+    void setGimbalMode(QString mode) override;
+    void setGimbalPos(float panPos,float tiltPos) override;
+
+    Q_INVOKABLE void setVehicle(Vehicle* vehicle) override;
 Q_SIGNALS:
 
 public Q_SLOTS:
@@ -34,6 +39,12 @@ public Q_SLOTS:
     void handleButtonStateChanged(int buttonID, bool pressed);
     void sendQueryZoom();
     void handleQuery(QString data);
+    void handleGimbalMessage(mavlink_message_t message);
+    void handleVehicleMessage(mavlink_message_t message);
+    void handleVehicleLinkChanged();
+    void handleGimbalModeChanged(QString mode) override;
+    void handleGimbalSetModeFail() override;
+
 private:
     void enableDigitalZoom(bool enable);
 private:
@@ -42,6 +53,11 @@ private:
     SensorController* m_sensor;
     QVector<int> m_zoom;
     QMap<int,int> m_mapZoom;
+    Vehicle* m_vehicle = nullptr;
+    float m_presetAngleSet_Pan = 0;
+    float m_presetAngleSet_Tilt = 0;
+    QString m_modePreset = "UNKNOWN";
+
 };
 
 #endif // GREMSEYGIMBAL_H

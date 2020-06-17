@@ -105,7 +105,13 @@ ApplicationWindow {
 
     CameraController{
         id: cameraController
+        Component.onCompleted: {
+            console.log("vehicle----------------->:"+vehicle)
+            cameraController.gimbal.setVehicle(vehicle);
+        }
+
     }
+
 
     Joystick{
         id: joystick
@@ -133,7 +139,7 @@ ApplicationWindow {
 
     Vehicle{
         id: vehicle
-//        communication: comVehicle
+        //        communication: comVehicle
         onCoordinateChanged: {
             mapPane.updatePlane(position);
         }
@@ -151,6 +157,10 @@ ApplicationWindow {
                 timerSendHome.start();
             }
         }
+        //        Component.onCompleted: {
+        //            console.log("vehicle----------------->:"+vehicle)
+        //            cameraController.gimbal.setVehicle(vehicle);
+        //        }
     }
     Timer{
         id: timerSendHome
@@ -158,7 +168,7 @@ ApplicationWindow {
         repeat: true
         running: false
         onTriggered: {
-//            console.log("Send home postion to tracker");
+            //            console.log("Send home postion to tracker");
             tracker.sendHomePosition(vehicle.homePosition);
         }
     }
@@ -203,18 +213,18 @@ ApplicationWindow {
                                 +missionItem.param1+":"+missionItem.param2+":"+missionItem.param3+":"+missionItem.param4+":"
                                 +missionItem.param5+":"+missionItem.param6+":"+missionItem.param7
                                 );
-//                    if( missionItem.command!== 22){
-//                        mapPane.addWPPosition(missionItem.sequence,missionItem.position,missionItem.command,
-//                                              missionItem.param1,missionItem.param2,missionItem.param3,missionItem.param4);
-//                    }else{
-//                        mapPane.isContainWP1 = false;
-//                    }
+                    //                    if( missionItem.command!== 22){
+                    //                        mapPane.addWPPosition(missionItem.sequence,missionItem.position,missionItem.command,
+                    //                                              missionItem.param1,missionItem.param2,missionItem.param3,missionItem.param4);
+                    //                    }else{
+                    //                        mapPane.isContainWP1 = false;
+                    //                    }
                     mapPane.addWPPosition(missionItem.sequence,missionItem.position,missionItem.command,
                                           missionItem.param1,missionItem.param2,missionItem.param3,missionItem.param4);
                 }
             }else{
                 console.log("onUploadMissionDone\r\n");
-//                planController.missionItems = mapPane.getCurrentListWaypoint();
+                //                planController.missionItems = mapPane.getCurrentListWaypoint();
                 toastFlightControler.callActionAppearance = false;
                 toastFlightControler.rejectButtonAppearance = false;
                 toastFlightControler.toastContent = "Plan upload success";
@@ -229,7 +239,7 @@ ApplicationWindow {
         id: missionController
         vehicle: vehicle
         onCurrentIndexChanged: {
-//            console.log("changeCurrentWP to "+sequence);
+            //            console.log("changeCurrentWP to "+sequence);
             mapPane.changeCurrentWP(sequence);
         }
     }
@@ -246,21 +256,21 @@ ApplicationWindow {
         target: UC_API?UCEventListener:undefined
         onInvalidOpenPcdVideoFired: {
             switch( invalidCase ) {
-                case UCEventEnums.PCD_VIDEO_DUPLICATE:
-                    toast.callActionAppearance = false;
-                    toast.rejectButtonAppearance = false;
-                    toast.toastContent = "Chỉ mở được video của 1 PCD tại 1 thời điểm.! \nĐóng PCD video trước khi mở video của PCD khác";
-                    toast.show();
-                    break;
-                case UCEventEnums.USER_NOT_IN_ROOM:
-                    toast.callActionAppearance = false;
-                    toast.rejectButtonAppearance = false;
-                    toast.toastContent = "Ko hợp lệ ! \n Chỉ xem được hình ảnh của PCD ở trong phòng !";
-                    toast.show();
-                    break;
-                default:
-                    console.log(" Invalid case fired.!!!");
-                    break;
+            case UCEventEnums.PCD_VIDEO_DUPLICATE:
+                toast.callActionAppearance = false;
+                toast.rejectButtonAppearance = false;
+                toast.toastContent = "Chỉ mở được video của 1 PCD tại 1 thời điểm.! \nĐóng PCD video trước khi mở video của PCD khác";
+                toast.show();
+                break;
+            case UCEventEnums.USER_NOT_IN_ROOM:
+                toast.callActionAppearance = false;
+                toast.rejectButtonAppearance = false;
+                toast.toastContent = "Ko hợp lệ ! \n Chỉ xem được hình ảnh của PCD ở trong phòng !";
+                toast.show();
+                break;
+            default:
+                console.log(" Invalid case fired.!!!");
+                break;
             }
         }
     }
@@ -618,11 +628,11 @@ ApplicationWindow {
                 footerBar.isShowConfirm = true;
                 footerBar.compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                 footerBar.confirmDialogObj = footerBar.compo.createObject(parent,{
-                    "title":"Are you sure to change next flight mode to:\n"+currentMode,
-                    "type": "CONFIRM",
-                    "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                    "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                    "z":200});
+                                                                              "title":"Are you sure to change next flight mode to:\n"+currentMode,
+                                                                              "type": "CONFIRM",
+                                                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                                                              "z":200});
                 footerBar.confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
                         setFlightMode(currentMode);
@@ -694,7 +704,7 @@ ApplicationWindow {
                 z:9
                 onClicked: {
                     paramsSelectPanel.visible = false;
-                     navbar.dialogShow = "";
+                    navbar.dialogShow = "";
                 }
             }
             ListPlatesLog{
@@ -719,7 +729,8 @@ ApplicationWindow {
                     Connections{
                         target: cameraController.gimbal
                         onZoomCalculatedChanged:{
-//                            if(viewIndex === 0)
+                            console.log("zoom_end")
+                            //                            if(viewIndex === 0)
                             {
                                 videoOverlay.zoomCalculate = zoomCalculated;
                             }
@@ -766,11 +777,11 @@ ApplicationWindow {
                             cameraController.gimbal.changeSensor("IR");
                         }
                     }
-//                    if(CAMERA_CONTROL){
-//                        if(camState.isConnected && camState.isPingOk && gimbalNetwork.isGimbalConnected){
-//                            gimbalNetwork.ipcCommands.changeSensorID(camState.sensorID);
-//                        }
-//                    }
+                    //                    if(CAMERA_CONTROL){
+                    //                        if(camState.isConnected && camState.isPingOk && gimbalNetwork.isGimbalConnected){
+                    //                            gimbalNetwork.ipcCommands.changeSensorID(camState.sensorID);
+                    //                        }
+                    //                    }
                 }
                 onGcsSnapshotClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
@@ -802,13 +813,110 @@ ApplicationWindow {
                 }
             }
 
-            MapPane{
+            //            MapPane{
+            //                id: mapPane
+            //                width: rectMap.width
+            //                height: rectMap.height
+            //                x: rectMap.x
+            //                y: rectMap.y
+            //                z: 1
+            //                function updateUsersOnMap(){
+            //                    if(UC_API){
+            //                        for (var id = 0; id < UCDataModel.listUsers.length; id++){
+            //                            var user = UCDataModel.listUsers[id];
+            //                            var pointMapOnScreen =
+            //                                    mapPane.convertLocationToScreen(user.latitude,user.longitude);
+            //                            console.log("updateUserOnMap["+id+"] from ["+user.latitude+","+user.longitude+"] to ["
+            //                                        +pointMapOnScreen.x+","+pointMapOnScreen.y+"]" );
+            //                            userOnMap.updateUCClientPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
+            //                        }
+            //                        userOnMap.updatePcdVideo(userOnMap.currentPcdId);
+            //                    }else{
+            //                        return;
+            //                    }
+            //                }
+            //                function updateObjectsOnMap(){
+            //                    if(cameraController.videoEngine !== undefined){
+            //                        for (var id = 0; id < cameraController.videoEngine.listTrackObjectInfos.length; id++){
+            //                            var object = cameraController.videoEngine.listTrackObjectInfos[id];
+            //                            var pointMapOnScreen =
+            //                                    mapPane.convertLocationToScreen(object.latitude,object.longitude);
+            //                            objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
+            //                        }
+            //                    }
+            //                }
+
+            //                onMapClicked: {
+            //                    footerBar.flightView = !isMap?"WP":"MAP";
+            //                    if(!isMap)
+            //                    {
+            //                        var listWaypoint = mapPane.getCurrentListWaypoint();
+            //                        for(var i=0; i< listWaypoint.length; i++){
+            //                            var missionItem = listWaypoint[i];
+            //                            if( missionItem.sequence === selectedIndex){
+            //                                footerBar.loiterSelected = (missionItem.command === 19);
+            //                                break;
+            //                            }else{
+
+            //                            }
+            //                        }
+            //                    }else{
+            //                        if(footerBar.addWPSelected){
+            //                            mapPane.addWP(mapPane.lastWPIndex()+1);
+            //                            // update mission items
+            //                            var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
+            //                            planController.writeMissionItems = listCurrentWaypoint;
+            //                        }
+            //                    }
+            //                }
+            //                onMapMoved: {
+            //                    updateUsersOnMap()
+            //                    updateObjectsOnMap();
+            //                }
+            //                onHomePositionChanged: {
+            //                    console.log("Home change to "+lat+","+lon);
+            //                    vehicle.setHomeLocation(lat,lon);
+            //                    vehicle.setAltitudeRTL(alt);
+            //                }
+            //                onShowAdvancedConfigChanged: {
+            //                    pageConfig.showAdvancedConfig(true);
+            //                }
+
+            //                Connections{
+            //                    target: vehicle
+            //                    onFlightModeChanged:{
+            //                        if(vehicle.flightMode !== "Guided"){
+            //                            mapPane.changeClickedPosition(mapPane.clickedLocation,false);
+            //                        }
+            //                    }
+            //                }
+            //                UserOnMap {
+            //                    id: userOnMap
+            //                    anchors.fill: parent
+            //                }
+            //                ObjectsOnMap{
+            //                    id: objectsOnMap
+            //                    anchors.fill: parent
+            //                    visible: camState.objectLocalization
+            //                    player: cameraController.videoEngine
+            //                }
+            //            }
+
+
+
+            MapPane_UAV
+            {
                 id: mapPane
                 width: rectMap.width
                 height: rectMap.height
                 x: rectMap.x
                 y: rectMap.y
                 z: 1
+                //                onSymbolMoving: {
+                //                    waypointEditor.latitude = position.latitude
+                //                    waypointEditor.longitude = position.longitude
+                //                }
+                //nhatdn1 comment
                 function updateUsersOnMap(){
                     if(UC_API){
                         for (var id = 0; id < UCDataModel.listUsers.length; id++){
@@ -825,9 +933,9 @@ ApplicationWindow {
                     }
                 }
                 function updateObjectsOnMap(){
-                    if(cameraController.videoEngine !== undefined){
-                        for (var id = 0; id < cameraController.videoEngine.listTrackObjectInfos.length; id++){
-                            var object = cameraController.videoEngine.listTrackObjectInfos[id];
+                    if(videoPane.player !== undefined){
+                        for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
+                            var object = videoPane.player.listTrackObjectInfos[id];
                             var pointMapOnScreen =
                                     mapPane.convertLocationToScreen(object.latitude,object.longitude);
                             objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
@@ -858,19 +966,16 @@ ApplicationWindow {
                         }
                     }
                 }
-                onMapMoved: {
-                    updateUsersOnMap()
-                    updateObjectsOnMap();
-                }
+                //                onMapMoved: {
+                //                    updateUsersOnMap()
+                //                    updateObjectsOnMap();
+                //                }
+
                 onHomePositionChanged: {
                     console.log("Home change to "+lat+","+lon);
                     vehicle.setHomeLocation(lat,lon);
-                    vehicle.setAltitudeRTL(alt);
+                    //vehicle.setAltitudeRTL(alt);
                 }
-                onShowAdvancedConfigChanged: {
-                    pageConfig.showAdvancedConfig(true);
-                }
-
                 Connections{
                     target: vehicle
                     onFlightModeChanged:{
@@ -879,6 +984,7 @@ ApplicationWindow {
                         }
                     }
                 }
+
                 UserOnMap {
                     id: userOnMap
                     anchors.fill: parent
@@ -886,10 +992,10 @@ ApplicationWindow {
                 ObjectsOnMap{
                     id: objectsOnMap
                     anchors.fill: parent
-                    visible: camState.objectLocalization
-                    player: cameraController.videoEngine
+                    player: videoPane.player
                 }
             }
+
             Rectangle{
                 id: rectMap
                 color: "transparent"
@@ -1066,11 +1172,11 @@ ApplicationWindow {
                         if(func === "QUIT_APP"){
                             var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                             var confirmDialogObj = compo.createObject(parent,{
-                                "title":"Are you sure to want to \n close application",
-                                "type": "CONFIRM",
-                                "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                "z":200});
+                                                                          "title":"Are you sure to want to \n close application",
+                                                                          "type": "CONFIRM",
+                                                                          "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                                                          "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                                                          "z":200});
                             confirmDialogObj.clicked.connect(function (type,func){
                                 if(func === "DIALOG_OK"){
                                     confirmDialogObj.destroy();
@@ -1086,11 +1192,11 @@ ApplicationWindow {
                         }else if(func === "QUIT_COM"){
                             var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                             var confirmDialogObj = compo.createObject(parent,{
-                                "title":"Are you sure to want to \n turn off computer",
-                                "type": "CONFIRM",
-                                "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                "z":200});
+                                                                          "title":"Are you sure to want to \n turn off computer",
+                                                                          "type": "CONFIRM",
+                                                                          "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                                                          "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                                                          "z":200});
                             confirmDialogObj.clicked.connect(function (type,func){
                                 if(func === "DIALOG_OK"){
                                     confirmDialogObj.destroy();
@@ -1153,11 +1259,11 @@ ApplicationWindow {
                 var y = mainWindow.height/2-UIConstants.sRect*15/2;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/MapDialog.qml");
                 var fileDialogObj = compo.createObject(parent,{"title":"Please choose a file!",
-                                                            "folder":mapPane.dataPath+"tpk",
-//                                                            "nameFilters":["*.tpk"],
-                                                            "x": x,
-                                                            "y": y,
-                                                            "z": 200
+                                                           "folder":mapPane.dataPath+"tpk",
+                                                           //                                                            "nameFilters":["*.tpk"],
+                                                           "x": x,
+                                                           "y": y,
+                                                           "z": 200
                                                        });
                 fileDialogObj.fileSelected.connect(function (file){
                     mapPane.setMap(file);
@@ -1183,12 +1289,12 @@ ApplicationWindow {
                 var y = mainWindow.height/2-UIConstants.sRect*15/2;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/FileDialog.qml");
                 var fileDialogObj = compo.createObject(parent,{"title":"Please choose a map file!",
-                                                            "fileMode": "FILE_OPEN",
-                                                            "folder":applicationDirPath+"/"+"missions",
-                                                            "nameFilters":["*.waypoints"],
-                                                            "x": x,
-                                                            "y": y,
-                                                            "z": 200
+                                                           "fileMode": "FILE_OPEN",
+                                                           "folder":applicationDirPath+"/"+"missions",
+                                                           "nameFilters":["*.waypoints"],
+                                                           "x": x,
+                                                           "y": y,
+                                                           "z": 200
                                                        });
                 fileDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
@@ -1217,12 +1323,12 @@ ApplicationWindow {
                 var y = mainWindow.height/2-UIConstants.sRect*15/2;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/FileDialog.qml");
                 var fileDialogObj = compo.createObject(parent,{ "title":"Please insert file's name!",
-                                                                "fileMode": "FILE_SAVE",
-                                                                "folder":applicationDirPath+"/"+"missions",
-                                                                "nameFilters":["*.waypoints"],
-                                                                "x": x,
-                                                                "y": y,
-                                                                "z": 200});
+                                                           "fileMode": "FILE_SAVE",
+                                                           "folder":applicationDirPath+"/"+"missions",
+                                                           "nameFilters":["*.waypoints"],
+                                                           "x": x,
+                                                           "y": y,
+                                                           "z": 200});
                 fileDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
                         var path = fileDialogObj.folder + "/" + fileDialogObj.currentFile;
@@ -1239,13 +1345,13 @@ ApplicationWindow {
 
                         // update list waypoint to plancontroller
                         var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
-    //                                console.log("listCurrentWaypoint = "+listCurrentWaypoint);
-    //                                for(var i =0; i< listCurrentWaypoint.length; i++){
-    //                                    var missionItem = listCurrentWaypoint[i];
-    //                                    console.log("missionItem["+missionItem.sequence+"]"+missionItem.frame+":["+missionItem.command+"]"+
-    //                                                missionItem.param1+":"+missionItem.param2+":"+missionItem.param3+":"+missionItem.param4+
-    //                                                missionItem.param5+":"+missionItem.param6+":"+missionItem.param7+":");
-    //                                }
+                        //                                console.log("listCurrentWaypoint = "+listCurrentWaypoint);
+                        //                                for(var i =0; i< listCurrentWaypoint.length; i++){
+                        //                                    var missionItem = listCurrentWaypoint[i];
+                        //                                    console.log("missionItem["+missionItem.sequence+"]"+missionItem.frame+":["+missionItem.command+"]"+
+                        //                                                missionItem.param1+":"+missionItem.param2+":"+missionItem.param3+":"+missionItem.param4+
+                        //                                                missionItem.param5+":"+missionItem.param6+":"+missionItem.param7+":");
+                        //                                }
                         planController.missionItems = listCurrentWaypoint;
                         planController.writeWaypointFile(cleanPath);
                         mapPane.saveMarker(cleanPath+".markers");
@@ -1292,11 +1398,11 @@ ApplicationWindow {
                     console.log("Do Auto");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                        "title":"Are you sure to want to \n change flight mode to AUTO",
-                        "type": "CONFIRM",
-                        "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                        "z":200});
+                                                                  "title":"Are you sure to want to \n change flight mode to AUTO",
+                                                                  "type": "CONFIRM",
+                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "Auto";
@@ -1316,11 +1422,11 @@ ApplicationWindow {
                     console.log("Do Guided");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                        "title":"Are you sure to want to \n change flight mode to Guided",
-                        "type": "CONFIRM",
-                        "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                        "z":200});
+                                                                  "title":"Are you sure to want to \n change flight mode to Guided",
+                                                                  "type": "CONFIRM",
+                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "Guided";
@@ -1340,18 +1446,18 @@ ApplicationWindow {
                     console.log("Do Takeoff");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                        "title":"Are you sure to want to \n"+(!vehicle.armed?"ARM and ":"")+"TAKE OFF ?",
-                        "type": "CONFIRM",
-                        "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                        "z":200});
+                                                                  "title":"Are you sure to want to \n"+(!vehicle.armed?"ARM and ":"")+"TAKE OFF ?",
+                                                                  "type": "CONFIRM",
+                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
-//                            if(!vehicle.armed)
-//                                vehicle.setArmed(true);
-//                            vehicle.commandTakeoff(100);
+                            //                            if(!vehicle.armed)
+                            //                                vehicle.setArmed(true);
+                            //                            vehicle.commandTakeoff(100);
                             vehicle.startMission();
-//                            navbar.startFlightTimer();
+                            //                            navbar.startFlightTimer();
                         }else if(func === "DIALOG_CANCEL"){
 
                         }
@@ -1379,12 +1485,12 @@ ApplicationWindow {
 
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/AltitudeEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                        "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
-                        "z":200,
-                        "minValue": minValue,
-                        "maxValue": maxValue,
-                        "currentValue": footerBar.getFlightAltitudeTarget()});
+                                                                  "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
+                                                                  "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
+                                                                  "z":200,
+                                                                  "minValue": minValue,
+                                                                  "maxValue": maxValue,
+                                                                  "currentValue": footerBar.getFlightAltitudeTarget()});
                     confirmDialogObj.confirmClicked.connect(function (){
                         console.log("vehicle.currentWaypoint = "+vehicle.currentWaypoint);
                         footerBar.isShowConfirm = false;
@@ -1416,17 +1522,17 @@ ApplicationWindow {
                     }
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/SpeedEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                        "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
-                        "z":200,
-                        "minValue": minValue,
-                        "maxValue": maxValue,
-                        "currentValue": Math.round(footerBar.getFlightSpeedTarget())});
+                                                                  "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
+                                                                  "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
+                                                                  "z":200,
+                                                                  "minValue": minValue,
+                                                                  "maxValue": maxValue,
+                                                                  "currentValue": Math.round(footerBar.getFlightSpeedTarget())});
                     confirmDialogObj.confirmClicked.connect(function (){
                         vehicle.commandChangeSpeed(confirmDialogObj.currentValue);
                         confirmDialogObj.destroy();
                         compo.destroy();
-//                        footerBar.setFlightSpeedTarget(confirmDialogObj.currentValue);
+                        //                        footerBar.setFlightSpeedTarget(confirmDialogObj.currentValue);
                         footerBar.isShowConfirm = false;
                     });
                     confirmDialogObj.cancelClicked.connect(function (){
@@ -1444,10 +1550,10 @@ ApplicationWindow {
                     console.log("Do Loiter Radius changed");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/LoiterRadiusEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                        "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
-                        "z":200,
-                        "currentValue": vehicle.paramLoiterRadius});
+                                                                  "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
+                                                                  "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
+                                                                  "z":200,
+                                                                  "currentValue": vehicle.paramLoiterRadius});
                     confirmDialogObj.confirmClicked.connect(function (){
                         vehicle.commandLoiterRadius(confirmDialogObj.currentValue);
                         confirmDialogObj.destroy();
@@ -1468,7 +1574,7 @@ ApplicationWindow {
         }
         onDoNewMission: {
             mapPane.clearWPs();
-//            mapPane.clearMarkers();
+            //            mapPane.clearMarkers();
         }
 
         onDeleteWP: {
@@ -1476,7 +1582,7 @@ ApplicationWindow {
             // update mission items
             var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
             planController.writeMissionItems = listCurrentWaypoint;
-//            planController.missionItems = planController.writeMissionItems;
+            //            planController.missionItems = planController.writeMissionItems;
 
         }
         onDoNextWP: {
@@ -1515,11 +1621,11 @@ ApplicationWindow {
                     console.log("Do RTL");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                        "title":"Are you sure to want to \n change flight mode to RTL",
-                        "type": "CONFIRM",
-                        "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                        "z":200});
+                                                                  "title":"Are you sure to want to \n change flight mode to RTL",
+                                                                  "type": "CONFIRM",
+                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "RTL";
@@ -1539,11 +1645,11 @@ ApplicationWindow {
                 console.log("Do Arm");
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                 var confirmDialogObj = compo.createObject(parent,{
-                    "title":"Are you sure to want to \n"+(!vehicle.armed?"ARM":"DISARM")+"?",
-                    "type": "CONFIRM",
-                    "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                    "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                    "z":200});
+                                                              "title":"Are you sure to want to \n"+(!vehicle.armed?"ARM":"DISARM")+"?",
+                                                              "type": "CONFIRM",
+                                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                                              "z":200});
                 confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
                         vehicle.setArmed(!vehicle.armed);
@@ -1565,9 +1671,9 @@ ApplicationWindow {
                 mapPane.changeWPCommand(mapPane.lstWaypointCommand[mapPane.vehicleType]["LOITER"]["COMMAND"],
                                         3600,0,closeWise > 0 ? "1":"-1",0);
                 mapPane.selectedWP.attributes.replaceAttribute("command_prev",
-                            mapPane.selectedWP.attributes.attributeValue("command"));
+                                                               mapPane.selectedWP.attributes.attributeValue("command"));
                 mapPane.selectedWP.attributes.replaceAttribute("param3_prev",
-                            mapPane.selectedWP.attributes.attributeValue("param3"));
+                                                               mapPane.selectedWP.attributes.attributeValue("param3"));
                 mapPane.selectedWP.attributes.replaceAttribute("param1_prev",3600);
                 mapPane.selectedWP.attributes.replaceAttribute("param1",3600);
                 // update mission items
@@ -1581,7 +1687,7 @@ ApplicationWindow {
                 mapPane.changeWPCommand(mapPane.lstWaypointCommand[mapPane.vehicleType]["WAYPOINT"]["COMMAND"],
                                         0,0,0,0);
                 mapPane.selectedWP.attributes.replaceAttribute("command_prev",
-                            mapPane.selectedWP.attributes.attributeValue("command"));
+                                                               mapPane.selectedWP.attributes.attributeValue("command"));
                 mapPane.selectedWP.attributes.replaceAttribute("param1_prev",0);
                 mapPane.selectedWP.attributes.replaceAttribute("param1",0);
                 // update mission items
@@ -1597,11 +1703,11 @@ ApplicationWindow {
                 if(vehicle.flightMode !== "Guided"){
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                        "title":"Vehicle is not in Guided mode\nDo you want to change and go?",
-                        "type": "CONFIRM",
-                        "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                        "z":200});
+                                                                  "title":"Vehicle is not in Guided mode\nDo you want to change and go?",
+                                                                  "type": "CONFIRM",
+                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "Guided";
@@ -1617,11 +1723,11 @@ ApplicationWindow {
                 }else{
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                        "title":"Are you sure to go to \n selected location"+"?",
-                        "type": "CONFIRM",
-                        "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                        "z":200});
+                                                                  "title":"Are you sure to go to \n selected location"+"?",
+                                                                  "type": "CONFIRM",
+                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             mapPane.changeClickedPosition(mapPane.clickedLocation,true);
@@ -1661,10 +1767,10 @@ ApplicationWindow {
                 if(camState.gcsExportVideo){
                     var compo = Qt.createComponent("qrc:/CustomViews/Bars/VideoExternal.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                        "x":parent.width / 2 - UIConstants.sRect * 19 / 2,
-                        "y":parent.height / 2 - UIConstants.sRect * 13 / 2,
-                        "camState": camState,
-                        "player": cameraController.videoEngine});
+                                                                  "x":parent.width / 2 - UIConstants.sRect * 19 / 2,
+                                                                  "y":parent.height / 2 - UIConstants.sRect * 13 / 2,
+                                                                  "camState": camState,
+                                                                  "player": cameraController.videoEngine});
                 }
             }
         }
@@ -1680,10 +1786,10 @@ ApplicationWindow {
         running: false
         property int countGetData: 0
         onTriggered: {
-//            console.log("Get gimbal data");
+            //            console.log("Get gimbal data");
             var frameID = 0;
             if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-//                frameID = cameraController.videoEngine.frameID;
+                //                frameID = cameraController.videoEngine.frameID;
             }
 
             var data = cameraController.context.getData(frameID);
@@ -1693,6 +1799,13 @@ ApplicationWindow {
             camState.record = data["RECORD"];
             camState.gcsShare = data["GCS_SHARED"];
             camState.digitalStab = data["STAB_DIGITAL"];
+            mapPane.drawTargetLocalization(
+                        QtPositioning.coordinate(data["CORNER01"].x,data["CORNER01"].y),
+                        QtPositioning.coordinate(data["CORNER02"].x,data["CORNER02"].y),
+                        QtPositioning.coordinate(data["CORNER03"].x,data["CORNER03"].y),
+                        QtPositioning.coordinate(data["CORNER04"].x,data["CORNER04"].y),
+                        QtPositioning.coordinate(data["CENTER"].x,data["CENTER"].y),
+                        QtPositioning.coordinate(data["UAV"].x,data["UAV"].y));
         }
     }
     Rectangle{

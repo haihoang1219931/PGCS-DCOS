@@ -7,6 +7,8 @@
 #include <QMap>
 
 #include "../FirmwarePlugin.h"
+#include "../../Vehicle/Vehicle.h"
+#include "../../../Joystick/JoystickLib/JoystickThreaded.h"
 class Vehicle;
 class ArduCopterFirmware : public FirmwarePlugin
 {
@@ -36,6 +38,13 @@ public:
         GUIDED_NOGPS= 20,
         SAFE_RTL   = 21,   //Safe Return to Launch
     };
+
+    typedef enum _controlGimbalAxisInputMode{
+        CTRL_ANGLE_BODY_FRAME = 0,
+        CTRL_ANGULAR_RATE = 1,
+        CTRL_ANGLE_ABSOLUTE_FRAME = 2,
+    } control_gimbal_axis_input_mode_t;
+
     ArduCopterFirmware(Vehicle* vehicle = nullptr);
     ~ArduCopterFirmware();
     bool pic() override;
@@ -119,16 +128,40 @@ public:
     ///     @param lon: longitude
     ///     @param alt: altitude
     void setHomeHere(float lat, float lon, float alt);
+
+    /// Set gimbal postion/Rate
+    ///     @param pan: position/Rate
+    ///     @param tilt: position/Rate
+    void setGimbalAngle(float pan, float tilt) override;
+    void setGimbalRate(float pan, float tilt) override;
+    void setGimbalMode(QString mode) override;//NONE;RATE_MODE;ANGLE_BODY_MODE;ANGLE_ABSOLUTE_MODE
+
+    void setGimbalMove(float pan, float tilt);
+    void setGimbalMode(control_gimbal_axis_input_mode_t mode);
+
+    void sendGimbalHeartbeat();
+
+    void changeGimbalCurrentMode() override;
+    QString getGimbalCurrentMode() override;
+
 Q_SIGNALS:
+
 
 public Q_SLOTS:
     void sendJoystickData();
     void sendClearRC();
     void handleJSButton(int id, bool clicked) override;
     void handleUseJoystick(bool enable) override;
+    void handleMavCommandResult(int vehicleId, int component, int command, int result, bool noReponseFromVehicle);
+
 private:
     float convertRC(float input, int channel);
     bool m_pic = false;
+    QTimer m_gimbalHearbeatTimer;
+    float m_gimbalLastPan = 0;
+    float m_gimbalLastTilt = 0;
+    QString m_gimbalCurrentMode = "UNKNOWN";
+    QString m_gimbalSetMode = "UNKNOWN";
 };
 
 #endif // ARDUCOPTERFIRMWARE_H

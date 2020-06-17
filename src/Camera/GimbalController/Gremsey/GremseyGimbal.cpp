@@ -3,8 +3,12 @@
 #include "SensorController.h"
 #include "Camera/VideoEngine/VideoEngineInterface.h"
 #include "Joystick/JoystickLib/JoystickThreaded.h"
+
+#define rad2Deg 57.2957795f
+
 GremseyGimbal::GremseyGimbal(GimbalInterface *parent) : GimbalInterface(parent)
 {
+    m_targetLocation = new TargetLocalization();
     m_zoom.append(0x0000); //1x
     m_zoom.append(0x0DC1); //2x
     m_zoom.append(0x186C); //3x
@@ -103,9 +107,10 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
         if(m_joystick->axisCount()<3) return;
         // send raw gimbal rate
         float maxAxis = 32768.0f;
-        float maxRate = 1024.0f/maxAxis;
+//        float maxRate = 1024.0f/maxAxis;
+        float maxRate = 120/maxAxis;
         float deadZone = 160;
-        float alphaSpeed = 2;
+        float alphaSpeed = 0.5;
         float invertPan = m_joystick->invertPan();
         float invertTilt = m_joystick->invertTilt();
         float invertZoom = m_joystick->invertZoom();
@@ -115,8 +120,8 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
         if(fabs(panRate) < deadZone) panRate = 0;
         if(fabs(tiltRate) < deadZone) tiltRate = 0;
         if(fabs(zoomRate) < deadZone) zoomRate = 0;
-        float x = invertPan * panRate * maxRate;
-        float y = invertTilt * tiltRate * maxRate;
+        float x = invertPan * (panRate-deadZone*(panRate>=0?1:-1)) * maxRate;
+        float y = invertTilt * (tiltRate-deadZone*(tiltRate>=0?1:-1)) * maxRate;
         float z = invertZoom * zoomRate;
         float hfov = m_context->m_hfov[m_context->m_sensorID];
         float panRateScale = (alphaSpeed * hfov * x / m_context->m_hfovMax[m_context->m_sensorID]);
@@ -240,11 +245,15 @@ void GremseyGimbal::setIRZoom(QString command){
     m_videoEngine->setdigitalZoom(zoomDigital);
 }
 void GremseyGimbal::setGimbalRate(float panRate,float tiltRate){
-    if(m_gimbal->getConnectionStatus() == 1){
-        m_gimbal->set_Mode(e_control_gimbal_mode::GIMBAL_LOCK_MODE);
-        m_gimbal->set_control(0,
-                              static_cast<int>(tiltRate),
-                              static_cast<int>(panRate));
+//    if(m_gimbal->getConnectionStatus() == 1){
+//        m_gimbal->set_Mode(e_control_gimbal_mode::GIMBAL_LOCK_MODE);
+//        m_gimbal->set_control(0,
+//                              static_cast<int>(tiltRate),
+//                              static_cast<int>(panRate));
+//    }
+    if (m_vehicle != nullptr) {
+        m_vehicle->setGimbalRate(panRate,tiltRate);
+
     }
 }
 void GremseyGimbal::snapShot(){
@@ -294,6 +303,53 @@ void GremseyGimbal::setShare(bool enable){
         m_videoEngine->setShare(m_context->m_gcsShare);
     }
 }
+
+void GremseyGimbal::setGimbalPreset(QString mode)
+{
+    if(m_vehicle!= nullptr)
+    {
+        m_modePreset = mode;
+        if (mode.contains("OFF")) {
+            setGimbalMode("RATE_MODE");
+            return;
+        }      
+        setGimbalMode("ANGLE_BODY_MODE");
+
+    }
+}
+
+void GremseyGimbal::setGimbalMode(QString mode)
+{
+    if(m_vehicle != nullptr &&  m_vehicle->m_firmwarePlugin != nullptr)
+    {
+        m_vehicle->m_firmwarePlugin->setGimbalMode(mode);
+//         printf("set preset mode \r\n");
+    }
+}
+
+void GremseyGimbal::setGimbalPos(float panPos, float tiltPos)
+{
+    if(m_vehicle != nullptr &&  m_vehicle->m_firmwarePlugin != nullptr)
+    {
+        m_vehicle->m_firmwarePlugin->setGimbalAngle(panPos,tiltPos);
+    }
+}
+
+void GremseyGimbal::setVehicle(Vehicle *vehicle)
+{
+    m_vehicle = vehicle;
+    if(m_vehicle!= nullptr)
+    {
+        connect(m_vehicle,SIGNAL(mavlinkGimbalMessageReceived(mavlink_message_t)),this,SLOT(handleGimbalMessage(mavlink_message_t)));
+        connect(m_vehicle,SIGNAL(mavlinkMessageReceived(mavlink_message_t)),this,SLOT(handleVehicleMessage(mavlink_message_t)));
+        connect(m_vehicle,SIGNAL(linkChanged()),this,SLOT(handleVehicleLinkChanged()));
+        if(m_vehicle->m_firmwarePlugin !=nullptr)
+        {
+        connect(m_vehicle,SIGNAL(gimbalModeChanged(QString)),this,SLOT(handleGimbalModeChanged(QString)));
+        connect(m_vehicle,SIGNAL(gimbalModeSetFail()),this,SLOT(handleGimbalSetModeFail()));
+        }
+    }
+}
 void GremseyGimbal::sendQueryZoom(){
     m_sensor->sendRawData("0681090447FF");
 }
@@ -316,6 +372,138 @@ void GremseyGimbal::handleQuery(QString data){
             }
         }
     }
+}
+
+void GremseyGimbal::handleGimbalMessage(mavlink_message_t message)
+{
+    switch (message.msgid) {
+    case MAVLINK_MSG_ID_HEARTBEAT:
+        break;
+    case MAVLINK_MSG_ID_MOUNT_ORIENTATION:
+        mavlink_mount_orientation_t mount_orient;
+        mavlink_msg_mount_orientation_decode(&message, &mount_orient);
+
+        m_context->m_panPosition = mount_orient.yaw;
+        m_context->m_tiltPosition = mount_orient.pitch;
+//        printf("pan gimbal: %5.1f\r\n",static_cast<double>(m_context->m_panPosition));
+//        printf("tilt gimbal: %5.1f\r\n",static_cast<double>(m_context->m_tiltPosition));
+//        printf("altitude: %5.1f\r\n",static_cast<double>(m_context->m_altitudeOffset));
+        break;
+    default:
+        break;
+    }
+}
+
+void GremseyGimbal::handleVehicleMessage(mavlink_message_t message)
+{
+    // uav: lat,long,alt, roll, pitch, yaw
+    switch (message.msgid) {
+    case MAVLINK_MSG_ID_HEARTBEAT:
+        break;
+
+    case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
+        mavlink_global_position_int_t gps_pos;
+        mavlink_msg_global_position_int_decode(&message,&gps_pos);
+        m_context->m_latitude = (static_cast<float>(gps_pos.lat))/10000000;
+        m_context->m_longtitude = (static_cast<float>(gps_pos.lon))/10000000;
+//        m_context->m_altitudeOffset = (static_cast<float>(gps_pos.alt))/1000;
+        m_context->m_altitudeOffset = 25;
+        if(m_targetLocation!=nullptr){
+            double centerLat,centerLon;
+            double cornerLat[4],cornerLon[4];
+            std::vector<QPointF> corners;
+            corners.push_back(QPointF(0,0));
+            corners.push_back(QPointF(1920,0));
+            corners.push_back(QPointF(1920,1080));
+            corners.push_back(QPointF(0,1080));
+            m_targetLocation->targetLocationMain(
+                    960,540,
+                    m_context->m_hfov[m_context->m_sensorID] / rad2Deg,
+                    m_context->m_rollOffset / rad2Deg,
+                    m_context->m_pitchOffset / rad2Deg,
+                    m_context->m_yawOffset / rad2Deg,
+                    m_context->m_panPosition / rad2Deg,
+                    m_context->m_tiltPosition / rad2Deg,
+                    m_context->m_latitude,
+                    m_context->m_longtitude,
+                    m_context->m_altitudeOffset,
+                    centerLat,
+                    centerLon);
+            m_context->m_centerLat = centerLat;
+            m_context->m_centerLon = centerLon;
+
+            for(int i=0; i< 4; i++){
+                m_targetLocation->targetLocationMain(
+                        corners[i].x(),corners[i].y(),
+                        m_context->m_hfov[m_context->m_sensorID] / rad2Deg,
+                        m_context->m_rollOffset / rad2Deg,
+                        m_context->m_pitchOffset / rad2Deg,
+                        m_context->m_yawOffset / rad2Deg,
+                        m_context->m_panPosition / rad2Deg,
+                        m_context->m_tiltPosition / rad2Deg,
+                        m_context->m_latitude,
+                        m_context->m_longtitude,
+                        m_context->m_altitudeOffset,
+                        cornerLat[i],
+                        cornerLon[i]);
+                m_context->m_cornerLat[i] = cornerLat[i];
+                m_context->m_cornerLon[i] = cornerLon[i];
+            }
+        }
+        break;
+
+    case MAVLINK_MSG_ID_ATTITUDE:
+        mavlink_attitude_t  attitude;
+        mavlink_msg_attitude_decode(&message,&attitude);
+        m_context->m_rollOffset  = attitude.roll * rad2Deg;
+        m_context->m_pitchOffset = attitude.pitch * rad2Deg;
+        m_context->m_yawOffset   = attitude.yaw * rad2Deg;
+        //printf("att-roll: %5.1f\r\n",m_context->m_rollOffset);
+        break;
+    default:
+        break;
+    }
+}
+
+void GremseyGimbal::handleVehicleLinkChanged()
+{
+    if(m_vehicle != nullptr)
+    {
+        if(m_vehicle->link() == true && m_vehicle->m_firmwarePlugin != nullptr)
+        {
+            //set gimbal mode
+            m_vehicle->m_firmwarePlugin->setGimbalMode("RATE_MODE");
+        }
+    }
+}
+
+void GremseyGimbal::handleGimbalModeChanged(QString mode)
+{
+    if(m_modePreset.contains("OFF") && mode == "RATE_MODE")
+    {
+        Q_EMIT presetChanged(true);
+        return;
+    }
+    if(mode == "ANGLE_BODY_MODE")
+    {
+        if(m_modePreset.contains("FRONT")){
+            m_presetAngleSet_Pan = 0;
+            m_presetAngleSet_Tilt = 0;
+        }else if(m_modePreset.contains("RIGHT")){
+            m_presetAngleSet_Pan = -90;
+            m_presetAngleSet_Tilt = 0;
+        }else if(m_modePreset.contains("NADIR")){
+            m_presetAngleSet_Pan = 0;
+            m_presetAngleSet_Tilt = -90;
+        }
+        setGimbalPos(m_presetAngleSet_Pan,m_presetAngleSet_Tilt);
+        Q_EMIT presetChanged(true);
+    }
+}
+
+void GremseyGimbal::handleGimbalSetModeFail()
+{
+    Q_EMIT presetChanged(false);
 }
 void GremseyGimbal::enableDigitalZoom(bool enable){
 

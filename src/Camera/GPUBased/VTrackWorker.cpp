@@ -359,14 +359,14 @@ void VTrackWorker::run()
                                            static_cast<double>(m_trackRect.height),
                                            static_cast<double>(w),
                                            static_cast<double>(h));
-                    printf("%s _px=%f _py=%f _oW=%f _oH=%f _w=%f _h=%f\r\n",
-                           __func__,
-                           static_cast<double>(m_trackRect.x),
-                           static_cast<double>(m_trackRect.y),
-                           static_cast<double>(m_trackRect.width),
-                           static_cast<double>(m_trackRect.height),
-                           static_cast<double>(w),
-                           static_cast<double>(h));
+//                    printf("%s _px=%f _py=%f _oW=%f _oH=%f _w=%f _h=%f\r\n",
+//                           __func__,
+//                           static_cast<double>(m_trackRect.x),
+//                           static_cast<double>(m_trackRect.y),
+//                           static_cast<double>(m_trackRect.width),
+//                           static_cast<double>(m_trackRect.height),
+//                           static_cast<double>(w),
+//                           static_cast<double>(h));
                 }else{
                     Q_EMIT objectLost();
                 }

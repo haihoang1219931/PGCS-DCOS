@@ -18,6 +18,12 @@ void GimbalInterface::connectToGimbal(Config* config){
 void GimbalInterface::setVideoEngine(VideoEngine* videoEngine){
     m_videoEngine = videoEngine;
 }
+
+void GimbalInterface::setVehicle(Vehicle *vehicle)
+{
+    Q_UNUSED(vehicle);
+}
+
 void GimbalInterface::disconnectGimbal(){
 
 }
@@ -53,10 +59,10 @@ void GimbalInterface::lockScreenPoint(int _id,
 
         double deltaPan = atan(-px/focalLength) * 180.0 / M_PI;
 
-        printf("delta pan: %.4f\r\n",deltaPan);
+//        printf("delta pan: %.4f\r\n",deltaPan);
         //            if(deltaPan > 10)deltaPan = 10
         //            else if(deltaPan < -10)deltaPan = -10
-        if(deltaPan<0.15 && deltaPan>-0.15)
+        if(deltaPan<0.1 && deltaPan>-0.1)
             m_iPan+=deltaPan/fps;
         else
             m_iPan = 0;
@@ -72,7 +78,7 @@ void GimbalInterface::lockScreenPoint(int _id,
         double deltaTilt = atan(-py/focalLength) * 180.0 / M_PI;
         //            if(deltaTilt > 10)deltaTilt = 10
         //            else if(deltaTilt < -10)deltaTilt = -10
-        if(deltaTilt<0.15 && deltaTilt>-0.15)
+        if(deltaTilt<0.1 && deltaTilt>-0.1)
             m_iTilt+=deltaTilt/fps;
         else
             m_iTilt = 0;
@@ -81,25 +87,25 @@ void GimbalInterface::lockScreenPoint(int _id,
         m_uTilt = m_kpTilt * deltaTilt + m_kiTilt * m_iTilt + m_kdTilt * dTilt;
         m_dTiltOld = deltaTilt;
 
-        m_tiltRate = m_uTilt;
+        m_tiltRate =  m_uTilt;
 
-        if(m_panRate<8 && m_panRate >1)
-        {
-            m_panRate=8;
-        }
-        else if(m_panRate> -8 && m_panRate <-1)
-        {
-               m_panRate = -8;
-        }
+//        if(m_panRate<8 && m_panRate >1)
+//        {
+//            m_panRate=8;
+//        }
+//        else if(m_panRate> -8 && m_panRate <-1)
+//        {
+//               m_panRate = -8;
+//        }
 
-        if(m_tiltRate<8 && m_tiltRate >1)
-        {
-            m_tiltRate=8;
-        }
-        else if(m_tiltRate> -8 && m_tiltRate <-1)
-        {
-               m_tiltRate = -8;
-        }
+//        if(m_tiltRate<8 && m_tiltRate >1)
+//        {
+//            m_tiltRate=8;
+//        }
+//        else if(m_tiltRate> -8 && m_tiltRate <-1)
+//        {
+//               m_tiltRate = -8;
+//        }
 
 //        printf("%s _px=%f _py=%f _oW=%f _oH=%f _w=%f _h=%f => panRate=%d tiltRate=%d\r\n",
 //               __func__,_px,_py,_oW,_oH,_w,_h,
@@ -172,4 +178,14 @@ void GimbalInterface::setLockMode(QString mode, QPoint location){
 }
 void GimbalInterface::setGeoLockPosition(QPoint location){
     Q_UNUSED(location);
+}
+
+void GimbalInterface::handleGimbalModeChanged(QString mode)
+{
+    Q_UNUSED(mode);
+}
+
+void GimbalInterface::handleGimbalSetModeFail()
+{
+
 }

@@ -10,6 +10,9 @@ Vehicle::Vehicle(QObject *parent) : QObject(parent)
     m_uas = new UAS();
     m_firmwarePluginManager = new FirmwarePluginManager();
     m_firmwarePlugin = m_firmwarePluginManager->firmwarePluginForAutopilot(this,_firmwareType, static_cast<MAV_TYPE>(_vehicleType));
+
+    connect(this,&Vehicle::mavCommandResult,this,&Vehicle::handleMavCommandResult);
+
     _loadDefaultParamsShow();
     Q_EMIT flightModesChanged();
     Q_EMIT flightModesOnAirChanged();
@@ -86,6 +89,10 @@ void Vehicle::setCommunication(IOFlightController *com)
     // Request firmware version
     connect(m_com,SIGNAL(messageReceived(mavlink_message_t)),
             this,SLOT(_mavlinkMessageReceived(mavlink_message_t)));
+
+    connect(m_com,SIGNAL(gimbalMessageReceived(mavlink_message_t)),
+            this,SLOT(_mavlinkGimbalMessageReceived(mavlink_message_t)));
+
     connect(this, SIGNAL(_sendMessageOnLinkOnThread(IOFlightController*,mavlink_message_t)),
             this, SLOT(_sendMessageOnLink(IOFlightController*,mavlink_message_t)),Qt::QueuedConnection);
     connect(m_com, SIGNAL(mavlinkMessageStatus(int,uint64_t,uint64_t,uint64_t,float)),
@@ -300,6 +307,7 @@ void Vehicle::_mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t tota
         Q_EMIT mavlinkStatusChanged();
     }
 }
+
 void Vehicle::motorTest(int motor, int percent)
 {
     if (m_firmwarePlugin != nullptr) {
@@ -336,6 +344,23 @@ void Vehicle::sendHomePosition(QGeoCoordinate location){
         m_com->getInterface()->writeBytesSafe((char*)buffer,len);
     }
 }
+
+///control gimbal with mavlink
+void Vehicle::setGimbalRate(float pan, float tilt)
+{
+    if(m_firmwarePlugin != nullptr){
+        m_firmwarePlugin->setGimbalRate(pan,tilt);
+    }
+}
+
+void Vehicle::setGimbalAngle(float pan, float tilt)
+{
+    if(m_firmwarePlugin != nullptr){
+        m_firmwarePlugin->setGimbalAngle(pan,tilt);
+    }
+}
+///end control gimbal
+
 void Vehicle::activeProperty(QString name,bool active){
     int propertiesShowCount = 0;
     for(int i=0; i< _propertiesModel.size(); i++){
@@ -446,6 +471,51 @@ void Vehicle::_sendMessageOnLink(IOFlightController *link, mavlink_message_t mes
     QByteArray b(reinterpret_cast<const char*>(buf), len);
     LogController::writeBinaryLog(_logFile,b);
 }
+
+
+
+void Vehicle::_mavlinkGimbalMessageReceived(mavlink_message_t message)
+{
+    switch (message.msgid) {
+    case MAVLINK_MSG_ID_HEARTBEAT:
+        break;
+
+    case MAVLINK_MSG_ID_COMMAND_ACK:
+        _handleCommandAck(message);
+        break;
+    default:
+        break;
+    }
+    Q_EMIT mavlinkGimbalMessageReceived(message);
+}
+
+void Vehicle::handleMavCommandResult(int vehicleId, int component, int command, int result, bool noReponseFromVehicle)
+{
+    if(component == MAV_COMP_ID_GIMBAL)
+    {
+        switch (command) {
+        case MAV_CMD_DO_MOUNT_CONFIGURE:
+            if(result == MAV_RESULT_ACCEPTED)
+            {
+                if(m_firmwarePlugin != nullptr)
+                {
+                    //m_gimbalCurrentMode = m_gimbalSetMode;
+                    m_firmwarePlugin->changeGimbalCurrentMode();
+                    printf("Send mode to Gimbal: OK!\r\n");
+                    Q_EMIT gimbalModeChanged(m_firmwarePlugin->getGimbalCurrentMode());
+                }
+            }
+            else if(result == MAV_RESULT_FAILED)
+            {
+                Q_EMIT gimbalModeSetFail();
+            }
+            break;
+        default:
+            break;
+        }
+    }
+}
+
 
 void Vehicle::_mavlinkMessageReceived(mavlink_message_t message)
 {
@@ -799,54 +869,60 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
 {
     mavlink_heartbeat_t heartbeat;
     mavlink_msg_heartbeat_decode(&message, &heartbeat);
-//        printf("=============================\r\n");
-//        printf("heartbeat.base_mode=%d\r\n",heartbeat.base_mode);
-//        printf("heartbeat.custom_mode=%d\r\n",heartbeat.custom_mode);
-//        printf("heartbeat.type=%d\r\n",heartbeat.type);
-//        printf("heartbeat.system_status=%d\r\n",heartbeat.system_status);
-//        printf("heartbeat.autopilot=%d\r\n",heartbeat.autopilot);
-//        printf("heartbeat.mavlink_version=%d\r\n",heartbeat.mavlink_version);
-
-    if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID
-        && (heartbeat.base_mode != _base_mode || heartbeat.custom_mode != _custom_mode)
-            ) {
-        bool newArmed = heartbeat.base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY;
-        _updateArmed(newArmed);
-        _base_mode = heartbeat.base_mode;
-        _custom_mode = heartbeat.custom_mode;
-        flightModeChanged(flightMode());
-    }
-
-    if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID) {
-        //        printf("_handleHeartbeat\r\n");
-
-        if(_landed != ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY))
-        {
-            _landed = ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY);
-            _setPropertyValue("Landed",((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY)?"True":"False","");
-            Q_EMIT landedChanged();
+//    printf("=============================\r\n");
+//    printf("message.compid=%d\r\n",message.compid);
+//    printf("heartbeat.base_mode=%d\r\n",heartbeat.base_mode);
+//    printf("heartbeat.custom_mode=%d\r\n",heartbeat.custom_mode);
+//    printf("heartbeat.type=%d\r\n",heartbeat.type);
+//    printf("heartbeat.system_status=%d\r\n",heartbeat.system_status);
+//    printf("heartbeat.autopilot=%d\r\n",heartbeat.autopilot);
+//    printf("heartbeat.mavlink_version=%d\r\n",heartbeat.mavlink_version);
+//    if(message.compid!=154)
+    {
+        if(m_com->m_componentId != message.compid){
+            m_com->m_componentId = message.compid;
+        }
+        if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID
+            && (heartbeat.base_mode != _base_mode || heartbeat.custom_mode != _custom_mode)
+                ) {
+            bool newArmed = heartbeat.base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY;
+            _updateArmed(newArmed);
+            _base_mode = heartbeat.base_mode;
+            _custom_mode = heartbeat.custom_mode;
+            flightModeChanged(flightMode());
         }
 
-        if (_firmwareType != static_cast<MAV_AUTOPILOT>(heartbeat.autopilot)) {
-            _firmwareType = static_cast<MAV_AUTOPILOT>(heartbeat.autopilot);
-        }
-        _linkHeartbeatRecv ++;
-        if (_vehicleType != static_cast<VEHICLE_MAV_TYPE>(heartbeat.type)) {
-            setVehicleType(static_cast<VEHICLE_MAV_TYPE>(heartbeat.type));
-            printf("Change firmware plugin to _vehicleType=%d\r\n", _vehicleType);
-            FirmwarePlugin *newFimware =
-                        m_firmwarePluginManager->firmwarePluginForAutopilot(
-                        this,_firmwareType, static_cast<MAV_TYPE>(heartbeat.type));
-            if (newFimware != nullptr) {
-                if (m_firmwarePlugin != nullptr)
-                    delete m_firmwarePlugin;
-                m_firmwarePlugin = newFimware;
-                m_firmwarePlugin->initializeVehicle();
-                m_paramsController->refreshAllParameters();
-//                _loadDefaultParamsShow();
-                Q_EMIT flightModesChanged();
-                Q_EMIT flightModesOnAirChanged();
-                flightModeChanged(flightMode());
+        if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID) {
+            //        printf("_handleHeartbeat\r\n");
+
+            if(_landed != ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY))
+            {
+                _landed = ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY);
+                _setPropertyValue("Landed",((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY)?"True":"False","");
+                Q_EMIT landedChanged();
+            }
+
+            if (_firmwareType != static_cast<MAV_AUTOPILOT>(heartbeat.autopilot)) {
+                _firmwareType = static_cast<MAV_AUTOPILOT>(heartbeat.autopilot);
+            }
+            _linkHeartbeatRecv ++;
+            if (_vehicleType != static_cast<VEHICLE_MAV_TYPE>(heartbeat.type)) {
+                setVehicleType(static_cast<VEHICLE_MAV_TYPE>(heartbeat.type));
+                printf("Change firmware plugin to _vehicleType=%d\r\n", _vehicleType);
+                FirmwarePlugin *newFimware =
+                            m_firmwarePluginManager->firmwarePluginForAutopilot(
+                            this,_firmwareType, static_cast<MAV_TYPE>(heartbeat.type));
+                if (newFimware != nullptr) {
+                    if (m_firmwarePlugin != nullptr)
+                        delete m_firmwarePlugin;
+                    m_firmwarePlugin = newFimware;
+                    m_firmwarePlugin->initializeVehicle();
+                    m_paramsController->refreshAllParameters();
+    //                _loadDefaultParamsShow();
+                    Q_EMIT flightModesChanged();
+                    Q_EMIT flightModesOnAirChanged();
+                    flightModeChanged(flightMode());
+                }
             }
         }
     }
@@ -1883,11 +1959,12 @@ void Vehicle::_sendMavCommandAgain(void)
         cmd.param5 =            queuedCommand.rgParam[4];
         cmd.param6 =            queuedCommand.rgParam[5];
         cmd.param7 =            queuedCommand.rgParam[6];
-        mavlink_msg_command_long_encode_chan(m_com->systemId(),
-                                             m_com->componentId(),
+        mavlink_msg_command_long_encode_chan(cmd.target_system ,
+                                             cmd.target_component,
                                              m_com->mavlinkChannel(),
                                              &msg,
                                              &cmd);
+//        printf("Send command long\r\n");
     }
 
     sendMessageOnLink(m_com, msg);
@@ -1931,7 +2008,7 @@ void Vehicle::_handleCommandAck(mavlink_message_t &message)
         _mavCommandQueue.removeFirst();
     }
 
-    mavCommandResult(_id, message.compid, ack.command, ack.result, false /* noResponsefromVehicle */);
+    Q_EMIT mavCommandResult(_id, message.compid, ack.command, ack.result, false /* noResponsefromVehicle */);
     //    if (showError) {
     //        QString commandName = _toolbox->missionCommandTree()->friendlyName((MAV_CMD)ack.command);
     //        switch (ack.result) {

@@ -20,11 +20,11 @@ class SymbolModel : public QAbstractListModel
         {
             IdRole = Qt::DisplayRole + 1,
             TypeRole,
-            AltRole,
-            ToWPRole,
-            RepeatRole,
-            DirCircleRole,
-            TimeCircleRole,
+            Param1Role,
+            Param2Role,
+            Param3Role,
+            Param4Role,
+            TextRole,
             CoordinateRole
         };
 
@@ -39,8 +39,9 @@ class SymbolModel : public QAbstractListModel
         };
 
 
-        Q_INVOKABLE void addSymbol(const int id,const int type,const int alt,const int toWP,const int repeat,const int dirCircle,const int timeCircle, const QGeoCoordinate coordinate);
-        Q_INVOKABLE void editSymbol(const int id,const int type,const int alt,const int toWP,const int repeat,const int dirCircle,const int timeCircle, const QGeoCoordinate coordinate);
+        Q_INVOKABLE void addSymbol(const int id,const int type,const int param1,const int param2,const int param3,const int param4,const QString text,const QGeoCoordinate coordinate);
+        Q_INVOKABLE void editSymbol(const int id,const int type,const int param1,const int param2,const int param3,const int param4,const QString text,const QGeoCoordinate coordinate);
+
         Q_INVOKABLE void deleteSymbol(const int id);
         Q_INVOKABLE void moveSymbol(const int id,const QGeoCoordinate coordinate);
         Q_INVOKABLE void clearSymbol();
@@ -56,13 +57,13 @@ class SymbolModel : public QAbstractListModel
 
         QHash<int, QByteArray> roleNames() const override{
             QHash<int, QByteArray> roles;
-            roles[IdRole]   = "Id_Role";
-            roles[TypeRole] = "Type_Role";
-            roles[AltRole]  = "Alt_Role";
-            roles[ToWPRole] = "ToWP_Role";
-            roles[RepeatRole]    = "Repeat_Role";
-            roles[DirCircleRole] = "DirCircle_Role";
-            roles[TimeCircleRole]= "TimeCircle_Role";
+            roles[IdRole]        = "Id_Role";
+            roles[TypeRole]      = "Type_Role";
+            roles[Param1Role]    = "Param1_Role";
+            roles[Param2Role]    = "Param2_Role";
+            roles[Param3Role]    = "Param3_Role";
+            roles[Param4Role]    = "Param4_Role";
+            roles[TextRole]      = "Text_Role";
             roles[CoordinateRole]= "Coordinate_Role";
             return roles;
         }

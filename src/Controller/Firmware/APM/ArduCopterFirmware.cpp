@@ -1,11 +1,13 @@
 #include "ArduCopterFirmware.h"
-#include "../../Vehicle/Vehicle.h"
-#include "../../../Joystick/JoystickLib/JoystickThreaded.h"
+
 ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
 {
     m_vehicle = vehicle;
     connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&ArduCopterFirmware::handleJSButton);
     connect(m_vehicle,&Vehicle::useJoystickChanged,this,&ArduCopterFirmware::handleUseJoystick);
+
+    //connect(m_vehicle,&Vehicle::mavCommandResult,this,&ArduCopterFirmware::handleMavCommandResult);
+
     loadFromFile("conf/Properties.conf");
     m_rtlAltParamName = "RTL_ALT";
     m_airSpeedParamName = "WPNAV_SPEED";
@@ -43,6 +45,11 @@ ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
     if(m_vehicle->joystick()!=nullptr){
         m_vehicle->setFlightMode(m_vehicle->pic()?"Loiter":"Guided");
     }
+
+    m_gimbalHearbeatTimer.setInterval(1000);
+    m_gimbalHearbeatTimer.setSingleShot(false);
+    connect(&m_gimbalHearbeatTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendGimbalHeartbeat);
+    m_gimbalHearbeatTimer.start();
 }
 ArduCopterFirmware::~ArduCopterFirmware(){
     if(m_joystickTimer.isActive()){
@@ -105,6 +112,10 @@ void ArduCopterFirmware::initializeVehicle()
     m_vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA1,          6);//attitude
     m_vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA2,          6);//attitude
     m_vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA3,          2);//sensor
+
+    //set gimbal mode
+//    setGimbalMode(CTRL_ANGULAR_RATE);
+//    setGimbalMove(m_gimbalLastPan,m_gimbalLastTilt);
 }
 QString ArduCopterFirmware::gotoFlightMode() const
 {
@@ -320,6 +331,118 @@ void ArduCopterFirmware::setHomeHere(float lat, float lon, float alt){
     m_vehicle->sendMavCommand(m_vehicle->defaultComponentId(), MAV_CMD_DO_SET_HOME, true,
                               0,0,0,0, lat,lon,alt);
 }
+
+///control gimbal with mavlink
+void ArduCopterFirmware::setGimbalAngle(float pan, float tilt)
+{
+    if(m_gimbalCurrentMode == "ANGLE_BODY_MODE")
+        setGimbalMove(-pan,tilt);
+}
+
+void ArduCopterFirmware::setGimbalRate(float pan, float tilt)
+{
+    if(m_gimbalCurrentMode == "RATE_MODE")
+        setGimbalMove(-pan,tilt);
+}
+
+void ArduCopterFirmware::setGimbalMode(QString mode)
+{
+    if(mode == "ANGLE_BODY_MODE"){
+        setGimbalMode(CTRL_ANGLE_BODY_FRAME);
+    }
+    else if(mode == "ANGLE_ABSOLUTE_MODE")
+    {
+        setGimbalMode(CTRL_ANGLE_ABSOLUTE_FRAME);
+    }
+    else if(mode == "RATE_MODE"){
+        setGimbalMode(CTRL_ANGULAR_RATE);
+        setGimbalMove(m_gimbalLastPan,m_gimbalLastTilt);
+    }
+    m_gimbalSetMode = mode;
+}
+
+void ArduCopterFirmware::setGimbalMove(float pan, float tilt)
+{
+    m_gimbalLastPan = pan;
+    m_gimbalLastTilt = tilt;
+//    printf("%s - pan: %5.1f , tilt: %5.1f\r\n",__func__,pan,tilt);
+    float mode_mavlink_targeting = static_cast<float>(MAV_MOUNT_MODE_MAVLINK_TARGETING);
+//    m_vehicle->sendMavCommand(m_vehicle->gimbalComponentId(),MAV_CMD_DO_MOUNT_CONTROL,
+//                              false,tilt,0,-pan,0,0,0,mode_mavlink_targeting);
+    mavlink_message_t msg;
+    mavlink_command_long_t  cmd;
+    memset(&cmd, 0, sizeof(cmd));
+    cmd.target_system =     0;
+    cmd.target_component =  154;
+    cmd.command =           MAV_CMD_DO_MOUNT_CONTROL;
+    cmd.confirmation =      0;
+    cmd.param1 =            static_cast<float>(tilt);
+    cmd.param2 =            static_cast<float>(0);
+    cmd.param3 =            static_cast<float>(-pan);
+    cmd.param7 =            static_cast<float>(MAV_MOUNT_MODE_MAVLINK_TARGETING);
+    mavlink_msg_command_long_encode_chan(cmd.target_system ,
+                                         cmd.target_component,
+                                         m_vehicle->communication()->mavlinkChannel(),
+                                         &msg,
+                                         &cmd);
+    m_vehicle->sendMessageOnLink(m_vehicle->communication(),msg);
+}
+
+void ArduCopterFirmware::setGimbalMode(ArduCopterFirmware::control_gimbal_axis_input_mode_t mode)
+{
+    m_vehicle->sendMavCommand(m_vehicle->gimbalComponentId(),MAV_CMD_DO_MOUNT_CONFIGURE,
+                              false,MAV_MOUNT_MODE_MAVLINK_TARGETING,1,1,1,mode,mode,mode);
+
+//    mavlink_message_t msg;
+//    mavlink_command_long_t  cmd;
+//    memset(&cmd, 0, sizeof(cmd));
+//    cmd.target_system =     0;
+//    cmd.target_component =  154;
+//    cmd.command =           MAV_CMD_DO_MOUNT_CONFIGURE;
+//    cmd.confirmation =      0;
+//    cmd.param1 =            MAV_MOUNT_MODE_MAVLINK_TARGETING;
+//    cmd.param2 =            1;
+//    cmd.param3 =            1;
+//    cmd.param4 =            1;
+//    cmd.param5 =            mode;
+//    cmd.param6 =            mode;
+//    cmd.param7 =            mode;
+//    mavlink_msg_command_long_encode_chan(cmd.target_system ,
+//                                         cmd.target_component,
+//                                         m_vehicle->communication()->mavlinkChannel(),
+//                                         &msg,
+//                                         &cmd);
+//    m_vehicle->sendMessageOnLink(m_vehicle->communication(),msg);
+}
+
+void ArduCopterFirmware::sendGimbalHeartbeat()
+{
+    mavlink_heartbeat_t hearbeat;
+    hearbeat.type = MAV_TYPE_ONBOARD_CONTROLLER;
+    hearbeat.autopilot = MAV_AUTOPILOT_GENERIC;
+    hearbeat.base_mode = 0;
+    hearbeat.custom_mode = 0;
+    hearbeat.system_status = MAV_STATE_ACTIVE;
+
+    mavlink_message_t message;
+    mavlink_msg_heartbeat_encode(m_vehicle->gimbalSystemId(),MAV_COMP_ID_SYSTEM_CONTROL,&message,&hearbeat);
+
+    m_vehicle->sendMessageOnLink(m_vehicle->m_com, message);
+
+}
+
+void ArduCopterFirmware::changeGimbalCurrentMode()
+{
+    m_gimbalCurrentMode = m_gimbalSetMode;
+}
+
+QString ArduCopterFirmware::getGimbalCurrentMode()
+{
+    return m_gimbalCurrentMode;
+}
+
+///end control gimbal
+
 void ArduCopterFirmware::sendJoystickData(){
     if (m_vehicle == nullptr)
         return;
@@ -443,6 +566,12 @@ void ArduCopterFirmware::handleUseJoystick(bool enable) {
         m_joystickClearRCTimer.start();
     }
 }
+
+void ArduCopterFirmware::handleMavCommandResult(int vehicleId, int component, int command, int result, bool noReponseFromVehicle)
+{
+
+}
+
 float ArduCopterFirmware::convertRC(float input, int channel){
     float result = 0;
     if(m_vehicle!=nullptr){

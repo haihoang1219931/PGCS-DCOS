@@ -124,7 +124,17 @@ void IOFlightController::handlePacket(QByteArray packet){
 
                 LogController::writeBinaryLog(m_logFile,b);
                 // Send signal to other component
-                Q_EMIT messageReceived(_message);
+                switch (_message.compid) {
+                    case MAV_COMP_ID_AUTOPILOT1:
+                        Q_EMIT messageReceived(_message);
+                        break;
+                    case MAV_COMP_ID_GIMBAL:
+                        Q_EMIT gimbalMessageReceived(_message);
+                        break;
+                    default:
+                        break;
+                }
+
                 memset(&_status,  0, sizeof(_status));
                 memset(&_message, 0, sizeof(_message));
             }

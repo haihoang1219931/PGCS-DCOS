@@ -5,25 +5,26 @@ symbol::symbol()
 
 }
 
-symbol::symbol(const int& id,const int& type,const int& alt,const int& toWP,const int& repeat,const int& dircircle,const int& timecircle,const QGeoCoordinate& coordinate)
+symbol::symbol(const int &id, const int &type, const int &param1, const int &param2, const int &param3, const int &param4,const QString &text, const QGeoCoordinate &coordinate)
 {
     _mid  = id;
     _mtype= type;
-    _malt = alt;
-    _mtoWP = toWP;
-    _mrepeat = repeat;
-    _mdirCircle = dircircle;
-    _mtimeCircle = timecircle;
+    _mparam1 = param1;
+    _mparam2 = param2;
+    _mparam3 = param3;
+    _mparam4 = param4;
+    _mtext    = text;
     _mcoordinate=coordinate;
 
-
-    Id   =_mid;
-    Type =_mtype;
-    Alt  = alt;
-    ToWP = toWP;
-    Repeat = repeat;
-    DirCircle = dircircle;
-    TimeCircle = timecircle;
-    Coordinate=coordinate;
-
+    Id     =_mid;
+    Type   =_mtype;
+    Param1 = _mparam1;
+    Param2 = _mparam2;
+    Param3 = _mparam3;
+    Param4 = _mparam4;
+    Text   = _mtext;
+    Coordinate=_mcoordinate;
 }
+
+
+

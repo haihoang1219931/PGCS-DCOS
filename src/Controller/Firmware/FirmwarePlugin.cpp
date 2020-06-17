@@ -313,3 +313,30 @@ void FirmwarePlugin::setHomeHere(float lat, float lon, float alt){
     Q_UNUSED(lon);
     Q_UNUSED(alt);
 }
+
+void FirmwarePlugin::setGimbalRate(float pan, float tilt)
+{
+    Q_UNUSED(pan);
+    Q_UNUSED(tilt);
+}
+
+void FirmwarePlugin::setGimbalMode(QString mode)
+{
+    Q_UNUSED(mode);
+}
+
+void FirmwarePlugin::changeGimbalCurrentMode()
+{
+
+}
+
+QString FirmwarePlugin::getGimbalCurrentMode()
+{
+
+}
+
+void FirmwarePlugin::setGimbalAngle(float pan, float tilt)
+{
+    Q_UNUSED(pan);
+    Q_UNUSED(tilt);
+}

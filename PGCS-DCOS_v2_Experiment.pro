@@ -1,5 +1,5 @@
 QT += qml quick webengine multimedia network positioning sensors core gui serialport
-QT += quickcontrols2
+QT += quickcontrols2 location
 CONFIG += c++11 no_keywords console
 
 RESOURCES += qml.qrc
@@ -36,7 +36,9 @@ QML_IMPORT_PATH += \
     $$PWD/src/QmlControls \
     $$PWD/src/Controller
 SOURCES += \
-    main.cpp
+    main.cpp \
+    src/Maplib/Model/symbol.cpp \
+    src/Maplib/Model/symbolmodel.cpp
 
 INCLUDEPATH += $$PWD/src
 # Flight controller
@@ -213,7 +215,8 @@ SOURCES += \
     src/Camera/VideoEngine/VideoEngineInterface.cpp \
     src/Camera/VideoEngine/VRTSPServer.cpp \
     src/Camera/VideoEngine/VSavingWorker.cpp \
-    src/Camera/VideoDisplay/ImageItem.cpp
+    src/Camera/VideoDisplay/ImageItem.cpp \
+    src/Camera/TargetLocation/TargetLocalization.cpp
 
 HEADERS += \
     src/Bytes/ByteManipulation.h \
@@ -236,7 +239,8 @@ HEADERS += \
     src/Camera/VideoEngine/VideoEngineInterface.h \
     src/Camera/VideoEngine/VRTSPServer.h \
     src/Camera/VideoEngine/VSavingWorker.h \
-    src/Camera/VideoDisplay/ImageItem.h
+    src/Camera/VideoDisplay/ImageItem.h \
+    src/Camera/TargetLocation/TargetLocalization.h
 
 # Gimbal control
 SOURCES += \
@@ -761,3 +765,7 @@ SOURCES += \
 HEADERS += \
     src/Controller/Telemetry/TelemetryController.h
 }
+
+HEADERS += \
+    src/Maplib/Model/symbol.h \
+    src/Maplib/Model/symbolmodel.h

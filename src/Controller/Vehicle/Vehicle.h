@@ -184,6 +184,10 @@ public:
     Q_ENUMS(VEHICLE_MAV_TYPE)
 public:
     int defaultComponentId(){return _defaultComponentId;}
+    //nhatdn1
+    int gimbalComponentId(){return MAV_COMP_ID_GIMBAL;}
+    uint8_t gimbalSystemId(){return 4;}
+
     float roll(){return _roll;}
     float pitch(){return _pitch;}
     float heading(){return _heading;}
@@ -358,6 +362,12 @@ public:
     Q_INVOKABLE void setAltitudeRTL(float alt);
 
     Q_INVOKABLE void sendHomePosition(QGeoCoordinate location);
+
+    ///control gimbal with mavlink by nhatdn1
+    void setGimbalRate(float pan,float tilt);
+    void setGimbalAngle(float pan,float tilt);
+
+
 
 public:
     Q_INVOKABLE void activeProperty(QString name,bool active);
@@ -548,6 +558,12 @@ Q_SIGNALS:
     void rcinChan2Changed();
     void rcinChan3Changed();
     void rcinChan4Changed();
+
+    void gimbalModeChanged(QString mode);
+    void gimbalModeSetFail();
+
+    void mavlinkGimbalMessageReceived(mavlink_message_t message);
+
 public Q_SLOTS:
     void handlePIC();
     void handleUseJoystick(bool useJoystick);
@@ -562,6 +578,11 @@ public Q_SLOTS:
     void requestDataStream(int messageID, int hz, int enable = 1);
     void _startPlanRequest(void);
     void _mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t totalReceived, uint64_t totalLoss, float lossPercent);
+
+    void _mavlinkGimbalMessageReceived(mavlink_message_t message);
+
+    void handleMavCommandResult(int vehicleId, int component, int command, int result, bool noReponseFromVehicle);
+
 public:
     IOFlightController* m_com = nullptr;
     FirmwarePlugin*      m_firmwarePlugin = nullptr;

@@ -335,4 +335,35 @@ QtObject {
             break;
         }
     }
+
+    //nhatdn1 define
+    //------- waypoint type
+    readonly property int waypointType : 16
+    readonly property int loitertimeType : 19
+    readonly property int landType : 21
+    readonly property int takeoffType : 22
+    readonly property int vtoltakeoffType : 84
+    readonly property int vtollandType : 85
+    readonly property int dojumpType : 177
+
+    //---------z_index
+    readonly property int z_targetPolygon: 0
+    readonly property int z_mouseArrow: 1
+    readonly property int z_tracjactory: 2
+    readonly property int z_tracjactoryPlane: 3
+    readonly property int z_marker: 4
+    readonly property int z_waypoint: 5
+    readonly property int z_plane: 5000
+    readonly property int z_gotohere: 6
+    readonly property int z_ruler: 7
+
+    readonly property int z_map: 0
+    readonly property int z_profilePath: 1
+    readonly property int z_dialog: 2
+
+    readonly property color planeTrajactoryColor: "#ffee44"
+
+
+
+
 }

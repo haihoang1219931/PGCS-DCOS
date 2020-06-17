@@ -151,7 +151,19 @@ public:
     ///     @param alt: altitude
     virtual void setHomeHere(float lat, float lon, float alt);
 
+    /// Set gimbal postion/Rate
+    ///     @param pan: position/Rate
+    ///     @param tilt: position/Rate
+    virtual void setGimbalAngle(float pan, float tilt);
+    virtual void setGimbalRate(float pan, float tilt);
+    virtual void setGimbalMode(QString mode);
+    virtual void changeGimbalCurrentMode();
+    virtual QString getGimbalCurrentMode();
+
+
 Q_SIGNALS:
+//    void gimbalModeChanged(QString mode);
+//    void gimbalModeSetFail();
 
 public Q_SLOTS:
     virtual void handleJSButton(int id, bool clicked);

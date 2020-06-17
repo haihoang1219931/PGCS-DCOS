@@ -187,7 +187,8 @@ Item {
                         Layout.preferredHeight: parent.height
                         btnText: "Delete\nWP"
                         isEnable: mapPane.selectedWP !== undefined
-                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
+//                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
+                                  && (mapPane.selectedWP.wpId>0)
                                   && (UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint)
                         isSolid: false
                         icon: UIConstants.iDeleteWP
@@ -533,7 +534,8 @@ Item {
                         icon: UIConstants.iDeleteWP
                         btnText: "Delete\nWP"
                         isEnable: mapPane.selectedWP !== undefined
-                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
+//                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
+                                  && (mapPane.selectedWP.wpId>0)
                                   && (UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint)
                         onClicked: {
                             rootItem.deleteWP();

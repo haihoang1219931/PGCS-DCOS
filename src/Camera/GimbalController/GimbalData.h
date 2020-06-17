@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QVariant>
 #include <QPointF>
+#include <QGeoCoordinate>
 #include <math.h>
 #define MAX_SENSOR 10
 class GimbalData : public QObject
@@ -228,6 +229,7 @@ public Q_SLOTS:
         map.insert("CORNER03", QPointF(m_cornerLat[2],m_cornerLon[2]));
         map.insert("CORNER04", QPointF(m_cornerLat[3],m_cornerLon[3]));
         map.insert("CENTER", QPointF(m_centerLat,m_centerLon));
+        map.insert("UAV", QPointF(m_latitude,m_longtitude));
         map.insert("RECORD",m_recording);
         map.insert("GIMBAL_MODE",(m_gimbalMode));
         map.insert("TRACK_SIZE",m_trackSize);

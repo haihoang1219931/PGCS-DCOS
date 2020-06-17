@@ -12,7 +12,9 @@
 #include "src/Maplib/Marker/MarkerList.h"
 #include "src/Machine/computer.hpp"
 #include "src/Camera/VideoDisplay/ImageItem.h"
-//----Model
+//----Model nhatdn1
+#include "src/Maplib/Model/symbol.h"
+#include "src/Maplib/Model/symbolmodel.h"
 #include "src/Maplib/profilepath.h"
 #ifdef CAMERA_CONTROL
     #include "src/Camera/CameraController.h"
@@ -47,6 +49,12 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("qdt");
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");
+
+    //set antialiasing nhatdn1
+        QSurfaceFormat format;
+        format.setSamples(8);
+        QSurfaceFormat::setDefaultFormat(format);
+
 #ifdef UC_API
     QtWebEngine::initialize();
 #endif
@@ -93,8 +101,10 @@ int main(int argc, char *argv[])
     qmlRegisterType<Marker>("io.qdt.dev",1,0,"Marker");
     qmlRegisterType<MarkerList>("io.qdt.dev",1,0,"MarkerList");
     qmlRegisterType<COMPUTER_INFO>("io.qdt.dev", 1, 0, "Computer");
-    //----Model-----------
+    //----Model nhatdn1-----------
     qmlRegisterType<ProfilePath>("io.qdt.dev", 1, 0,    "ProfilePath");
+    qmlRegisterType<SymbolModel>("io.qdt.dev", 1, 0,    "SymbolModel");
+
 //    qmlRegisterType<MAV_TYPE>("io.qdt.dev", 1, 0, "MAV_TYPE", "MAV_TYPE");
     FCSConfig fcsConfig;
     fcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/fcs.conf");

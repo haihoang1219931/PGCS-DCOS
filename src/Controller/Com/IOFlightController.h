@@ -54,6 +54,8 @@ Q_SIGNALS:
     void teleDataReceived(QString srcAddr, QString dataType, int value);
     void receivePacket(QByteArray msg);
     void messageReceived(mavlink_message_t message);
+    void gimbalMessageReceived(mavlink_message_t message);
+
     void mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t totalReceived, uint64_t totalLoss, float lossPercent);
 public Q_SLOTS:
     void handleDataReceived(QString ip, int snr, int rssi);

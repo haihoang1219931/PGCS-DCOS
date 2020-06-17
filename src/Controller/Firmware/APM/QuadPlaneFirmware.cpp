@@ -225,5 +225,10 @@ void QuadPlaneFirmware::setHomeHere(float lat, float lon, float alt){
     if (m_vehicle == nullptr)
         return;
     m_vehicle->sendMavCommand(m_vehicle->defaultComponentId(), MAV_CMD_DO_SET_HOME, true,
-                            0,0,0,0, lat,lon,alt);
+                              0,0,0,0, lat,lon,alt);
+}
+
+void QuadPlaneFirmware::setGimbalMode(QString mode)
+{
+    Q_UNUSED(mode);
 }
