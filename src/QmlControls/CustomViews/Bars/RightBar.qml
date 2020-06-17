@@ -236,6 +236,7 @@ Rectangle {
                         }else{
                             nextColor = "WHITE_HOT";
                         }
+                        colorMode = nextColor;
                         cameraController.gimbal.setSensorColor(camState.sensorID,nextColor);
                     }
                 }

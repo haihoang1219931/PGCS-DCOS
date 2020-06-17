@@ -93,7 +93,12 @@ void VDisplayWorker::process()
             if(processImgItem.colorMode() == "WHITE_HOT"){
 
             }else if(processImgItem.colorMode() == "COLOR"){
-                cv::applyColorMap(m_imgShow,m_imgShow,cv::COLORMAP_HOT);
+                cv::Mat imgColor;
+                cv::applyColorMap(m_imgShow,imgColor,cv::COLORMAP_HOT);
+                printf("imgColor[%dx%d] - %s\r\n",
+                       imgColor.cols,imgColor.rows,
+                       processImgItem.colorMode().toStdString().c_str());
+                m_imgShow = imgColor.clone();
             }
         }
         // draw zoom
