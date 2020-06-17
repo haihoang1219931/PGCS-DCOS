@@ -89,18 +89,7 @@ void VDisplayWorker::process()
 //        printf("imgSize[%dx%d]\r\n",imgSize.width,imgSize.height);
 
         m_imgShow = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
-        if(processImgItem.sensorID() == "IR"){
-            if(processImgItem.colorMode() == "WHITE_HOT"){
 
-            }else if(processImgItem.colorMode() == "COLOR"){
-                cv::Mat imgColor;
-                cv::applyColorMap(m_imgShow,imgColor,cv::COLORMAP_HOT);
-                printf("imgColor[%dx%d] - %s\r\n",
-                       imgColor.cols,imgColor.rows,
-                       processImgItem.colorMode().toStdString().c_str());
-                m_imgShow = imgColor.clone();
-            }
-        }
         // draw zoom
         char zoomText[100];
         sprintf(zoomText,"zoom: %.02f\r\n",processImgItem.getZoom());
@@ -108,6 +97,19 @@ void VDisplayWorker::process()
 //                    cv::FONT_HERSHEY_COMPLEX, 1.2, cv::Scalar(0, 0, 0,255), 2);
 
         cv::cvtColor(m_imgShow, m_imgShow, cv::COLOR_YUV2BGRA_I420);
+        if(processImgItem.sensorID() == "IR"){
+            if(processImgItem.colorMode() == "WHITE_HOT"){
+
+            }else if(processImgItem.colorMode() == "COLOR"){
+//                cv::Mat imgColor;
+//                cv::applyColorMap(m_imgShow,m_imgShow,cv::COLORMAP_HOT);
+//                printf("imgColor[%dx%d] - %s\r\n",
+//                       imgColor.cols,imgColor.rows,
+//                       processImgItem.colorMode().toStdString().c_str());
+//                m_imgShow = imgColor.clone();
+                cv::applyColorMap(m_imgShow,m_imgShow,cv::COLORMAP_HOT);
+            }
+        }
         if(m_captureSet){
             m_captureMutex.lock();
             m_captureSet = false;
