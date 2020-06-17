@@ -106,8 +106,9 @@ void VDisplayWorker::process()
 //                printf("imgColor[%dx%d] - %s\r\n",
 //                       imgColor.cols,imgColor.rows,
 //                       processImgItem.colorMode().toStdString().c_str());
+//                cv::cvtColor(imgColor, m_imgShow, cv::COLOR_BGR2BGRA);
 //                m_imgShow = imgColor.clone();
-                cv::applyColorMap(m_imgShow,m_imgShow,cv::COLORMAP_HOT);
+//                cv::applyColorMap(m_imgShow,m_imgShow,cv::COLORMAP_HOT);
             }
         }
         if(m_captureSet){
