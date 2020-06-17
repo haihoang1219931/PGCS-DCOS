@@ -224,9 +224,14 @@ Rectangle {
                 id: btnSensorColor
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: parent.width
-                icon: UIConstants.iSnapshot
+                icon: camState.sensorID === camState.sensorIDEO ? "Normal" : colorMap[colorMode]
+                iconSize: UIConstants.fontSize
                 btnText: camState.sensorID === camState.sensorIDEO ? "EO color":"IR color"
                 color: UIConstants.bgAppColor
+                property var colorMap: {
+                    "WHITE_HOT":"WHITE\nHOT",
+                    "COLOR":"COLOR"
+                }
                 property string colorMode: "WHITE_HOT"
                 onClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
