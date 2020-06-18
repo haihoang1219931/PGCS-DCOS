@@ -137,7 +137,9 @@ public:
     void setGimbalMode(QString mode) override;//NONE;RATE_MODE;ANGLE_BODY_MODE;ANGLE_ABSOLUTE_MODE
 
     void setGimbalMove(float pan, float tilt);
-    void setGimbalMode(control_gimbal_axis_input_mode_t mode);
+    void setGimbalMode(ArduCopterFirmware::control_gimbal_axis_input_mode_t rollMode,
+                                           ArduCopterFirmware::control_gimbal_axis_input_mode_t tiltMode,
+                                           ArduCopterFirmware::control_gimbal_axis_input_mode_t panMode);
 
     void sendGimbalHeartbeat();
 

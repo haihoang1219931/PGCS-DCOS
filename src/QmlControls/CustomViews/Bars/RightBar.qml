@@ -48,6 +48,8 @@ Rectangle {
         // preset mode
         "MISSION_PRESET_FRONT":["FRONT","PHÍA\nTRƯỚC"],
         "MISSION_PRESET_RIGHTWING":["RIGHT\nWING","CÁNH\nPHẢI"],
+        "MISSION_PRESET_BEHIND":["BEHIND","PHÍA\nSAU"],
+        "MISSION_PRESET_LEFTWING":["LEFT\nWING","CÁNH\nTRÁI"],
         "MISSION_PRESET_NADIR":["NADIR","DƯỚI\nBỤNG"],
         "MISSION_PRESET_OFF":["OFF","OFF"],
     "MISSION_SNAPSHOT":["Snapshot","Chụp ảnh"],
@@ -204,12 +206,15 @@ Rectangle {
                                 btnPreset.btnText = buttonListName["MISSION_PRESET_RIGHTWING"][camState.language[camState.fd_icon]]
                                 break;
                             case buttonListName["MISSION_PRESET_RIGHTWING"][camState.language[camState.fd_icon]]:
+                                btnPreset.btnText = buttonListName["MISSION_PRESET_BEHIND"][camState.language[camState.fd_icon]]
+                                break;
+                            case buttonListName["MISSION_PRESET_BEHIND"][camState.language[camState.fd_icon]]:
+                                btnPreset.btnText = buttonListName["MISSION_PRESET_LEFTWING"][camState.language[camState.fd_icon]]
+                                break;
+                            case buttonListName["MISSION_PRESET_LEFTWING"][camState.language[camState.fd_icon]]:
                                 btnPreset.btnText = buttonListName["MISSION_PRESET_NADIR"][camState.language[camState.fd_icon]]
                                 break;
                             case buttonListName["MISSION_PRESET_NADIR"][camState.language[camState.fd_icon]]:
-                                btnPreset.btnText = buttonListName["MISSION_PRESET_OFF"][camState.language[camState.fd_icon]]
-                                break;
-                            case buttonListName["MISSION_PRESET_OFF"][camState.language[camState.fd_icon]]:
                                 btnPreset.btnText = buttonListName["MISSION_PRESET_FRONT"][camState.language[camState.fd_icon]]
                                 break;
                             default:

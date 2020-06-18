@@ -20,10 +20,12 @@ MapPolygon{
     {
         //if(gcs_target_polygon.path.length >= 4)
         {
-            path[0] = coord1;
-            path[1] = coord2;
-            path[2] = coord3;
-            path[3] = coord4;
+            var _path = gcs_target_polygon.path
+            _path[0] = coord1;
+            _path[1] = coord2;
+            _path[2] = coord3;
+            _path[3] = coord4;
+            gcs_target_polygon.path  = _path
         }
     }
 }

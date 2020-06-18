@@ -15,6 +15,8 @@ Item
     property var mcircleOject: null
     property var marrowOject: null
     property var minforOject: null
+    property var showText: true
+    property var lineColor: "red"
 
     id:rulerItem
     anchors.fill: parent
@@ -42,7 +44,7 @@ Item
                     width: 8
                     height: 8
                     radius: width/2
-                    color: "red"
+                    color: lineColor
                 }
             }
     }
@@ -65,8 +67,8 @@ Item
                         var ctx = getContext("2d")
                         ctx.reset()
                         ctx.lineWidth = 1;
-                        ctx.strokeStyle = "red"
-                        ctx.fillStyle = "red"
+                        ctx.strokeStyle = lineColor
+                        ctx.fillStyle = lineColor
                         ctx.beginPath()
                         ctx.moveTo(width/2, 0)
                         ctx.lineTo(width,height)
@@ -92,6 +94,7 @@ Item
                 id:textQuickItem
                 anchorPoint.x: rectText.width/2
                 anchorPoint.y: 22
+                visible: showText
                 sourceItem: Rectangle{
                     height: 22
                     width: widthRect
@@ -119,7 +122,7 @@ Item
 
     function creatLine(coordinate1,coordinate2)  {
         var component = Qt.createComponent("qrc:/CustomViews/SubComponents/Trajactory.qml");
-        var line = component.createObject(uavmap, {color:"red"});
+        var line = component.createObject(uavmap, {color:lineColor});
         if (line === null) {
             // Error Handling
             console.log("Error creating object");

@@ -1592,13 +1592,14 @@ Flickable {
     //target polygon
     function updateTargetPolygon(coord1,coord2,coord3,coord4){
         if(targetPolygon){
-            targetPolygon.destroy()
-
+            //targetPolygon.destroy()
+            targetPolygon.changeCoordinate(coord1,coord2,coord3,coord4);
             // targetPolygon.coordinate = position;
+            return ;
         }
 
         var component = Qt.createComponent("qrc:/CustomViews/SubComponents/TargetPolygon.qml");
-        var targetPolygonObject = component.createObject(map,{z:UIConstants.z_targetPolygon,smooth:true,antialiasing:true,visible: true});
+        var targetPolygonObject = component.createObject(map,{z:UIConstants.z_targetPolygon,visible: true});
         if (targetPolygonObject === null) {
             // Error Handling
             console.log("Error creating object");
@@ -1616,7 +1617,14 @@ Flickable {
 
     function updateOpticalLine(coord1,coord2){
         if(opticalLine)
-            opticalLine.destroy()
+        {
+            //opticalLine.destroy()
+            var _path = opticalLine.path;
+            _path[0] = coord1;
+            _path[1] = coord2;
+            opticalLine.path = _path;
+            return;
+        }
 
         var component = Qt.createComponent("qrc:/CustomViews/SubComponents/PolyTrajactory.qml");
         var object = component.createObject(map, {z:UIConstants.z_targetPolygon,linewidth: 2,color:"black"});

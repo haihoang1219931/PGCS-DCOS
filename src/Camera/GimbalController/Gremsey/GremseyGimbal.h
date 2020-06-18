@@ -58,7 +58,9 @@ private:
     float m_presetAngleSet_Pan = 0;
     float m_presetAngleSet_Tilt = 0;
     QString m_modePreset = "UNKNOWN";
-
+    QString m_gimbalCurrentMode = "UNKNOWN";
+    float m_panRateJoystick = 0;
+    float m_tiltRateJoystick = 0;
 };
 
 #endif // GREMSEYGIMBAL_H

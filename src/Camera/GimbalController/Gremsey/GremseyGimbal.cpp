@@ -153,6 +153,12 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
                     setEOZoom("ZOOM_STOP",0);
             }
         }
+        if(m_gimbalCurrentMode != "RATE_MODE")
+        {
+            m_panRateJoystick = panRateScale;
+            m_tiltRateJoystick = tiltRateScale;
+            setGimbalPreset("OFF");
+        }
     }
 }
 void GremseyGimbal::connectToGimbal(Config* config){
@@ -326,7 +332,7 @@ void GremseyGimbal::setGimbalPreset(QString mode)
         if (mode.contains("OFF")) {
             setGimbalMode("RATE_MODE");
             return;
-        }      
+        }
         setGimbalMode("ANGLE_BODY_MODE");
     }
 }
@@ -345,6 +351,7 @@ void GremseyGimbal::setGimbalPos(float panPos, float tiltPos)
     if(m_vehicle != nullptr &&  m_vehicle->m_firmwarePlugin != nullptr)
     {
         m_vehicle->m_firmwarePlugin->setGimbalAngle(panPos,tiltPos);
+        printf("set pan pos:%5.1f\r\n",-panPos);
     }
 }
 
@@ -492,8 +499,10 @@ void GremseyGimbal::handleVehicleLinkChanged()
 
 void GremseyGimbal::handleGimbalModeChanged(QString mode)
 {
+    m_gimbalCurrentMode = mode;
     if(m_modePreset.contains("OFF") && mode == "RATE_MODE")
     {
+        setGimbalRate(m_panRateJoystick,m_tiltRateJoystick);
         Q_EMIT presetChanged(true);
         return;
     }
@@ -503,13 +512,22 @@ void GremseyGimbal::handleGimbalModeChanged(QString mode)
             m_presetAngleSet_Pan = 0;
             m_presetAngleSet_Tilt = 0;
         }else if(m_modePreset.contains("RIGHT")){
-            m_presetAngleSet_Pan = -90;
+//            m_presetAngleSet_Pan = 90;
+            m_presetAngleSet_Pan = abs(m_context->m_panPosition - 90) < 180 ? 90 : -270;
+            m_presetAngleSet_Tilt = 0;
+        }else if(m_modePreset.contains("LEFT")){
+//            m_presetAngleSet_Pan = -90;
+            m_presetAngleSet_Pan = abs(m_context->m_panPosition + 90) < 180 ? -90 : 270;
+            m_presetAngleSet_Tilt = 0;
+        }else if(m_modePreset.contains("BEHIND")){
+//            m_presetAngleSet_Pan = -180;
+            m_presetAngleSet_Pan = abs(m_context->m_panPosition + 180) < 180 ? -180 : 179;
             m_presetAngleSet_Tilt = 0;
         }else if(m_modePreset.contains("NADIR")){
             m_presetAngleSet_Pan = 0;
-            m_presetAngleSet_Tilt = -90;
+            m_presetAngleSet_Tilt = 90;
         }
-        setGimbalPos(m_presetAngleSet_Pan,m_presetAngleSet_Tilt);
+        setGimbalPos(-m_presetAngleSet_Pan,-m_presetAngleSet_Tilt);
         Q_EMIT presetChanged(true);
     }
 }

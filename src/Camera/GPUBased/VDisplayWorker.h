@@ -78,7 +78,10 @@ class VDisplayWorker : public QObject
 //        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
 //        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
         std::vector<std::string> m_objName;
+        cv::Mat m_imgRaw;
         cv::Mat m_imgShow;
+        cv::Mat m_imgGray;
+        cv::Mat m_imgIRColor;
         std::string m_ipStream;
         int m_portStream;
         std::mutex m_mtxShow;

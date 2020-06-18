@@ -88,28 +88,24 @@ void VDisplayWorker::process()
         /***Warp Image CPU*******/
 //        printf("imgSize[%dx%d]\r\n",imgSize.width,imgSize.height);
 
-        m_imgShow = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
-
+        m_imgRaw = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
+        m_imgGray = cv::Mat(imgSize.height, imgSize.width, CV_8UC1, h_imageData);
         // draw zoom
         char zoomText[100];
         sprintf(zoomText,"zoom: %.02f\r\n",processImgItem.getZoom());
 //        cv::putText(m_imgShow,zoomText,cv::Point(100,100),
 //                    cv::FONT_HERSHEY_COMPLEX, 1.2, cv::Scalar(0, 0, 0,255), 2);
 
-        cv::cvtColor(m_imgShow, m_imgShow, cv::COLOR_YUV2BGRA_I420);
+
         if(processImgItem.sensorID() == "IR"){
             if(processImgItem.colorMode() == "WHITE_HOT"){
-
-            }else if(processImgItem.colorMode() == "COLOR"){
-//                cv::Mat imgColor;
-//                cv::applyColorMap(m_imgShow,m_imgShow,cv::COLORMAP_HOT);
-//                printf("imgColor[%dx%d] - %s\r\n",
-//                       imgColor.cols,imgColor.rows,
-//                       processImgItem.colorMode().toStdString().c_str());
-//                cv::cvtColor(imgColor, m_imgShow, cv::COLOR_BGR2BGRA);
-//                m_imgShow = imgColor.clone();
-//                cv::applyColorMap(m_imgShow,m_imgShow,cv::COLORMAP_HOT);
+                cv::cvtColor(m_imgRaw, m_imgShow, cv::COLOR_YUV2BGRA_I420);
+            }else if(processImgItem.colorMode() == "COLOR"){                
+                cv::applyColorMap(m_imgGray,m_imgIRColor,cv::COLORMAP_HOT);
+                cv::cvtColor(m_imgIRColor, m_imgShow, cv::COLOR_BGR2BGRA);
             }
+        }else{
+            cv::cvtColor(m_imgRaw, m_imgShow, cv::COLOR_YUV2BGRA_I420);
         }
         if(m_captureSet){
             m_captureMutex.lock();

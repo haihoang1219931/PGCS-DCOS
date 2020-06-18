@@ -348,14 +348,14 @@ void ArduCopterFirmware::setGimbalRate(float pan, float tilt)
 void ArduCopterFirmware::setGimbalMode(QString mode)
 {
     if(mode == "ANGLE_BODY_MODE"){
-        setGimbalMode(CTRL_ANGLE_BODY_FRAME);
+        setGimbalMode(CTRL_ANGLE_ABSOLUTE_FRAME, CTRL_ANGLE_ABSOLUTE_FRAME, CTRL_ANGLE_BODY_FRAME);
     }
     else if(mode == "ANGLE_ABSOLUTE_MODE")
     {
-        setGimbalMode(CTRL_ANGLE_ABSOLUTE_FRAME);
+        setGimbalMode(CTRL_ANGLE_ABSOLUTE_FRAME, CTRL_ANGLE_ABSOLUTE_FRAME, CTRL_ANGLE_ABSOLUTE_FRAME);
     }
     else if(mode == "RATE_MODE"){
-        setGimbalMode(CTRL_ANGULAR_RATE);
+        setGimbalMode(CTRL_ANGULAR_RATE, CTRL_ANGULAR_RATE, CTRL_ANGULAR_RATE);
         setGimbalMove(m_gimbalLastPan,m_gimbalLastTilt);
     }
     m_gimbalSetMode = mode;
@@ -373,7 +373,7 @@ void ArduCopterFirmware::setGimbalMove(float pan, float tilt)
     mavlink_command_long_t  cmd;
     memset(&cmd, 0, sizeof(cmd));
     cmd.target_system =     0;
-    cmd.target_component =  154;
+    cmd.target_component =  MAV_COMP_ID_GIMBAL;
     cmd.command =           MAV_CMD_DO_MOUNT_CONTROL;
     cmd.confirmation =      0;
     cmd.param1 =            static_cast<float>(tilt);
@@ -388,10 +388,12 @@ void ArduCopterFirmware::setGimbalMove(float pan, float tilt)
     m_vehicle->sendMessageOnLink(m_vehicle->communication(),msg);
 }
 
-void ArduCopterFirmware::setGimbalMode(ArduCopterFirmware::control_gimbal_axis_input_mode_t mode)
+void ArduCopterFirmware::setGimbalMode(ArduCopterFirmware::control_gimbal_axis_input_mode_t rollMode,
+                                       ArduCopterFirmware::control_gimbal_axis_input_mode_t tiltMode,
+                                       ArduCopterFirmware::control_gimbal_axis_input_mode_t panMode)
 {
     m_vehicle->sendMavCommand(m_vehicle->gimbalComponentId(),MAV_CMD_DO_MOUNT_CONFIGURE,
-                              false,MAV_MOUNT_MODE_MAVLINK_TARGETING,1,1,1,mode,mode,mode);
+                              false,MAV_MOUNT_MODE_MAVLINK_TARGETING,1,1,1,rollMode,tiltMode,panMode);
 
 //    mavlink_message_t msg;
 //    mavlink_command_long_t  cmd;
