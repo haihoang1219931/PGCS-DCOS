@@ -11,6 +11,8 @@ GimbalInterface* GimbalInterfaceManager::getGimbal(GIMBAL_TYPE type){
         return new GremseyGimbal;
     }else if(type == GIMBAL_TYPE::TRERON){
         return new TreronGimbal;
+    }else if(type == GIMBAL_TYPE::SBUS){
+        return new SBusGimbal;
     }else
         return new GimbalInterface;
 }

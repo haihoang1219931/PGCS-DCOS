@@ -808,110 +808,13 @@ ApplicationWindow {
                 }
             }
 
-            //            MapPane{
-            //                id: mapPane
-            //                width: rectMap.width
-            //                height: rectMap.height
-            //                x: rectMap.x
-            //                y: rectMap.y
-            //                z: 1
-            //                function updateUsersOnMap(){
-            //                    if(UC_API){
-            //                        for (var id = 0; id < UCDataModel.listUsers.length; id++){
-            //                            var user = UCDataModel.listUsers[id];
-            //                            var pointMapOnScreen =
-            //                                    mapPane.convertLocationToScreen(user.latitude,user.longitude);
-            //                            console.log("updateUserOnMap["+id+"] from ["+user.latitude+","+user.longitude+"] to ["
-            //                                        +pointMapOnScreen.x+","+pointMapOnScreen.y+"]" );
-            //                            userOnMap.updateUCClientPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
-            //                        }
-            //                        userOnMap.updatePcdVideo(userOnMap.currentPcdId);
-            //                    }else{
-            //                        return;
-            //                    }
-            //                }
-            //                function updateObjectsOnMap(){
-            //                    if(cameraController.videoEngine !== undefined){
-            //                        for (var id = 0; id < cameraController.videoEngine.listTrackObjectInfos.length; id++){
-            //                            var object = cameraController.videoEngine.listTrackObjectInfos[id];
-            //                            var pointMapOnScreen =
-            //                                    mapPane.convertLocationToScreen(object.latitude,object.longitude);
-            //                            objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
-            //                        }
-            //                    }
-            //                }
-
-            //                onMapClicked: {
-            //                    footerBar.flightView = !isMap?"WP":"MAP";
-            //                    if(!isMap)
-            //                    {
-            //                        var listWaypoint = mapPane.getCurrentListWaypoint();
-            //                        for(var i=0; i< listWaypoint.length; i++){
-            //                            var missionItem = listWaypoint[i];
-            //                            if( missionItem.sequence === selectedIndex){
-            //                                footerBar.loiterSelected = (missionItem.command === 19);
-            //                                break;
-            //                            }else{
-
-            //                            }
-            //                        }
-            //                    }else{
-            //                        if(footerBar.addWPSelected){
-            //                            mapPane.addWP(mapPane.lastWPIndex()+1);
-            //                            // update mission items
-            //                            var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
-            //                            planController.writeMissionItems = listCurrentWaypoint;
-            //                        }
-            //                    }
-            //                }
-            //                onMapMoved: {
-            //                    updateUsersOnMap()
-            //                    updateObjectsOnMap();
-            //                }
-            //                onHomePositionChanged: {
-            //                    console.log("Home change to "+lat+","+lon);
-            //                    vehicle.setHomeLocation(lat,lon);
-            //                    vehicle.setAltitudeRTL(alt);
-            //                }
-            //                onShowAdvancedConfigChanged: {
-            //                    pageConfig.showAdvancedConfig(true);
-            //                }
-
-            //                Connections{
-            //                    target: vehicle
-            //                    onFlightModeChanged:{
-            //                        if(vehicle.flightMode !== "Guided"){
-            //                            mapPane.changeClickedPosition(mapPane.clickedLocation,false);
-            //                        }
-            //                    }
-            //                }
-            //                UserOnMap {
-            //                    id: userOnMap
-            //                    anchors.fill: parent
-            //                }
-            //                ObjectsOnMap{
-            //                    id: objectsOnMap
-            //                    anchors.fill: parent
-            //                    visible: camState.objectLocalization
-            //                    player: cameraController.videoEngine
-            //                }
-            //            }
-
-
-
-            MapPane_UAV
-            {
+            MapPane{
                 id: mapPane
                 width: rectMap.width
                 height: rectMap.height
                 x: rectMap.x
                 y: rectMap.y
                 z: 1
-                //                onSymbolMoving: {
-                //                    waypointEditor.latitude = position.latitude
-                //                    waypointEditor.longitude = position.longitude
-                //                }
-                //nhatdn1 comment
                 function updateUsersOnMap(){
                     if(UC_API){
                         for (var id = 0; id < UCDataModel.listUsers.length; id++){
@@ -928,9 +831,9 @@ ApplicationWindow {
                     }
                 }
                 function updateObjectsOnMap(){
-                    if(videoPane.player !== undefined){
-                        for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
-                            var object = videoPane.player.listTrackObjectInfos[id];
+                    if(cameraController.videoEngine !== undefined){
+                        for (var id = 0; id < cameraController.videoEngine.listTrackObjectInfos.length; id++){
+                            var object = cameraController.videoEngine.listTrackObjectInfos[id];
                             var pointMapOnScreen =
                                     mapPane.convertLocationToScreen(object.latitude,object.longitude);
                             objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
@@ -961,15 +864,14 @@ ApplicationWindow {
                         }
                     }
                 }
-                //                onMapMoved: {
-                //                    updateUsersOnMap()
-                //                    updateObjectsOnMap();
-                //                }
-
+                onMapMoved: {
+                    updateUsersOnMap()
+                    updateObjectsOnMap();
+                }
                 onHomePositionChanged: {
                     console.log("Home change to "+lat+","+lon);
                     vehicle.setHomeLocation(lat,lon);
-                    //vehicle.setAltitudeRTL(alt);
+                    vehicle.setAltitudeRTL(alt);
                 }
                 onShowAdvancedConfigChanged: {
                     pageConfig.showAdvancedConfig(true);
@@ -983,7 +885,6 @@ ApplicationWindow {
                         }
                     }
                 }
-
                 UserOnMap {
                     id: userOnMap
                     anchors.fill: parent
@@ -991,9 +892,108 @@ ApplicationWindow {
                 ObjectsOnMap{
                     id: objectsOnMap
                     anchors.fill: parent
-                    player: videoPane.player
+                    visible: camState.objectLocalization
+                    player: cameraController.videoEngine
                 }
             }
+
+
+
+//            MapPane_UAV
+//            {
+//                id: mapPane
+//                width: rectMap.width
+//                height: rectMap.height
+//                x: rectMap.x
+//                y: rectMap.y
+//                z: 1
+//                //                onSymbolMoving: {
+//                //                    waypointEditor.latitude = position.latitude
+//                //                    waypointEditor.longitude = position.longitude
+//                //                }
+//                //nhatdn1 comment
+//                function updateUsersOnMap(){
+//                    if(UC_API){
+//                        for (var id = 0; id < UCDataModel.listUsers.length; id++){
+//                            var user = UCDataModel.listUsers[id];
+//                            var pointMapOnScreen =
+//                                    mapPane.convertLocationToScreen(user.latitude,user.longitude);
+//                            console.log("updateUserOnMap["+id+"] from ["+user.latitude+","+user.longitude+"] to ["
+//                                        +pointMapOnScreen.x+","+pointMapOnScreen.y+"]" );
+//                            userOnMap.updateUCClientPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
+//                        }
+//                        userOnMap.updatePcdVideo(userOnMap.currentPcdId);
+//                    }else{
+//                        return;
+//                    }
+//                }
+//                function updateObjectsOnMap(){
+//                    if(videoPane.player !== undefined){
+//                        for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
+//                            var object = videoPane.player.listTrackObjectInfos[id];
+//                            var pointMapOnScreen =
+//                                    mapPane.convertLocationToScreen(object.latitude,object.longitude);
+//                            objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
+//                        }
+//                    }
+//                }
+
+//                onMapClicked: {
+//                    footerBar.flightView = !isMap?"WP":"MAP";
+//                    if(!isMap)
+//                    {
+//                        var listWaypoint = mapPane.getCurrentListWaypoint();
+//                        for(var i=0; i< listWaypoint.length; i++){
+//                            var missionItem = listWaypoint[i];
+//                            if( missionItem.sequence === selectedIndex){
+//                                footerBar.loiterSelected = (missionItem.command === 19);
+//                                break;
+//                            }else{
+
+//                            }
+//                        }
+//                    }else{
+//                        if(footerBar.addWPSelected){
+//                            mapPane.addWP(mapPane.lastWPIndex()+1);
+//                            // update mission items
+//                            var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
+//                            planController.writeMissionItems = listCurrentWaypoint;
+//                        }
+//                    }
+//                }
+//                //                onMapMoved: {
+//                //                    updateUsersOnMap()
+//                //                    updateObjectsOnMap();
+//                //                }
+
+//                onHomePositionChanged: {
+//                    console.log("Home change to "+lat+","+lon);
+//                    vehicle.setHomeLocation(lat,lon);
+//                    //vehicle.setAltitudeRTL(alt);
+//                }
+//                onShowAdvancedConfigChanged: {
+//                    pageConfig.showAdvancedConfig(true);
+//                }
+
+//                Connections{
+//                    target: vehicle
+//                    onFlightModeChanged:{
+//                        if(vehicle.flightMode !== "Guided"){
+//                            mapPane.changeClickedPosition(mapPane.clickedLocation,false);
+//                        }
+//                    }
+//                }
+
+//                UserOnMap {
+//                    id: userOnMap
+//                    anchors.fill: parent
+//                }
+//                ObjectsOnMap{
+//                    id: objectsOnMap
+//                    anchors.fill: parent
+//                    player: videoPane.player
+//                }
+//            }
 
             Rectangle{
                 id: rectMap

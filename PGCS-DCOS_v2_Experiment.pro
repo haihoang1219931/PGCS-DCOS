@@ -23,11 +23,11 @@ CONFIG += use_ucapi
 
 CONFIG += use_camera_control
 
-CONFIG += use_video_gpu
+#CONFIG += use_video_gpu
 
-#CONFIG += use_video_cpu
+CONFIG += use_video_cpu
 
-CONFIG += use_line_detector
+#CONFIG += use_line_detector
 
 CONFIG += use_telemetry_log
 
@@ -371,6 +371,7 @@ SOURCES += \
     src/Camera/GimbalController/Gremsey/GimbalControl.cpp \
     src/Camera/GimbalController/Gremsey/GremseyGimbal.cpp \
     src/Camera/GimbalController/Gremsey/SensorController.cpp \
+    src/Camera/GimbalController/Gremsey/SBusGimbal.cpp \
     src/Camera/GimbalController/Treron/TreronGimbal.cpp
 HEADERS += \
     src/Camera/GimbalController/CM160/CM160Gimbal.h \
@@ -502,6 +503,7 @@ HEADERS += \
     src/Camera/GimbalController/Gremsey/GimbalControl.h \
     src/Camera/GimbalController/Gremsey/GremseyGimbal.h \
     src/Camera/GimbalController/Gremsey/SensorController.h \
+    src/Camera/GimbalController/Gremsey/SBusGimbal.h \
     src/Camera/GimbalController/Treron/TreronGimbal.h
 HEADERS += \
     src/Camera/Algorithms/stabilizer/dando_02/stab_gcs_kiir.hpp \

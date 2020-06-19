@@ -22,7 +22,7 @@ Item {
     property color themeColor: "#222F3E" //"#222F3E","#1A1A1A"
     property bool ctrlPress: false
     property bool autoConnect: false
-    property string fd_icon: "EN"
+    property string languageID: "EN"
     property var language:
     {
         "EN":0,
@@ -110,8 +110,8 @@ Item {
     property bool hudCameraEnable: true
     signal lanChanged()
     function changeLanguage(newLanguage){
-        if(fd_icon !== newLanguage){
-            fd_icon = newLanguage
+        if(languageID !== newLanguage){
+            languageID = newLanguage
             lanChanged()
         }
     }

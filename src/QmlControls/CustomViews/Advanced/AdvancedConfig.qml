@@ -95,15 +95,15 @@ Rectangle {
             id: navMenuEles
             model: ListModel {
                 Component.onCompleted: {
-                    append({id_: 0, btnText_: buttonListName["TAB_CONFIG_EO"][camState.language[camState.fd_icon]],
+                    append({id_: 0, btnText_: buttonListName["TAB_CONFIG_EO"][camState.language[camState.languageID]],
                                icon_: "\uf185", active_: true ,info_:"config_eo"});
-                    append({id_: 1, btnText_: buttonListName["TAB_CONFIG_IR"][camState.language[camState.fd_icon]],
+                    append({id_: 1, btnText_: buttonListName["TAB_CONFIG_IR"][camState.language[camState.languageID]],
                                icon_: "\uf186", active_: false ,info_:"config_ir" });
-                    append({id_: 2, btnText_: buttonListName["TAB_CONFIG_VIDEO"][camState.language[camState.fd_icon]],
+                    append({id_: 2, btnText_: buttonListName["TAB_CONFIG_VIDEO"][camState.language[camState.languageID]],
                                icon_: "\uf02b", active_: false ,info_:"video" });
-                    append({id_: 3, btnText_: buttonListName["TAB_CONFIG_MOTIONC"][camState.language[camState.fd_icon]],
+                    append({id_: 3, btnText_: buttonListName["TAB_CONFIG_MOTIONC"][camState.language[camState.languageID]],
                                icon_: "\uf0b2", active_: false ,info_:"motionc" });
-                    append({id_: 4, btnText_: buttonListName["TAB_CONFIG_SEARCH"][camState.language[camState.fd_icon]],
+                    append({id_: 4, btnText_: buttonListName["TAB_CONFIG_SEARCH"][camState.language[camState.languageID]],
                                icon_: "\uf4fe", active_: false ,info_:"other-functions" });
 
                 }

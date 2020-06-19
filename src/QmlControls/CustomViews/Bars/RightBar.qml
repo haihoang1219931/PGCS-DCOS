@@ -32,7 +32,7 @@ Rectangle {
     radius: UIConstants.rectRadius
     property int spacing: 2
     property alias currentIndex: rightBarStack.currentIndex
-    property var buttonListName:
+    property var itemListName:
     {
     "MISSION_SENSOR":["Sensor","Hình ảnh"],
         // sensor id
@@ -152,8 +152,8 @@ Rectangle {
                 Layout.preferredHeight: parent.width
                 icon: UIConstants.iSensor
                 iconRotate: camState.sensorID === camState.sensorIDEO?0:180
-                btnText: buttonListName["MISSION_SENSOR"]
-                         [camState.language[camState.fd_icon]]
+                btnText: itemListName["MISSION_SENSOR"]
+                         [camState.language[camState.languageID]]
                 color: UIConstants.bgAppColor
                 onClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
@@ -187,7 +187,7 @@ Rectangle {
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: parent.width
                 icon: UIConstants.iPreset
-                btnText: buttonListName["MISSION_PRESET_"+camState.presetMode][camState.language[camState.fd_icon]]
+                btnText: itemListName["MISSION_PRESET_"+camState.presetMode][camState.language[camState.languageID]]
                 color: UIConstants.bgAppColor
                 onClicked: {
 //                    btnPreset.setButtonDisable()
@@ -201,20 +201,20 @@ Rectangle {
 //                        {
 //                            switch(btnPreset.btnText)
 //                            {
-//                            case buttonListName["MISSION_PRESET_FRONT"][camState.language[camState.fd_icon]]:
-//                                btnPreset.btnText = buttonListName["MISSION_PRESET_RIGHTWING"][camState.language[camState.fd_icon]]
+//                            case itemListName["MISSION_PRESET_FRONT"][camState.language[camState.languageID]]:
+//                                btnPreset.btnText = itemListName["MISSION_PRESET_RIGHTWING"][camState.language[camState.languageID]]
 //                                break;
-//                            case buttonListName["MISSION_PRESET_RIGHTWING"][camState.language[camState.fd_icon]]:
-//                                btnPreset.btnText = buttonListName["MISSION_PRESET_BEHIND"][camState.language[camState.fd_icon]]
+//                            case itemListName["MISSION_PRESET_RIGHTWING"][camState.language[camState.languageID]]:
+//                                btnPreset.btnText = itemListName["MISSION_PRESET_BEHIND"][camState.language[camState.languageID]]
 //                                break;
-//                            case buttonListName["MISSION_PRESET_BEHIND"][camState.language[camState.fd_icon]]:
-//                                btnPreset.btnText = buttonListName["MISSION_PRESET_LEFTWING"][camState.language[camState.fd_icon]]
+//                            case itemListName["MISSION_PRESET_BEHIND"][camState.language[camState.languageID]]:
+//                                btnPreset.btnText = itemListName["MISSION_PRESET_LEFTWING"][camState.language[camState.languageID]]
 //                                break;
-//                            case buttonListName["MISSION_PRESET_LEFTWING"][camState.language[camState.fd_icon]]:
-//                                btnPreset.btnText = buttonListName["MISSION_PRESET_NADIR"][camState.language[camState.fd_icon]]
+//                            case itemListName["MISSION_PRESET_LEFTWING"][camState.language[camState.languageID]]:
+//                                btnPreset.btnText = itemListName["MISSION_PRESET_NADIR"][camState.language[camState.languageID]]
 //                                break;
-//                            case buttonListName["MISSION_PRESET_NADIR"][camState.language[camState.fd_icon]]:
-//                                btnPreset.btnText = buttonListName["MISSION_PRESET_FRONT"][camState.language[camState.fd_icon]]
+//                            case itemListName["MISSION_PRESET_NADIR"][camState.language[camState.languageID]]:
+//                                btnPreset.btnText = itemListName["MISSION_PRESET_FRONT"][camState.language[camState.languageID]]
 //                                break;
 //                            default:
 //                                break;

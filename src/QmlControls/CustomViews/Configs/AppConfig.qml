@@ -9,12 +9,14 @@
 
 
 import QtQuick          2.3
-import QtQuick.Controls 1.2
 import QtQuick.Dialogs  1.2
 import QtQuick.Layouts 1.3
 import QtQuick.Window 2.11
 import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
+import QtQuick.Controls 1.2 as OldCtrl
+import QtQuick.Controls 2.4
+import QtQuick.Controls.Styles 1.4
 /// ConfigPage
 Rectangle {
     id: root
@@ -23,6 +25,59 @@ Rectangle {
     height: 768
     property string type: ""
     signal clicked(string type, string action)
+    Column{
+        id: clmLanguage
+        anchors.topMargin: 8
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+        anchors.top: parent.top
+        width: UIConstants.sRect* 15
+        spacing:    UIConstants.sRect/2
+        Row{
+            Label {
+                text: qsTr("Language selection")
+                color: UIConstants.textColor
+                font.pixelSize: UIConstants.fontSize
+                font.family: UIConstants.appFont
+            }
+        }
+        Row{
+            spacing: UIConstants.sRect/2
+            QComboBox{
+                id: cbxListLanguage
+                width: clmLanguage.width - btnSelectLanguage.width - parent.spacing
+                height: UIConstants.sRect * 1.5
+                model: ["English","Việt Nam"]
+            }
+            OldCtrl.Button{
+                id: btnSelectLanguage
+                width: UIConstants.sRect * 3
+                height: UIConstants.sRect * 1.5
+                text: "Select"
+                style: ButtonStyle{
+                    background: Rectangle{
+                        color: UIConstants.info
+                    }
+                    label: Label{
+                        color: UIConstants.textColor
+                        font.pixelSize: UIConstants.fontSize
+                        font.family: UIConstants.appFont
+                        verticalAlignment: Label.AlignVCenter
+                        horizontalAlignment: Label.AlignHCenter
+                        text: btnSelectLanguage.text
+                    }
+                }
+
+                onClicked: {
+                    if(cbxListLanguage.currentIndex === 0){
+                        camState.languageID = "EN";
+                    }else if(cbxListLanguage.currentIndex === 1){
+                        camState.languageID = "VI";
+                    }
+                }
+            }
+        }
+    }
     ColumnLayout{
         anchors.topMargin: 8
         anchors.right: parent.right
