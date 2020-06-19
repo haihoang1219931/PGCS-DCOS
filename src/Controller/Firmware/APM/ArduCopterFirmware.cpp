@@ -336,13 +336,22 @@ void ArduCopterFirmware::setHomeHere(float lat, float lon, float alt){
 void ArduCopterFirmware::setGimbalAngle(float pan, float tilt)
 {
     if(m_gimbalCurrentMode == "ANGLE_BODY_MODE")
+    {
         setGimbalMove(-pan,tilt);
+        setGimbalMove(-pan,tilt);
+        setGimbalMove(-pan,tilt);
+        setGimbalMove(-pan,tilt);
+    }
 }
 
 void ArduCopterFirmware::setGimbalRate(float pan, float tilt)
 {
     if(m_gimbalCurrentMode == "RATE_MODE")
-        setGimbalMove(-pan,tilt);
+    {
+        m_gimbalLastPan = -pan;
+        m_gimbalLastTilt = tilt;
+        setGimbalMove(-pan,tilt);    
+    }
 }
 
 void ArduCopterFirmware::setGimbalMode(QString mode)
@@ -363,8 +372,7 @@ void ArduCopterFirmware::setGimbalMode(QString mode)
 
 void ArduCopterFirmware::setGimbalMove(float pan, float tilt)
 {
-    m_gimbalLastPan = pan;
-    m_gimbalLastTilt = tilt;
+
 //    printf("%s - pan: %5.1f , tilt: %5.1f\r\n",__func__,pan,tilt);
     float mode_mavlink_targeting = static_cast<float>(MAV_MOUNT_MODE_MAVLINK_TARGETING);
 //    m_vehicle->sendMavCommand(m_vehicle->gimbalComponentId(),MAV_CMD_DO_MOUNT_CONTROL,
@@ -372,17 +380,21 @@ void ArduCopterFirmware::setGimbalMove(float pan, float tilt)
     mavlink_message_t msg;
     mavlink_command_long_t  cmd;
     memset(&cmd, 0, sizeof(cmd));
-    cmd.target_system =     0;
+    cmd.target_system =     4;
     cmd.target_component =  MAV_COMP_ID_GIMBAL;
     cmd.command =           MAV_CMD_DO_MOUNT_CONTROL;
-    cmd.confirmation =      0;
+    cmd.confirmation =      true;
     cmd.param1 =            static_cast<float>(tilt);
     cmd.param2 =            static_cast<float>(0);
     cmd.param3 =            static_cast<float>(-pan);
     cmd.param7 =            static_cast<float>(MAV_MOUNT_MODE_MAVLINK_TARGETING);
-    mavlink_msg_command_long_encode_chan(cmd.target_system ,
-                                         cmd.target_component,
-                                         m_vehicle->communication()->mavlinkChannel(),
+//    mavlink_msg_command_long_encode_chan(cmd.target_system ,
+//                                         cmd.target_component,
+//                                         m_vehicle->communication()->mavlinkChannel(),
+//                                         &msg,
+//                                         &cmd);
+    mavlink_msg_command_long_encode(cmd.target_system ,
+                                         MAV_COMP_ID_SYSTEM_CONTROL,
                                          &msg,
                                          &cmd);
     m_vehicle->sendMessageOnLink(m_vehicle->communication(),msg);

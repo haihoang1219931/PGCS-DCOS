@@ -971,6 +971,10 @@ ApplicationWindow {
                     vehicle.setHomeLocation(lat,lon);
                     //vehicle.setAltitudeRTL(alt);
                 }
+                onShowAdvancedConfigChanged: {
+                    pageConfig.showAdvancedConfig(true);
+                }
+
                 Connections{
                     target: vehicle
                     onFlightModeChanged:{
@@ -1794,6 +1798,7 @@ ApplicationWindow {
             camState.record = data["RECORD"];
             camState.gcsShare = data["GCS_SHARED"];
             camState.digitalStab = data["STAB_DIGITAL"];
+            camState.presetMode = data["PRESET"];
             mapPane.drawTargetLocalization(
                         QtPositioning.coordinate(data["CORNER01"].x,data["CORNER01"].y),
                         QtPositioning.coordinate(data["CORNER02"].x,data["CORNER02"].y),

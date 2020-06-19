@@ -164,6 +164,7 @@ private:
     float m_gimbalLastTilt = 0;
     QString m_gimbalCurrentMode = "UNKNOWN";
     QString m_gimbalSetMode = "UNKNOWN";
+
 };
 
 #endif // ARDUCOPTERFIRMWARE_H

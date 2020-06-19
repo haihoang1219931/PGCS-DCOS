@@ -31,3 +31,4 @@ FlatRectangle                   1.0 FlatRectangle.qml
 ToastLabel                      1.0 ToastLabel.qml
 FlatButtonText                  1.0 FlatButtonText.qml
 QComboBox                       1.0 QComboBox.qml
+ScrollWaypoint                  1.0 ScrollWaypoint.qml

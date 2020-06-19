@@ -71,6 +71,8 @@ Flickable {
 
     property string mapHeightFolder: "ElevationData-H1"
 
+    property bool ctrlPress: false
+
     signal homePositionChanged(real lat, real lon, real alt)
     signal symbolMoving(var id,var position)
     signal mapClicked(bool isMap)
@@ -88,10 +90,7 @@ Flickable {
         "MAV_TYPE_FIXED_WING":"qrc:/qmlimages/uavIcons/Plane.png",
         "MAV_TYPE_GENERIC":"qrc:/qmlimages/uavIcons/Unknown.png"
     }
-
-
-
-
+    signal showAdvancedConfigChanged()
     Timer
     {
         id:timerUpdateWP
@@ -127,7 +126,6 @@ Flickable {
     Computer{
         id: cInfo
     }
-
 
     ListModel {
         id: _arrowModel
@@ -189,6 +187,12 @@ Flickable {
                     zoomIn();
                 }else if(event.key === Qt.Key_Minus || event.key === Qt.Key_Underscore){
                     zoomOut();
+                }else if(event.key === Qt.Key_Control){
+                    rootItem.ctrlPress = true;
+                }else if(rootItem.ctrlPress && event.key === Qt.Key_F6){
+                    rootItem.showAdvancedConfigChanged();
+                    console.log("showAdvancedConfigChanged");
+                    rootItem.ctrlPress = false;
                 }
 
                 if(event.key === Qt.Key_C)
@@ -690,6 +694,13 @@ Flickable {
             }
         }
 
+
+    ScrollWaypoint{
+        id: scrollWP
+        visible: true
+        x:100
+        y:100
+    }
 
     WaypointEditor{
         id: waypointEditor

@@ -238,6 +238,7 @@ public Q_SLOTS:
         map.insert("VIDEO_IP", (m_videoIP));
         map.insert("VIDEO_PORT", m_videoPort);
         map.insert("GCS_SHARED",m_gcsShare);
+        map.insert("PRESET",m_presetMode);
         //        printf("m_enableGyroStabilisationPan = %s\r\n",m_enableGyroStabilisationPan==true?"ON":"OFF");
         //        printf("m_enableGyroStabilisationTilt = %s\r\n",m_enableGyroStabilisationTilt==true?"ON":"OFF");
         //        printf("STAB_DIGITAL = %s\r\n",m_videoStabMode==true?"ON":"OFF");
@@ -363,6 +364,7 @@ public:
     int m_trackSize = -1;
     QString m_gimbalMode = "NA";
     QString m_trackMode = "";
+    QString m_presetMode = "OFF";
     float m_geoLon,m_geoLat,m_geoAlt;
     float m_targetLon,m_targetLat,m_targetSlr;
     float m_speedNorth,m_speedEast,m_gpsAlt,m_gpstakeOffAlt;

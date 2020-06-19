@@ -47,9 +47,9 @@ Rectangle {
     "MISSION_PRESET":["Preset","Quan sát\nvị trí"],
         // preset mode
         "MISSION_PRESET_FRONT":["FRONT","PHÍA\nTRƯỚC"],
-        "MISSION_PRESET_RIGHTWING":["RIGHT\nWING","CÁNH\nPHẢI"],
+        "MISSION_PRESET_RIGHT":["RIGHT\nWING","CÁNH\nPHẢI"],
         "MISSION_PRESET_BEHIND":["BEHIND","PHÍA\nSAU"],
-        "MISSION_PRESET_LEFTWING":["LEFT\nWING","CÁNH\nTRÁI"],
+        "MISSION_PRESET_LEFT":["LEFT\nWING","CÁNH\nTRÁI"],
         "MISSION_PRESET_NADIR":["NADIR","DƯỚI\nBỤNG"],
         "MISSION_PRESET_OFF":["OFF","OFF"],
     "MISSION_SNAPSHOT":["Snapshot","Chụp ảnh"],
@@ -187,43 +187,42 @@ Rectangle {
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: parent.width
                 icon: UIConstants.iPreset
-                btnText: buttonListName["MISSION_PRESET_FRONT"][camState.language[camState.fd_icon]]
+                btnText: buttonListName["MISSION_PRESET_"+camState.presetMode][camState.language[camState.fd_icon]]
                 color: UIConstants.bgAppColor
-                isAutoReturn: false
                 onClicked: {
-                    btnPreset.setButtonDisable()
-                    cameraController.gimbal.setGimbalPreset(btnText);
+//                    btnPreset.setButtonDisable()
+                    cameraController.gimbal.setGimbalPreset("NEXT");
                 }
-                Connections {
-                    target: cameraController.gimbal
-                    onPresetChanged:{
-                        console.log("end preset");
-                        if(result === true && btnPreset.isEnable === false)
-                        {
-                            switch(btnPreset.btnText)
-                            {
-                            case buttonListName["MISSION_PRESET_FRONT"][camState.language[camState.fd_icon]]:
-                                btnPreset.btnText = buttonListName["MISSION_PRESET_RIGHTWING"][camState.language[camState.fd_icon]]
-                                break;
-                            case buttonListName["MISSION_PRESET_RIGHTWING"][camState.language[camState.fd_icon]]:
-                                btnPreset.btnText = buttonListName["MISSION_PRESET_BEHIND"][camState.language[camState.fd_icon]]
-                                break;
-                            case buttonListName["MISSION_PRESET_BEHIND"][camState.language[camState.fd_icon]]:
-                                btnPreset.btnText = buttonListName["MISSION_PRESET_LEFTWING"][camState.language[camState.fd_icon]]
-                                break;
-                            case buttonListName["MISSION_PRESET_LEFTWING"][camState.language[camState.fd_icon]]:
-                                btnPreset.btnText = buttonListName["MISSION_PRESET_NADIR"][camState.language[camState.fd_icon]]
-                                break;
-                            case buttonListName["MISSION_PRESET_NADIR"][camState.language[camState.fd_icon]]:
-                                btnPreset.btnText = buttonListName["MISSION_PRESET_FRONT"][camState.language[camState.fd_icon]]
-                                break;
-                            default:
-                                break;
-                            }
-                        }
-                        btnPreset.setButtonEnable()
-                    }
-                }
+//                Connections {
+//                    target: cameraController.gimbal
+//                    onPresetChanged:{
+//                        console.log("end preset");
+//                        if(result === true && btnPreset.isEnable === false)
+//                        {
+//                            switch(btnPreset.btnText)
+//                            {
+//                            case buttonListName["MISSION_PRESET_FRONT"][camState.language[camState.fd_icon]]:
+//                                btnPreset.btnText = buttonListName["MISSION_PRESET_RIGHTWING"][camState.language[camState.fd_icon]]
+//                                break;
+//                            case buttonListName["MISSION_PRESET_RIGHTWING"][camState.language[camState.fd_icon]]:
+//                                btnPreset.btnText = buttonListName["MISSION_PRESET_BEHIND"][camState.language[camState.fd_icon]]
+//                                break;
+//                            case buttonListName["MISSION_PRESET_BEHIND"][camState.language[camState.fd_icon]]:
+//                                btnPreset.btnText = buttonListName["MISSION_PRESET_LEFTWING"][camState.language[camState.fd_icon]]
+//                                break;
+//                            case buttonListName["MISSION_PRESET_LEFTWING"][camState.language[camState.fd_icon]]:
+//                                btnPreset.btnText = buttonListName["MISSION_PRESET_NADIR"][camState.language[camState.fd_icon]]
+//                                break;
+//                            case buttonListName["MISSION_PRESET_NADIR"][camState.language[camState.fd_icon]]:
+//                                btnPreset.btnText = buttonListName["MISSION_PRESET_FRONT"][camState.language[camState.fd_icon]]
+//                                break;
+//                            default:
+//                                break;
+//                            }
+//                        }
+//                        btnPreset.setButtonEnable()
+//                    }
+//                }
             }
             FooterButton {
                 id: btnSensorColor

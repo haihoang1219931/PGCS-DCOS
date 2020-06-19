@@ -204,6 +204,7 @@
         <file alias="assets/images/takeoff.png">src/QmlControls/CustomViews/assets/images/takeoff.png</file>
         <file alias="CustomViews/SubComponents/PolyTrajactory.qml">src/QmlControls/CustomViews/SubComponents/PolyTrajactory.qml</file>
         <file alias="CustomViews/SubComponents/TargetPolygon.qml">src/QmlControls/CustomViews/SubComponents/TargetPolygon.qml</file>
+        <file alias="CustomViews/Components/ScrollWaypoint.qml">src/QmlControls/CustomViews/Components/ScrollWaypoint.qml</file>
     </qresource>
     <qresource prefix="/qmlimages">
         <file alias="markers/AntiClockwiseCircle.png">src/QmlControls/CustomViews/assets/images/markers/AntiClockwiseCircle.png</file>

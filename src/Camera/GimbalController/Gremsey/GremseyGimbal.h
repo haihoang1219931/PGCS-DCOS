@@ -57,7 +57,7 @@ private:
     Vehicle* m_vehicle = nullptr;
     float m_presetAngleSet_Pan = 0;
     float m_presetAngleSet_Tilt = 0;
-    QString m_modePreset = "UNKNOWN";
+//    QString m_modePreset = "OFF";
     QString m_gimbalCurrentMode = "UNKNOWN";
     float m_panRateJoystick = 0;
     float m_tiltRateJoystick = 0;
