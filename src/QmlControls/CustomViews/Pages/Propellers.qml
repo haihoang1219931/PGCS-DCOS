@@ -26,10 +26,13 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]["PROPELLERS"]
     QLabel {
         id: lblTitle
         height: 54
-        text: "Press Safety and continue to check propellers"
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.left: parent.left
@@ -49,7 +52,8 @@ Rectangle{
 
         FlatButtonIcon {
             id: btnP1
-            icon: qsTr("Propeller A")
+            icon: itemListName["PROPELLER"]
+                  [UIConstants.language[UIConstants.languageID]]+" A"
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
@@ -69,7 +73,8 @@ Rectangle{
         FlatButtonIcon {
             id: btnP2
             x: 280
-            icon: qsTr("Propeller B")
+            icon: itemListName["PROPELLER"]
+                  [UIConstants.language[UIConstants.languageID]]+" B"
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
@@ -88,7 +93,8 @@ Rectangle{
         FlatButtonIcon {
             id: btnP3
             y: 187
-            icon: qsTr("Propeller C")
+            icon: itemListName["PROPELLER"]
+                  [UIConstants.language[UIConstants.languageID]]+" C"
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
@@ -106,7 +112,8 @@ Rectangle{
 
         FlatButtonIcon {
             id: btnP4
-            icon: qsTr("Propeller D")
+            icon: itemListName["PROPELLER"]
+                  [UIConstants.language[UIConstants.languageID]]+" D"
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6

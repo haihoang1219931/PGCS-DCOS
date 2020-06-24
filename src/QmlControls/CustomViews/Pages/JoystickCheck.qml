@@ -26,10 +26,13 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]["JOYSTICK"]
     QLabel {
         id: lblTitle
         height: 54
-        text: "Checking Joystick action"
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.left: parent.left
@@ -51,7 +54,8 @@ Rectangle{
         anchors.left: parent.left
         anchors.leftMargin: 8
         Label {
-            text: qsTr("Axis Monitor")
+            text: itemListName["AXIS_MONITOR"]
+                  [UIConstants.language[UIConstants.languageID]]
             color: UIConstants.textColor
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont
@@ -139,7 +143,8 @@ Rectangle{
         anchors.top: lblTitle.bottom
         anchors.bottomMargin: 8
         Label {
-            text: qsTr("RC Monitor")
+            text: itemListName["RC_MONITOR"]
+                  [UIConstants.language[UIConstants.languageID]]
             color: UIConstants.textColor
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont

@@ -311,6 +311,386 @@ QtObject {
     readonly property string iAddUser:              "\uf055"
     readonly property string iShareVideo:           "\uf064"
     readonly property string iRemoveUser:           "\uf056"
+    //------- Language
+    property var language:
+    {
+        "EN":0,
+        "VI":1
+    }
+    property string languageID: "EN"
+    property var itemTextMultilanguages:{
+        "NAVBAR":{
+            "SYSTEM_TIME":["System time","Thời gian hệ thống"],
+            "MISSION":["Mission\nplanner","Xây dựng\nkế hoạch"],
+            "PRECHECK":["Preflight\ncheck","Kiểm tra\ntrước bay"],
+            "FLIGHT":["Flight","Giám sát\nbay"],
+            "FLIGHT_MODE":["Flight mode","Chế độ bay"],
+            "UAV_HOME":["UAV->Home","Máy bay->Nhà"],
+            "UAV_WP":["UAV->WP","Máy bay->Điểm"],
+            "FLIGHT_TIME":["Flight time","Thời gian bay"],
+        },
+//        "RIGHTBAR": {
+//            "MISSION_SENSOR":["Sensor","Hình ảnh"],
+//                // sensor id
+//                "MISSION_SENSOR_EO":["DAY","NGÀY"],
+//                "MISSION_SENSOR_IR":["IR","NHIỆT"],
+//            "MISSION_OBSERV":["Observe\nmode","Chế độ\nTheo dõi"],
+//                // observe mode
+//                "MISSION_OBSERV_FREE":["FREE","TỰ DO"],
+//                "MISSION_OBSERV_VISUAL":["TLOCK","GIỮ\nKHUNG"],
+//                "MISSION_OBSERV_GEO":["GEO","GIỮ\nTỌA ĐỘ"],
+//                "MISSION_OBSERV_TRACK":["TRACK","BÁM\nBẮT"],
+//            "MISSION_PRESET":["Preset","Quan sát\nvị trí"],
+//                // preset mode
+//                "MISSION_PRESET_FRONT":["FRONT","PHÍA\nTRƯỚC"],
+//                "MISSION_PRESET_RIGHT":["RIGHT\nWING","CÁNH\nPHẢI"],
+//                "MISSION_PRESET_BEHIND":["BEHIND","PHÍA\nSAU"],
+//                "MISSION_PRESET_LEFT":["LEFT\nWING","CÁNH\nTRÁI"],
+//                "MISSION_PRESET_NADIR":["NADIR","DƯỚI\nBỤNG"],
+//                "MISSION_PRESET_OFF":["OFF","OFF"],
+//            "MISSION_SNAPSHOT":["Snapshot","Chụp ảnh"],
+//                // snapshot mode
+//            "MISSION_COLOR":["Daylight\nmode","Màu ảnh"],
+//                // sensor color
+//                // eo
+//                "MISSION_COLOR_EO_AUTO":["AUTO","TỰ\nĐỘNG"],
+//                "MISSION_COLOR_EO_COLOR":["COLOR","MÀU"],
+//                "MISSION_COLOR_EO_DAWN":["DAWN","NHẠY\nSÁNG"],
+//                //ir
+//                "MISSION_COLOR_IR_WHITE_HOT":["WHITE\nHOT","NHIỆT\nTRẮNG"],
+//                "MISSION_COLOR_IR_BLACK_HOT":["BLACK\nHOT","NHIỆT\nĐEN"],
+//                "MISSION_COLOR_IR_REDDISH":["REDDISH","NHIỆT\nĐỎ"],
+//                "MISSION_COLOR_IR_COLOR":["COLOR","NHIỆT\nMÀU"],
+//            "MISSION_DEFOG":{
+//                    "EO":["Defog\nEO","Khử mây\nảnh ngày"],
+//                    "IR":["Defog\nIR","Khử mây\nảnh nhiệt"]
+//                },
+//                // sensor defog mode
+//                // eo
+//                "MISSION_DEFOG_EO_OFF":["OFF","TẮT"],
+//                "MISSION_DEFOG_EO_AUTO":["AUTO","TỰ\nĐỘNG"],
+//                "MISSION_DEFOG_EO_LOW":["LOW","THẤP"],
+//                "MISSION_DEFOG_EO_MEDIUM":["MEDIUM","TRUNG"],
+//                "MISSION_DEFOG_EO_HIGH":["HIGH","CAO"],
+//                // ir
+//                "MISSION_DEFOG_IR_OFF":["OFF","TẮT"],
+//                "MISSION_DEFOG_IR_AUTO":["AUTO","TỰ\nĐỘNG"],
+//                "MISSION_DEFOG_IR_LOW":["LOW","THẤP"],
+//                "MISSION_DEFOG_IR_MEDIUM":["MEDIUM","TRUNG"],
+//                "MISSION_DEFOG_IR_HIGH":["HIGH","CAO"],
+//            "MISSION_MEASURE_DISTANCE":["Measure\ndistance","Khoảng\ncách"],
+//            "MISSION_GIMBAL":["Gimbal\nmode","Chế độ\ngimbal"],
+//                // gimbal mode
+//                "MISSION_GIMBAL_OFF":["OFF","TẮT"],
+//                "MISSION_GIMBAL_ON":["ON","BẬT"],
+//                "MISSION_GIMBAL_SECURE":["SECURE","AN\nTOÀN"],
+//                "MISSION_GIMBAL_SLEEP":["SLEEP","NGHỈ"],
+//                "MISSION_GIMBAL_NA":["?","?"],
+//            "MISSION_RECORDER":["Gimbal\nrecorder","Ghi lại\nhình ảnh"],
+//                // recorder mode
+//                "MISSION_RECORDER_NA":["?","?"],
+//                "MISSION_RECORDER_OFF":["OFF","TẮT"],
+//                "MISSION_RECORDER_ON":["ON","BẬT"],
+//            "MISSION_CONTROLLER":["Gimbal\ncontroller","Điều khiển\ncamera"],
+//            // selet button
+//            "SELECT_UAV": ["Select\nUAV","Vị trí\nUAV"],
+//            "SELECT_GDT": ["Select\nGDT","Vị trí\nGDT"],
+//            // markers button
+//            "MARKER_SAVE": ["Save\nmarkers","Lưu lại\nnhãn"],
+//            "MARKER_LOAD": ["Load\nmarkers","Tải lên\nnhãn"],
+//            "MARKER_CLEAR": ["Clear\nmarkers","Xóa tất \ncả nnhãn"],
+//            // map tab
+//            "MAP_LOOK": ["Look\nhere","Khóa\nvị trí"],
+//            "MAP_ADD": ["Add\nmarker","Thêm\nnhãn"],
+//            "MAP_REMOVE": ["Remove\nmarker","Xóa\nnhãn"],
+//            "MAP_CLEAR": ["Clear\nmarkers","Xóa tất\ncả nhãn"],
+//            "MAP_EDIT": ["Edit\nmarker","Sửa\nnhãn"],
+//            // image processing
+//            "GCS_DETECT": ["Object\ndetect","Phat\nhien"],
+//            // advance tab
+//            "ADVANCED":["Advanced","Nâng cao"],
+//            "BACK":["Back","Trở lại"],
+//            "ADVANCED_STAB_GIMBAL":["Gimbal\nStab","Cân bằng\nđiện"],
+//            "ADVANCED_LOCK_VISUAL":["Visual\nlock","Giữ trường\nnhìn"],
+//            "ADVANCED_STAB_DIGITAL":["Digital\nStab","Cân bằng\nảnh"],
+//            "ADVANCED_STAB_GCS":["GCS\nStab","Cân bằng\ntrên GCS"],
+//            "ADVANCED_OBJECT_DETECT":["Object\nDetect","Phat hien\nDoi tuong"],
+//            "ADVANCED_HUD":["HUD","HUD"],
+//            "ADVANCED_LANGUAGE":["Language","Ngôn ngữ"],
+//                // language
+//                "ADVANCED_LANGUAGE_VI":"VI",
+//                "ADVANCED_LANGUAGE_EN":"EN",
+//            "ADVANCED_INVERT_PAN":["Invert\nPan","Đảo\nPan"],
+//            "ADVANCED_INVERT_TILT":["Invert\nTilt","Đảo\nTilt"],
+//            "ADVANCED_VIDEO_CONFIG":["Video\nConfig","Cấu hình\nhình ảnh"],
+//            "ADVANCED_SYSTEM_CONFIG":["System\nConfig","Cấu hình\nhệ thống"],
+//        },
+        "FOOTERBAR":{
+            "MISSION":{
+                "LOAD_MAP":["Load\nmap","Tải\nbản đồ"],
+                "LOAD_MISSION":["Load\nmission","Tải\nnhiệm vụ"],
+                "SAVE_MISSION":["Save\nmission","Lưu\nnhiệm vụ"],
+                "NEW_MISSION":["New\nmission","Nhiệm vụ\nmới"],
+                "NEXT_WP":["Next\nWP","Điểm\ntiếp theo"],
+                "ADD_WP":["Add WP","Thêm\nđiểm"],
+                "DELETE_WP":["Delete\nWP","Xóa\nđiểm"],
+                "ADD_MARKER":["Add\nmarker","Thêm\nnhãn"],
+                "DELETE_MARKER":["Delete\nmarker","Xóa\nnhãn"],
+                "UPLOAD_PLAN":["Upload\nplan","Tải lên\nkế hoạch"],
+                "DOWNLOAD_PLAN":["Download\nplan","Tải xuống\nkế hoạch"],
+                "ARM":["Arm","Mở khóa\nđộng cơ"],
+                "DISARM":["Disarm","Khóa\nđộng cơ"],
+                "GROUND_SPEED":["Ground speed","Địa tốc"],
+                "AMSL":["AMSL","AMSL"],
+                "CLIMB_SPEED":["Climb speed","Vận tốc\nleo"],
+                "AGL":["AGL","AGL"],
+                "GO_WP":["Go to\nWP","Bay tới\nđiểm"],
+                "GO_LOCATION":["Go to\nLocation","Bay tới\nvị trí"],
+                "AUTO":["Auto","Tự động"],
+                "TAKE_OFF":["Take off","Cất cánh"],
+                "LOITER":["Loiter","Bay\nvòng"],
+                "LOITER_RADIUS":["Loiter\nradius","Bán\nkính"],
+                "LOITER_DIR":["Loiter\ndir","Hướng\nbay"],
+                "PLAN_NOT_SYNC":["Plan is not synchronized","Kế hoạch chưa được đồng bộ"],
+            },
+            "PRECHECK":{
+                "TRACKER":["Tracker","Trạm\nbắt bám"],
+                "TRACKER_LEFT":["Turn\nleft","Quay\ntrái"],
+                "TRACKER_RIGHT":["Turn\nright","Quay\nphải"],
+                "CHECK":["Check","Xác\nnhận"],
+                "NEXT":["Next","Tiếp\ntheo"],
+                "PREVIOUS":["Previous","Quay\nlại"],
+            }
+        },
+        "RIGHTBAR":{
+            "SENSOR":["Sensor","Cảm biến"],
+            "PRESET":{
+                "OFF":["OFF","Tắt"],
+                "FRONT":["FRONT","TRƯỚC"],
+                "RIGHT":["RIGHT\nWING","PHẢI"],
+                "BEHIND":["BEHIND","SAU"],
+                "LEFT":["LEFT","TRÁI"],
+                "NADIR":["NADIR","DƯỚI\nBỤNG"],
+            },
+            "COLOR":{
+                "EO":{
+                    "TILTLE":["EO color","Màu\nngày"],
+                    "NORMAL":["Normal","Bình\nthường"]
+                },
+                "IR":{
+                    "TILTLE":["IR color","Màu\nnhiệt"],
+                    "WHITE_HOT":["WHITE\nHOT","Nhiệt\ntrắng"],
+                    "COLOR":["COLOR","Nhiệt\nmàu"],
+                },
+            },
+            "ADVANCED":["Advanced","Nâng\ncao"],
+            "BACK":["Back","Quay\nlại"],
+            "SNAPSHOT":["Snapshot","Chụp\nảnh"],
+            "GCS_RECORD":["GCS\nrecord","Cân bằng\nảnh"],
+            "OBJECT_DETECT":["Object\ndetect","Phân\nloại"],
+            "POWERLINE_DETECT":["Power\nline","Đường\ndây"],
+            "EXPORT_VIDEO":["Export\nvideo","Xuất\nvideo"],
+            "VISUAL_LOCK":["Visual\nlock","Giữ\nkhung"],
+            "GCS_STAB":["GCS\nstab","Cân bằng\nảnh"],
+            "INVERT_PAN":["Invert\npan","Đảo cần\npan"],
+            "INVERT_TILT":["Invert\ntilt","Đảo cần\ntilt"],
+            "INVERT_ZOOM":["Invert\nzoom","Đảo cần\nzoom"],
+        },
+        "PRECHECK":{
+            "MENU_TITTLE":["Check list","Danh sách"],
+            "TITTLE":["Preflight check process","Quy trình kiểm tra trước bay"],
+            "GPS":{
+                "MENU_TITTLE":["GPS","Định vị"],
+                "TITTLE":["Wait untill UAV Location show bellow!\nCompare it with Other GPS device!",
+                            "Đợi cho tới khi vị trí máy bay xuất hiện bên dưới!\nSo sánh với thiết bị khác"],
+                "QUESTION":["Is UAV Location correct?","Tọa độ của máy bay có chính xác không?"],
+                "LATITUDE":["LATITUDE","VĨ ĐỘ"],
+                "LONGITUDE":["LONGITUDE","KINH ĐỘ"],
+            },
+            "JOYSTICK":{
+                "MENU_TITTLE":["Joystick","Tay cầm"],
+                "TITTLE":["Checking Joystick action","Kiểm tra hoạt động tay cầm"],
+                "AXIS_MONITOR":["Axis monitor","Giám sát cần trục"],
+                "RC_MONITOR":["RC monitor","Giám sát tín hiệu điều khiển"],
+            },
+            "LASER":{
+                "MENU_TITTLE":["Laser","Laser"],
+                "TITTLE":["Checking Altitude measurement Laser","KIểm tra đo cao sử dụng laser"],
+                "QUESTION":["Lift up the UAV and check Altitude parameter",
+                    "Nhấc máy bay lên và kiểm tra độ cao trả về"],
+                "ALTITUDE":["Altitude","Độ cao"]
+            },
+            "MODECHECK":{
+                "MENU_TITTLE":["Mode check","Chế độ bay"],
+                "TITTLE":["Check Flight Mode","Kiểm tra chế độ bay"],
+                "COMMAND_MODE":["Command Mode","Chế độ lệnh"],
+                "TEST_MODE":["Test mode","Chế độ thử"]
+            },
+            "PITOT":{
+                "MENU_TITTLE":["Pitot","Pitot"],
+                "TITTLE":["Cover the pitot, monitor velocity parameter", "Che đầu ống pitot, quan sát vận tốc trả về"],
+                "QUESTION":["Does velocity parameter change when cover the pitot?",
+                            "Vận tốc có thay đổi khi che đầu ống pitot?"],
+                "VELOCITY":["Current Velocity","Vận tốc trả về"]
+            },
+            "PROPELLERS":{
+                "MENU_TITTLE":["Propellers","Cánh quạt"],
+                "TITTLE":["Press Safety and continue to check propellers",
+                        "Nhấn nút an toàn và kiểm tra các cánh quạt"],
+                "PROPELLER":["Propeller","Cánh quạt"],
+            },
+            "RPM":{
+                "MENU_TITTLE":["RPM","RPM"],
+                "TITTLE":["Checking UAV Propulsion motor",
+                        "Kiểm tra động cơ đẩy"],
+                "QUESTION":["Lift up the UAV and check Altitude parameter",
+                        ""]                                                                                                                                             ,
+                "SPEED":["Engine speed","Tốc độ quay"]
+            },
+            "STEERING":{
+                "MENU_TITTLE":["Steering","Cánh liệng"],
+                "TITTLE":["Checking steering","Kiểm tra cánh liệng"],
+                "QUESTION":["Pilot check steering at Manual mode and FBWA mode",
+                            "Phi công kiểm tra cánh liệng ở chế độ Manual và FBWA"],
+            },
+            "SUCCESS":{
+                "MENU_TITTLE":["Preflight check success. Ready to take off.",
+                                "Kiểm tra trước bay thành công. Sẵn sàng cất cánh"]
+            },
+        },
+        "PARAMS":{
+            "SELECT":["Select minor params to show","Lựa chọn tham số hiển thị"],
+            "SHOW":["Minor params","Tham số phụ"]
+        },
+        "POPUP":{
+            "DRONE":["Drone Online","Drone trực tuyến"],
+            "PCD":["PM Online","PM trực tuyến"],
+            "CC":["C&C Online","SCH trực tuyến"]
+        },
+        "CHATBOX":{
+            "TITTLE":["Chat box","Nhắn tin"],
+            "MESSAGE":["Message","Trả lời"]
+        },
+        "CONFIGURATION":{
+            "TITTLE":["Menu settings","Danh sách\nthiết lập"],
+            "APPLICATION":{
+                "TITTLE":["Application config","Cấu hình ứng dụng"],
+                "SIDEBAR":["Application","Ứng dụng"],
+                "WINDOWS_NORMAL":["Minize windows","Thu nhỏ"],
+                "WINDOWS_FULL":["Full screen","Toàn màn hình"],
+                "QUIT_APP":["Quit application","Thoát ứng dụng"],
+                "SHUTDOWN_COM":["Shutdown computer","Tắt thiết bị"],
+                "LANGUAGE":["Language selection","Lựa chọn ngôn ngữ"],
+                "SELECT":["Select","Lựa chọn"]
+            },
+            "SCREEN":{
+                "TITTLE":["Screen Monitor Information","Thông tin màn hình"],
+                "SIDEBAR":["Screen monitor","Màn hình"]
+            },
+            "PARAMETERS":{
+                "TITTLE":["Parameter List","Danh sách tham số máy bay"],
+                "SIDEBAR":["Parametes","Tham số máy bay"],
+                "FILTER":["PARAM NAME FILTER","LỌC TÊN THAM SỐ"],
+            },
+            "JOYSTICK":{
+                "TITTLE":["Joystick Configuration","Thiết lập tay cầm"],
+                "SIDEBAR":["Joystick","Tay cầm"],
+                "SELECTION":["Joystick selection","Lựa chọn tay cầm"],
+                "BTN_SELECT":["Select","Lựa chọn"],
+                "NAME":["Name","Tên"],
+                "VERSION":["Version","Phiên\nbản"],
+                "AXES":["Axes","Trục"],
+                "BUTTONS":["Button","Phím"],
+                "ENABLE":["Enable control plane using joystick",
+                            "Sử dụng tay cầm điều khiển máy bay"],
+                "BTN_SAVE":["Save joystick","Lưu thay đổi"],
+                "BTN_RESET":["Reset default","Thiết lập lại"],
+                "AXES_MONITOR":["Axes monitor","Giám sát cần trục"],
+                "BUTTONS_MONITOR":["Buttons monitor","Giám sát nút bấm"],
+                "INVERT":["Invert","Đảo ngược"],
+            },
+        },
+        "VIDEO":{
+            "SIGNAL_SMALL":["NO\nVIDEO","CHỜ\nTÍN HIỆU"],
+            "SIGNAL_NORMAL":["NO VIDEO","CHỜ TÍN HIỆU"],
+            "STAB":{
+                "TITTLE":["Stab","Cân bằng"],
+                "ON":["ON","BẬT"],
+                "OFF":["OFF","TẮT"],
+            },
+            "LOCK":{
+                "TITTLE":["Lock","Bám"],
+                "FREE":["FREE","TỰ DO"],
+                "TRACK":["TRACK","BÁM BẮT"],
+                "VISUAL":["VISUAL","GIỮ KHUNG"],
+            },
+            "ZOOM":{
+                "OPTICAL":["Zoom","Phóng đại"],
+                "DIGITAL":["Digital","Số"],
+            },
+        },
+        "MAP_CONTROL":{
+            "CENTER":["Center","Tâm"],
+            "IN":["In","To"],
+            "OUT":["Out","Nhỏ"],
+        },
+        "OCR":{
+            "NAME":["OCR","OCR"],
+            "FILTER":["License number","Biển số"],
+            "BTN_READ":["Read log","Đọc nhật kí"],
+            "TIME_LINE":["Time line","Thời gian"],
+            "DATE_TIME":["Date time","Thời gian"],
+            "PLATE":["Plate","Biển"],
+            "SPEED":["Speed","Tốc độ"],
+            "COUNT":["Count","Số lượng"],
+        },
+        "DIALOG":{
+            "WAYPOINT_EDITOR":{
+                "TITTLE":["Waypoint editor","Chỉnh sửa điểm"],
+                "LATITUDE":["Latitude","Vĩ độ"],
+                "LONGITUDE":["Longitude","Kinh độ"],
+            },
+            "MARKER_EDITOR":{
+                "TITTLE":["Marker editor","Chỉnh sửa nhãn"],
+                "LATITUDE":["Latitude","Vĩ độ"],
+                "LONGITUDE":["Longitude","Kinh độ"],
+            },
+            "ALTITUDE_EDITOR":{
+                "TITTLE":["Altitude editor","Chỉnh sửa điểm"],
+            },
+            "SPEED_EDITOR":{
+                "TITTLE":["Speed editor","Chỉnh sửa điểm"],
+            },
+            "LOAD_MAP":{
+                "TITTLE":["Please choose a map file!","Chọn bản đồ"],
+                "ONLINE":["Online map","Bản đồ trực tuyến"]
+            },
+            "LOAD_MISSION":{
+                "TITTLE":["Please choose a mission file!","Chọn nhiệm vụ"],
+            },
+            "SAVE_MISSION":{
+                "TITTLE":["Please insert file's name!","Nhập tên tệp lưu"],
+            },
+            "CONFIRM":{
+                "FLIGHT_MODE":["Are you sure to change next flight mode to",
+                    "Bạn có muốn chuyển chế độ bay sang"],
+                "QUIT_APP":["Are you sure to want to \n close application",
+                    "Bạn có muốn tắt ứng dụng"],
+                "SHUTDOWN_COM":["Are you sure to want to \n turn off computer",
+                    "Bạn có muốn tắt thiết bị"],
+                "ARM":["ARM","MỞ KHÓA ĐỘNG CƠ"],
+                "DISARM":["DISARM","KHÓA ĐỘNG CƠ"],
+                "TAKE_OFF":["TAKE OFF","CẤT CÁNH"],
+                "WANT_TO":["Are you sure to want to","Bạn có muốn"],
+                "GO_LOCATION_NOT_GUIDED":["Vehicle is not in Guided mode\nDo you want to change and go?",
+                    "Máy bay không ở chế độ Guided\nBạn có muốn chuyển chế độ và tới vị trí đã chọn"],
+                "GO_LOCATION_GUIDED":["Are you sure to go to \n selected location",
+                    "Bạn có muốn tới vị trí đã chọn"
+                ],
+            }
+        },
+    }
+
     function changeTheme(themeType){
         switch(themeType){
         case UIConstants.themeNormal:
@@ -362,8 +742,5 @@ QtObject {
     readonly property int z_dialog: 2
 
     readonly property color planeTrajactoryColor: "#ffee44"
-
-
-
 
 }

@@ -23,6 +23,8 @@ ApplicationWindow {
     visibility: ApplicationWindow.FullScreen
     title: qsTr("DCOS - PGCSv0.1")
     flags: Qt.WindowMinMaxButtonsHint
+    property var itemListName:
+        UIConstants.itemTextMultilanguages
     function switchMapFull(){
         videoPane.x = paneControl.x;
         videoPane.y = paneControl.y;
@@ -628,11 +630,12 @@ ApplicationWindow {
                 footerBar.isShowConfirm = true;
                 footerBar.compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                 footerBar.confirmDialogObj = footerBar.compo.createObject(parent,{
-                                                                              "title":"Are you sure to change next flight mode to:\n"+currentMode,
-                                                                              "type": "CONFIRM",
-                                                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                              "z":200});
+                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["FLIGHT_MODE"]
+                                [UIConstants.language[UIConstants.languageID]]+":\n"+currentMode,
+                              "type": "CONFIRM",
+                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                              "z":200});
                 footerBar.confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
                         setFlightMode(currentMode);
@@ -683,7 +686,8 @@ ApplicationWindow {
             }
             ParamsShowDialog{
                 id: paramsShowPanel
-                title: "Minor params"
+                title: itemListName["PARAMS"]["SHOW"]
+                       [UIConstants.language[UIConstants.languageID]]
                 z:6
                 vehicle: vehicle
                 width: hud.width
@@ -697,7 +701,8 @@ ApplicationWindow {
             ParamsSelectDialog{
                 id: paramsSelectPanel
                 visible: false
-                title:"Select minor params to show"
+                title:itemListName["PARAMS"]["SELECT"]
+                      [UIConstants.language[UIConstants.languageID]]
                 type: "CONFIRM"
                 x:parent.width / 2 - width / 2
                 y:parent.height / 2 - height / 2
@@ -1171,11 +1176,12 @@ ApplicationWindow {
                         if(func === "QUIT_APP"){
                             var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                             var confirmDialogObj = compo.createObject(parent,{
-                                                                          "title":"Are you sure to want to \n close application",
-                                                                          "type": "CONFIRM",
-                                                                          "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                          "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                          "z":200});
+                                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["QUIT_APP"]
+                                                        [UIConstants.language[UIConstants.languageID]],
+                                              "type": "CONFIRM",
+                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                              "z":200});
                             confirmDialogObj.clicked.connect(function (type,func){
                                 if(func === "DIALOG_OK"){
                                     confirmDialogObj.destroy();
@@ -1191,11 +1197,12 @@ ApplicationWindow {
                         }else if(func === "QUIT_COM"){
                             var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                             var confirmDialogObj = compo.createObject(parent,{
-                                                                          "title":"Are you sure to want to \n turn off computer",
-                                                                          "type": "CONFIRM",
-                                                                          "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                          "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                          "z":200});
+                                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["SHUTDOWN_COM"]
+                                                [UIConstants.language[UIConstants.languageID]],
+                                              "type": "CONFIRM",
+                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                              "z":200});
                             confirmDialogObj.clicked.connect(function (type,func){
                                 if(func === "DIALOG_OK"){
                                     confirmDialogObj.destroy();
@@ -1257,7 +1264,8 @@ ApplicationWindow {
                 var x = mainWindow.width/2-UIConstants.sRect*10/2;
                 var y = mainWindow.height/2-UIConstants.sRect*15/2;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/MapDialog.qml");
-                var fileDialogObj = compo.createObject(parent,{"title":"Please choose a file!",
+                var fileDialogObj = compo.createObject(parent,{"title":mainWindow.itemListName["DIALOG"]["LOAD_MAP"]
+                                                           [UIConstants.language[UIConstants.languageID]],
                                                            "folder":mapPane.dataPath+"tpk",
                                                            //                                                            "nameFilters":["*.tpk"],
                                                            "x": x,
@@ -1287,7 +1295,8 @@ ApplicationWindow {
                 var x = mainWindow.width/2-UIConstants.sRect*10/2;
                 var y = mainWindow.height/2-UIConstants.sRect*15/2;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/FileDialog.qml");
-                var fileDialogObj = compo.createObject(parent,{"title":"Please choose a map file!",
+                var fileDialogObj = compo.createObject(parent,{"title":mainWindow.itemListName["DIALOG"]["LOAD_MISSION"]
+                                                           [UIConstants.language[UIConstants.languageID]],
                                                            "fileMode": "FILE_OPEN",
                                                            "folder":applicationDirPath+"/"+"missions",
                                                            "nameFilters":["*.waypoints"],
@@ -1321,7 +1330,8 @@ ApplicationWindow {
                 var x = mainWindow.width/2-UIConstants.sRect*10/2;
                 var y = mainWindow.height/2-UIConstants.sRect*15/2;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/FileDialog.qml");
-                var fileDialogObj = compo.createObject(parent,{ "title":"Please insert file's name!",
+                var fileDialogObj = compo.createObject(parent,{ "title":mainWindow.itemListName["DIALOG"]["LOAD_MISSION"]
+                                                           [UIConstants.language[UIConstants.languageID]],
                                                            "fileMode": "FILE_SAVE",
                                                            "folder":applicationDirPath+"/"+"missions",
                                                            "nameFilters":["*.waypoints"],
@@ -1397,11 +1407,12 @@ ApplicationWindow {
                     console.log("Do Auto");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Are you sure to want to \n change flight mode to AUTO",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                                  "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["FLIGHT_MODE"]
+                                            [UIConstants.language[UIConstants.languageID]]+" Auto",
+                                  "type": "CONFIRM",
+                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "Auto";
@@ -1421,11 +1432,12 @@ ApplicationWindow {
                     console.log("Do Guided");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Are you sure to want to \n change flight mode to Guided",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                                  "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["FLIGHT_MODE"]
+                                        [UIConstants.language[UIConstants.languageID]]+" Guided",
+                                  "type": "CONFIRM",
+                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "Guided";
@@ -1445,11 +1457,18 @@ ApplicationWindow {
                     console.log("Do Takeoff");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Are you sure to want to \n"+(!vehicle.armed?"ARM and ":"")+"TAKE OFF ?",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                                  "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["WANT_TO"]
+                                      [UIConstants.language[UIConstants.languageID]]+
+                                      "\n"+(!vehicle.armed?
+                                                (mainWindow.itemListName["DIALOG"]["CONFIRM"]["ARM"]
+                                                 [UIConstants.language[UIConstants.languageID]]+" and "):
+                                                "")
+                                        +mainWindow.itemListName["DIALOG"]["CONFIRM"]["TAKE_OFF"]
+                                        [UIConstants.language[UIConstants.languageID]]+" ?",
+                                  "type": "CONFIRM",
+                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             //                            if(!vehicle.armed)
@@ -1484,12 +1503,12 @@ ApplicationWindow {
 
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/AltitudeEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
-                                                                  "z":200,
-                                                                  "minValue": minValue,
-                                                                  "maxValue": maxValue,
-                                                                  "currentValue": footerBar.getFlightAltitudeTarget()});
+                                      "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
+                                      "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
+                                      "z":200,
+                                      "minValue": minValue,
+                                      "maxValue": maxValue,
+                                      "currentValue": footerBar.getFlightAltitudeTarget()});
                     confirmDialogObj.confirmClicked.connect(function (){
                         console.log("vehicle.currentWaypoint = "+vehicle.currentWaypoint);
                         footerBar.isShowConfirm = false;
@@ -1620,11 +1639,12 @@ ApplicationWindow {
                     console.log("Do RTL");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Are you sure to want to \n change flight mode to RTL",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                                  "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["FLIGHT_MODE"]
+                                         [UIConstants.language[UIConstants.languageID]]+" RTL",
+                                  "type": "CONFIRM",
+                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "RTL";
@@ -1644,11 +1664,17 @@ ApplicationWindow {
                 console.log("Do Arm");
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                 var confirmDialogObj = compo.createObject(parent,{
-                                                              "title":"Are you sure to want to \n"+(!vehicle.armed?"ARM":"DISARM")+"?",
-                                                              "type": "CONFIRM",
-                                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                              "z":200});
+                                  "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["WANT_TO"]
+                                        [UIConstants.language[UIConstants.languageID]]+" \n"+(!vehicle.armed?
+                                          mainWindow.itemListName["DIALOG"]["CONFIRM"]["ARM"]
+                                            [UIConstants.language[UIConstants.languageID]]:
+                                          mainWindow.itemListName["DIALOG"]["CONFIRM"]["DISARM"]
+                                            [UIConstants.language[UIConstants.languageID]]
+                                    )+"?",
+                                  "type": "CONFIRM",
+                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                  "z":200});
                 confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
                         vehicle.setArmed(!vehicle.armed);
@@ -1702,11 +1728,12 @@ ApplicationWindow {
                 if(vehicle.flightMode !== "Guided"){
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Vehicle is not in Guided mode\nDo you want to change and go?",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["GO_LOCATION_NOT_GUIDED"]
+                                [UIConstants.language[UIConstants.languageID]],
+                              "type": "CONFIRM",
+                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                              "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "Guided";
@@ -1722,11 +1749,12 @@ ApplicationWindow {
                 }else{
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Are you sure to go to \n selected location"+"?",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["GO_LOCATION_GUIDED"]
+                                [UIConstants.language[UIConstants.languageID]]+"?",
+                              "type": "CONFIRM",
+                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                              "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             mapPane.changeClickedPosition(mapPane.clickedLocation,true);
@@ -1781,7 +1809,7 @@ ApplicationWindow {
     }
     Timer{
         id: timerRequestData
-        interval: 30; repeat: true;
+        interval: 100; repeat: true;
         running: false
         property int countGetData: 0
         onTriggered: {

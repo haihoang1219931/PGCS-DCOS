@@ -21,13 +21,7 @@ Item {
     property color subFunctionColor: "#4d4d4d"
     property color themeColor: "#222F3E" //"#222F3E","#1A1A1A"
     property bool ctrlPress: false
-    property bool autoConnect: false
-    property string languageID: "EN"
-    property var language:
-    {
-        "EN":0,
-        "VI":1
-    }
+    property bool autoConnect: false    
     property real zoomState: 0
     property int irZoom: 1
     property string sensorID: sensorIDEO
@@ -35,15 +29,10 @@ Item {
     property string sensorIDIR: "IR"
     property string lockMode: "FREE" // "VISUAL","GEO","TRACK"
     property string presetMode: "OFF" // "RIGHT_WING","NADIR","OFF"
-    property string colorModeEO: "AUTO"
-    property string colorModeIR: "WHITE_HOT"
-//    property string colorMode: "AUTO"
     property var colorMode: {
-                            "EO":"AUTO",// "COLOR","DAWN"
+                            "EO":"NORMAL",// "COLOR","DAWN"
                             "IR":"WHITE_HOT" // "BLACK_HOT","REDDISH","COLOR"
                             }
-    property string defogModeEO: "OFF"
-    property string defogModeIR: "OFF"
     property var defogMode: {
                             "EO":"OFF",//"AUTO","LOW","MEDIUM","HIGH"
                             "IR":"OFF" //"AUTO","LOW","MEDIUM","HIGH"

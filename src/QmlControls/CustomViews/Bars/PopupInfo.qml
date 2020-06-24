@@ -25,6 +25,8 @@ Rectangle {
     property bool showInfoDrones: true
     property bool showInfoPMCC: true
     property int fontSize: 15
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["POPUP"]
     signal changeShowState(string type, int id, bool show);
     signal openChatBoxClicked(string ip);
     function showInfo(type,show){
@@ -67,7 +69,8 @@ Rectangle {
 
         Label {
             id: lblDroneOnline
-            text: UC_API?"Drone Online "+"["+Number(UCDataModel.listRooms.length)+"]":""
+            text: UC_API?itemListName["DRONE"]
+                          [UIConstants.language[UIConstants.languageID]]+" ["+Number(UCDataModel.listRooms.length)+"]":""
             color: UIConstants.textColor
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize
@@ -120,7 +123,8 @@ Rectangle {
 
         Label {
             id: lblPMOnline
-            text: "PM Online "+"["+Number(UCDataModel.listUsers.length).toFixed(0).toString()+"]"
+            text: itemListName["PCD"]
+                  [UIConstants.language[UIConstants.languageID]]+" ["+Number(UCDataModel.listUsers.length).toFixed(0).toString()+"]"
             color: UIConstants.textColor
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize
@@ -170,7 +174,8 @@ Rectangle {
 
         Label {
             id: lblCCOnline
-            text: "C&C Online "+qsTr("[0]")
+            text: itemListName["CC"]
+                  [UIConstants.language[UIConstants.languageID]]+qsTr("[0]")
             color: UIConstants.textColor
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize

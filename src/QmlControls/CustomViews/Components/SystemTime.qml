@@ -24,10 +24,7 @@ import CustomViews.UIConstants 1.0
 
 Item {
     id: item
-    property var itemListName:
-    {
-        "SYSTEM_TIME":["System time","Thời gian hệ thống"],
-    }
+    property var itemListName: UIConstants.itemTextMultilanguages["NAVBAR"]
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
@@ -35,7 +32,7 @@ Item {
 
         Text {
             id: headTitle
-            text: itemListName["SYSTEM_TIME"][camState.language[camState.languageID]]
+            text: itemListName["SYSTEM_TIME"][UIConstants.language[UIConstants.languageID]]
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             font {pixelSize: UIConstants.fontSize;}

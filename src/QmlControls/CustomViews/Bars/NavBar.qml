@@ -57,16 +57,7 @@ Item {
 
     //----- List tab button
     property var listTab: [tabMP,tabPC,tabFlight]
-    property var itemListName:
-    {
-        "MISSION":["Mission\nplanner","Xây dựng\nkế hoạch"],
-        "PRECHECK":["Preflight\ncheck","Kiểm tra\ntrước bay"],
-        "FLIGHT":["Flight","Giám sát\nbay"],
-        "FLIGHT_MODE":["Flight mode","Chế độ bay"],
-        "UAV_HOME":["UAV->Home","Máy bay->Nhà"],
-        "UAV_WP":["UAV->WP","Máy bay->Điểm"],
-        "FLIGHT_TIME":["Flight time","Thời gian bay"],
-    }
+    property var itemListName: UIConstants.itemTextMultilanguages["NAVBAR"]
 
     function startFlightTimer(){
         timerFlightTime.start();
@@ -155,7 +146,7 @@ Item {
             //---------- Menu navigation
             FlatButton {
                 id: tabMP
-                btnText: itemListName["MISSION"][camState.language[camState.languageID]]
+                btnText: itemListName["MISSION"][UIConstants.language[UIConstants.languageID]]
                 btnTextColor: UIConstants.textFooterColor
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: width
@@ -174,7 +165,7 @@ Item {
             }
             FlatButton {
                 id: tabPC
-                btnText: itemListName["PRECHECK"][camState.language[camState.languageID]]
+                btnText: itemListName["PRECHECK"][UIConstants.language[UIConstants.languageID]]
                 btnTextColor: UIConstants.textFooterColor
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: width
@@ -193,7 +184,7 @@ Item {
             }
             FlatButton {
                 id: tabFlight
-                btnText: itemListName["FLIGHT"][camState.language[camState.languageID]]
+                btnText: itemListName["FLIGHT"][UIConstants.language[UIConstants.languageID]]
                 btnTextColor: UIConstants.textFooterColor
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: width
@@ -574,7 +565,7 @@ Item {
                 Label{
                     id: lblFlightTime
                     Layout.alignment: Qt.AlignVCenter
-                    text: itemListName["FLIGHT_TIME"][camState.language[camState.languageID]]
+                    text: itemListName["FLIGHT_TIME"][UIConstants.language[UIConstants.languageID]]
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
@@ -636,7 +627,7 @@ Item {
                 Label{
                     id: lblWP0
                     Layout.alignment: Qt.AlignVCenter
-                    text: itemListName["UAV_WP"][camState.language[camState.languageID]]+"["+
+                    text: itemListName["UAV_WP"][UIConstants.language[UIConstants.languageID]]+"["+
                           (vehicle?Number(vehicle.currentWaypoint).toFixed(0).toString():"")
                     +"]"
                     color: UIConstants.textColor
@@ -669,7 +660,7 @@ Item {
                 Label{
                     id: lblHome
                     Layout.alignment: Qt.AlignVCenter
-                    text: itemListName["UAV_HOME"][camState.language[camState.languageID]]
+                    text: itemListName["UAV_HOME"][UIConstants.language[UIConstants.languageID]]
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
@@ -701,7 +692,7 @@ Item {
                     id: lblFlightMode
                     Layout.alignment: Qt.AlignVCenter
                     font.pixelSize: UIConstants.fontSize
-                    text: itemListName["FLIGHT_MODE"][camState.language[camState.languageID]]
+                    text: itemListName["FLIGHT_MODE"][UIConstants.language[UIConstants.languageID]]
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
                     width: UIConstants.sRect

@@ -97,7 +97,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 5
+            anchors.bottomMargin: 0
             color: isEnable ? UIConstants.textFooterColor : UIConstants.cDisableColor
         }
     }
@@ -173,8 +173,3 @@ Rectangle {
         textBtn.color = UIConstants.cDisableColor
     }
 }
-
-/*##^## Designer {
-    D{i:13;anchors_y:0}
-}
- ##^##*/

@@ -24,6 +24,8 @@ Rectangle {
     width: 1376
     height: 768
     property string type: ""
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["CONFIGURATION"]["APPLICATION"]
     signal clicked(string type, string action)
     Column{
         id: clmLanguage
@@ -35,7 +37,8 @@ Rectangle {
         spacing:    UIConstants.sRect/2
         Row{
             Label {
-                text: qsTr("Language selection")
+                text: itemListName["LANGUAGE"]
+                      [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize
                 font.family: UIConstants.appFont
@@ -51,9 +54,10 @@ Rectangle {
             }
             OldCtrl.Button{
                 id: btnSelectLanguage
-                width: UIConstants.sRect * 3
+                width: UIConstants.sRect * 4
                 height: UIConstants.sRect * 1.5
-                text: "Select"
+                text: itemListName["SELECT"]
+                      [UIConstants.language[UIConstants.languageID]]
                 style: ButtonStyle{
                     background: Rectangle{
                         color: UIConstants.info
@@ -70,9 +74,9 @@ Rectangle {
 
                 onClicked: {
                     if(cbxListLanguage.currentIndex === 0){
-                        camState.languageID = "EN";
+                        UIConstants.languageID = "EN";
                     }else if(cbxListLanguage.currentIndex === 1){
-                        camState.languageID = "VI";
+                        UIConstants.languageID = "VI";
                     }
                 }
             }
@@ -118,7 +122,10 @@ Rectangle {
                 font.family: UIConstants.appFont
                 font.pixelSize: UIConstants.fontSize
                 text: mainWindow.visibility === ApplicationWindow.FullScreen?
-                          "Minize windows":"Full windows"
+                          itemListName["WINDOWS_NORMAL"]
+                            [UIConstants.language[UIConstants.languageID]]:
+                          itemListName["WINDOWS_FULL"]
+                            [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.textColor
             }
         }
@@ -147,7 +154,8 @@ Rectangle {
             Label{
                 font.family: UIConstants.appFont
                 font.pixelSize: UIConstants.fontSize
-                text: "Quit Application"
+                text: itemListName["QUIT_APP"]
+                      [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.textColor
             }
         }
@@ -176,7 +184,8 @@ Rectangle {
             Label{
                 font.family: UIConstants.appFont
                 font.pixelSize: UIConstants.fontSize
-                text: "Shutdown Computer"
+                text: itemListName["SHUTDOWN_COM"]
+                      [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.textColor
             }
         }

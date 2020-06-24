@@ -28,11 +28,12 @@ Rectangle{
     width: 600
     height: 300
     color: "transparent"
-
+    property var itemListName:  UIConstants.itemTextMultilanguages["PRECHECK"]["MODECHECK"]
     QLabel {
         id: lblTitle
         height: 54
-        text: "Check Flight Mode"
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.left: parent.left
@@ -48,7 +49,8 @@ Rectangle{
         spacing: 8
         QLabel {
             id: lblModeCommandTiltle
-            text: "Command Mode"
+            text: itemListName["COMMAND_MODE"]
+                  [UIConstants.language[UIConstants.languageID]]
             anchors.horizontalCenter: parent.horizontalCenter
             border.width: 0
             clip: false
@@ -65,7 +67,8 @@ Rectangle{
         QLabel {
             id: lblModeTiltle
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Test Mode"
+            text: itemListName["TEST_MODE"]
+                  [UIConstants.language[UIConstants.languageID]]
             border.width: 0
             clip: false
         }

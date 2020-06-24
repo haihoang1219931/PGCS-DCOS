@@ -28,6 +28,8 @@ Rectangle {
     //-------------- properties
     property int currentItem: 0
     property alias model: sidebarElements.model
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]
     //-------------- signal
     signal displayActiveConfigBoard( real boardId_ )
 
@@ -40,7 +42,8 @@ Rectangle {
         anchors { top: parent.top; left: parent.left; right: parent.right }
         height: UIConstants.sRect * 2
         visible: true
-        title: "Check List"
+        title: itemListName["MENU_TITTLE"]
+               [UIConstants.language[UIConstants.languageID]]
     }
 
     //--------------- Sidebar list / Sidebar content
@@ -49,7 +52,7 @@ Rectangle {
         //--- Sidebar Elements
         Repeater {
             id: sidebarElements
-            anchors.fill: parent
+            anchors.fill: parent            
             delegate: CheckListEle {
                 width: parent.width
                 height: 60

@@ -33,6 +33,8 @@ Rectangle {
     property real currentValue: 150
     property real stepValue: 5
     property var validatorValue: /^([1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9])/
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["DIALOG"]["ALTITUDE_EDITOR"]
     signal confirmClicked()
     signal cancelClicked()
     MouseArea{
@@ -44,7 +46,8 @@ Rectangle {
         x: 8
         width: 264
         height: 25
-        text: qsTr("Altitude editor")
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: 8

@@ -19,11 +19,11 @@ import CustomViews.UIConstants 1.0
 /// Joystick Config
 Item {
     id: rootItem
-    property string pageName:           qsTr("Joystick")
-    property string pageDescription:    qsTr("Joystick Setup is used to configure a calibrate joysticks.")
     width: 1280
     height: 768
     clip: true
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["CONFIGURATION"]["JOYSTICK"]
     property var mapAxisKeys: ["Unused","Roll","Pitch","Yaw","Throttle"]
     property var mapAxis: {"Unused":-1,"Roll":0,"Pitch":1,"Yaw":2,"Throttle":3}
     property var mapButtonKeys: ["Unused","PIC/CIC","CIC/PIC","Guided","Loiter","Auto","RTL",
@@ -49,7 +49,8 @@ Item {
             spacing:    UIConstants.sRect/2
             Row{
                 Label {
-                    text: qsTr("Joystick selection")
+                    text: itemListName["SELECTION"]
+                          [UIConstants.language[UIConstants.languageID]]
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
@@ -66,7 +67,8 @@ Item {
                     id: btnSelectJoystick
                     width: UIConstants.sRect * 3
                     height: UIConstants.sRect * 1.5
-                    text: "Select"
+                    text: itemListName["BTN_SELECT"]
+                          [UIConstants.language[UIConstants.languageID]]
                     style: ButtonStyle{
                         background: Rectangle{
                             color: UIConstants.info
@@ -88,7 +90,8 @@ Item {
             }
             Row{
                 Label{
-                    text: "Name:"
+                    text: itemListName["NAME"]
+                          [UIConstants.language[UIConstants.languageID]]+":"
                     width: UIConstants.sRect*3
                     height: UIConstants.sRect * 1.5
                     color: UIConstants.textColor
@@ -110,7 +113,8 @@ Item {
             }
             Row{
                 Label{
-                    text: "Version:"
+                    text: itemListName["VERSION"]
+                          [UIConstants.language[UIConstants.languageID]]+":"
                     width: UIConstants.sRect*3
                     height: UIConstants.sRect * 1.5
                     color: UIConstants.textColor
@@ -131,7 +135,8 @@ Item {
             }
             Row{
                 Label{
-                    text: "Axes:"
+                    text: itemListName["AXES"]
+                          [UIConstants.language[UIConstants.languageID]]+":"
                     width: UIConstants.sRect*3
                     height: UIConstants.sRect * 1.5
                     color: UIConstants.textColor
@@ -152,7 +157,8 @@ Item {
             }
             Row{
                 Label{
-                    text: "Buttons:"
+                    text: itemListName["BUTTONS"]
+                          [UIConstants.language[UIConstants.languageID]]+":"
                     width: UIConstants.sRect*3
                     height: UIConstants.sRect * 1.5
                     color: UIConstants.textColor
@@ -202,7 +208,8 @@ Item {
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
-                    text: "Enable control plane using joystick"
+                    text: itemListName["ENABLE"]
+                          [UIConstants.language[UIConstants.languageID]]
                 }
             }
 
@@ -226,7 +233,8 @@ Item {
                             horizontalAlignment: Label.AlignHCenter
                         }
                     }
-                    text: "Save joystick"
+                    text: itemListName["BTN_SAVE"]
+                          [UIConstants.language[UIConstants.languageID]]
                     onClicked: {
                         joystick.saveConfig();
                     }
@@ -249,7 +257,8 @@ Item {
                             horizontalAlignment: Label.AlignHCenter
                         }
                     }
-                    text: "Reset default"
+                    text: itemListName["BTN_RESET"]
+                          [UIConstants.language[UIConstants.languageID]]
                     onClicked: {
                         joystick.resetConfig();
                     }
@@ -267,7 +276,8 @@ Item {
                 spacing:    UIConstants.sRect/2
                 width: parent.width
                 Label {
-                    text: qsTr("Axis Monitor")
+                    text: itemListName["AXES_MONITOR"]
+                          [UIConstants.language[UIConstants.languageID]]
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
@@ -372,7 +382,8 @@ Item {
                                 font.pixelSize: UIConstants.fontSize
                                 font.family: UIConstants.appFont
                                 color: UIConstants.textColor
-                                text: "Invert"
+                                text: itemListName["INVERT"]
+                                      [UIConstants.language[UIConstants.languageID]]
                             }
                         }
                     }
@@ -387,7 +398,8 @@ Item {
                 spacing:    UIConstants.sRect/2
                 Label {
                     id: lblButtonMonitor
-                    text: qsTr("Button Monitor")
+                    text: itemListName["BUTTONS_MONITOR"]
+                          [UIConstants.language[UIConstants.languageID]]
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont

@@ -22,6 +22,8 @@ Rectangle {
     clip: true
     property bool isNewMessage: false
     property int receiverID: 0
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["CHATBOX"]
     signal closeClicked()
 
     state: "show"
@@ -71,7 +73,6 @@ Rectangle {
                 target: rectHeader
                 height: UIConstants.sRect * 2
                 width: UIConstants.sRect * 0
-                //                color: UIConstants.transparentColor
             }
             PropertyChanges{
                 target: btnExit
@@ -156,10 +157,8 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: 8
             onClicked: {
-//                rootItem.closeWindows();
                 rootItem.closeClicked();
             }
-//            visible: false
         }
         state: rootItem.isNewMessage ? "message"+"-"+rootItem.state:"normal"+"-"+rootItem.state
         states: [
@@ -172,10 +171,6 @@ Rectangle {
             },
             State{
                 name: "message-hide"
-                //                PropertyChanges{
-                //                    target: btnExit
-                //                    iconColor: "red"
-                //                }
             },
             State{
                 name: "normal-show"
@@ -186,10 +181,6 @@ Rectangle {
             },
             State{
                 name: "message-show"
-                //                PropertyChanges{
-                //                    target: rectHeader
-                //                    color: "red"
-                //                }
             }
         ]
         transitions: [
@@ -240,7 +231,8 @@ Rectangle {
             id: lblChatbox
             y: 12
             height: 30
-            text: qsTr("Chat box")
+            text: itemListName["TITTLE"]
+                  [UIConstants.language[UIConstants.languageID]]
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize
             color: UIConstants.textColor
@@ -291,7 +283,8 @@ Rectangle {
             Layout.fillHeight: true
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize
-            placeholderText: "Message"
+            placeholderText: itemListName["MESSAGE"]
+                             [UIConstants.language[UIConstants.languageID]]
             Keys.onReturnPressed: {
                 UcApi.sendMsgToRoom(input.text)
                 rectChat.sendMessage(UcApi.getStationName());
@@ -353,11 +346,6 @@ Rectangle {
                     wrapMode: TextArea.Wrap
                     horizontalAlignment: !msgPCS?Text.AlignRight:Text.AlignLeft
                     Layout.fillHeight: true
-//                    background: Rectangle{
-//                        anchors.fill: parent
-//                        color: msgPCS?UIConstants.blueColor:UIConstants.greenColor
-//                        radius: UIConstants.rectRadius
-//                    }
                 }
             }
         }

@@ -26,10 +26,13 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]["PITOT"]
     Label {
         id: lblTitle1
         height: UIConstants.sRect * 2
-        text: "Cover the pitot, monitor velocity parameter"
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         wrapMode: Text.WordWrap
         anchors.right: parent.right
         anchors.rightMargin: 8
@@ -72,7 +75,8 @@ Rectangle{
             id: label
             y: 384
             height: UIConstants.sRect * 2
-            text: qsTr("Does velocity parameter change when cover the pitot?")
+            text: itemListName["QUESTION"]
+                  [UIConstants.language[UIConstants.languageID]]
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             verticalAlignment: Text.AlignVCenter
@@ -100,7 +104,8 @@ Rectangle{
         Label {
             id: label1
             y: 38
-            text: qsTr("Current Velocity:")
+            text: itemListName["VELOCITY"]
+                  [UIConstants.language[UIConstants.languageID]]
             anchors.left: parent.left
             anchors.leftMargin: 8
             color: UIConstants.textColor
