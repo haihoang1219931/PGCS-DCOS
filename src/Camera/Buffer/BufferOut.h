@@ -46,6 +46,7 @@ Q_SIGNALS:
 public Q_SLOTS:
     void send();
 public:
+    void connectToHost(QString ip, int port);
     void setIP(string ip);
     void setPort(int port);
     void init();

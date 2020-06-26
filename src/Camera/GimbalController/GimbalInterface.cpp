@@ -173,7 +173,7 @@ void GimbalInterface::setGimbalRecorder(bool enable){
 void GimbalInterface::setGCSRecorder(bool enable){
     Q_UNUSED(enable);
 }
-void GimbalInterface::setLockMode(QString mode, QPoint location){
+void GimbalInterface::setLockMode(QString mode, QPointF location){
     Q_UNUSED(mode);
     Q_UNUSED(location);
 }

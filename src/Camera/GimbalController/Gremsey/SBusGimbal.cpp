@@ -275,7 +275,7 @@ void SBusGimbal::setDigitalStab(bool enable){
         m_context->m_videoStabMode = enable;
     }
 }
-void SBusGimbal::setLockMode(QString mode, QPoint location){
+void SBusGimbal::setLockMode(QString mode, QPointF location){
     m_context->m_lockMode = mode;
     if(mode == "FREE"){
         setDigitalStab(false);

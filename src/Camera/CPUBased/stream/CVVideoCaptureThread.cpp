@@ -230,22 +230,31 @@ void CVVideoCaptureThread::setDigitalStab(bool _en){
 void CVVideoCaptureThread::setTrackAt(int _id, double _px, double _py, double _w, double _h)
 {
     if(m_gimbal != nullptr){
-        if(m_gimbal->context()->m_lockMode == "FREE"){
-            m_gimbal->context()->m_lockMode = "TRACK";
-            m_process->m_trackEnable = true;
-            m_enTrack = true;
-            m_enSteer = false;
-            int x = static_cast<int>(_px/_w*m_sourceSize.width());
-            int y = static_cast<int>(_py/_h*m_sourceSize.height());
-            printf("%s at (%dx%d)\r\n",__func__,x,y);
-            removeTrackObjectInfo(0);
-            TrackObjectInfo *object = new TrackObjectInfo(m_sourceSize,QRect(x-20,y-20,40,40),"Object",20.975092,105.307680,0,0,"Track");
-            object->setIsSelected(true);
-            addTrackObjectInfo(object);
+        if(!m_gimbal->context()->m_processOnBoard){
+            if(m_gimbal->context()->m_lockMode == "FREE"){
+                m_gimbal->context()->m_lockMode = "TRACK";
+                m_process->m_trackEnable = true;
+                m_enTrack = true;
+                m_enSteer = false;
+                int x = static_cast<int>(_px/_w*m_sourceSize.width());
+                int y = static_cast<int>(_py/_h*m_sourceSize.height());
+                printf("%s at (%dx%d)\r\n",__func__,x,y);
+                removeTrackObjectInfo(0);
+                TrackObjectInfo *object = new TrackObjectInfo(m_sourceSize,QRect(x-20,y-20,40,40),"Object",20.975092,105.307680,0,0,"Track");
+                object->setIsSelected(true);
+                addTrackObjectInfo(object);
+            }
+            m_gimbal->setDigitalStab(true);
+            m_process->setClick(_px, _py, _w, _h);
+        }else{
+            if(m_gimbal->context()->m_lockMode == "FREE" ||
+                    m_gimbal->context()->m_lockMode == "TRACK"){
+                m_gimbal->setLockMode("TRACK",QPointF(_px/_w,_py/_h));
+            }else{
+                m_gimbal->setLockMode("VISUAL",QPointF(_px/_w,_py/_h));
+            }
         }
-        m_gimbal->setDigitalStab(true);
-    }
-    m_process->setClick(_px, _py, _w, _h);
+    }    
 }
 void CVVideoCaptureThread::setRecord(bool _en){
     m_process->m_recordEnable = _en;

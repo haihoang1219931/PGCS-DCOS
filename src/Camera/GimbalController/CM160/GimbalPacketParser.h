@@ -1,5 +1,5 @@
-#ifndef GIMBALPACKETPARSER_H
-#define GIMBALPACKETPARSER_H
+#ifndef CM160GIMBALPACKETPARSER_H
+#define CM160GIMBALPACKETPARSER_H
 
 #include <stdio.h>
 #include <iostream>
@@ -8,12 +8,12 @@
 #include <QQuickItem>
 #include "UavvPacket.h"
 using namespace std;
-class GimbalPacketParser: public QObject
+class CM160GimbalPacketParser: public QObject
 {
     Q_OBJECT
 public:
-    GimbalPacketParser(QObject* parent=0);
-    virtual ~GimbalPacketParser();
+    CM160GimbalPacketParser(QObject* parent=0);
+    ~CM160GimbalPacketParser();
     enum SyncBytes : unsigned char
     {
         Sync1 = 0x24,
@@ -21,12 +21,12 @@ public:
     };
     const int MINIMUM_UAVV_PACKET_SIZE = 5;
     vector<unsigned char> receivedBuffer;
-    virtual void Push(vector<unsigned char> data);
-    virtual void Push(unsigned char* data, int length);
-    virtual void Parse();
+    void Push(vector<unsigned char> data);
+    void Push(unsigned char* data, int length);
+    void Parse();
     void Reset();
 Q_SIGNALS:
-    virtual void gimbalPacketParsed(GimbalPacket packet, unsigned char checksum);
+    void gimbalPacketParsed(GimbalPacket packet, unsigned char checksum);
 };
 
-#endif // GIMBALPACKETPARSER_H
+#endif // CM160GIMBALPACKETPARSER_H

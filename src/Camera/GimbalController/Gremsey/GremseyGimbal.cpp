@@ -309,7 +309,7 @@ void GremseyGimbal::setDigitalStab(bool enable){
         m_context->m_videoStabMode = enable;
     }
 }
-void GremseyGimbal::setLockMode(QString mode, QPoint location){
+void GremseyGimbal::setLockMode(QString mode, QPointF location){
     m_context->m_lockMode = mode;
     if(mode == "FREE"){
         setDigitalStab(false);

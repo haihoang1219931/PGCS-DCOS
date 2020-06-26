@@ -64,8 +64,8 @@ void CVVideoProcess::moveImage(float panRate,float tiltRate,float zoomRate, floa
         temp.zoomRate = 0;
         m_jsQueue.clear();
         m_zoomDir = (m_r - m_zoomStart)/fabs(m_r - m_zoomStart);
-//        Q_EMIT zoomTargetChangeStopped(m_r);
-//        startRollbackZoom();
+        //        Q_EMIT zoomTargetChangeStopped(m_r);
+        //        startRollbackZoom();
         m_zoomStart = m_gimbal->context()->m_zoom[m_gimbal->context()->m_sensorID];
     }else{
         m_jsQueue.push_back(temp);
@@ -204,227 +204,233 @@ void CVVideoProcess::doWork()
         gst_buffer_map(buf, &map, GST_MAP_READ);
         //        printf("map.size=%d\r\n", map.size);
         m_i420Img = cv::Mat(height * 3 / 2 ,  map.size / height / 3 * 2, CV_8UC1, map.data);
-        cv::cvtColor(m_i420Img, m_img, CV_YUV2BGRA_I420);
-        gst_buffer_unmap(buf, &map);
-        gst_buffer_unref(buf);
-        if (m_img.cols <= 0 || m_img.rows <=  0) {
-            msleep(SLEEP_TIME);
-            continue;
-        }
-        if(m_grayFrame.cols > 0 && m_grayFrame.rows > 0){
-            m_grayFramePrev = m_grayFrame.clone();
-        }
-        if(m_i420Img.cols <= 0 || m_i420Img.rows <= 0){
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            continue;
-        }
-        cv::cvtColor(m_i420Img, m_grayFrame, CV_YUV2GRAY_I420);
-        //TODO: Perfrom tracking
-        float w = static_cast<float>(m_grayFrame.cols);
-        float h = static_cast<float>(m_grayFrame.rows);
-        if (m_dx < 0) m_dx = w/2;
-        if (m_dy < 0) m_dy = h/2;
-        // handle command
-        //        printf("m_jsQueue.size() = %d\r\n",m_jsQueue.size());
-        if(m_gimbal->context()->m_lockMode == "FREE"){
-            m_trackEnable = false;
-        }else if(m_gimbal->context()->m_lockMode == "TRACK" ||
-                 m_gimbal->context()->m_lockMode == "VISUAL"){
-            m_trackEnable = true;
-            if(!m_tracker->isInitialized()){
-                setClick(w/2,h/2,w,h);
+        if(!m_gimbal->context()->m_processOnBoard){
+            cv::cvtColor(m_i420Img, m_img, CV_YUV2BGRA_I420);
+            gst_buffer_unmap(buf, &map);
+            gst_buffer_unref(buf);
+            if (m_img.cols <= 0 || m_img.rows <=  0) {
+                msleep(SLEEP_TIME);
+                continue;
             }
-            if(m_gimbal->context()->m_lockMode == "VISUAL"){
-                if( h/2 > m_trackSize)
-                    m_trackSize = h/2;
-            }else{
-                if(m_trackSizePrev != m_trackSize){
-                    m_trackSize = m_trackSizePrev;
+            if(m_grayFrame.cols > 0 && m_grayFrame.rows > 0){
+                m_grayFramePrev = m_grayFrame.clone();
+            }
+            if(m_i420Img.cols <= 0 || m_i420Img.rows <= 0){
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                continue;
+            }
+            cv::cvtColor(m_i420Img, m_grayFrame, CV_YUV2GRAY_I420);
+            //TODO: Perfrom tracking
+            float w = static_cast<float>(m_grayFrame.cols);
+            float h = static_cast<float>(m_grayFrame.rows);
+            if (m_dx < 0) m_dx = w/2;
+            if (m_dy < 0) m_dy = h/2;
+            // handle command
+            //        printf("m_jsQueue.size() = %d\r\n",m_jsQueue.size());
+            if(m_gimbal->context()->m_lockMode == "FREE"){
+                m_trackEnable = false;
+            }else if(m_gimbal->context()->m_lockMode == "TRACK" ||
+                     m_gimbal->context()->m_lockMode == "VISUAL"){
+                m_trackEnable = true;
+                if(!m_tracker->isInitialized()){
+                    setClick(w/2,h/2,w,h);
+                }
+                if(m_gimbal->context()->m_lockMode == "VISUAL"){
+                    if( h/2 > m_trackSize)
+                        m_trackSize = h/2;
+                }else{
+                    if(m_trackSizePrev != m_trackSize){
+                        m_trackSize = m_trackSizePrev;
+                    }
                 }
             }
-        }
-        if(m_clickSet || m_jsQueue.size()>0){
-            if(m_clickSet){
-                m_clickSet=false;
-                cv::Mat ptzMatrixInvert;
-                cv::invert(m_ptzMatrix,ptzMatrixInvert);
-                cv::Mat pointBeforeStab(3, 1, CV_64FC1,cv::Scalar::all(0));
-                cv::Mat pointInStab(3, 1, CV_64FC1);
-                pointInStab.at<double>(0,0) = static_cast<double>(m_clickPoint.x);
-                pointInStab.at<double>(1,0) = static_cast<double>(m_clickPoint.y);
-                pointInStab.at<double>(2,0) = 1;
-                pointBeforeStab = ptzMatrixInvert*pointInStab;
-                if(!m_stabEnable){
-                    pointBeforeStab = pointInStab.clone();
-                }
+            if(m_clickSet || m_jsQueue.size()>0){
+                if(m_clickSet){
+                    m_clickSet=false;
+                    cv::Mat ptzMatrixInvert;
+                    cv::invert(m_ptzMatrix,ptzMatrixInvert);
+                    cv::Mat pointBeforeStab(3, 1, CV_64FC1,cv::Scalar::all(0));
+                    cv::Mat pointInStab(3, 1, CV_64FC1);
+                    pointInStab.at<double>(0,0) = static_cast<double>(m_clickPoint.x);
+                    pointInStab.at<double>(1,0) = static_cast<double>(m_clickPoint.y);
+                    pointInStab.at<double>(2,0) = 1;
+                    pointBeforeStab = ptzMatrixInvert*pointInStab;
+                    if(!m_stabEnable){
+                        pointBeforeStab = pointInStab.clone();
+                    }
 
-                cv::Point lockPoint(static_cast<int>(pointBeforeStab.at<double>(0,0)),
-                                    static_cast<int>(pointBeforeStab.at<double>(1,0)));
-                if(m_trackEnable){
-                    cv::Rect trackRectTmp(lockPoint.x-m_trackSize/2,
-                                          lockPoint.y-m_trackSize/2,
-                                          m_trackSize,m_trackSize);
-                    if(trackRectTmp.x > 0 && trackRectTmp.x + trackRectTmp.width < w &&
-                            trackRectTmp.y > 0 && trackRectTmp.y + trackRectTmp.height < h){
+                    cv::Point lockPoint(static_cast<int>(pointBeforeStab.at<double>(0,0)),
+                                        static_cast<int>(pointBeforeStab.at<double>(1,0)));
+                    if(m_trackEnable){
+                        cv::Rect trackRectTmp(lockPoint.x-m_trackSize/2,
+                                              lockPoint.y-m_trackSize/2,
+                                              m_trackSize,m_trackSize);
+                        if(trackRectTmp.x > 0 && trackRectTmp.x + trackRectTmp.width < w &&
+                                trackRectTmp.y > 0 && trackRectTmp.y + trackRectTmp.height < h){
+                            if(m_tracker->isInitialized()){
+                                m_tracker->resetTrack();
+                            }
+                            m_tracker->initTrack(m_grayFramePrev,trackRectTmp);
+                        }
+                    }else{
+                        m_dx = lockPoint.x;
+                        m_dy = lockPoint.y;
+                    }
+                }else if(m_jsQueue.size()>0){
+                    joystickData temp = m_jsQueue.front();
+                    temp.panRate = m_movePanRate;
+                    temp.tiltRate = m_moveTiltRate;
+                    if(fabs(m_moveZoomRate) >= deadZone/maxAxis){
+                        if(m_gimbal->context()->m_sensorID == 1){
+                            m_zoomIR+=m_moveZoomRate /3;
+                            if(m_zoomIR > m_gimbal->context()->m_digitalZoomMax[1]){
+                                m_zoomIR = m_gimbal->context()->m_digitalZoomMax[1];
+                            }else if(m_zoomIR < 1){
+                                m_zoomIR = 1;
+                            }
+                            m_gimbal->context()->m_zoom[1]= m_zoomIR;
+                            //                        m_gimbal->context()->m_hfov[1] = atanf(
+                            //                                    tan(m_gimbal->context()->m_hfovMax[1]/2/180*M_PI)/m_zoomIR
+                            //                                )/M_PI*180*2;
+                            //                        printf("IR zoomMin[%f] zoomMax[%f] zoomRatio[%f] digitalZoomMax[%f]\r\n",
+                            //                               m_gimbal->zoomMin(),
+                            //                               m_gimbal->zoomMax(),
+                            //                               m_gimbal->zoom(),
+                            //                               m_gimbal->digitalZoomMax());
+                        }
+
+                        //                    Q_EMIT zoomTargetChanged(m_r);
+                        //                    Q_EMIT zoomTargetChangeStopped(m_r);
+                    }
+                    cv::Point lockPoint(static_cast<int>(m_dx +
+                                                         (temp.panRate * cos(m_rotationAlpha) + temp.tiltRate * sin(m_rotationAlpha))/m_r),
+                                        static_cast<int>(m_dy +
+                                                         (-temp.panRate * sin(m_rotationAlpha) + temp.tiltRate * cos(m_rotationAlpha))/m_r)
+                                        );
+                    if(m_trackEnable){
+                        int trackSizeTmp = m_trackSize;
+                        cv::Rect trackRectTmp(lockPoint.x-trackSizeTmp/2,
+                                              lockPoint.y-trackSizeTmp/2,
+                                              trackSizeTmp,trackSizeTmp);
+                        int deadSpace = 10;
+                        if(trackRectTmp.x < deadSpace){
+                            trackRectTmp.x = deadSpace;
+                        }else if(trackRectTmp.x + trackRectTmp.width > w - deadSpace){
+                            trackRectTmp.x = w - deadSpace - trackRectTmp.width;
+                        }
+
+                        if(trackRectTmp.y < deadSpace){
+                            trackRectTmp.y = deadSpace;
+                        }else if(trackRectTmp.y + trackRectTmp.height > h - deadSpace){
+                            trackRectTmp.y = h - deadSpace - trackRectTmp.height;
+                        }
+
                         if(m_tracker->isInitialized()){
                             m_tracker->resetTrack();
                         }
                         m_tracker->initTrack(m_grayFramePrev,trackRectTmp);
                     }
-                }else{
-                    m_dx = lockPoint.x;
-                    m_dy = lockPoint.y;
-                }
-            }else if(m_jsQueue.size()>0){
-                joystickData temp = m_jsQueue.front();
-                temp.panRate = m_movePanRate;
-                temp.tiltRate = m_moveTiltRate;
-                if(fabs(m_moveZoomRate) >= deadZone/maxAxis){
-                    if(m_gimbal->context()->m_sensorID == 1){
-                        m_zoomIR+=m_moveZoomRate /3;
-                        if(m_zoomIR > m_gimbal->context()->m_digitalZoomMax[1]){
-                            m_zoomIR = m_gimbal->context()->m_digitalZoomMax[1];
-                        }else if(m_zoomIR < 1){
-                            m_zoomIR = 1;
-                        }
-                        m_gimbal->context()->m_zoom[1]= m_zoomIR;
-//                        m_gimbal->context()->m_hfov[1] = atanf(
-//                                    tan(m_gimbal->context()->m_hfovMax[1]/2/180*M_PI)/m_zoomIR
-//                                )/M_PI*180*2;
-                        //                        printf("IR zoomMin[%f] zoomMax[%f] zoomRatio[%f] digitalZoomMax[%f]\r\n",
-                        //                               m_gimbal->zoomMin(),
-                        //                               m_gimbal->zoomMax(),
-                        //                               m_gimbal->zoom(),
-                        //                               m_gimbal->digitalZoomMax());
+                    else{
+                        m_dx = lockPoint.x;
+                        m_dy = lockPoint.y;
                     }
+                }
 
-                    //                    Q_EMIT zoomTargetChanged(m_r);
-                    //                    Q_EMIT zoomTargetChangeStopped(m_r);
-                }
-                cv::Point lockPoint(static_cast<int>(m_dx +
-                                                     (temp.panRate * cos(m_rotationAlpha) + temp.tiltRate * sin(m_rotationAlpha))/m_r),
-                                    static_cast<int>(m_dy +
-                                                     (-temp.panRate * sin(m_rotationAlpha) + temp.tiltRate * cos(m_rotationAlpha))/m_r)
-                                    );
-                if(m_trackEnable){
-                    int trackSizeTmp = m_trackSize;
-                    cv::Rect trackRectTmp(lockPoint.x-trackSizeTmp/2,
-                                          lockPoint.y-trackSizeTmp/2,
-                                          trackSizeTmp,trackSizeTmp);
-                    int deadSpace = 10;
-                    if(trackRectTmp.x < deadSpace){
-                        trackRectTmp.x = deadSpace;
-                    }else if(trackRectTmp.x + trackRectTmp.width > w - deadSpace){
-                        trackRectTmp.x = w - deadSpace - trackRectTmp.width;
-                    }
-
-                    if(trackRectTmp.y < deadSpace){
-                        trackRectTmp.y = deadSpace;
-                    }else if(trackRectTmp.y + trackRectTmp.height > h - deadSpace){
-                        trackRectTmp.y = h - deadSpace - trackRectTmp.height;
-                    }
-
-                    if(m_tracker->isInitialized()){
-                        m_tracker->resetTrack();
-                    }
-                    m_tracker->initTrack(m_grayFramePrev,trackRectTmp);
-                }
-                else{
-                    m_dx = lockPoint.x;
-                    m_dy = lockPoint.y;
-                }
             }
+            if(m_trackEnable){
+                if(m_tracker->isInitialized()){
+                    //                printf("Before performTrack\r\n");
+                    m_tracker->performTrack(m_grayFrame);
+                    //                printf("After performTrack\r\n");
+                    cv::Rect trackRect = m_tracker->getPosition();
+                    m_dx = trackRect.x+trackRect.width/2;
+                    m_dy = trackRect.y+trackRect.height/2;
+                    m_trackRect.x = static_cast<int>(
+                                static_cast<float>(m_dx) - static_cast<float>(m_trackSize)/2);
+                    m_trackRect.y = static_cast<int>(
+                                static_cast<float>(m_dy) - static_cast<float>(m_trackSize)/2);
+                    m_trackRect.width = m_trackSize;
+                    m_trackRect.height = m_trackSize;
+                    if(m_tracker->Get_State() == TRACK_INVISION || m_tracker->Get_State() == TRACK_OCCLUDED){
+                        Q_EMIT trackStateFound(0,
+                                               static_cast<double>(m_trackRect.x),
+                                               static_cast<double>(m_trackRect.y),
+                                               static_cast<double>(m_trackRect.width),
+                                               static_cast<double>(m_trackRect.height),
+                                               static_cast<double>(w),
+                                               static_cast<double>(h));
+                    }else{
+                        Q_EMIT trackStateLost();
+                    }
+                }else{
 
-        }
-        if(m_trackEnable){
-            if(m_tracker->isInitialized()){
-                //                printf("Before performTrack\r\n");
-                m_tracker->performTrack(m_grayFrame);
-                //                printf("After performTrack\r\n");
-                cv::Rect trackRect = m_tracker->getPosition();
-                m_dx = trackRect.x+trackRect.width/2;
-                m_dy = trackRect.y+trackRect.height/2;
-                m_trackRect.x = static_cast<int>(
-                            static_cast<float>(m_dx) - static_cast<float>(m_trackSize)/2);
-                m_trackRect.y = static_cast<int>(
-                            static_cast<float>(m_dy) - static_cast<float>(m_trackSize)/2);
+                }
+            }else{
+                m_trackRect.x = m_dx - m_trackSize/2;
+                m_trackRect.y = m_dy - m_trackSize/2;
                 m_trackRect.width = m_trackSize;
                 m_trackRect.height = m_trackSize;
-                if(m_tracker->Get_State() == TRACK_INVISION || m_tracker->Get_State() == TRACK_OCCLUDED){
-                    Q_EMIT trackStateFound(0,
-                                           static_cast<double>(m_trackRect.x),
-                                           static_cast<double>(m_trackRect.y),
-                                           static_cast<double>(m_trackRect.width),
-                                           static_cast<double>(m_trackRect.height),
-                                           static_cast<double>(w),
-                                           static_cast<double>(h));
+            }
+            if(m_stabEnable){
+                if(m_gimbal->context()->m_sensorID == 0){
+                    m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1 * m_scale,m_rotationAlpha);
                 }else{
-                    Q_EMIT trackStateLost();
+                    m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_zoomIR * m_scale,m_rotationAlpha);
                 }
             }else{
+                if(m_gimbal->context()->m_sensorID == 0){
+                    m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,1,m_rotationAlpha);
+                }else{
+                    m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,m_zoomIR,m_rotationAlpha);
+                }
+            }
+            cv::Mat warpMatrix = cv::Mat(3,3,CV_32FC1);
+            warpMatrix.at<float>(0,0) = static_cast<float>(m_ptzMatrix.at<double>(0,0));
+            warpMatrix.at<float>(0,1) = static_cast<float>(m_ptzMatrix.at<double>(0,1));
+            warpMatrix.at<float>(0,2) = static_cast<float>(m_ptzMatrix.at<double>(0,2));
+            warpMatrix.at<float>(1,0) = static_cast<float>(m_ptzMatrix.at<double>(1,0));
+            warpMatrix.at<float>(1,1) = static_cast<float>(m_ptzMatrix.at<double>(1,1));
+            warpMatrix.at<float>(1,2) = static_cast<float>(m_ptzMatrix.at<double>(1,2));
+            cv::warpAffine(m_img,*m_imgShow,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(m_img.cols,m_img.rows),cv::INTER_LINEAR);
 
-            }
-        }else{
-            m_trackRect.x = m_dx - m_trackSize/2;
-            m_trackRect.y = m_dy - m_trackSize/2;
-            m_trackRect.width = m_trackSize;
-            m_trackRect.height = m_trackSize;
-        }
-        if(m_stabEnable){
-            if(m_gimbal->context()->m_sensorID == 0){
-                m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1 * m_scale,m_rotationAlpha);
-            }else{
-                m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_zoomIR * m_scale,m_rotationAlpha);
-            }
-        }else{
-            if(m_gimbal->context()->m_sensorID == 0){
-                m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,1,m_rotationAlpha);
-            }else{
-                m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,m_zoomIR,m_rotationAlpha);
-            }
-        }
-        cv::Mat warpMatrix = cv::Mat(3,3,CV_32FC1);
-        warpMatrix.at<float>(0,0) = static_cast<float>(m_ptzMatrix.at<double>(0,0));
-        warpMatrix.at<float>(0,1) = static_cast<float>(m_ptzMatrix.at<double>(0,1));
-        warpMatrix.at<float>(0,2) = static_cast<float>(m_ptzMatrix.at<double>(0,2));
-        warpMatrix.at<float>(1,0) = static_cast<float>(m_ptzMatrix.at<double>(1,0));
-        warpMatrix.at<float>(1,1) = static_cast<float>(m_ptzMatrix.at<double>(1,1));
-        warpMatrix.at<float>(1,2) = static_cast<float>(m_ptzMatrix.at<double>(1,2));
-        cv::warpAffine(m_img,*m_imgShow,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(m_img.cols,m_img.rows),cv::INTER_LINEAR);
-
-        // draw track
-        cv::Rect trackRect = m_trackRect;
-        cv::Point pointAfterStab = convertPoint(cv::Point(trackRect.x+trackRect.width/2,
+            // draw track
+            cv::Rect trackRect = m_trackRect;
+            cv::Point pointAfterStab = convertPoint(cv::Point(trackRect.x+trackRect.width/2,
                                                               trackRect.y+trackRect.height/2),
                                                     warpMatrix);
-        trackRect.x = pointAfterStab.x - trackRect.width/2;
-        trackRect.y = pointAfterStab.y - trackRect.height/2;
-        cv::Scalar colorInvision(0,0,255,255);
-        cv::Scalar colorOccluded(0,0,0,255);
-        if(m_gimbal->context()->m_lockMode == "TRACK"){
-            if(m_tracker->Get_State() == TRACK_INVISION){
-                cv::rectangle(*m_imgShow,trackRect,colorInvision,2);
-            }else if(m_tracker->Get_State() == TRACK_OCCLUDED){
-                cv::rectangle(*m_imgShow,trackRect,colorOccluded,2);
-            }else{
+            trackRect.x = pointAfterStab.x - trackRect.width/2;
+            trackRect.y = pointAfterStab.y - trackRect.height/2;
+            cv::Scalar colorInvision(0,0,255,255);
+            cv::Scalar colorOccluded(0,0,0,255);
+            if(m_gimbal->context()->m_lockMode == "TRACK"){
+                if(m_tracker->Get_State() == TRACK_INVISION){
+                    cv::rectangle(*m_imgShow,trackRect,colorInvision,2);
+                }else if(m_tracker->Get_State() == TRACK_OCCLUDED){
+                    cv::rectangle(*m_imgShow,trackRect,colorOccluded,2);
+                }else{
 
-            }
-        }else if(m_gimbal->context()->m_lockMode == "VISUAL"){
-            if(m_tracker->Get_State() == TRACK_INVISION){
-                drawSteeringCenter(*m_imgShow,trackRect.width,
-                                   static_cast<int>(trackRect.x + trackRect.width/2),
-                                   static_cast<int>(trackRect.y + trackRect.height/2),
-                                   colorInvision);
-            }else if(m_tracker->Get_State() == TRACK_OCCLUDED){
-                drawSteeringCenter(*m_imgShow,trackRect.width,
-                                   static_cast<int>(trackRect.x + trackRect.width/2),
-                                   static_cast<int>(trackRect.y + trackRect.height/2),
-                                   colorOccluded);
-            }else{
+                }
+            }else if(m_gimbal->context()->m_lockMode == "VISUAL"){
+                if(m_tracker->Get_State() == TRACK_INVISION){
+                    drawSteeringCenter(*m_imgShow,trackRect.width,
+                                       static_cast<int>(trackRect.x + trackRect.width/2),
+                                       static_cast<int>(trackRect.y + trackRect.height/2),
+                                       colorInvision);
+                }else if(m_tracker->Get_State() == TRACK_OCCLUDED){
+                    drawSteeringCenter(*m_imgShow,trackRect.width,
+                                       static_cast<int>(trackRect.x + trackRect.width/2),
+                                       static_cast<int>(trackRect.y + trackRect.height/2),
+                                       colorOccluded);
+                }else{
 
+                }
             }
         }
-
+        else{
+            cv::cvtColor(m_i420Img, *m_imgShow, CV_YUV2BGRA_I420);
+            gst_buffer_unmap(buf, &map);
+            gst_buffer_unref(buf);
+        }
         cv::Mat _imgOtherFunc;
         cv::Mat _imgResize;
         cv::cvtColor(*m_imgShow, _imgOtherFunc, CV_BGRA2YUV_I420);
@@ -443,7 +449,7 @@ void CVVideoProcess::doWork()
             gstFrame.setIndex(*m_frameID);
             gstFrame.setGstBuffer(rtspImage);
             m_gstRTSPBuff->add(gstFrame);
-//            printf("Adding rtsp frame m_gstRTSPBuff->size()=%d\r\n",m_gstRTSPBuff->size());
+            //            printf("Adding rtsp frame m_gstRTSPBuff->size()=%d\r\n",m_gstRTSPBuff->size());
             //add to saving
             GstFrameCacheItem gstFrameSaving;
             gstFrameSaving.setIndex(*m_frameID);

@@ -354,6 +354,7 @@ public:
     float m_powerTilt;
     float m_timeStamp;
     QString m_lockMode = "FREE";
+    bool m_processOnBoard = false;
     bool m_videoStabMode = true;
     bool m_gcsShare = true;
     int m_lrfValidCount = 0;

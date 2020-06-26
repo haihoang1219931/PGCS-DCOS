@@ -8,6 +8,11 @@ BufferOut::~BufferOut()
 {
     uinit();
 }
+void BufferOut::connectToHost(QString ip, int port){
+    setIP(ip.toStdString());
+    setPort(port);
+    init();
+}
 void BufferOut::setIP(string ip){
     m_ip = ip;
 }

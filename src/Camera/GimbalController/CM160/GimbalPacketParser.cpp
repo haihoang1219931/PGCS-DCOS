@@ -1,26 +1,25 @@
 #include "GimbalPacketParser.h"
-
-GimbalPacketParser::GimbalPacketParser(QObject* parent) :
+CM160GimbalPacketParser::CM160GimbalPacketParser(QObject* parent) :
     QObject(parent)
 {
     //receivedBuffer = vector<unsigned char>(1024);
 }
-GimbalPacketParser::~GimbalPacketParser(){
+CM160GimbalPacketParser::~CM160GimbalPacketParser(){
 
 }
 
-void GimbalPacketParser::Push(vector<unsigned char> data){
+void CM160GimbalPacketParser::Push(vector<unsigned char> data){
 
     receivedBuffer.insert(receivedBuffer.end(),data.begin(),data.end());
 }
 
-void GimbalPacketParser::Push(unsigned char* data, int length){
+void CM160GimbalPacketParser::Push(unsigned char* data, int length){
     for(int i = 0; i< length; i++){
         receivedBuffer.push_back(data[i]);
     }
 }
 
-void GimbalPacketParser::Parse(){
+void CM160GimbalPacketParser::Parse(){
     while(receivedBuffer.size() > (unsigned int)MINIMUM_UAVV_PACKET_SIZE)
     {
         //qDebug("receivedBuffer has %d bytes",receivedBuffer.size());
@@ -89,7 +88,6 @@ void GimbalPacketParser::Parse(){
     }
 }
 
-void GimbalPacketParser::Reset(){
+void CM160GimbalPacketParser::Reset(){
 
 }
-

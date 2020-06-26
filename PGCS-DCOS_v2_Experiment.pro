@@ -36,9 +36,8 @@ QML_IMPORT_PATH += \
     $$PWD/src/QmlControls \
     $$PWD/src/Controller
 SOURCES += \
-    main.cpp \
-    src/Maplib/Model/symbol.cpp \
-    src/Maplib/Model/symbolmodel.cpp
+    main.cpp
+
 
 INCLUDEPATH += $$PWD/src
 # Flight controller
@@ -88,7 +87,9 @@ SOURCES += \
     src/Machine/ConnectionThread.cpp \
     src/Maplib/profilepath.cpp \
     src/Controller/Params/Fact.cpp \
-    src/Log/LogController.cpp
+    src/Log/LogController.cpp \
+    src/Maplib/Model/symbol.cpp \
+    src/Maplib/Model/symbolmodel.cpp
 
 HEADERS += \
     src/Controller/Com/IOFlightController.h \
@@ -132,7 +133,9 @@ HEADERS += \
     src/Machine/ConnectionThread.h \
     src/Maplib/profilepath.h \
     src/Controller/Params/Fact.h \
-    src/Log/LogController.h
+    src/Log/LogController.h \
+    src/Maplib/Model/symbol.h \
+    src/Maplib/Model/symbolmodel.h
 }
 # UC libs KURENTO
 use_ucapi{
@@ -372,7 +375,12 @@ SOURCES += \
     src/Camera/GimbalController/Gremsey/GremseyGimbal.cpp \
     src/Camera/GimbalController/Gremsey/SensorController.cpp \
     src/Camera/GimbalController/Gremsey/SBusGimbal.cpp \
-    src/Camera/GimbalController/Treron/TreronGimbal.cpp
+    src/Camera/GimbalController/Treron/TreronGimbal.cpp \
+    src/Camera/GimbalController/Treron/TreronGimbalPacketParser.cpp \
+    src/Camera/GimbalController/Treron/Command/GeoCommands.cpp \
+    src/Camera/GimbalController/Treron/Command/IPCCommands.cpp \
+    src/Camera/GimbalController/Treron/Command/MotionCCommands.cpp \
+    src/Camera/GimbalController/Treron/Command/SystemCommands.cpp
 HEADERS += \
     src/Camera/GimbalController/CM160/CM160Gimbal.h \
     src/Camera/GimbalController/CM160/GimbalDiscoverer.h \
@@ -504,7 +512,65 @@ HEADERS += \
     src/Camera/GimbalController/Gremsey/GremseyGimbal.h \
     src/Camera/GimbalController/Gremsey/SensorController.h \
     src/Camera/GimbalController/Gremsey/SBusGimbal.h \
-    src/Camera/GimbalController/Treron/TreronGimbal.h
+    src/Camera/GimbalController/Treron/TreronGimbal.h \
+    src/Camera/GimbalController/Treron/TreronGimbalPacketParser.h \
+    src/Camera/GimbalController/Treron/Command/GeoCommands.h \
+    src/Camera/GimbalController/Treron/Command/IPCCommands.h \
+    src/Camera/GimbalController/Treron/Command/MotionCCommands.h \
+    src/Camera/GimbalController/Treron/Command/SystemCommands.h \
+    src/Camera/GimbalController/Treron/Packet/Common_type.h \
+    src/Camera/GimbalController/Treron/Packet/Confirm.h \
+    src/Camera/GimbalController/Treron/Packet/EnGeoLocation.h \
+    src/Camera/GimbalController/Treron/Packet/EOS.h \
+    src/Camera/GimbalController/Treron/Packet/EyeCheck.h \
+    src/Camera/GimbalController/Treron/Packet/EyeEvent.h \
+    src/Camera/GimbalController/Treron/Packet/EyephoenixProtocol.h \
+    src/Camera/GimbalController/Treron/Packet/EyeRotationMatrix.h \
+    src/Camera/GimbalController/Treron/Packet/EyeStatus.h \
+    src/Camera/GimbalController/Treron/Packet/GimbalMode.h \
+    src/Camera/GimbalController/Treron/Packet/GimbalRecord.h \
+    src/Camera/GimbalController/Treron/Packet/GimbalRecordStatus.h \
+    src/Camera/GimbalController/Treron/Packet/GimbalStab.h \
+    src/Camera/GimbalController/Treron/Packet/GPSData.h \
+    src/Camera/GimbalController/Treron/Packet/GPSRate.h \
+    src/Camera/GimbalController/Treron/Packet/HConfigMessage.h \
+    src/Camera/GimbalController/Treron/Packet/ImageStab.h \
+    src/Camera/GimbalController/Treron/Packet/InstallMode.h \
+    src/Camera/GimbalController/Treron/Packet/IPCStatusResponse.h \
+    src/Camera/GimbalController/Treron/Packet/KLV.h \
+    src/Camera/GimbalController/Treron/Packet/LockMode.h \
+    src/Camera/GimbalController/Treron/Packet/Matrix.h \
+    src/Camera/GimbalController/Treron/Packet/MCParams.h \
+    src/Camera/GimbalController/Treron/Packet/MData.h \
+    src/Camera/GimbalController/Treron/Packet/MotionAngle.h \
+    src/Camera/GimbalController/Treron/Packet/MotionCStatus.h \
+    src/Camera/GimbalController/Treron/Packet/MotionImage.h \
+    src/Camera/GimbalController/Treron/Packet/Object.h \
+    src/Camera/GimbalController/Treron/Packet/PTAngle.h \
+    src/Camera/GimbalController/Treron/Packet/PTAngleDiff.h \
+    src/Camera/GimbalController/Treron/Packet/PTRateFactor.h \
+    src/Camera/GimbalController/Treron/Packet/RapidView.h \
+    src/Camera/GimbalController/Treron/Packet/RequestResponsePacket.h \
+    src/Camera/GimbalController/Treron/Packet/RFData.h \
+    src/Camera/GimbalController/Treron/Packet/RFRequest.h \
+    src/Camera/GimbalController/Treron/Packet/RTData.h \
+    src/Camera/GimbalController/Treron/Packet/SceneSteering.h \
+    src/Camera/GimbalController/Treron/Packet/ScreenPoint.h \
+    src/Camera/GimbalController/Treron/Packet/SensorColor.h \
+    src/Camera/GimbalController/Treron/Packet/SensorId.h \
+    src/Camera/GimbalController/Treron/Packet/Snapshot.h \
+    src/Camera/GimbalController/Treron/Packet/StreamingProfile.h \
+    src/Camera/GimbalController/Treron/Packet/SystemStatus.h \
+    src/Camera/GimbalController/Treron/Packet/TargetPosition.h \
+    src/Camera/GimbalController/Treron/Packet/Telemetry.h \
+    src/Camera/GimbalController/Treron/Packet/TrackObject.h \
+    src/Camera/GimbalController/Treron/Packet/TrackResponse.h \
+    src/Camera/GimbalController/Treron/Packet/TrackSize.h \
+    src/Camera/GimbalController/Treron/Packet/utils.h \
+    src/Camera/GimbalController/Treron/Packet/Vector.h \
+    src/Camera/GimbalController/Treron/Packet/XPoint.h \
+    src/Camera/GimbalController/Treron/Packet/ZoomData.h \
+    src/Camera/GimbalController/Treron/Packet/ZoomStatus.h
 HEADERS += \
     src/Camera/Algorithms/stabilizer/dando_02/stab_gcs_kiir.hpp \
     src/Camera/Algorithms/tracker/dando/HTrack/ffttools.hpp \
@@ -732,7 +798,3 @@ SOURCES += \
 HEADERS += \
     src/Controller/Telemetry/TelemetryController.h
 }
-
-HEADERS += \
-    src/Maplib/Model/symbol.h \
-    src/Maplib/Model/symbolmodel.h

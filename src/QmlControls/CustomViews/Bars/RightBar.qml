@@ -67,11 +67,6 @@ Rectangle {
                             cameraController.gimbal.changeSensor("IR");
                         }
                     }
-                    if(CAMERA_CONTROL){
-                        if(camState.isConnected && camState.isPingOk && gimbalNetwork.isGimbalConnected){
-                            gimbalNetwork.ipcCommands.changeSensorID(camState.sensorID);
-                        }
-                    }
                 }
             }
 
@@ -200,13 +195,11 @@ Rectangle {
                          [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.bgAppColor
                 isSync: true
-                isOn: camState.gcsRecord
+                isOn: camState.record
                 onClicked: {
-                    camState.gcsRecord=!camState.gcsRecord;
-
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setRecord(camState.gcsRecord);
+                        cameraController.gimbal.setRecord(!camState.record);
                     }
                 }
             }
@@ -333,11 +326,11 @@ Rectangle {
                 isSync: true
                 isOn: camState.lockMode === "VISUAL"
                 onClicked: {
-//                    if(camState.lockMode === "VISUAL"){
-//                        camState.lockMode = "FREE"
-//                    }else{
-//                        camState.lockMode = "VISUAL"
-//                    }
+                    if(camState.lockMode === "VISUAL"){
+                        camState.lockMode = "FREE"
+                    }else{
+                        camState.lockMode = "VISUAL"
+                    }
                     cameraController.gimbal.setLockMode(camState.lockMode);
                 }
             }
