@@ -214,18 +214,20 @@ void IPCCommands::setClickPoint(int frameID, double x, double y, double width,
                                 double height, double objW, double objH)
 {
     Eye::KLV packet;
-    TrackObject data(frameID, x, y, width, height, objW, objH);
+
     //    printf("\n====>Send TrackObj: %d, %f, %f, %f, %f, %f, %f", frameID, x, y,
     //           width, height, objW, objH);
     QString lockMode = m_gimbalModel->m_lockMode;
-    if(lockMode == "VISUAL")
+    if(lockMode == "VISUAL"){
+        XPoint data(frameID,x,y,width,height);
         packet.key = (key_type)EyePhoenixProtocol::SceneSteering;
-    else if(lockMode == "TRACK"){
+        packet.data = data.toByte();
+    }else if(lockMode == "TRACK"){
+        TrackObject data(frameID, x - objW/2, y - objH/2, width, height, objW, objH);
         packet.key = (key_type)EyePhoenixProtocol::Tracking;
-        changeLockMode("LOCK_TRACK", "GEOLOCATION_OFF");
-//        m_gimbalModel->gimbal()->m_lockMode = "TRACK";
+        packet.data = data.toByte();
     }
-    packet.data = data.toByte();
+
     vector<byte> packetEncoded = packet.encode();
     m_buffer->add(packetEncoded);
     m_buffer->send();

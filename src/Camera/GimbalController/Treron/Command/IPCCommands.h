@@ -18,6 +18,7 @@
 #include "../Packet/Snapshot.h"
 #include "../Packet/StreamingProfile.h"
 #include "../Packet/TrackObject.h"
+#include "../Packet/XPoint.h"
 #include "../Packet/TrackSize.h"
 #include "../Packet/ZoomData.h"
 #include "../Packet/ZoomStatus.h"

@@ -167,20 +167,21 @@ void TreronGimbal::setLockMode(QString mode, QPointF location){
     m_context->m_lockMode = mode;
 //    _ipcCommands->changeLockMode("LOCK_"+mode, "GEOLOCATION_OFF");
     if(mode == "VISUAL"){
-        _ipcCommands->doSceneSteering(0);
+//        _ipcCommands->doSceneSteering(0);
         _ipcCommands->setClickPoint(0,location.x()*1920,location.y()*1080,1920,1080,
-                                    static_cast<double>(200),
-                                    static_cast<double>(200));
+                                    static_cast<double>(100),
+                                    static_cast<double>(100));
     }else if(mode == "FREE"){
         _ipcCommands->changeLockMode("LOCK_FREE", "GEOLOCATION_OFF");
+
     }else if(mode == "TRACK"){
         _ipcCommands->changeLockMode("LOCK_TRACK", "GEOLOCATION_OFF");
         _ipcCommands->setClickPoint(0,
-                                    location.x()*1920 - 100,
-                                    location.y()*1080 - 100,
+                                    location.x()*1920,
+                                    location.y()*1080,
                                     1920,1080,
-                                    static_cast<double>(200),
-                                    static_cast<double>(200));
+                                    static_cast<double>(100),
+                                    static_cast<double>(100));
     }
 }
 void TreronGimbal::setGeoLockPosition(QPoint location){
