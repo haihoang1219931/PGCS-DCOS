@@ -47,8 +47,6 @@ class CVVideoCaptureThread : public VideoEngine
         Q_INVOKABLE void goToPosition(float percent) override;
         Q_INVOKABLE void setSpeed(float speed) override;
         Q_INVOKABLE qint64 getTime(QString type) override;
-public Q_SLOTS:
-        void doShowVideo() override;
 public:
         QThread *m_captureThread;
         QThread *m_processThread;

@@ -45,8 +45,7 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(pa
             SLOT(slTrackStateFound(int, double, double, double, double, double, double)));
     connect(this, &VideoEngine::sourceSizeChanged,
             this, &VideoEngine::onStreamFrameSizeChanged);
-    connect(m_process,&CVVideoProcess::readyDrawOnViewerID,this,&CVVideoCaptureThread::drawOnViewerID);
-    //    connect(m_process,SIGNAL(objectSizeChange(float)),this,SLOT(doChangeZoom(float)));
+    connect(m_process,&CVVideoProcess::readyDrawOnRenderID,this,&VideoEngine::drawOnRenderID);
     m_capture->m_imageQueue = &m_imageQueue;
     m_capture->m_mutexCapture = m_mutexCapture;
     m_capture->m_logFolder = m_logFolder;
@@ -191,31 +190,6 @@ bool CVVideoCaptureThread::getTrackEnable()
 void CVVideoCaptureThread::changeTrackSize(int newSize)
 {
     m_process->m_trackSize = newSize;
-}
-void CVVideoCaptureThread::doShowVideo()
-{
-    if (m_videoSurface != NULL) {
-        //        m_mutexCapture->lock();
-        if (m_sourceSize.width() != m_imgShow.cols ||
-            m_sourceSize.height() != m_imgShow.rows) {
-            m_sourceSize.setWidth(m_imgShow.cols);
-            m_sourceSize.setHeight(m_imgShow.rows);
-            Q_EMIT sourceSizeChanged(m_imgShow.cols, m_imgShow.rows);
-        }
-        if(m_updateVideoSurface){
-            update();
-            m_updateVideoSurface = false;
-        }
-        QImage tmp((uchar *)m_imgShow.data, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888);
-        QVideoFrame output = QVideoFrame(tmp);
-
-//        printf("show image[%dx%d]\r\n",m_imgShow.cols,m_imgShow.rows);
-        if (!m_videoSurface->present(output)) {
-//            printf("Show failed\r\n");
-        } else {
-//            printf("Show success\r\n");
-        }
-    }
 }
 
 void CVVideoCaptureThread::disableObjectDetect(){

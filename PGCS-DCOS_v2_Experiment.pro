@@ -1,5 +1,5 @@
-QT += qml quick webengine multimedia network positioning sensors core gui serialport
-QT += quickcontrols2 location
+QT += qml quick multimedia network positioning sensors core gui serialport charts widgets
+QT += webengine
 CONFIG += c++11 no_keywords console
 
 RESOURCES += qml.qrc
@@ -219,6 +219,8 @@ SOURCES += \
     src/Camera/VideoEngine/VRTSPServer.cpp \
     src/Camera/VideoEngine/VSavingWorker.cpp \
     src/Camera/VideoDisplay/ImageItem.cpp \
+    src/Camera/VideoDisplay/I420Render.cpp \
+    src/Camera/VideoDisplay/VideoRender.cpp \
     src/Camera/TargetLocation/TargetLocalization.cpp
 
 HEADERS += \
@@ -243,6 +245,8 @@ HEADERS += \
     src/Camera/VideoEngine/VRTSPServer.h \
     src/Camera/VideoEngine/VSavingWorker.h \
     src/Camera/VideoDisplay/ImageItem.h \
+    src/Camera/VideoDisplay/I420Render.h \
+    src/Camera/VideoDisplay/VideoRender.h \
     src/Camera/TargetLocation/TargetLocalization.h
 
 # Gimbal control

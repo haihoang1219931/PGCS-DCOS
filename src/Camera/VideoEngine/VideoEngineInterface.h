@@ -17,8 +17,6 @@
 #include <QThread>
 #include <QProcess>
 #include <QDir>
-#include <QAbstractVideoSurface>
-#include <QVideoSurfaceFormat>
 #include <QMetaType>
 #include <QQmlListProperty>
 #include <QThread>
@@ -35,11 +33,12 @@
 #include "../Cache/TrackObject.h"
 #include "../Cache/GstFrameCacheItem.h"
 #include "../../../Files/PlateLog.h"
+#include "../VideoDisplay/VideoRender.h"
 #include <opencv2/core.hpp>
 #include "Setting/config.h"
 class VRTSPServer;
 class VSavingWorker;
-class ImageItem;
+class VideoRender;
 class TrackObjectInfo;
 class GimbalInterface;
 class VideoEngine : public QObject
@@ -47,7 +46,6 @@ class VideoEngine : public QObject
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<TrackObjectInfo> listTrackObjectInfos READ listTrackObjectInfos NOTIFY listTrackObjectInfosChanged);
     Q_PROPERTY(GimbalInterface*    gimbal   READ gimbal       WRITE setGimbal)
-    Q_PROPERTY(QAbstractVideoSurface *videoSurface READ videoSurface WRITE setVideoSurface)
     Q_PROPERTY(QSize sourceSize READ sourceSize NOTIFY sourceSizeChanged)
     Q_PROPERTY(bool enStream READ enStream WRITE setEnStream)
     Q_PROPERTY(bool enSaving READ enSaving WRITE setEnSaving)
@@ -60,115 +58,27 @@ class VideoEngine : public QObject
 public:
     explicit VideoEngine(QObject *parent = nullptr);
 
-    QQmlListProperty<TrackObjectInfo> listTrackObjectInfos()
-    {
-        return QQmlListProperty<TrackObjectInfo>(this, m_listTrackObjectInfos);
-    }
-    void addTrackObjectInfo(TrackObjectInfo* object)
-    {
-        this->m_listTrackObjectInfos.append(object);
-        Q_EMIT listTrackObjectInfosChanged();
-    }
-    void removeTrackObjectInfo(const int& sequence) {
-        if(sequence < 0 || sequence >= this->m_listTrackObjectInfos.size()){
-            return;
-        }
-
-        // remove user on list
-        this->m_listTrackObjectInfos.removeAt(sequence);
-        Q_EMIT listTrackObjectInfosChanged();
-    }
-    void removeTrackObjectInfo(const QString &userUid)
-    {
-        // check room contain user
-        int sequence = -1;
-        for (int i = 0; i < this->m_listTrackObjectInfos.size(); i++) {
-            if (this->m_listTrackObjectInfos[i]->userId() == userUid) {
-                sequence = i;
-                break;
-            }
-        }
-        removeTrackObjectInfo(sequence);
-    }
-    Q_INVOKABLE void updateTrackObjectInfo(const QString& userUid, const QString& attr, const QVariant& newValue) {
-
-        for(int i = 0; i < this->m_listTrackObjectInfos.size(); i++ ) {
-            TrackObjectInfo* object = this->m_listTrackObjectInfos[i];
-            if(userUid.contains(this->m_listTrackObjectInfos.at(i)->userId())) {
-                if( attr == "RECT"){
-                    object->setRect(newValue.toRect());
-                }else if( attr == "SIZE"){
-                    object->setSourceSize(newValue.toSize());
-                }else if( attr == "LATITUDE"){
-                    object->setLatitude(newValue.toFloat());
-                }else if( attr == "LONGTITUDE"){
-                    object->setLongitude(newValue.toFloat());
-                }else if( attr == "SPEED"){
-                    object->setSpeed(newValue.toFloat());
-                }else if( attr == "ANGLE"){
-                    object->setAngle(newValue.toFloat());
-                }else if( attr == "SCREEN_X"){
-                    object->setScreenX(newValue.toInt());
-                }else if( attr == "SCREEN_Y"){
-                    object->setScreenY(newValue.toInt());
-                }
-                if( attr == "SELECTED"){
-                    object->setIsSelected(newValue.toBool());
-                }
-            }else{
-                if( attr == "SELECTED"){
-                    object->setIsSelected(false);
-                }
-            }
-        }
-    }
-    void setEnStream(bool _enStream)
-    {
-        m_enStream = _enStream;
-
-    }
-    bool enStream()
-    {
-        return m_enStream;
-    }
-    void setEnSaving(bool _enSaving)
-    {
-        m_enSaving = _enSaving;
-    }
-    bool enSaving()
-    {
-        return m_enSaving;
-    }
-    void setSensorMode(bool _sensorMode)
-    {
-        m_sensorMode = _sensorMode;
-    }
-    bool sensorMode()
-    {
-        return m_sensorMode;
-    }
-    int frameID(){
-        return m_frameID;
-    }
-    bool enOD()
-    {
-        return m_enOD;
-    }
-    bool enTrack()
-    {
-        return m_enTrack;
-    }
-    bool enSteer()
-    {
-        return m_enSteer;
-    }
-
-    QMap<int,bool>  freezeMap(){ return m_freezeMap; }
+    QQmlListProperty<TrackObjectInfo> listTrackObjectInfos();
+    void addTrackObjectInfo(TrackObjectInfo* object);
+    void removeTrackObjectInfo(const int& sequence);
+    void removeTrackObjectInfo(const QString &userUid);
+    Q_INVOKABLE void updateTrackObjectInfo(const QString& userUid,
+                                           const QString& attr,
+                                           const QVariant& newValue);
+    void setEnStream(bool _enStream);
+    bool enStream();
+    void setEnSaving(bool _enSaving);
+    bool enSaving();
+    void setSensorMode(bool _sensorMode);
+    bool sensorMode();
+    int frameID();
+    bool enOD();
+    bool enTrack();
+    bool enSteer();
+    QMap<int,bool> freezeMap();
     GimbalInterface* gimbal();
     virtual void setGimbal(GimbalInterface* gimbal);
 public:
-    QAbstractVideoSurface *videoSurface();
-    void setVideoSurface(QAbstractVideoSurface *videoSurface);
     QSize sourceSize();
     void update();
     bool allThreadStopped();
@@ -176,9 +86,24 @@ public:
     void setSourceRTSP(QString source, int port, int width, int height);
     void stopRTSP();
     virtual void setdigitalZoom(float value){}
+    static void rectangle(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Rect rect,cv::Scalar color,
+                   int thickness = 1,
+                   int lineType = cv::LINE_8, int shift = 0);
+    static void fillRectangle(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Rect rect,cv::Scalar color);
+    static void line(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Point start,cv::Point stop,cv::Scalar color,
+              int thickness = 1,
+              int lineType = cv::LINE_8, int shift = 0);
+    static void putText(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,const string& text, cv::Point org,
+                 int fontFace, double fontScale, cv::Scalar color,
+                 int thickness = 1, int lineType = cv::LINE_8,
+                 bool bottomLeftOrigin = false);
+    static void ellipse(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Point center,
+                 cv::Size size,double angle,double startAngle,double endAngle,
+                 cv::Scalar centerColor,int thickness = 1, int lineType = cv::LINE_8, int shift = 0);
+    static void convertRGB2YUV(const double R, const double G, const double B, double& Y, double& U, double& V);
 public:
-    Q_INVOKABLE virtual int addSubViewer(ImageItem *viewer);
-    Q_INVOKABLE virtual void removeSubViewer(int viewerID);
+    Q_INVOKABLE virtual int addVideoRender(VideoRender *viewer);
+    Q_INVOKABLE virtual void removeVideoRender(int viewerID);
     Q_INVOKABLE virtual void setObjectDetect(bool enable){}
     Q_INVOKABLE virtual void setPowerLineDetect(bool enable){}
     Q_INVOKABLE virtual void setPowerLineDetectRect(QRect rect){}
@@ -220,7 +145,6 @@ Q_SIGNALS:
     void plateLogChanged();
     void determinedPlateOnTracking(QString _imgPath, QString _plateID);
 public Q_SLOTS:
-    virtual void updateVideoSurface(int width = -1, int height = -1);
     virtual void setTrackType(QString trackType)
     {
         Q_UNUSED(trackType);
@@ -229,23 +153,24 @@ public Q_SLOTS:
     virtual void slTrackStateLost();
     virtual void onStreamFrameSizeChanged(int width, int height);
     virtual void doShowVideo(){}
-    virtual void drawOnViewerID(cv::Mat img, int viewerID);
+    virtual void drawOnRenderID(int viewerID, unsigned char *data, int width, int height,
+                        float* warpMatrix = nullptr, unsigned char *dataOut = nullptr);
+
 protected:
     virtual PlateLog* plateLog(){return nullptr;}
     virtual void setPlateLog(PlateLog* plateLog){
         Q_UNUSED(plateLog);
     }
+
 protected:
     GimbalInterface* m_gimbal = nullptr;
     // === sub viewer
-    QList<ImageItem*> m_listSubViewer;
+    QList<VideoRender*> m_listRender;
     QMutex imageDataMutex[10];
     unsigned char imageData[10][34041600];
     QMap<int,bool> m_freezeMap;
     // sub viewer ===
-    const QVideoFrame::PixelFormat VIDEO_OUTPUT_FORMAT = QVideoFrame::PixelFormat::Format_RGB32;
     QSize m_sourceSize;
-    QAbstractVideoSurface *m_videoSurface = nullptr;
     bool m_updateVideoSurface = false;
     int m_updateCount = 0;
     int m_updateMax = 2;

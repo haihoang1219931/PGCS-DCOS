@@ -1,5 +1,6 @@
 #include "CVVideoProcess.h"
 #include "../../VideoDisplay/ImageItem.h"
+#include "../../VideoEngine/VideoEngineInterface.h"
 Q_DECLARE_METATYPE(cv::Mat)
 #include "src/Camera/GimbalController/GimbalInterface.h"
 
@@ -16,6 +17,11 @@ CVVideoProcess::CVVideoProcess(QObject *parent): QObject(parent)
     m_mutexCommand = new QMutex();
     m_mutex = new QMutex();
     m_pauseCond = new QWaitCondition();
+    m_warpDataRender = std::vector<float>(16,0);
+    m_warpDataRender[0*4+0] = 1;
+    m_warpDataRender[1*4+1] = 1;
+    m_warpDataRender[2*4+2] = 1;
+    m_warpDataRender[3*4+3] = 1;
 }
 CVVideoProcess::~CVVideoProcess()
 {
@@ -137,7 +143,12 @@ void CVVideoProcess::doWork()
     printf("CVVideoProcess dowork started\r\n");
     msleep(1000);
     int firstFrameCount = 0;
-
+    cv::Mat imgYWarped;
+    cv::Mat imgUWarped;
+    cv::Mat imgVWarped;
+    cv::Mat warpMatrix = cv::Mat(3,3,CV_32FC1);
+    std::chrono::high_resolution_clock::time_point start, stop;
+    int sleepTime = 0;
     while (m_stop == false) {
         m_mutex->lock();
         if(m_pause)
@@ -203,30 +214,27 @@ void CVVideoProcess::doWork()
 
         gst_buffer_map(buf, &map, GST_MAP_READ);
         //        printf("map.size=%d\r\n", map.size);
-        m_i420Img = cv::Mat(height * 3 / 2 ,  map.size / height / 3 * 2, CV_8UC1, map.data);
+        m_imgI420 = cv::Mat(height * 3 / 2 ,  map.size / height / 3 * 2, CV_8UC1, map.data);
+        if(m_imgI420Warped.rows <= 0 || m_imgI420Warped.cols <= 0){
+            m_imgI420Warped = cv::Mat(height * 3 / 2 ,  map.size / height / 3 * 2, CV_8UC1);
+            imgYWarped = cv::Mat(static_cast<int>(height), static_cast<int>(width), CV_8UC1, m_imgI420Warped.data);
+            imgUWarped = cv::Mat(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420Warped.data + size_t(height * width));
+            imgVWarped = cv::Mat(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420Warped.data + size_t(height * width * 5 / 4));
+        }
+        if(m_grayFrame.cols > 0 && m_grayFrame.rows > 0){
+            m_grayFramePrev = m_grayFrame.clone();
+        }
+        m_grayFrame = cv::Mat(height,width,CV_8UC1,map.data);
+        gst_buffer_unmap(buf, &map);
+        gst_buffer_unref(buf);
+        start = std::chrono::high_resolution_clock::now();
         if(!m_gimbal->context()->m_processOnBoard){
-            cv::cvtColor(m_i420Img, m_img, CV_YUV2BGRA_I420);
-            gst_buffer_unmap(buf, &map);
-            gst_buffer_unref(buf);
-            if (m_img.cols <= 0 || m_img.rows <=  0) {
-                msleep(SLEEP_TIME);
-                continue;
-            }
-            if(m_grayFrame.cols > 0 && m_grayFrame.rows > 0){
-                m_grayFramePrev = m_grayFrame.clone();
-            }
-            if(m_i420Img.cols <= 0 || m_i420Img.rows <= 0){
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                continue;
-            }
-            cv::cvtColor(m_i420Img, m_grayFrame, CV_YUV2GRAY_I420);
             //TODO: Perfrom tracking
             float w = static_cast<float>(m_grayFrame.cols);
             float h = static_cast<float>(m_grayFrame.rows);
             if (m_dx < 0) m_dx = w/2;
             if (m_dy < 0) m_dy = h/2;
             // handle command
-            //        printf("m_jsQueue.size() = %d\r\n",m_jsQueue.size());
             if(m_gimbal->context()->m_lockMode == "FREE"){
                 m_trackEnable = false;
             }else if(m_gimbal->context()->m_lockMode == "TRACK" ||
@@ -384,40 +392,56 @@ void CVVideoProcess::doWork()
                     m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,m_zoomIR,m_rotationAlpha);
                 }
             }
-            cv::Mat warpMatrix = cv::Mat(3,3,CV_32FC1);
+
             warpMatrix.at<float>(0,0) = static_cast<float>(m_ptzMatrix.at<double>(0,0));
             warpMatrix.at<float>(0,1) = static_cast<float>(m_ptzMatrix.at<double>(0,1));
             warpMatrix.at<float>(0,2) = static_cast<float>(m_ptzMatrix.at<double>(0,2));
             warpMatrix.at<float>(1,0) = static_cast<float>(m_ptzMatrix.at<double>(1,0));
             warpMatrix.at<float>(1,1) = static_cast<float>(m_ptzMatrix.at<double>(1,1));
             warpMatrix.at<float>(1,2) = static_cast<float>(m_ptzMatrix.at<double>(1,2));
-            cv::warpAffine(m_img,*m_imgShow,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(m_img.cols,m_img.rows),cv::INTER_LINEAR);
 
+            cv::Mat imgY(static_cast<int>(height), static_cast<int>(width), CV_8UC1, m_imgI420.data);
+            cv::Mat imgU(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420.data + size_t(height * width));
+            cv::Mat imgV(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420.data + size_t(height * width * 5 / 4));
+
+            cv::warpAffine(imgY,imgYWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgY.cols,imgY.rows),cv::INTER_LINEAR);
+
+            warpMatrix.at<float>(0,2) = static_cast<float>(m_ptzMatrix.at<double>(0,2))/2;
+            warpMatrix.at<float>(1,2) = static_cast<float>(m_ptzMatrix.at<double>(1,2))/2;
+
+            cv::warpAffine(imgU,imgUWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgU.cols,imgU.rows),cv::INTER_LINEAR);
+            cv::warpAffine(imgV,imgVWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgV.cols,imgV.rows),cv::INTER_LINEAR);
             // draw track
+            warpMatrix.at<float>(0,2) = static_cast<float>(m_ptzMatrix.at<double>(0,2));
+            warpMatrix.at<float>(1,2) = static_cast<float>(m_ptzMatrix.at<double>(1,2));
             cv::Rect trackRect = m_trackRect;
             cv::Point pointAfterStab = convertPoint(cv::Point(trackRect.x+trackRect.width/2,
                                                               trackRect.y+trackRect.height/2),
                                                     warpMatrix);
             trackRect.x = pointAfterStab.x - trackRect.width/2;
             trackRect.y = pointAfterStab.y - trackRect.height/2;
-            cv::Scalar colorInvision(0,0,255,255);
-            cv::Scalar colorOccluded(0,0,0,255);
+            cv::Scalar colorInvision(255,0,0);
+            cv::Scalar colorOccluded(0,0,0);
             if(m_gimbal->context()->m_lockMode == "TRACK"){
                 if(m_tracker->Get_State() == TRACK_INVISION){
-                    cv::rectangle(*m_imgShow,trackRect,colorInvision,2);
+                    VideoEngine::rectangle(imgYWarped,imgUWarped,imgVWarped,
+                                           trackRect,colorInvision,2);
                 }else if(m_tracker->Get_State() == TRACK_OCCLUDED){
-                    cv::rectangle(*m_imgShow,trackRect,colorOccluded,2);
+                    VideoEngine::rectangle(imgYWarped,imgUWarped,imgVWarped,
+                                           trackRect,colorOccluded,2);
                 }else{
 
                 }
             }else if(m_gimbal->context()->m_lockMode == "VISUAL"){
                 if(m_tracker->Get_State() == TRACK_INVISION){
-                    drawSteeringCenter(*m_imgShow,trackRect.width,
+                    drawSteeringCenter(imgYWarped,imgUWarped,imgVWarped,
+                                       trackRect.width,
                                        static_cast<int>(trackRect.x + trackRect.width/2),
                                        static_cast<int>(trackRect.y + trackRect.height/2),
                                        colorInvision);
                 }else if(m_tracker->Get_State() == TRACK_OCCLUDED){
-                    drawSteeringCenter(*m_imgShow,trackRect.width,
+                    drawSteeringCenter(imgYWarped,imgUWarped,imgVWarped,
+                                       trackRect.width,
                                        static_cast<int>(trackRect.x + trackRect.width/2),
                                        static_cast<int>(trackRect.y + trackRect.height/2),
                                        colorOccluded);
@@ -427,69 +451,73 @@ void CVVideoProcess::doWork()
             }
         }
         else{
-            cv::cvtColor(m_i420Img, *m_imgShow, CV_YUV2BGRA_I420);
-            gst_buffer_unmap(buf, &map);
-            gst_buffer_unref(buf);
+//            cv::cvtColor(m_i420Img, *m_imgShow, CV_YUV2BGRA_I420);
         }
-        cv::Mat _imgOtherFunc;
-        cv::Mat _imgResize;
-        cv::cvtColor(*m_imgShow, _imgOtherFunc, CV_BGRA2YUV_I420);
-        if(m_sharedEnable && m_recordEnable){
-            GstBuffer *rtspImage = gst_buffer_new();
-            assert(rtspImage != NULL);
-            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
-            assert(gstMem != NULL);
-            gst_buffer_append_memory(rtspImage, gstMem);
-            GstMapInfo mapT;
-            gst_buffer_map(rtspImage, &mapT, GST_MAP_READ);
-            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
-            gst_buffer_unmap(rtspImage , &mapT);
-            //add to rtsp
-            GstFrameCacheItem gstFrame;
-            gstFrame.setIndex(*m_frameID);
-            gstFrame.setGstBuffer(rtspImage);
-            m_gstRTSPBuff->add(gstFrame);
-            //            printf("Adding rtsp frame m_gstRTSPBuff->size()=%d\r\n",m_gstRTSPBuff->size());
-            //add to saving
-            GstFrameCacheItem gstFrameSaving;
-            gstFrameSaving.setIndex(*m_frameID);
-            gstFrameSaving.setGstBuffer(gst_buffer_copy(rtspImage));
-            m_buffVideoSaving->add(gstFrameSaving);
-        }else if(m_sharedEnable && !m_recordEnable){
-            GstBuffer *rtspImage = gst_buffer_new();
-            assert(rtspImage != NULL);
-            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
-            assert(gstMem != NULL);
-            gst_buffer_append_memory(rtspImage, gstMem);
-            GstMapInfo mapT;
-            gst_buffer_map(rtspImage, &mapT, GST_MAP_READ);
-            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
-            gst_buffer_unmap(rtspImage , &mapT);
-            //add to rtsp
-            GstFrameCacheItem gstFrame;
-            gstFrame.setIndex(*m_frameID);
-            gstFrame.setGstBuffer(rtspImage);
-            m_gstRTSPBuff->add(gstFrame);
-        }else if(!m_sharedEnable && m_recordEnable){
-            GstBuffer *savingImage = gst_buffer_new();
-            assert(savingImage != NULL);
-            GstMemory *gstMem = gst_allocator_alloc(NULL, _imgOtherFunc.u->size, NULL);
-            assert(gstMem != NULL);
-            gst_buffer_append_memory(savingImage, gstMem);
-            GstMapInfo mapT;
-            gst_buffer_map(savingImage, &mapT, GST_MAP_READ);
-            memcpy((void *)mapT.data, _imgOtherFunc.data, _imgOtherFunc.u->size);
-            gst_buffer_unmap(savingImage , &mapT);
-            //add to saving
-            GstFrameCacheItem gstFrameSaving;
-            gstFrameSaving.setIndex(*m_frameID);
-            gstFrameSaving.setGstBuffer(savingImage);
-            m_buffVideoSaving->add(gstFrameSaving);
-        }else{
 
+        Q_EMIT readyDrawOnRenderID(0,m_imgI420Warped.data,width,height,m_warpDataRender.data(),nullptr);
+        Q_EMIT readyDrawOnRenderID(1,m_imgI420Warped.data,width,height,m_warpDataRender.data(),nullptr);
+//        if(false)
+        {
+            if(m_sharedEnable && m_recordEnable){
+                GstBuffer *rtspImage = gst_buffer_new();
+                assert(rtspImage != NULL);
+                GstMemory *gstMem = gst_allocator_alloc(NULL, m_imgI420Warped.u->size, NULL);
+                assert(gstMem != NULL);
+                gst_buffer_append_memory(rtspImage, gstMem);
+                GstMapInfo mapT;
+                gst_buffer_map(rtspImage, &mapT, GST_MAP_READ);
+                memcpy((void *)mapT.data, m_imgI420Warped.data, m_imgI420Warped.u->size);
+                gst_buffer_unmap(rtspImage , &mapT);
+                //add to rtsp
+                GstFrameCacheItem gstFrame;
+                gstFrame.setIndex(*m_frameID);
+                gstFrame.setGstBuffer(rtspImage);
+                m_gstRTSPBuff->add(gstFrame);
+//                printf("Adding rtsp frame m_gstRTSPBuff->size()=%d\r\n",m_gstRTSPBuff->size());
+                //add to saving
+                GstFrameCacheItem gstFrameSaving;
+                gstFrameSaving.setIndex(*m_frameID);
+                gstFrameSaving.setGstBuffer(gst_buffer_copy(rtspImage));
+                m_buffVideoSaving->add(gstFrameSaving);
+            }else if(m_sharedEnable && !m_recordEnable){
+                GstBuffer *rtspImage = gst_buffer_new();
+                assert(rtspImage != NULL);
+                GstMemory *gstMem = gst_allocator_alloc(NULL, m_imgI420Warped.u->size, NULL);
+                assert(gstMem != NULL);
+                gst_buffer_append_memory(rtspImage, gstMem);
+                GstMapInfo mapT;
+                gst_buffer_map(rtspImage, &mapT, GST_MAP_READ);
+                memcpy((void *)mapT.data, m_imgI420Warped.data, m_imgI420Warped.u->size);
+                gst_buffer_unmap(rtspImage , &mapT);
+                //add to rtsp
+                GstFrameCacheItem gstFrame;
+                gstFrame.setIndex(*m_frameID);
+                gstFrame.setGstBuffer(rtspImage);
+                m_gstRTSPBuff->add(gstFrame);
+            }else if(!m_sharedEnable && m_recordEnable){
+                GstBuffer *savingImage = gst_buffer_new();
+                assert(savingImage != NULL);
+                GstMemory *gstMem = gst_allocator_alloc(NULL, m_imgI420Warped.u->size, NULL);
+                assert(gstMem != NULL);
+                gst_buffer_append_memory(savingImage, gstMem);
+                GstMapInfo mapT;
+                gst_buffer_map(savingImage, &mapT, GST_MAP_READ);
+                memcpy((void *)mapT.data, m_imgI420Warped.data, m_imgI420Warped.u->size);
+                gst_buffer_unmap(savingImage , &mapT);
+                //add to saving
+                GstFrameCacheItem gstFrameSaving;
+                gstFrameSaving.setIndex(*m_frameID);
+                gstFrameSaving.setGstBuffer(savingImage);
+                m_buffVideoSaving->add(gstFrameSaving);
+            }else{
+
+            }
         }
-        Q_EMIT processDone();
-        msleep(SLEEP_TIME);
+        stop = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::micro> timeSpan = stop - start;
+        sleepTime = 33333 - timeSpan.count();
+        std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
+        msleep(sleepTime/1000);
     }
 
     Q_EMIT stopped();
@@ -507,30 +535,30 @@ void CVVideoProcess::msleep(int ms)
 #else
 #endif
 }
-void CVVideoProcess::drawSteeringCenter(cv::Mat &_img, int _wBoundary,
-                                        int _centerX, int _centerY,
+void CVVideoProcess::drawSteeringCenter(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV,
+                                        int _wBoundary, int _centerX, int _centerY,
                                         cv::Scalar _color)
 {
     _centerX -= _wBoundary / 2;
     _centerY -= _wBoundary / 2;
-    cv::line(_img, cv::Point(_centerX, _centerY),
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY),
              cv::Point(_centerX + _wBoundary / 4, _centerY), _color, 2);
-    cv::line(_img, cv::Point(_centerX, _centerY),
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY),
              cv::Point(_centerX, _centerY + _wBoundary / 4), _color, 2);
-    cv::line(_img, cv::Point(_centerX + _wBoundary, _centerY),
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY),
              cv::Point(_centerX + 3 * _wBoundary / 4, _centerY), _color, 2);
-    cv::line(_img, cv::Point(_centerX + _wBoundary, _centerY),
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY),
              cv::Point(_centerX + _wBoundary, _centerY + _wBoundary / 4), _color,
              2);
-    cv::line(_img, cv::Point(_centerX, _centerY + _wBoundary),
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY + _wBoundary),
              cv::Point(_centerX, _centerY + 3 * _wBoundary / 4), _color, 2);
-    cv::line(_img, cv::Point(_centerX, _centerY + _wBoundary),
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY + _wBoundary),
              cv::Point(_centerX + _wBoundary / 4, _centerY + _wBoundary), _color,
              2);
-    cv::line(_img, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
              cv::Point(_centerX + _wBoundary, _centerY + 3 * _wBoundary / 4),
              _color, 2);
-    cv::line(_img, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
              cv::Point(_centerX + 3 * _wBoundary / 4, _centerY + _wBoundary),
              _color, 2);
 }
