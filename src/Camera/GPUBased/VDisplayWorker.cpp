@@ -1,5 +1,5 @@
 #include "VDisplayWorker.h"
-Q_DECLARE_METATYPE(cv::Mat)
+#include "../VideoEngine/VideoEngineInterface.h"
 #include "Camera/Algorithms/tracker/mosse/tracker.h"
 VDisplayWorker::VDisplayWorker(QObject *_parent) : QObject(_parent)
 {
@@ -51,6 +51,17 @@ void VDisplayWorker::process()
     float* h_stabMat = nullptr;
     float *d_stabMat;
     cv::Scalar line_color(255,0,255,255);
+    m_warpDataRender = std::vector<float>(16,0);
+    m_warpDataRender[0*4+0] = 1;
+    m_warpDataRender[1*4+1] = 1;
+    m_warpDataRender[2*4+2] = 1;
+    m_warpDataRender[3*4+3] = 1;
+    float width = 0;
+    float height = 0;
+    cv::Mat imgYWarped;
+    cv::Mat imgUWarped;
+    cv::Mat imgVWarped;
+    cv::Mat warpMatrix = cv::Mat(3,3,CV_32FC1);
     while (true) {
         start = std::chrono::high_resolution_clock::now();
         int index = m_matImageBuff->size() - 1;
@@ -75,6 +86,8 @@ void VDisplayWorker::process()
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
             continue;
         }
+        width = imgSize.width;
+        height = imgSize.height;
         // Warp I420 Image GPU
         h_stabMat = processImgItem.getHostStabMatrix();
         if(h_stabMat != nullptr)
@@ -88,7 +101,13 @@ void VDisplayWorker::process()
         /***Warp Image CPU*******/
 //        printf("imgSize[%dx%d]\r\n",imgSize.width,imgSize.height);
 
-        m_imgRaw = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
+        m_imgI420 = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
+        if(m_imgI420Warped.rows <= 0 || m_imgI420Warped.cols <= 0){
+            m_imgI420Warped = m_imgI420.clone();
+            imgYWarped = cv::Mat(static_cast<int>(height), static_cast<int>(width), CV_8UC1, m_imgI420Warped.data);
+            imgUWarped = cv::Mat(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420Warped.data + size_t(height * width));
+            imgVWarped = cv::Mat(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420Warped.data + size_t(height * width * 5 / 4));
+        }
         m_imgGray = cv::Mat(imgSize.height, imgSize.width, CV_8UC1, h_imageData);
         // draw zoom
         char zoomText[100];
@@ -99,13 +118,11 @@ void VDisplayWorker::process()
 
         if(processImgItem.sensorID() == "IR"){
             if(processImgItem.colorMode() == "WHITE_HOT"){
-                cv::cvtColor(m_imgRaw, m_imgShow, cv::COLOR_YUV2BGRA_I420);
-            }else if(processImgItem.colorMode() == "COLOR"){                
+
+            }else if(processImgItem.colorMode() == "COLOR"){
                 cv::applyColorMap(m_imgGray,m_imgIRColor,cv::COLORMAP_HOT);
-                cv::cvtColor(m_imgIRColor, m_imgShow, cv::COLOR_BGR2BGRA);
+                cv::cvtColor(m_imgIRColor, m_imgI420, cv::COLOR_BGR2YUV_I420);
             }
-        }else{
-            cv::cvtColor(m_imgRaw, m_imgShow, cv::COLOR_YUV2BGRA_I420);
         }
         if(m_captureSet){
             m_captureMutex.lock();
@@ -114,13 +131,27 @@ void VDisplayWorker::process()
             std::string timestamp = FileController::get_time_stamp();
             std::string captureFile = "flights/" + timestamp + ".jpg";
             printf("Save file %s\r\n", captureFile.c_str());
-            cv::imwrite(captureFile, m_imgShow);
+            cv::Mat imgSave;
+            cv::cvtColor(m_imgI420, imgSave, cv::COLOR_YUV2BGR_I420);
+            cv::imwrite(captureFile, imgSave);
         }
 
-        if(stabMatrix.rows == 3 && stabMatrix.cols ==3 &&
-                m_imgShow.cols > 0 && m_imgShow.rows > 0){
-            cv::Mat warpMatrix = cv::Mat(2,3,CV_32FC1,h_stabMat);
-            cv::warpAffine(m_imgShow, m_imgShow, warpMatrix, imgSize, cv::INTER_LINEAR);
+        if(stabMatrix.rows == 3 && stabMatrix.cols == 3 &&
+                m_imgI420.cols > 0 && m_imgI420.rows > 0){
+            warpMatrix.at<float>(0,0) = stabMatrix.at<float>(0,0);
+            warpMatrix.at<float>(0,1) = stabMatrix.at<float>(0,1);
+            warpMatrix.at<float>(0,2) = stabMatrix.at<float>(0,2);
+            warpMatrix.at<float>(1,0) = stabMatrix.at<float>(1,0);
+            warpMatrix.at<float>(1,1) = stabMatrix.at<float>(1,1);
+            warpMatrix.at<float>(1,2) = stabMatrix.at<float>(1,2);
+            cv::Mat imgY(static_cast<int>(height), static_cast<int>(width), CV_8UC1, m_imgI420.data);
+            cv::Mat imgU(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420.data + size_t(height * width));
+            cv::Mat imgV(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420.data + size_t(height * width * 5 / 4));
+            cv::warpAffine(imgY,imgYWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgY.cols,imgY.rows),cv::INTER_LINEAR);
+            warpMatrix.at<float>(0,2) = stabMatrix.at<float>(0,2)/2;
+            warpMatrix.at<float>(1,2) = stabMatrix.at<float>(1,2)/2;
+            cv::warpAffine(imgU,imgUWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgU.cols,imgU.rows),cv::INTER_LINEAR);
+            cv::warpAffine(imgV,imgVWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgV.cols,imgV.rows),cv::INTER_LINEAR);
             if(m_enOD){
                 if(m_countUpdateOD == 0){
                     //----------------------------- Draw EO object detected
@@ -138,7 +169,7 @@ void VDisplayWorker::process()
                         m_listObj[i].y = pointAfterStab.y - objBeforeStab.w/2;
                     }
                 }
-                this->drawDetectedObjects(m_imgShow, m_listObj);
+                this->drawDetectedObjects(imgYWarped,imgUWarped,imgVWarped, m_listObj);
                 m_countUpdateOD ++;
                 if(m_countUpdateOD > 15){
                     m_countUpdateOD = 0;
@@ -151,24 +182,28 @@ void VDisplayWorker::process()
                                                         stabMatrix);
             trackRect.x = pointAfterStab.x - trackRect.width/2;
             trackRect.y = pointAfterStab.y - trackRect.height/2;
-            cv::Scalar colorInvision(0,0,255,255);
-            cv::Scalar colorOccluded(0,0,0,255);
+            cv::Scalar colorInvision(255,0,0);
+            cv::Scalar colorOccluded(0,0,0);
             if(processImgItem.lockMode() == "TRACK"){
                 if(processImgItem.trackStatus() == TRACK_INVISION){
-                    cv::rectangle(m_imgShow,trackRect,colorInvision,2);
+                    VideoEngine::rectangle(imgYWarped,imgUWarped,imgVWarped,
+                                           trackRect,colorInvision,2);
                 }else if(processImgItem.trackStatus() == TRACK_OCCLUDED){
-                    cv::rectangle(m_imgShow,trackRect,colorOccluded,2);
+                    VideoEngine::rectangle(imgYWarped,imgUWarped,imgVWarped,
+                                           trackRect,colorOccluded,2);
                 }else{
 
                 }
             }else if(processImgItem.lockMode() == "VISUAL"){
                 if(processImgItem.trackStatus() == TRACK_INVISION){
-                    drawSteeringCenter(m_imgShow,trackRect.width,
+                    VideoEngine::drawSteeringCenter(imgYWarped,imgUWarped,imgVWarped,
+                                        trackRect.width,
                                        static_cast<int>(trackRect.x + trackRect.width/2),
                                        static_cast<int>(trackRect.y + trackRect.height/2),
                                        colorInvision);
                 }else if(processImgItem.trackStatus() == TRACK_OCCLUDED){
-                    drawSteeringCenter(m_imgShow,trackRect.width,
+                    VideoEngine::drawSteeringCenter(imgYWarped,imgUWarped,imgVWarped,
+                                        trackRect.width,
                                        static_cast<int>(trackRect.x + trackRect.width/2),
                                        static_cast<int>(trackRect.y + trackRect.height/2),
                                        colorOccluded);
@@ -179,7 +214,8 @@ void VDisplayWorker::process()
             // draw powerline
             if(processImgItem.powerlineDetectEnable()){
                 cv::Rect rect = processImgItem.powerlineDetectRect();
-                cv::rectangle(m_imgShow,rect,
+                VideoEngine::rectangle(imgYWarped,imgUWarped,imgVWarped,
+                                       rect,
                               cv::Scalar(0,255,0,255),2);
                 vector<cv::Scalar> plr_lines = processImgItem.powerLineList();
                 for(int i = 0;i < (int)plr_lines.size();i ++){
@@ -193,34 +229,31 @@ void VDisplayWorker::process()
                         cv::Point pointAfterStab = convertPoint(pt2,stabMatrix);
                         pt2 = pointAfterStab;
                     }
-                    cv::line(m_imgShow,pt1,pt2,line_color,4,cv::LINE_AA);
+                    VideoEngine::line(imgYWarped,imgUWarped,imgVWarped,
+                                      pt1,pt2,line_color,4,cv::LINE_AA);
                 }
+            }
+            Q_EMIT readyDrawOnRenderID(0,m_imgI420Warped.data,width,height,m_warpDataRender.data(),nullptr);
+            Q_EMIT readyDrawOnRenderID(1,m_imgI420Warped.data,width,height,m_warpDataRender.data(),nullptr);
+            // Adding video saving and rtsp
+            if(m_enShare &&
+                    (m_imgI420Warped.cols > 0 && m_imgI420Warped.rows > 0)){
+                GstBuffer *gstBuffRTSP = gst_buffer_new();
+                assert(gstBuffRTSP != NULL);
+                GstMemory *gstRTSPMem = gst_allocator_alloc(NULL, imgSize.width * imgSize.height * 3 / 2, NULL);
+                assert(gstRTSPMem != NULL);
+                gst_buffer_append_memory(gstBuffRTSP, gstRTSPMem);
+                GstMapInfo mapRTSP;
+                gst_buffer_map(gstBuffRTSP, &mapRTSP, GST_MAP_READ);
+                memcpy(mapRTSP.data, m_imgI420Warped.data, m_imgI420Warped.cols * m_imgI420Warped.rows);
+                gst_buffer_unmap(gstBuffRTSP , &mapRTSP);
+                GstFrameCacheItem gstRTSP;
+                gstRTSP.setIndex(m_currID);
+                gstRTSP.setGstBuffer(gstBuffRTSP);
+                m_gstRTSPBuff->add(gstRTSP);
             }
         }
 
-        memcpy(h_BRGAImage, m_imgShow.data, imgSize.width * imgSize.height * 4);
-        frame = QVideoFrame(QImage((uchar *)h_BRGAImage, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888));
-        Q_EMIT receivedFrame(m_currID, frame);
-        Q_EMIT readyDrawOnViewerID(m_imgShow,0);
-        // Adding video saving and rtsp
-        if(m_enShare &&
-                (m_imgShow.cols > 0 && m_imgShow.rows > 0)){
-            cv::Mat imgRTSP;
-            cv::cvtColor(m_imgShow, imgRTSP, cv::COLOR_BGRA2YUV_I420);
-            GstBuffer *gstBuffRTSP = gst_buffer_new();
-            assert(gstBuffRTSP != NULL);
-            GstMemory *gstRTSPMem = gst_allocator_alloc(NULL, imgSize.width * imgSize.height * 3 / 2, NULL);
-            assert(gstRTSPMem != NULL);
-            gst_buffer_append_memory(gstBuffRTSP, gstRTSPMem);
-            GstMapInfo mapRTSP;
-            gst_buffer_map(gstBuffRTSP, &mapRTSP, GST_MAP_READ);
-            memcpy(mapRTSP.data, imgRTSP.data, imgRTSP.cols * imgRTSP.rows);
-            gst_buffer_unmap(gstBuffRTSP , &mapRTSP);
-            GstFrameCacheItem gstRTSP;
-            gstRTSP.setIndex(m_currID);
-            gstRTSP.setGstBuffer(gstBuffRTSP);
-            m_gstRTSPBuff->add(gstRTSP);
-        }
         //-----------------------------
         fixedMemBRGA.notifyAddOne();
         //        fixedMemI420Stab.notifyAddOne();
@@ -228,7 +261,7 @@ void VDisplayWorker::process()
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
 //        printf("\nDisplay Worker: %d | %d - [%d - %d]", m_currID, (long)(timeSpan.count()), imgSize.width, imgSize.height);
-        std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
+        std::this_thread::sleep_for(std::chrono::microseconds(1000));
     }
 }
 cv::Point VDisplayWorker::convertPoint(cv::Point originPoint, cv::Mat stabMatrix){
@@ -254,50 +287,6 @@ cv::Point VDisplayWorker::convertPoint(cv::Point originPoint, cv::Mat stabMatrix
         result.y = pointInStab.at<double>(1,0);
     }
     return result;
-}
-void VDisplayWorker::drawSteeringCenter(cv::Mat &_img, int _wBoundary,
-                                        int _centerX, int _centerY,
-                                        cv::Scalar _color)
-{
-    _centerX -= _wBoundary / 2;
-    _centerY -= _wBoundary / 2;
-    cv::line(_img, cv::Point(_centerX, _centerY),
-             cv::Point(_centerX + _wBoundary / 4, _centerY), _color, 2);
-    cv::line(_img, cv::Point(_centerX, _centerY),
-             cv::Point(_centerX, _centerY + _wBoundary / 4), _color, 2);
-    cv::line(_img, cv::Point(_centerX + _wBoundary, _centerY),
-             cv::Point(_centerX + 3 * _wBoundary / 4, _centerY), _color, 2);
-    cv::line(_img, cv::Point(_centerX + _wBoundary, _centerY),
-             cv::Point(_centerX + _wBoundary, _centerY + _wBoundary / 4), _color,
-             2);
-    cv::line(_img, cv::Point(_centerX, _centerY + _wBoundary),
-             cv::Point(_centerX, _centerY + 3 * _wBoundary / 4), _color, 2);
-    cv::line(_img, cv::Point(_centerX, _centerY + _wBoundary),
-             cv::Point(_centerX + _wBoundary / 4, _centerY + _wBoundary), _color,
-             2);
-    cv::line(_img, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
-             cv::Point(_centerX + _wBoundary, _centerY + 3 * _wBoundary / 4),
-             _color, 2);
-    cv::line(_img, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
-             cv::Point(_centerX + 3 * _wBoundary / 4, _centerY + _wBoundary),
-             _color, 2);
-}
-void VDisplayWorker::drawObjectBoundary(cv::Mat &_img, cv::Rect _objBoundary,
-                                        cv::Scalar _color)
-{
-    cv::rectangle(_img, _objBoundary, _color, 2);
-}
-void VDisplayWorker::drawCenter(cv::Mat &_img, int _r, int _centerX,
-                                int _centerY, cv::Scalar _color)
-{
-    cv::line(_img, cv::Point(_centerX, _centerY - _r),
-             cv::Point(_centerX - _r, _centerY), _color, 2);
-    cv::line(_img, cv::Point(_centerX - _r, _centerY),
-             cv::Point(_centerX, _centerY + _r), _color, 2);
-    cv::line(_img, cv::Point(_centerX, _centerY + _r),
-             cv::Point(_centerX + _r, _centerY), _color, 2);
-    cv::line(_img, cv::Point(_centerX + _r, _centerY),
-             cv::Point(_centerX, _centerY - _r), _color, 2);
 }
 std::vector<std::string>
 VDisplayWorker::objects_names_from_file(std::string const filename)
@@ -370,9 +359,9 @@ void VDisplayWorker::capture(){
     m_captureMutex.unlock();
 }
 
-void VDisplayWorker::drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t> &_listObj)
+void VDisplayWorker::drawDetectedObjects(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV,
+                                         const std::vector<bbox_t> &_listObj)
 {
-    cv::Mat tmpImg = _img.clone();
     unsigned int limitW = 30;
     unsigned int limitH = 60;
     for (auto b : _listObj) {
@@ -385,7 +374,7 @@ void VDisplayWorker::drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t
         if((b.w * b.h) < (limitW * limitH) ){
             continue;
         }
-        cv::rectangle(_img, rectObject, cv::Scalar(255, 0, 0,255), 2);
+        VideoEngine::rectangle(imgY,imgU,imgV, rectObject, cv::Scalar(255, 0, 0,255), 2);
         {
             std::string obj_name;
             std::string string_id(b.track_info.stringinfo);
@@ -401,10 +390,11 @@ void VDisplayWorker::drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t
 
             if (!obj_name.empty()){
                 cv::Rect rectName(cv::Point2f(std::max((int)b.x - 1, 0), std::max((int)b.y - 35, 0)),
-                                  cv::Point2f(std::min((int)b.x + max_width, _img.cols - 1), std::min((int)b.y, _img.rows - 1)));
-                cv::rectangle(_img,rectName,
+                                  cv::Point2f(std::min((int)b.x + max_width, imgY.cols - 1), std::min((int)b.y, imgY.rows - 1)));
+                VideoEngine::rectangle(imgY,imgU,imgV,rectName,
                               cv::Scalar(255, 255, 255,255), CV_FILLED, 8, 0);
-                cv::putText(_img, obj_name, cv::Point2f(b.x, b.y - 16), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.2, cv::Scalar(0, 0, 0,255), 2);
+                VideoEngine::putText(imgY,imgU,imgV,
+                            obj_name, cv::Point2f(b.x, b.y - 16), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.2, cv::Scalar(0, 0, 0,255), 2);
                 //                printf("obj_name = %s\r\n",obj_name.c_str());
 
                 QString qstrObjName = QString::fromStdString(obj_name);
@@ -421,7 +411,7 @@ void VDisplayWorker::drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t
                 if(writeLog){
                     m_mapPlates[qstrObjName] = QString::fromStdString(timestampt);
                     std::string fileName = timestampt+"_"+qstrObjName.toStdString()+".jpg";
-                    cv::imwrite("plates/"+fileName,tmpImg(rectObject));
+                    cv::imwrite("plates/"+fileName,imgY(rectObject));
                     std::string lineLog = timestampt+","+qstrObjName.toStdString()+","+fileName;
                     FileController::addLine("plates/plate_log.csv",lineLog);
                     if(m_plateLog != nullptr){

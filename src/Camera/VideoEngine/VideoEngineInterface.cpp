@@ -195,6 +195,9 @@ void VideoEngine::drawOnRenderID(int viewerID, unsigned char *data, int width, i
         if(tmpViewer != nullptr){
             if((width != m_sourceSize.width() ||
                 height != m_sourceSize.height()) &&viewerID == 0){
+//                printf("drawOnRenderID (%dx%d)\r\n",width,height);
+                m_sourceSize.setWidth(width);
+                m_sourceSize.setHeight(height);
                 Q_EMIT VideoEngine::sourceSizeChanged(width,height);
             }
             tmpViewer->handleNewFrame(viewerID,data,width,height,warpMatrix,dataOut);
@@ -210,7 +213,6 @@ QSize VideoEngine::sourceSize()
 void VideoEngine::onStreamFrameSizeChanged(int width, int height)
 {
 //    printf("%s [%dx%d]\r\n",__func__,width,height);
-    m_vSavingWorker->setStreamSize(width, height);
     if (m_enStream) {
         if(m_vRTSPServer == nullptr)
         {
@@ -222,15 +224,42 @@ void VideoEngine::onStreamFrameSizeChanged(int width, int height)
         setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=4000000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
                       8554,width,height);
     #endif
-        }else{
-//            printf("m_vRTSPServer != nullptr\r\n");
         }
     }
 
     if (m_enSaving) {
+        m_vSavingWorker->setStreamSize(width, height);
         m_vSavingWorker->start();
     }
 }
+void VideoEngine::drawSteeringCenter(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV,
+                                        int _wBoundary, int _centerX, int _centerY,
+                                        cv::Scalar _color)
+{
+    _centerX -= _wBoundary / 2;
+    _centerY -= _wBoundary / 2;
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY),
+             cv::Point(_centerX + _wBoundary / 4, _centerY), _color, 2);
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY),
+             cv::Point(_centerX, _centerY + _wBoundary / 4), _color, 2);
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY),
+             cv::Point(_centerX + 3 * _wBoundary / 4, _centerY), _color, 2);
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY),
+             cv::Point(_centerX + _wBoundary, _centerY + _wBoundary / 4), _color,
+             2);
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY + _wBoundary),
+             cv::Point(_centerX, _centerY + 3 * _wBoundary / 4), _color, 2);
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY + _wBoundary),
+             cv::Point(_centerX + _wBoundary / 4, _centerY + _wBoundary), _color,
+             2);
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
+             cv::Point(_centerX + _wBoundary, _centerY + 3 * _wBoundary / 4),
+             _color, 2);
+    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
+             cv::Point(_centerX + 3 * _wBoundary / 4, _centerY + _wBoundary),
+             _color, 2);
+}
+
 void VideoEngine::rectangle(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Rect rect,cv::Scalar color,int thickness, int lineType,int shift){
     double y,u,v;
     convertRGB2YUV((double)color.val[0],(double)color.val[1],(double)color.val[2],y,u,v);

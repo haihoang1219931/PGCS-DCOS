@@ -49,6 +49,7 @@ void VTrackWorker::setClick(float x, float y,float width,float height){
     }
 }
 void VTrackWorker::setPowerLineDetect(bool enable){
+#ifdef USE_LINE_DETECTOR
     m_powerLineDetectEnable = enable;
     if(enable){
         if(m_grayFrame.cols <= 0 || m_grayFrame.rows <= 0){
@@ -59,12 +60,15 @@ void VTrackWorker::setPowerLineDetect(bool enable){
         m_powerLineDetectRect.width = m_grayFrame.cols - 100;
         m_powerLineDetectRect.height = m_grayFrame.rows / 2 - 50;
     }
+#endif
 }
 void VTrackWorker::setPowerLineDetectRect(QRect rect){
+    #ifdef USE_LINE_DETECTOR
     m_powerLineDetectRect.x = rect.x();
     m_powerLineDetectRect.y = rect.y();
     m_powerLineDetectRect.width = rect.width();
     m_powerLineDetectRect.height = rect.height();
+#endif
 }
 void VTrackWorker::setSensorColor(QString colorMode){
     m_colorMode = colorMode;
@@ -238,6 +242,7 @@ void VTrackWorker::run()
         h_gmeMat = processImgItem.getDeviceGMEMatrix();
         d_gmeMat = processImgItem.getHostGMEMatrix();
 
+        cv::Mat nv12Img = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_i420Image);
         m_i420Img = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_i420Image);
         if(m_grayFrame.cols > 0 && m_grayFrame.rows > 0){
             m_grayFramePrev = m_grayFrame.clone();
@@ -246,10 +251,12 @@ void VTrackWorker::run()
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
-        cv::cvtColor(m_i420Img, m_grayFrame, CV_YUV2GRAY_YV12);
+        m_grayFrame = cv::Mat(imgSize.height , imgSize.width, CV_8UC1, h_i420Image);
+#ifdef USE_LINE_DETECTOR
         if(m_plrEngine == nullptr){
             m_plrEngine = my_pli::createPlrEngine(m_grayFrame.size());
         }
+#endif
         //TODO: Perfrom tracking
         float w = static_cast<float>(m_grayFrame.cols);
         float h = static_cast<float>(m_grayFrame.rows);
@@ -400,10 +407,11 @@ void VTrackWorker::run()
             m_trackRect.width = m_trackSize;
             m_trackRect.height = m_trackSize;
         }
-
+#ifdef USE_LINE_DETECTOR
         if(m_powerLineDetectEnable){
             m_plrEngine->init_track_plr(m_grayFrame,m_powerLineDetectRect,m_powerLineList,m_plrRR);
         }
+#endif
         if(m_stabEnable){
             if(m_gimbal->context()->m_sensorID == 0){
                 m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1 * m_scale,m_rotationAlpha);
@@ -417,7 +425,6 @@ void VTrackWorker::run()
                 m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,m_zoomIR,m_rotationAlpha);
             }
         }
-
         // add data to display worker
         ProcessImageCacheItem processImgItem;
         processImgItem.setIndex(m_currID);
@@ -432,9 +439,11 @@ void VTrackWorker::run()
         processImgItem.setTrackRect(m_trackRect);
         processImgItem.setTrackStatus(m_tracker->Get_State());
         processImgItem.setZoom(m_gimbal->context()->m_zoom[m_gimbal->context()->m_sensorID]);
+#ifdef USE_LINE_DETECTOR
         processImgItem.setPowerlineDetectEnable(m_powerLineDetectEnable);
         processImgItem.setPowerlineDetectRect(m_powerLineDetectRect);
         processImgItem.setPowerLineList(m_powerLineList);
+#endif
         processImgItem.setSensorID(m_gimbal->context()->m_sensorID == 0?"EO":"IR");
         processImgItem.setColorMode(m_colorMode);
         m_matTrackBuff->add(processImgItem);
@@ -442,7 +451,7 @@ void VTrackWorker::run()
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
-        std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
+        std::this_thread::sleep_for(std::chrono::microseconds(1000));
         //printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
         //std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
     }

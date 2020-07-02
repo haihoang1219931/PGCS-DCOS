@@ -86,6 +86,9 @@ public:
     void setSourceRTSP(QString source, int port, int width, int height);
     void stopRTSP();
     virtual void setdigitalZoom(float value){}
+    static void drawSteeringCenter(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV,
+                                   int _wBoundary, int _centerX, int _centerY,
+                                   cv::Scalar _color);
     static void rectangle(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Rect rect,cv::Scalar color,
                    int thickness = 1,
                    int lineType = cv::LINE_8, int shift = 0);
@@ -176,7 +179,7 @@ protected:
     int m_updateMax = 2;
     QSize m_videoSurfaceSize;
     bool m_enStream = true;
-    bool m_enSaving = true;
+    bool m_enSaving = false;
     int m_sensorMode = -1;
     int m_frameID;
     cv::Mat m_imgShow;

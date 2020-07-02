@@ -37,10 +37,7 @@ class VSavingWorker : public QThread
 
         static gboolean wrapperOnSeekData(GstAppSrc *_appSrc, guint64 _offset, gpointer _uData);
 
-        void setStreamSize(int width,int height){
-            m_width = width;
-            m_height = height;
-        }
+        void setStreamSize(int width,int height);
     private:
         void onNeedData(GstAppSrc *_appSrc, guint _size, gpointer _uData);
 

@@ -6,8 +6,6 @@ VSavingWorker::VSavingWorker(std::string _mode)
     m_loop = g_main_loop_new(nullptr, FALSE);
     m_bitrate = 4000000;
     m_frameRate = 30;
-    m_width = 1920;
-    m_height = 1080;
 
     if (std::strcmp(_mode.data(), "EO") == 0) {
         m_sensorMode = "EO";
@@ -59,7 +57,7 @@ void VSavingWorker::onNeedData(GstAppSrc *_appSrc, guint _size, gpointer _uData)
 
     m_currID = gstBuff.getIndex();
     GstBuffer *img_save = gst_buffer_copy(gstBuff.getGstBuffer());
-    //    printf("\n===> Saving Video: sensor = %s  |  id = %d", (m_sensorMode == Status::SensorMode::EO) ? "EO" : "IR", m_currID);
+    printf("\n===> Saving Video:  |  id = %d",m_currID);
     GstClockTime gstDuration = GST_SECOND / m_frameRate;
     GST_BUFFER_PTS(img_save) = (m_countFrame + 1) * gstDuration;
     GST_BUFFER_DTS(img_save) = (m_countFrame + 1) * gstDuration;
@@ -122,7 +120,10 @@ bool VSavingWorker::initPipeline()
     gst_app_src_set_callbacks(GST_APP_SRC_CAST(m_appSrc), &cbs, this, nullptr);
     return true;
 }
-
+void VSavingWorker::setStreamSize(int width,int height){
+    m_width = width;
+    m_height = height;
+}
 void VSavingWorker::run()
 {
     initPipeline();

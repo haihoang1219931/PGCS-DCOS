@@ -23,9 +23,10 @@
 #include "Camera/Algorithms/tracker/dando/Utilities.hpp"
 #include "Camera/Algorithms/tracker/dando/HTrack/saliency.h"
 #include "Camera/Algorithms/tracker/mosse/tracker.h"
-
+#ifdef USE_LINE_DETECTOR
 #include <S_PowerLineDetect/power_line_scan.hpp>
-#define TRACK_DANDO
+#endif
+//#define TRACK_DANDO
 class ClickTrack;
 class GimbalInterface;
 class OCR;
@@ -185,11 +186,13 @@ public:
     float deadZone = 160;
     float maxAxis = 32768.0f;
     // powerline detect
+#ifdef USE_LINE_DETECTOR
     bool m_powerLineDetectEnable = false;
     cv::Rect m_powerLineDetectRect;
     my_pli::plr_engine* m_plrEngine = nullptr;
     std::vector<cv::Scalar> m_powerLineList;
     cv::RotatedRect m_plrRR;
+#endif
     // color mode
     QString m_colorMode = "WHITE_HOT";
 };

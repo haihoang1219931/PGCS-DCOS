@@ -70,9 +70,7 @@ public Q_SLOTS:
     void doWork();
 public:
     void msleep(int ms);
-    void drawSteeringCenter(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV,
-                            int _wBoundary, int _centerX, int _centerY,
-                            cv::Scalar _color);
+
 //    void warpAffine(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV);
 public:
     unsigned char m_renderDataOut[8294400];

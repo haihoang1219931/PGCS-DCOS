@@ -1,14 +1,12 @@
 #include "CVVideoProcess.h"
 #include "../../VideoDisplay/ImageItem.h"
 #include "../../VideoEngine/VideoEngineInterface.h"
-Q_DECLARE_METATYPE(cv::Mat)
 #include "src/Camera/GimbalController/GimbalInterface.h"
 
 CVVideoProcess::CVVideoProcess(QObject *parent): QObject(parent)
 {
     m_gstRTSPBuff = Cache::instance()->getGstRTSPCache();
     m_buffVideoSaving = Cache::instance()->getGstEOSavingCache();
-    qRegisterMetaType< cv::Mat >("cv::Mat");
 #ifdef TRACK_DANDO
     m_tracker = new ITrack(FEATURE_HOG, KERNEL_GAUSSIAN);
 #else
@@ -434,13 +432,13 @@ void CVVideoProcess::doWork()
                 }
             }else if(m_gimbal->context()->m_lockMode == "VISUAL"){
                 if(m_tracker->Get_State() == TRACK_INVISION){
-                    drawSteeringCenter(imgYWarped,imgUWarped,imgVWarped,
+                    VideoEngine::drawSteeringCenter(imgYWarped,imgUWarped,imgVWarped,
                                        trackRect.width,
                                        static_cast<int>(trackRect.x + trackRect.width/2),
                                        static_cast<int>(trackRect.y + trackRect.height/2),
                                        colorInvision);
                 }else if(m_tracker->Get_State() == TRACK_OCCLUDED){
-                    drawSteeringCenter(imgYWarped,imgUWarped,imgVWarped,
+                    VideoEngine::drawSteeringCenter(imgYWarped,imgUWarped,imgVWarped,
                                        trackRect.width,
                                        static_cast<int>(trackRect.x + trackRect.width/2),
                                        static_cast<int>(trackRect.y + trackRect.height/2),
@@ -534,31 +532,4 @@ void CVVideoProcess::msleep(int ms)
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 #else
 #endif
-}
-void CVVideoProcess::drawSteeringCenter(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV,
-                                        int _wBoundary, int _centerX, int _centerY,
-                                        cv::Scalar _color)
-{
-    _centerX -= _wBoundary / 2;
-    _centerY -= _wBoundary / 2;
-    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY),
-             cv::Point(_centerX + _wBoundary / 4, _centerY), _color, 2);
-    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY),
-             cv::Point(_centerX, _centerY + _wBoundary / 4), _color, 2);
-    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY),
-             cv::Point(_centerX + 3 * _wBoundary / 4, _centerY), _color, 2);
-    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY),
-             cv::Point(_centerX + _wBoundary, _centerY + _wBoundary / 4), _color,
-             2);
-    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY + _wBoundary),
-             cv::Point(_centerX, _centerY + 3 * _wBoundary / 4), _color, 2);
-    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY + _wBoundary),
-             cv::Point(_centerX + _wBoundary / 4, _centerY + _wBoundary), _color,
-             2);
-    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
-             cv::Point(_centerX + _wBoundary, _centerY + 3 * _wBoundary / 4),
-             _color, 2);
-    VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
-             cv::Point(_centerX + 3 * _wBoundary / 4, _centerY + _wBoundary),
-             _color, 2);
 }

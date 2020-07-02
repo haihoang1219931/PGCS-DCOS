@@ -4,6 +4,7 @@
 #include "src/Camera/GimbalController/GimbalInterface.h"
 CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(parent)
 {
+    m_enSaving = true;
     char cmd[100];
     std::string day = Utils::get_day();
 #ifdef __linux__
