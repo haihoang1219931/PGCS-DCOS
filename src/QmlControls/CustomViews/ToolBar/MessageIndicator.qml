@@ -39,7 +39,7 @@ Item {
         id: messageIcon
         source: "qrc:/qmlimages/ToolBar/Images/Megaphone.svg"
         color:  vehicle.uas.messages.length > 0? (!_isMessageImportant?
-                                                                  UIConstants.greenColor:UIConstants.redColor) :
+                                                                  UIConstants.navIconColor:UIConstants.redColor) :
                                                              UIConstants.textColor
         anchors.horizontalCenter: parent.horizontalCenter
         width:              iconSize

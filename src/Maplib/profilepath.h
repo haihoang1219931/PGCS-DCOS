@@ -16,6 +16,12 @@ class ProfilePath:public QQuickPaintedItem
     Q_PROPERTY(QString yName READ yName WRITE setYName NOTIFY yNameChanged)
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
     Q_PROPERTY(QString fontFamily READ fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
+
+    Q_PROPERTY(int axisXOffset READ xOffset NOTIFY xOffsetChanged)
+    Q_PROPERTY(int axisYOffset READ yOffset NOTIFY yOffsetChanged)
+
+    Q_PROPERTY(bool isShowLineOfSight READ isShowLineOfSight WRITE setIsShowLineOfSight NOTIFY isShowLineOfSightChanged)
+
 public:
     QColor color(){ return _color;}
     QString title(){ return _title;}
@@ -51,8 +57,8 @@ public:
     void setFontSize(int value){
         if(_fontSize != value){
             _fontSize = value;
-            AxisXoffset = _fontSize * 3;
-            AxisYoffset = _fontSize * 3;
+            mAxisXoffset = _fontSize * 3;
+            mAxisYoffset = _fontSize * 3;
             Q_EMIT fontSizeChanged();
         }
     }
@@ -60,6 +66,13 @@ public:
         if(_fontFamily != value){
             _fontFamily = value;
             Q_EMIT fontFamilyChanged();
+        }
+    }
+
+    void setIsShowLineOfSight(bool value){
+        if(_isShowLineOfSight != value){
+            _isShowLineOfSight = value;
+            Q_EMIT isShowLineOfSightChanged();
         }
     }
 
@@ -73,7 +86,14 @@ public:
     void insertProfilePath(int distance,int altitude);
     void clearProfilePath();
 
+    bool isShowLineOfSight(){return _isShowLineOfSight;}
+
+
+    QGeoCoordinate findSlideShowCoord(QGeoCoordinate coord,QGeoCoordinate startcoord, QGeoCoordinate tocoord);
+
     Q_INVOKABLE void addElevation(QString folder,QGeoCoordinate startcoord,QGeoCoordinate tocoord);
+    Q_INVOKABLE QPoint convertCoordinatetoXY(QGeoCoordinate coord,QGeoCoordinate startcoord, QGeoCoordinate tocoord);
+    Q_INVOKABLE void setLineOfSight(double fromDis,double fromAlt,double toDis,double toAlt);
 Q_SIGNALS:
     void colorChanged();
     void titleChanged();
@@ -81,6 +101,9 @@ Q_SIGNALS:
     void yNameChanged();
     void fontSizeChanged();
     void fontFamilyChanged();
+    void xOffsetChanged();
+    void yOffsetChanged();
+    void isShowLineOfSightChanged();
 private:
     QColor _color;
     QString _title;
@@ -88,16 +111,31 @@ private:
     QString _yName;
     int _fontSize;
     QString _fontFamily;
-    int AxisXoffset = 45;
-    int AxisYoffset = 50;
+    int mAxisXoffset = 45;
+    int mAxisYoffset = 50;
 
     int mMaxAltitude=0;
     int mMinAltitude=0;
     int mMinDistance=0;
     int mMaxDistance=0;
 
+    double _fromDistance = 0;
+    double _fromAltitude = 0;
+    double _toDistance = 0;
+    double _toAltitude = 0;
+
+    int mMaxVehicleAlt = 0;
+
+    bool _isShowLineOfSight = false;
+
     QMap<int,int> mListAltitude;
     Elevation mElevation;
+
+    int xOffset(){return mAxisXoffset;}
+    int yOffset(){return mAxisYoffset;}
+
+    double max_altitude_point_Y=0;
+    double max_distance_point_X=0;
 
 };
 

@@ -23,8 +23,11 @@ ApplicationWindow {
     visibility: ApplicationWindow.FullScreen
     title: qsTr("DCOS - PGCSv0.1")
     flags: Qt.WindowMinMaxButtonsHint
+
+    property int seqTab: 2
+
     function switchMapFull(){
-        videoPane.x = paneControl.x;
+        Pane.x = paneControl.x;
         videoPane.y = paneControl.y;
         videoPane.width = paneControl.width;
         videoPane.height = paneControl.height;
@@ -591,14 +594,20 @@ ApplicationWindow {
         z: 8
         onItemNavChoosed:{
             console.log("seq clicked = "+seq);
+            seqTab = seq;
             if(seq>=0 && seq<=2){
                 footerBar.footerBarCurrent = seq;
                 if(seq === 0){
                     UIConstants.monitorMode = UIConstants.monitorModeMission;
                     stkMainRect.currentIndex = 1;
+
+//                    mapPane.showUAVProfilePath(false);
+                    mapPane.showWPScroll(true)
                 }else if(seq === 2){
                     UIConstants.monitorMode = UIConstants.monitorModeFlight;
                     stkMainRect.currentIndex = 1;
+//                    mapPane.showUAVProfilePath(true);
+                    mapPane.showWPScroll(false)
                 }else {
                     stkMainRect.currentIndex = 0;
                 }
@@ -1609,11 +1618,14 @@ ApplicationWindow {
         }
 
         onDoGoWP: {
+
             if(mapPane.selectedIndex > 0){
                 if(vehicle.flightMode === "Guided"){
                     vehicle.flightMode = "Auto";
                 }
                 vehicle.setCurrentMissionSequence(mapPane.selectedIndex);
+                mapPane.isGotoWP = true;
+                missionController.forceCurrentWP = true;//added by nhatdn1
             }else if(mapPane.selectedIndex === 0){
                 if(!isShowConfirm){
                     isShowConfirm = true;
@@ -1628,6 +1640,7 @@ ApplicationWindow {
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "RTL";
+                            mapPane.isGotoWP = true;
                         }else if(func === "DIALOG_CANCEL"){
 
                         }

@@ -24,6 +24,15 @@ void SymbolModel::editSymbol(const int id, const int type, const int param1, con
     Q_EMIT symbolModelChanged();
 }
 
+void SymbolModel::insertSymbol(const int id, const int type, const int param1, const int param2, const int param3, const int param4, const QString text, const QGeoCoordinate coordinate)
+{
+    //int length = _msymbol.length();
+    beginResetModel();
+    _msymbol.insert(id,symbol(id,type,param1,param2,param3,param4,text,coordinate));
+    refreshIndexSymbol();
+    endResetModel();
+    Q_EMIT symbolModelChanged();
+}
 
 
 void SymbolModel::deleteSymbol(const int id)
@@ -66,6 +75,32 @@ void SymbolModel::refreshModel()
     beginResetModel();
     endResetModel();
     Q_EMIT symbolModelChanged();
+}
+
+void SymbolModel::scrollUp(const int id)
+{
+    if(id>1)
+    {
+        beginResetModel();
+        _msymbol.move(id,id-1);
+        refreshIndexSymbol();
+        endResetModel();
+        Q_EMIT symbolModelChanged();
+    }
+}
+
+void SymbolModel::scrollDown(const int id)
+{
+    if(id < _msymbol.length() - 1)
+    {
+        beginResetModel();
+
+        _msymbol.move(id,id+1);
+
+        refreshIndexSymbol();
+        endResetModel();
+        Q_EMIT symbolModelChanged();
+    }
 }
 
 

@@ -32,7 +32,7 @@ Item {
     IconSVG {
         id: messageIcon
         source: "qrc:/qmlimages/ToolBar/Images/Signal.svg"
-        color:  !vehicle.link ? UIConstants.textColor: UIConstants.greenColor
+        color:  !vehicle.link ? UIConstants.textColor: UIConstants.navIconColor
 
         anchors.horizontalCenter: parent.horizontalCenter
         width:              iconSize

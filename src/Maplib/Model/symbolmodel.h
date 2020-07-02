@@ -42,10 +42,15 @@ class SymbolModel : public QAbstractListModel
         Q_INVOKABLE void addSymbol(const int id,const int type,const int param1,const int param2,const int param3,const int param4,const QString text,const QGeoCoordinate coordinate);
         Q_INVOKABLE void editSymbol(const int id,const int type,const int param1,const int param2,const int param3,const int param4,const QString text,const QGeoCoordinate coordinate);
 
+        Q_INVOKABLE void insertSymbol(const int id,const int type,const int param1,const int param2,const int param3,const int param4,const QString text,const QGeoCoordinate coordinate);
+
         Q_INVOKABLE void deleteSymbol(const int id);
         Q_INVOKABLE void moveSymbol(const int id,const QGeoCoordinate coordinate);
         Q_INVOKABLE void clearSymbol();
         Q_INVOKABLE void refreshModel();
+
+        Q_INVOKABLE void scrollUp(const int id);
+        Q_INVOKABLE void scrollDown(const int id);
 
         void refreshIndexSymbol();
 

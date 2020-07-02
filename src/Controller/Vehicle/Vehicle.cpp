@@ -1287,9 +1287,22 @@ void Vehicle::_handleGlobalPositionInt(mavlink_message_t &message)
             _setPropertyValue("Longitude",
                                      QString::fromStdString(std::to_string(_coordinate.longitude())),
                                      "deg");
+
+            if(_lastCount % 5 == 0) //5hz:
+            {
+                if(_lastCoord != QGeoCoordinate(0,0,0))
+                    _distanceTraveled += _lastCoord.distanceTo(newPosition);
+                _lastCoord = newPosition;
+            }
+            _lastCount++;
+
+            _setPropertyValue("DistanceTraveled",
+                                     QString::fromStdString(std::to_string(_distanceTraveled)),
+                                     "m");
         }
 
        Q_EMIT coordinateChanged(_coordinate);
+
        float _tmpHeadingToHome = static_cast<float>(coordinate().azimuthTo(homePosition()));
        if(_tmpHeadingToHome - _headingToHome > 0 ||
                _tmpHeadingToHome - _headingToHome < 0){

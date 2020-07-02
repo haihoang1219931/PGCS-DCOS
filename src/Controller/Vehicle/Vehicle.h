@@ -750,6 +750,11 @@ private:
     bool            _active;
     bool            _offlineEditingVehicle; ///< This Vehicle is a "disconnected" vehicle for ui use while offline editing
 
+    //distance Traveled;
+    float           _distanceTraveled = 0;
+    QGeoCoordinate  _lastCoord = QGeoCoordinate(0,0,0);
+    int32_t         _lastCount = 0;
+
     bool    _armed = false;         ///< true: vehicle is armed
     uint8_t _base_mode = 0;     ///< base_mode from HEARTBEAT
     uint32_t _custom_mode = 0;  ///< custom_mode from HEARTBEAT

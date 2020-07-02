@@ -186,7 +186,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         btnText: "Delete\nWP"
-                        isEnable: mapPane.selectedWP !== undefined
+                        isEnable: mapPane.selectedWP !== undefined && (mapPane.selectedWP !== null) //nhatdn1
 //                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
                                   && (mapPane.selectedWP.wpId>0)
                                   && (UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint)
@@ -386,6 +386,8 @@ Item {
                         topValue: "100"
                         middleValue: (vehicle?Number(vehicle.altitudeRelative).toFixed(0).toString():"0")
                         bottomValue: "m"
+                        middleColor: UIConstants.btnMiddleColorNormal
+                        disableColor: UIConstants.btnMiddleColorNormal
                         isEnable: vehicle.link
                                   &&
                                   (((vehicle.vehicleType === 2 || vehicle.vehicleType === 14) && vehicle.flightMode === "Guided")
@@ -397,7 +399,7 @@ Item {
                                 if((vehicle.flightMode === "Auto" || vehicle.flightMode === "RTL" )&&
                                         planController.missionItems.length > sequence
                                         ){
-                                    if(sequence !== rootItem.waypointIDSetProperty){
+                                    if(sequence !== rootItem.waypointIDSetProperty || missionController.forceCurrentWP === true){
                                         if(sequence > 0){
                                             rootItem.setFlightAltitudeTarget(
                                                 sequence,
@@ -432,6 +434,8 @@ Item {
                                                    ((vehicle.vehicleType === 2 || vehicle.vehicleType === 14)?vehicle.groundSpeed:vehicle.airSpeed)
                                                    *3.6).toString():"0")
                         bottomValue: "km/h"
+                        middleColor: UIConstants.btnMiddleColorNormal
+                        disableColor: UIConstants.btnMiddleColorNormal
                         isEnable: vehicle.link
                                   &&
                                   (((vehicle.vehicleType === 2 || vehicle.vehicleType === 14) && vehicle.flightMode === "Guided")
@@ -533,7 +537,7 @@ Item {
                         Layout.alignment: Qt.AlignTop
                         icon: UIConstants.iDeleteWP
                         btnText: "Delete\nWP"
-                        isEnable: mapPane.selectedWP !== undefined
+                        isEnable: mapPane.selectedWP !== undefined && (mapPane.selectedWP !== null) //nhatdn1
 //                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
                                   && (mapPane.selectedWP.wpId>0)
                                   && (UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint)

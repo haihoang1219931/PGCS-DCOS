@@ -73,6 +73,14 @@ Flickable {
 
     property bool ctrlPress: false
 
+    property bool isGotoWP: false
+
+    property bool isShowScrollWPTab: false
+
+    property int gcsTab: 0
+
+    property real virtualHomeAMSL: 0
+
     signal homePositionChanged(real lat, real lon, real alt)
     signal symbolMoving(var id,var position)
     signal mapClicked(bool isMap)
@@ -180,13 +188,17 @@ Flickable {
             onBearingChanged: {
                 _mapComponent.bearing = 0;
             }
+            onTiltChanged: {
+                _mapComponent.tilt = 0;
+            }
+
             Keys.onPressed: {
                 if(event.key === Qt.Key_S){
 
                 }else if(event.key === Qt.Key_Plus || event.key === Qt.Key_Equal){
-                    zoomIn();
+                    minZoomIn();
                 }else if(event.key === Qt.Key_Minus || event.key === Qt.Key_Underscore){
-                    zoomOut();
+                    minZoomOut();
                 }else if(event.key === Qt.Key_Control){
                     rootItem.ctrlPress = true;
                 }else if(rootItem.ctrlPress && event.key === Qt.Key_F6){
@@ -258,9 +270,9 @@ Flickable {
                 id: scaleLine
                 z: 0
                 visible: scaleText.text != "0 m"
-                anchors.top: parent.top;
-                anchors.left: parent.left
-                anchors{topMargin: 40;leftMargin:110;}
+                anchors.bottom: parent.bottom;
+                anchors.right: parent.right
+                anchors{bottomMargin: 15;rightMargin: 380;}
                 height: scaleText.height * 2
                 width: scaleImage.width
 
@@ -295,10 +307,13 @@ Flickable {
 
             onCenterChanged:{
                 scaleTimer.restart()
+                if(selectedWP !== null && selectedWP !== undefined)
+                    scrollWP.showScrollWp(map.center)
             }
 
             onZoomLevelChanged:{
                 scaleTimer.restart()
+
             }
 
             onWidthChanged:{
@@ -335,7 +350,7 @@ Flickable {
                         Helper.unselect_all(map,listsymbol)
                         selectedIndex = -1
                         selectedmarkerIndex = -1
-
+                        scrollWP.hideScrollWP()
                     }
                     else if(UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeMeasure && mouse.button === Qt.LeftButton)
                     {
@@ -433,6 +448,7 @@ Flickable {
         radius: UIConstants.rectRadius
         border.width: 1
         border.color: UIConstants.grayColor
+
         ProfilePath{
             id: profilePath
             title: "Profile Path"
@@ -442,9 +458,35 @@ Flickable {
             fontFamily: UIConstants.appFont
             anchors.fill: parent
             anchors.margins: 4
+
         }
     }
 
+
+    Uav_ProfilePath{
+        id: uav_profilePath
+        visible: true;
+        //anchors.centerIn: parent
+        mapHeightFolder: rootItem.mapHeightFolder
+
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors{leftMargin: 100;topMargin: 43;}
+
+        onPinClicked: {
+
+        }
+    }
+
+    function showUAVProfilePath(value){
+        uav_profilePath.visible = value
+    }
+
+    function showWPScroll(value){
+        isShowScrollWPTab = value;
+        if(value === false)
+            scrollWP.hideScrollWP()
+    }
 
     Component {
         id: myComponent
@@ -505,6 +547,18 @@ Flickable {
                     listsymbol.push(_waypoint) //add waypoint to list symbol
                     listwaypoint[Id_Role]=_waypoint
 
+                    if(_waypoint.symbolId === selectedIndex && (_waypoint.missionItemType === UIConstants.takeoffType ||
+                                                                _waypoint.missionItemType === UIConstants.landType ||
+                                                                _waypoint.wpId === 0)){
+                        scrollWP.hideScrollWP();
+                    }
+
+                    if(_waypoint.wpId === 0 && _waypoint.missionItemType === UIConstants.waypointType){
+                        virtualHomeAMSL = elevationFinder.getAltitude(
+                                                cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder,
+                                                _waypoint.coordinate.latitude,_waypoint.coordinate.longitude);
+                    }
+
                 }
 
 
@@ -537,6 +591,11 @@ Flickable {
 
                             if(waypointEditor.visible)
                                 waypointEditor.changeState()
+
+                            scrollWP.showScrollWp(buffCoord);
+
+                            if(mainWindow.seqTab == 0)
+                                showWPDistancePath(selectedWP.wpId)
                         }
                         else
                             mouse.accepted = false
@@ -554,6 +613,7 @@ Flickable {
                                     homePositionChanged(_waypoint.coordinate.latitude,_waypoint.coordinate.longitude,_waypoint.coordinate.altitude)
                                 }
                                 _waypointModel.moveSymbol(_waypoint.symbolId,_waypoint.coordinate)
+                                //scrollWP.showScrollWp();
                             }
                         }
                         _waypoint.stopTimerEditSymbol()
@@ -577,7 +637,11 @@ Flickable {
                                 waypointEditor.changeCoordinate(buffCoord);
                                 waypointEditor.changeState();
 
-                                isMapSync = false;
+                                scrollWP.showScrollWp(buffCoord);
+
+                                if(_waypoint.wpId !== 0)
+                                    isMapSync = false;
+
                             }
                         }
 
@@ -654,6 +718,8 @@ Flickable {
 
                             if(markerEditor.visible)
                                 markerEditor.changeState()
+
+                            scrollWP.hideScrollWP()
                         }
 
                     }
@@ -697,9 +763,49 @@ Flickable {
 
     ScrollWaypoint{
         id: scrollWP
-        visible: true
-        x:100
-        y:100
+        visible: false
+
+        onScrollUpWpClicked: {
+            if(selectedIndex !== null && selectedIndex !== undefined && selectedIndex > 2){
+                var id = selectedIndex;
+                selectedIndex = selectedIndex - 1
+                _waypointModel.scrollUp(id)
+                _trajactoryModel.scrollUp(id)
+                isMapSync = false;
+            }
+
+        }
+
+        onScrollDownWpClicked:{
+            if(selectedIndex !== null && selectedIndex !== undefined && selectedIndex < listwaypoint.length - 2){
+                var id = selectedIndex;
+                selectedIndex = selectedIndex + 1
+                _waypointModel.scrollDown(id)
+                _trajactoryModel.scrollDown(id)
+                isMapSync = false;
+            }
+        }
+
+
+
+        function showScrollWp(coord){
+            var p = Helper.convert_coordinator2screen(coord,map)
+            var px = p.x;
+            var py = p.y;
+
+            if(selectedWP !== null && selectedWP !== undefined && selectedWP.missionItemType !== UIConstants.takeoffType
+                                        && selectedWP.missionItemType !== UIConstants.landType && selectedIndex !== 0){
+                if(isShowScrollWPTab)
+                    visible = true;
+                x = px - 105;
+                y = py - scrollWP.height / 2 ;
+            }
+            else hideScrollWP();
+        }
+
+        function hideScrollWP(){
+            visible = false;
+        }
     }
 
     WaypointEditor{
@@ -859,7 +965,7 @@ Flickable {
     function createWPLine(coordinate1,coordinate2)
     {
         var component = Qt.createComponent("qrc:/CustomViews/SubComponents/Trajactory.qml");
-        var trajactory_object = component.createObject(map);//, {coord1: coordinate1,coord2: coordinate2});
+        var trajactory_object = component.createObject(map,{color : UIConstants.waypointTrajactoryColor});//, {coord1: coordinate1,coord2: coordinate2});
         if (trajactory_object === null) {
             // Error Handling
             console.log("Error creating object");
@@ -947,9 +1053,21 @@ Flickable {
             Helper.unselect_all(map,listsymbol)
             selectedIndex = -1
             var coord = coordinate_clicked;
-            coord.altitude = 100;
-            _waypointModel.addSymbol(index,UIConstants.waypointType,0,0,0,0,"",coord)
-            _trajactoryModel.addSymbol(index,UIConstants.waypointType,0,0,0,0,"",coord)
+
+            if(index === 1){
+                coord.altitude = 50;
+                _waypointModel.addSymbol(index,UIConstants.takeoffType,0,0,0,0,"",coord)
+                _trajactoryModel.addSymbol(index,UIConstants.takeoffType,0,0,0,0,"",coord)
+            }else if(index === 2){
+                coord.altitude = 0;
+                _waypointModel.addSymbol(index,UIConstants.landType,0,0,0,0,"",coord)
+                _trajactoryModel.addSymbol(index,UIConstants.landType,0,0,0,0,"",coord)
+            }else{
+                coord.altitude = 100;
+                _waypointModel.insertSymbol(index - 1,UIConstants.waypointType,0,0,0,0,"",coord)
+                _trajactoryModel.insertSymbol(index - 1,UIConstants.waypointType,0,0,0,0,"",coord)
+            }
+
 //            if(index===0)
 //                rollbackhomeposition=coordinate_clicked
 
@@ -1018,6 +1136,7 @@ Flickable {
              _waypointModel.deleteSymbol(index)
              _trajactoryModel.deleteSymbol(index)
             isMapSync = false;
+            scrollWP.hideScrollWP()
         }
     }
 
@@ -1095,7 +1214,7 @@ Flickable {
     function zoomIn(){
         var maxZoom = map.maximumZoomLevel
 
-        var zoom=map.zoomLevel+1
+        var zoom=map.zoomLevel + 1
         if(zoom>20)
             zoom=20
         map.zoomLevel = zoom
@@ -1104,12 +1223,32 @@ Flickable {
 
     function zoomOut(){
         var minZoom = map.minimumZoomLevel
-        var zoom=map.zoomLevel-1
+        var zoom=map.zoomLevel - 1
         if(zoom<11)
             zoom=11
         map.zoomLevel = zoom
         map.center = (selectedWP===undefined)? coordinate_clicked:selectedWP.coordinate;
     }
+
+    function minZoomIn(){
+        var maxZoom = map.maximumZoomLevel
+
+        var zoom=map.zoomLevel + 0.1
+        if(zoom>20)
+            zoom=20
+        map.zoomLevel = zoom
+        map.center = (selectedWP===undefined)? coordinate_clicked:selectedWP.coordinate;
+    }
+
+    function minZoomOut(){
+        var minZoom = map.minimumZoomLevel
+        var zoom=map.zoomLevel - 0.1
+        if(zoom<11)
+            zoom=11
+        map.zoomLevel = zoom
+        map.center = (selectedWP===undefined)? coordinate_clicked:selectedWP.coordinate;
+    }
+
 
     function focusAllObject(){
         if(plane.visible === true)
@@ -1131,6 +1270,9 @@ Flickable {
             if(planeTrajactory.pathLength() > 5000)
                 planeTrajactory.removeCoordinate(0);
             }
+
+            if(mainWindow.seqTab === 2)
+                uav_profilePath.setVehiclePosition(position)
 //            if(lastPlanePosition === null)
 //            {
 //                lastPlanePosition = position
@@ -1226,35 +1368,65 @@ Flickable {
         }
     }
 
-    function clearPlaneTrajactory()
-    {
-//        for(var i=0;i<listPlaneTrajactory.length;i++)
-//        {
-//            var object = listPlaneTrajactory[i]
-//            object.destroy()
-////            map.removeMapItem(object)
-//        }
-//        listPlaneTrajactory=[]
+    function clearPlaneTrajactory(){
         if(planeTrajactory!== null)
             planeTrajactory.destroy();
     }
-
 
     function changeCurrentWP(index)
     {
         currentWpIndex=index;
         if(currentWpIndex !== old_currentWpIndex)
-        {
-            old_currentWpIndex = currentWpIndex
+        {   
             _waypointModel.refreshModel()
+
+            //show vehicle point on profile path
+            var p1 = listwaypoint[old_currentWpIndex]
+            var p2 = listwaypoint[currentWpIndex]
+
+            if(currentWpIndex > 1 && p1 !== undefined && p2 !== undefined
+                    && p1 !== null && p2 !== null){
+                if(!isGotoWP){
+                    if(mainWindow.seqTab === 2){
+                        uav_profilePath.setUavProfilePathMode(1)
+                        if(currentWpIndex === 2 && old_currentWpIndex === 1)
+                            uav_profilePath.setLocation(plane.coordinate, p2.coordinate);
+                        else
+                            uav_profilePath.setLocation(p1.coordinate, p2.coordinate);
+
+                    }
+                }
+                else if(plane){
+                    isGotoWP = false;
+                    if(mainWindow.seqTab === 2){
+                        uav_profilePath.setUavProfilePathMode(1)
+                        uav_profilePath.setLocation(plane.coordinate, p2.coordinate);}
+                }
+            }
+            else if(currentWpIndex === 0 && p2 !== undefined && p2 !== null){
+                if(plane && isGotoWP){
+                    isGotoWP = false;
+                    if(mainWindow.seqTab === 2){
+                        uav_profilePath.setUavProfilePathMode(1)
+                        uav_profilePath.setLocation(plane.coordinate, p2.coordinate);}
+                }
+            }
+
+            //
+            old_currentWpIndex = currentWpIndex
+        }
+        else if(isGotoWP){
+            isGotoWP = false;
+            var p = listwaypoint[currentWpIndex]
+            if(mainWindow.seqTab === 2){
+                uav_profilePath.setUavProfilePathMode(1)
+                uav_profilePath.setLocation(plane.coordinate, p.coordinate);}
         }
     }
 
-    function removeSelectedMarker()
-    {
+    function removeSelectedMarker(){
         console.log("remove marker" + selectedmarkerIndex)
-        if( selectedmarkerIndex >-1)
-        {
+        if( selectedmarkerIndex >-1){
             listmarker = []
             _markerModel.deleteSymbol(selectedmarkerIndex)
         }
@@ -1262,33 +1434,50 @@ Flickable {
         selectedmarkerIndex = -1;
     }
 
-    function changeHomePosition(homePosition)
-    {
+    function changeHomePosition(homePosition){
         changeWPPosition(0,homePosition);
         _waypointModel.refreshModel();
         rollbackhomeposition = homePosition;
 //        console.log("home alt changed: "+homePosition.latitude);
     }
 
-    function rollback_homePosition()
-    {
+    function rollback_homePosition(){
         changeWPPosition(0,rollbackhomeposition)
     }
 
-    function showWaypointId(index)
-    {
-        if(index<listwaypoint.length)
-        {
+    function showWaypointId(index){
+        if(index<listwaypoint.length){
             selectedIndex = index;
             Helper.unselect_all(map,listsymbol)
             listwaypoint[index].isSelected = true
-
-//            console.log("index"+index)
-//            console.log("idshow"+listwaypoint[index].wpId)
-            map.center=listwaypoint[index].coordinate
-
-            rootItem.mapClicked(false);
             selectedWP = listwaypoint[index];
+            map.center=listwaypoint[index].coordinate         
+            rootItem.mapClicked(false);   
+            console.log("center index "+ index)
+
+            //show distance path
+            if(index > 1 && mainWindow.seqTab == 0)
+                showWPDistancePath(index)
+        }
+    }
+
+    function showWPDistancePath(index){
+        var lastWP = listwaypoint[index-1]
+        var currentWP = listwaypoint[index]
+        while(index>0 && lastWP!==undefined && lastWP!==null &&
+                          !(lastWP.missionItemType === UIConstants.waypointType
+                          || lastWP.missionItemType === UIConstants.takeoffType
+                          || lastWP.missionItemType === UIConstants.landType
+                          || lastWP.missionItemType === UIConstants.vtoltakeoffType
+                          || lastWP.missionItemType === UIConstants.vtollandType)){
+            index--;
+            lastWP = listwaypoint[index-1]
+            //console.log("index" + index + "type" + lastWP.missionItemType);
+        }
+
+        if(lastWP!==undefined && lastWP!==null && currentWP!==undefined && currentWP!==null){
+            uav_profilePath.setUavProfilePathMode(0)
+            uav_profilePath.setWpLineOfSight(lastWP.coordinate,currentWP.coordinate);
         }
     }
 
@@ -1533,6 +1722,10 @@ Flickable {
         }
         else
             gotohereSymbol.coordinate = position
+        if(mainWindow.seqTab === 2){
+            uav_profilePath.setUavProfilePathMode(1)
+            uav_profilePath.setLocation(plane.coordinate, position);
+        }
 
         gotohereSymbol.visible = visible
     }
@@ -1602,10 +1795,9 @@ Flickable {
 
     //target polygon
     function updateTargetPolygon(coord1,coord2,coord3,coord4){
+//        console.log("nhatdn1 test:" + coord1 + " -- " + coord2 + " -- " + coord3 + " -- " + coord4)
         if(targetPolygon){
-            //targetPolygon.destroy()
             targetPolygon.changeCoordinate(coord1,coord2,coord3,coord4);
-            // targetPolygon.coordinate = position;
             return ;
         }
 

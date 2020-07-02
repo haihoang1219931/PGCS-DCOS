@@ -9,4 +9,5 @@ GimbalData::GimbalData(QObject *parent) : QObject(parent)
     m_hfov[0] = 63.1f;
     m_hfov[1] = 17.7f;
     m_zoom[0] = 1;
+    setCorners(0,0,0,0,0,0,0,0,0,0);
 }

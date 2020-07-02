@@ -16,9 +16,11 @@ import QtQuick.Window 2.11
 QtObject {
     //---------------------- Size of smallest rect  --------------------
     property int sRect:                    Screen.pixelDensity*5.5
+    property int wpScrollRect:             55
     //------------------------------ App Font --------------------------
     property bool isMobile:                         false
     property int fontSize:                          Screen.pixelDensity*3.5
+    property int miniFontSize:                      fontSize * 0.6
     property string appFont:                        "monospace"
     property int rectRadius:                        5
     property color transparentRed:                  "#b3ff0000"
@@ -52,6 +54,9 @@ QtObject {
     property color cfProcessingOverlayBg:           "#2D3436"
     property color sidebarConfigBg:                 "#2D3C4B"
     property color sidebarActiveBg:                 "#283441"
+
+    readonly property color waypointTrajactoryColor:  "#02e6ed"
+    readonly property color navIconColor:             "#02e6ed"
 
     //------------------ Notification type messages color --------------
     readonly property color success:                "#1dd1a1"
@@ -132,6 +137,9 @@ QtObject {
     //------- Button
     readonly property color btnCateColor:          "#CAD3C8"
     readonly property color btnSelectedColor:      "#38729A"
+
+    readonly property color btnMiddleColorNormal:  "#33f8ff"
+
     //------- Shadow
     readonly property color dropshadowColor:       "#57606f"
     readonly property color headerTxtShadowColor:  "#3c6382"
@@ -280,6 +288,11 @@ QtObject {
     readonly property string iWindowStore:          "\uf2d2"
     readonly property string iDown:                 "\uf0dd"
     readonly property string iUp:                   "\uf151"
+
+    readonly property string iArrowUp:              "\uf35b"
+    readonly property string iArrowDown:            "\uf358"
+    readonly property string iPin:                  "\uf08d"
+
     //------- drone  button
     readonly property string iDrone:                "\uf55b"
     readonly property string iPatrolMan:            "\uf007"

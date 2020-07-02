@@ -2,6 +2,8 @@ import QtQuick 2.0
 import QtLocation 5.9
 import QtPositioning 5.5
 import QtQuick.Window 2.0
+import QtGraphicalEffects 1.0
+
 import io.qdt.dev 1.0
 import CustomViews.UIConstants 1.0
 
@@ -24,16 +26,16 @@ MapQuickItem {
     readonly property int  widthsymbol: 50
     readonly property int  heighsymbol: 50
 
-    readonly property color waypoint_Color: "#228888"
+    readonly property color waypoint_Color: "#02e6ed"
     readonly property color guidedpoint_Color: "#b87a33"
     readonly property color current_waypoint_Color: "#992be2"
-    readonly property color dojump_Color: "#225555"
+    readonly property color dojump_Color: "#00a8ad"
     readonly property color takeoffOrland_Color: "yellow"
     readonly property color home_Color: "blue"
     readonly property color symbol_Selected_Color: "#c300ff"
 
-    readonly property string takeoff_Source: "qrc:/assets/images/Takeoff.png"
-    readonly property string land_Source: "qrc:/assets/images/Landing.png"
+    readonly property string takeoff_Source: "qrc:/assets/images/takeoff.png"
+    readonly property string land_Source: "qrc:/assets/images/land.png"
 //    readonly property string home_Source: "qrc:/assets/images/BasePosition.png"
     readonly property string home_Source: "qrc:/assets/images/home.png"
     readonly property string anti_clockwiseCircle_Source: "qrc:/qmlimages/markers/AntiClockwiseCircle.png"
@@ -145,30 +147,34 @@ MapQuickItem {
 
                     case UIConstants.landType:
                         _waypoint_text.visible=true
-                        _rec_symbol.color = takeoffOrland_Color
+                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
                         _imageTakeOfforLandorHome.visible=true
                         _imageTakeOfforLandorHome.source=land_Source
+                        _imageTakeOfforLandorHome.opacity = 0.7
                         break;
 
                     case UIConstants.takeoffType:
                         _waypoint_text.visible=true
-                        _rec_symbol.color = takeoffOrland_Color
+                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
                         _imageTakeOfforLandorHome.visible=true
                         _imageTakeOfforLandorHome.source=takeoff_Source
+                        _imageTakeOfforLandorHome.opacity = 0.7
                         break;
 
                     case UIConstants.vtoltakeoffType:
                         _waypoint_text.visible=true
-                        _rec_symbol.color = takeoffOrland_Color
+                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
                         _imageTakeOfforLandorHome.visible=true
                         _imageTakeOfforLandorHome.source=takeoff_Source
+                        _imageTakeOfforLandorHome.opacity = 0.7
                         break;
 
                     case UIConstants.vtollandType:
                         _waypoint_text.visible=true
-                        _rec_symbol.color = takeoffOrland_Color
+                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
                         _imageTakeOfforLandorHome.visible=true
                         _imageTakeOfforLandorHome.source=land_Source
+                        _imageTakeOfforLandorHome.opacity = 0.7
                         break;
 
                     case UIConstants.dojumpType:
@@ -194,7 +200,7 @@ MapQuickItem {
             font.family: "Arial"
             font.weight: Font.Bold
             font.bold: true
-            font.pointSize: 14
+            font.pointSize: 18
             color: "white"
             visible: false
         }
@@ -229,6 +235,9 @@ MapQuickItem {
             anchors.horizontalCenter: _rec_symbol.horizontalCenter
             anchors.verticalCenter: _rec_symbol.verticalCenter
             visible: false
+            opacity: 0.9
+            smooth: true
+            antialiasing: true
         }
         Rectangle
         {
@@ -236,15 +245,24 @@ MapQuickItem {
             visible: isSelected
             anchors.verticalCenter:  _rec_symbol.verticalCenter
             anchors.horizontalCenter: _rec_symbol.horizontalCenter
-            x:-10
-            y:-10
+            x:-20
+            y:-20
             color: "transparent"
-            width: widthsymbol+20
-            height: heighsymbol+20
+            width: widthsymbol+40
+            height: heighsymbol+40
             radius: width/2
-            border.color: symbol_Selected_Color
-            opacity: 0.75
-            border.width: 10
+//            border.color: symbol_Selected_Color
+            //opacity: 0.75
+//            border.width: 10
+            RadialGradient{
+                anchors.fill: parent
+                gradient:  Gradient{
+                    GradientStop{position: 0.0 ; color: "transparent"; }
+                    GradientStop{position: 0.26 ; color: "transparent" }
+                    GradientStop{position: 0.27 ; color: symbol_Selected_Color; }
+                    GradientStop{position: 0.5 ; color: "transparent" ; }
+                }
+            }
         }
 
         Canvas {
@@ -255,6 +273,7 @@ MapQuickItem {
             height: parent.height + 20
             contextType: "2d"
             antialiasing: true
+            opacity: 0.8
             property real angle: 0
             onPaint: {
                 var ctx = getContext('2d');
@@ -262,7 +281,7 @@ MapQuickItem {
 
                 var x = width / 2
                 var y = height / 2
-                var losSize = width /2 - 3;
+                var losSize = width /2 - 5;
                 ctx.strokeStyle = "red";
                 ctx.beginPath();
                 ctx.lineWidth = 9;
