@@ -189,21 +189,17 @@ void VTrackWorker::pause(bool _pause){
 }
 void VTrackWorker::run()
 {
-    std::chrono::high_resolution_clock::time_point start, stop;
+    #ifdef DEBUG_TIMER
+    clock_t start, stop;
+    clock_t startFrame;
+#endif
     long sleepTime = 0;
     m_matImageBuff = Cache::instance()->getProcessImageCache();
     m_matTrackBuff = Cache::instance()->getTrackImageCache();
-    //    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
-    //    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
-    //    m_rbSystem = Cache::instance()->getSystemStatusCache();
-    //    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
-    //    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
     ProcessImageCacheItem processImgItem;
-
     cv::Size imgSize;
     unsigned char *h_i420Image;
     unsigned char *d_i420Image;
-    float *h_stabMat;
     float *d_stabMat;
     float *h_gmeMat;
     float *d_gmeMat;
@@ -211,21 +207,39 @@ void VTrackWorker::run()
         m_zoomRateCalculate[i] = 1;
     }
     while (m_running) {
+#ifdef DEBUG_TIMER
+        clock_t lastFrame = startFrame;
+        startFrame = clock();
+
+        {
+            clock_t timeSpan = startFrame - lastFrame;
+            std::cout << "Total run ["<<m_currID <<"] ["<<((double)timeSpan)/CLOCKS_PER_SEC * 1000<< "]" << std::endl;
+        }
+#endif
         m_mutex->lock();
         if(m_pause)
             m_pauseCond->wait(m_mutex); // in this place, your thread will stop to execute until someone calls resume
         m_mutex->unlock();
-        std::unique_lock<std::mutex> locker(m_mtx);
-
+#ifdef DEBUG_TIMER
+        start = clock();
+#endif
         processImgItem = m_matImageBuff->last();
-
-        if ((processImgItem.getIndex() == -1) ||
-                (processImgItem.getIndex() == m_currID)) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        if(processImgItem.getIndex() == -1 ||
+            processImgItem.getIndex() <= m_currID){
+            msleep(10);
+            processImgItem = m_matImageBuff->last();
+        }
+        if(processImgItem.getIndex() == -1 ||
+            processImgItem.getIndex() <= m_currID){
+            msleep(10);
+            processImgItem = m_matImageBuff->last();
+        }
+        if(processImgItem.getIndex() == -1 ||
+            processImgItem.getIndex() <= m_currID){
+            msleep(10);
             continue;
         }
 
-        start = std::chrono::high_resolution_clock::now();
         if(m_r < m_digitalZoomMin) {
             m_r = m_digitalZoomMin;
             Q_EMIT zoomTargetChanged(m_r);
@@ -247,15 +261,27 @@ void VTrackWorker::run()
         if(m_grayFrame.cols > 0 && m_grayFrame.rows > 0){
             m_grayFramePrev = m_grayFrame.clone();
         }
+        m_grayFrame = cv::Mat(imgSize.height , imgSize.width, CV_8UC1, h_i420Image);
+
         if(m_i420Img.cols <= 0 || m_i420Img.rows <= 0){
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
+//            printf("m_i420Img size invalid\r\n");
             continue;
         }
-        m_grayFrame = cv::Mat(imgSize.height , imgSize.width, CV_8UC1, h_i420Image);
+#ifdef DEBUG_TIMER
+        stop = clock();
+        {
+            clock_t timeSpan = stop - start;
+            std::cout << "Get frame ["<< m_currID <<"] ["<<((double)timeSpan)/CLOCKS_PER_SEC * 1000<< "]" << std::endl;
+        }
+#endif
 #ifdef USE_LINE_DETECTOR
         if(m_plrEngine == nullptr){
             m_plrEngine = my_pli::createPlrEngine(m_grayFrame.size());
         }
+#endif
+#ifdef DEBUG_TIMER
+        start = clock();
 #endif
         //TODO: Perfrom tracking
         float w = static_cast<float>(m_grayFrame.cols);
@@ -425,6 +451,15 @@ void VTrackWorker::run()
                 m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,m_zoomIR,m_rotationAlpha);
             }
         }
+#ifdef DEBUG_TIMER
+        stop = clock();
+        {
+            clock_t timeSpan = stop - start;
+            std::cout << "Process ["<<((double)timeSpan)/CLOCKS_PER_SEC * 1000<< "]" << std::endl;
+            sleepTime = (long)(33333 - std::chrono::duration<double, std::micro>(stop - start).count());
+        }
+        start = clock();
+#endif
         // add data to display worker
         ProcessImageCacheItem processImgItem;
         processImgItem.setIndex(m_currID);
@@ -447,13 +482,16 @@ void VTrackWorker::run()
         processImgItem.setSensorID(m_gimbal->context()->m_sensorID == 0?"EO":"IR");
         processImgItem.setColorMode(m_colorMode);
         m_matTrackBuff->add(processImgItem);
-
-        stop = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::micro> timeSpan = stop - start;
-        sleepTime = (long)(33333 - timeSpan.count());
-        std::this_thread::sleep_for(std::chrono::microseconds(1000));
-        //printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
-        //std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
+#ifdef DEBUG_TIMER
+        stop = clock();
+        {
+            clock_t timeSpan = stop - start;
+            std::cout << "Push to buffer ["<<((double)timeSpan)/CLOCKS_PER_SEC * 1000<< "]" << std::endl;
+            sleepTime = 33 - timeSpan;
+        }
+#endif
+        msleep(1);
+//        printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
     }
 }
 

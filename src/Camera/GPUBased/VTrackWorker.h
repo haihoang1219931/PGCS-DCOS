@@ -10,6 +10,7 @@
 #include <QThread>
 #include <QWaitCondition>
 #include <chrono>
+#include <time.h>
 #include <gst/gst.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
@@ -18,6 +19,7 @@
 #include <QRect>
 #include "Files/FileControler.h"
 #include "Files/PlateLog.h"
+
 #include "Camera/Algorithms/stabilizer/dando_02/stab_gcs_kiir.hpp"
 #include "Camera/Algorithms/tracker/dando/ITrack.hpp"
 #include "Camera/Algorithms/tracker/dando/Utilities.hpp"
@@ -27,6 +29,7 @@
 #include <S_PowerLineDetect/power_line_scan.hpp>
 #endif
 //#define TRACK_DANDO
+//#define DEBUG_TIMER
 class ClickTrack;
 class GimbalInterface;
 class OCR;

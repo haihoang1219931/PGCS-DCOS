@@ -15,10 +15,6 @@ VDisplay::VDisplay(VideoEngine *_parent) : VideoEngine(_parent)
     m_vDisplayWorker = new VDisplayWorker(0);
     m_vDisplayWorker->moveToThread(m_threadEODisplay);
     m_vFrameGrabber->m_enSaving = &m_enSaving;
-    connect(m_vDisplayWorker, SIGNAL(receivedFrame(int, QVideoFrame)), this,
-            SLOT(onReceivedFrame(int, QVideoFrame)));
-    connect(m_vDisplayWorker, SIGNAL(receivedFrame()), this,
-            SLOT(onReceivedFrame()));
     connect(m_threadEODisplay, SIGNAL(started()), m_vDisplayWorker,
             SLOT(process()));
     connect(m_vTrackWorker, &VTrackWorker::trackStateFound,

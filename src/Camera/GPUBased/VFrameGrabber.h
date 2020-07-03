@@ -36,12 +36,13 @@ class VFrameGrabber : public QThread
         static gboolean wrapperOnBusCall(GstBus *_bus, GstMessage *_msg,
                                          gpointer uData);
 
-        static GstPadProbeReturn
-        wrapperPadDataMod(GstPad *_pad, GstPadProbeInfo *_info, gpointer _uData);
+        static GstPadProbeReturn wrapperPadDataMod(GstPad *_pad, GstPadProbeInfo *_info, gpointer _uData);
 
         static void wrapperRun(void *_pointer);
 
-        static gboolean wrapNeedKlv(GstAppSrc* appsrc,void* userPointer);
+        static gboolean wrapNeedKlv(void* userPointer);
+
+        static void wrapStartFeedKlv(GstElement * pipeline, guint size, void* userPointer);
 
         bool initPipeline();
 
@@ -76,8 +77,8 @@ class VFrameGrabber : public QThread
 
         GstPadProbeReturn padDataMod(GstPad *_pad, GstPadProbeInfo *_info,
                                      gpointer _uData);
+        gboolean needKlv(void* userPointer);
 
-        gboolean needKlv(GstAppSrc* appsrc,void* userPointer);
         std::string getFileNameByTime();
 
         void correctTimeLessThanTen(std::string &inputStr, int time);
@@ -89,6 +90,7 @@ class VFrameGrabber : public QThread
 
     public:
         float m_speed = 1;
+        GstAppSrc* m_klvAppSrc = nullptr;
         GMainLoop *m_loop = nullptr;
         GstPipeline *m_pipeline = nullptr;
         std::string m_pipelineStr;
@@ -101,10 +103,10 @@ class VFrameGrabber : public QThread
         gint64 m_totalTime = 1800000000000;
         bool* m_enSaving = nullptr;
         bool m_stop = false;
-        index_type m_currID;
+        index_type m_currID = 0;
+        index_type m_metaID = 0;
         std::string m_filename;
         RollBuffer_<GstFrameCacheItem> *m_gstFrameBuff;
-        RollBuffer_<GstFrameCacheItem> *m_gstEOSavingBuff;
 };
 
 #endif // VFrameGrabber_H
