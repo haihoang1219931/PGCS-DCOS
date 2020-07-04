@@ -12,10 +12,11 @@ class GimbalInterfaceManager : public QObject
     Q_OBJECT
 public:
     enum class GIMBAL_TYPE{
-        CM160=0,
-        GREMSEY=1,
-        TRERON=2,
-        SBUS=3
+        UNKNOWN=0,
+        CM160=1,
+        GREMSY=2,
+        TRERON=3,
+        SBUS=4,
     };
     explicit GimbalInterfaceManager(QObject *parent = nullptr);
     GimbalInterface* getGimbal(GIMBAL_TYPE type);

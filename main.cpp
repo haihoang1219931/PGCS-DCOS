@@ -116,7 +116,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);
 #ifdef USE_VIDEO_CPU
     //--- Camera controller
-    qmlRegisterType<ImageItem>("io.qdt.dev", 1, 0, "ImageItem");
     qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
     qmlRegisterType<CVVideoCaptureThread>("io.qdt.dev", 1, 0, "Player");
     engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(true));
@@ -124,7 +123,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(false));
 #endif
 #ifdef USE_VIDEO_GPU
-    qmlRegisterType<ImageItem>("io.qdt.dev", 1, 0, "ImageItem");
 
     qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
     qmlRegisterType<VDisplay>("io.qdt.dev", 1, 0, "Player");
@@ -137,21 +135,20 @@ int main(int argc, char *argv[])
     pcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/pcs.conf");
     engine.rootContext()->setContextProperty("PCSConfig", &pcsConfig);
     qmlRegisterType<CameraController>("io.qdt.dev", 1, 0, "CameraController");
-    qmlRegisterType<ImageItem>("io.qdt.dev", 1, 0, "ImageItem");
+    qmlRegisterType<VideoRender>("io.qdt.dev", 1, 0, "VideoRender");
     engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(true));
 #else
-    qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "ImageItem");
+    qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "VideoRender");
     qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "CameraController");
     engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(false));
 #endif
     qmlRegisterType<PlateLog>("io.qdt.dev", 1, 0, "PlateLog");
-
     //--- Joystick
     JoystickThreaded::expose();
     //--- Other things
     engine.rootContext()->setContextProperty("applicationDirPath", QGuiApplication::applicationDirPath());
+    engine.addImportPath("qrc:/");
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-
     if (engine.rootObjects().isEmpty())
         return -1;
 

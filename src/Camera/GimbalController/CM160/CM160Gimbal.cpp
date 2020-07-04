@@ -5,7 +5,7 @@ CM160Gimbal::CM160Gimbal(GimbalInterface *parent) : GimbalInterface(parent)
     m_gimbalDiscover = new GimbalDiscoverer();
     _sendSocket = new QUdpSocket();
     _receiveSocket = new QUdpSocket();
-    _packetParser = new GimbalPacketParser();
+    _packetParser = new CM160GimbalPacketParser();
     _systemCommand = new UavvGimbalProtocolSystemPackets();
     _gimbalCommand = new UavvGimbalProtocolGimbalPackets();
     _eoCommand = new UavvGimbalProtocolEOSensorPackets();
@@ -171,7 +171,7 @@ void CM160Gimbal::setGimbalPreset(QString mode){
 void CM160Gimbal::setGimbalRecorder(bool enable){
     Q_UNUSED(enable);
 }
-void CM160Gimbal::setLockMode(QString mode, QPoint location){
+void CM160Gimbal::setLockMode(QString mode, QPointF location){
     Q_UNUSED(mode);
     Q_UNUSED(location);
 }

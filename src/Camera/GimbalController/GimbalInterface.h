@@ -116,7 +116,7 @@ public Q_SLOTS:
     virtual void setGimbalPreset(QString mode);
     virtual void setGimbalRecorder(bool enable);
     virtual void setGCSRecorder(bool enable);
-    virtual void setLockMode(QString mode,QPoint location = QPoint(0,0));
+    virtual void setLockMode(QString mode,QPointF location = QPointF(0,0));
     virtual void setGeoLockPosition(QPoint location);
 
     virtual void handleGimbalModeChanged(QString mode);

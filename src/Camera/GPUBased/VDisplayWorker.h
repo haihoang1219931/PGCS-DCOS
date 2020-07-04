@@ -39,22 +39,14 @@ class VDisplayWorker : public QObject
         void process();
 
     Q_SIGNALS:
-        void receivedFrame(int _id, QVideoFrame _frame);
-        void receivedFrame();
-        void readyDrawOnViewerID(cv::Mat img, int viewerID);
+        void readyDrawOnRenderID(int viewerID, unsigned char *data, int width, int height,float* warpMatrix = nullptr,unsigned char* dataOut = nullptr);
         void finished();
         void error(QString _err);
 
     private:
         void init();
-        void drawCenter(cv::Mat &_img, int _r, int _centerX, const int _centerY,
-                        cv::Scalar _color);
-        void drawSteeringCenter(cv::Mat &_img, int _wBoundary, int _centerX,
-                                const int _centerY, cv::Scalar _color);
-        void drawObjectBoundary(cv::Mat &_img, cv::Rect _objBoundary,
-                                cv::Scalar _color);
-        void drawDetectedObjects(cv::Mat &_img, const std::vector<bbox_t> &m_listObj);
-
+        void drawDetectedObjects(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV,
+                                 const std::vector<bbox_t> &m_listObj);
         std::vector<std::string> objects_names_from_file(std::string const filename);
 
         index_type readBarcode(const cv::Mat &_rgbImg);
@@ -78,8 +70,9 @@ class VDisplayWorker : public QObject
 //        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
 //        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
         std::vector<std::string> m_objName;
-        cv::Mat m_imgRaw;
-        cv::Mat m_imgShow;
+        cv::Mat m_imgI420;
+        cv::Mat m_imgI420Warped;
+        std::vector<float> m_warpDataRender;
         cv::Mat m_imgGray;
         cv::Mat m_imgIRColor;
         std::string m_ipStream;

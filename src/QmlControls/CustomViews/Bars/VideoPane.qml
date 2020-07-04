@@ -46,17 +46,9 @@ Item{
         target: player
 
     }
-    VideoOutput {
+    VideoRender{
         id: videoOutput
         anchors.fill: parent
-        onWidthChanged: {
-            if(player !== undefined)
-                player.updateVideoSurface(width,height);
-        }
-        onHeightChanged: {
-            if(player !== undefined)
-                player.updateVideoSurface(width,height);
-        }
     }
 
     MouseArea{
@@ -144,8 +136,7 @@ Item{
         if(USE_VIDEO_GPU || USE_VIDEO_CPU){
             rootItem.player = cameraController.videoEngine;
             rootItem.player.plateLog = listPlateLog.plateLog;
-            console.log("Player component="+rootItem.player);
-            videoOutput.source = rootItem.player;
+            cameraController.videoEngine.addVideoRender(videoOutput);
         }
     }
 }

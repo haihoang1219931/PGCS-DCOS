@@ -2,6 +2,7 @@
 #include "src/Camera/GimbalController/GimbalInterface.h"
 VDisplay::VDisplay(VideoEngine *_parent) : VideoEngine(_parent)
 {
+    m_enSaving = false;
     m_frameID = -1;
     m_vFrameGrabber = new VFrameGrabber;
     m_vPreprocess = new VPreprocess;
@@ -13,19 +14,17 @@ VDisplay::VDisplay(VideoEngine *_parent) : VideoEngine(_parent)
     m_threadEODisplay = new QThread(0);
     m_vDisplayWorker = new VDisplayWorker(0);
     m_vDisplayWorker->moveToThread(m_threadEODisplay);
-    connect(m_vDisplayWorker, SIGNAL(receivedFrame(int, QVideoFrame)), this,
-            SLOT(onReceivedFrame(int, QVideoFrame)));
-    connect(m_vDisplayWorker, SIGNAL(receivedFrame()), this,
-            SLOT(onReceivedFrame()));
+    m_vFrameGrabber->m_enSaving = &m_enSaving;
     connect(m_threadEODisplay, SIGNAL(started()), m_vDisplayWorker,
             SLOT(process()));
     connect(m_vTrackWorker, &VTrackWorker::trackStateFound,
             this, &VDisplay::slTrackStateFound);
-    connect(m_vTrackWorker, SIGNAL(determinedPlateOnTracking(QString, QString)),
-            this, SIGNAL(determinedPlateOnTracking(QString, QString)));
+    connect(m_vTrackWorker, &VTrackWorker::determinedPlateOnTracking,
+            this, &VideoEngine::determinedPlateOnTracking);
     connect(m_vTrackWorker, &VTrackWorker::trackStateLost,
             this, &VDisplay::slTrackStateLost);
-    connect(m_vDisplayWorker,&VDisplayWorker::readyDrawOnViewerID,this,&VDisplay::drawOnViewerID);
+    connect(m_vDisplayWorker,&VDisplayWorker::readyDrawOnRenderID,
+            this,&VideoEngine::drawOnRenderID);
     connect(this, &VideoEngine::sourceSizeChanged,
             this, &VideoEngine::onStreamFrameSizeChanged);
     connect(m_vTrackWorker, &VTrackWorker::zoomCalculateChanged, this,&VDisplay::handleZoomCalculateChanged);
@@ -56,6 +55,7 @@ void VDisplay::setdigitalZoom(float value){
 void VDisplay::setGimbal(GimbalInterface* gimbal){
     m_gimbal = gimbal;
     m_vTrackWorker->m_gimbal = gimbal;
+    m_vFrameGrabber->m_gimbal = gimbal;
 }
 void VDisplay::handleZoomTargetChangeStopped(float zoomTarget){
     if(m_gimbal!= nullptr){
@@ -101,67 +101,10 @@ void VDisplay::start()
     m_vODWorker->start();
     m_vMOTWorker->start();
     m_vSearchWorker->start();
-    m_vSavingWorker->start();
     m_vTrackWorker->start();
     m_threadEODisplay->start();
 }
 
-
-void VDisplay::onReceivedFrame(int _id, QVideoFrame frame)
-{
-    if(m_videoSurface!=nullptr){
-        m_frameID = _id;
-        if (m_sourceSize.width() != frame.width() ||
-                m_sourceSize.height() != frame.height()) {
-            m_sourceSize.setWidth(frame.width());
-            m_sourceSize.setHeight(frame.height());
-            Q_EMIT sourceSizeChanged(frame.width(),frame.height());
-        }
-        if(m_updateVideoSurface){
-            if(m_updateCount < m_updateMax){
-                update();
-                m_updateCount ++;
-            }else
-                m_updateVideoSurface = false;
-        }
-        m_videoSurface->present(frame);
-
-    }
-}
-void VDisplay::onReceivedFrame()
-{
-    if(m_videoSurface!=nullptr){
-        m_frameID = m_vDisplayWorker->m_currID;
-        if(m_updateVideoSurface){
-            if(m_updateCount < m_updateMax){
-                update();
-                m_updateCount ++;
-            }else
-                m_updateVideoSurface = false;
-        }
-        QVideoFrame frame = QVideoFrame(
-                    QImage((uchar *)m_vDisplayWorker->m_imgShow.data,
-                           m_vDisplayWorker->m_imgShow.cols,
-                           m_vDisplayWorker->m_imgShow.rows, QImage::Format_RGBA8888));
-        frame.map(QAbstractVideoBuffer::ReadOnly);
-        if (m_sourceSize.width() != frame.width() ||
-                m_sourceSize.height() != frame.height()) {
-            m_sourceSize.setWidth(frame.width());
-            m_sourceSize.setHeight(frame.height());
-            Q_EMIT sourceSizeChanged(frame.width(), frame.height());
-        }
-        if(m_updateVideoSurface){
-            if(m_updateCount < m_updateMax){
-                update();
-                m_updateCount ++;
-            }else
-                m_updateVideoSurface = false;
-        }
-        m_videoSurface->present(frame);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        frame.unmap();
-    }
-}
 void VDisplay::setVideo(QString _ip, int _port)
 {
     printf("%s - %s\r\n",__func__,_ip.toStdString().c_str());
@@ -270,12 +213,6 @@ void VDisplay::setTrackAt(int _id, double _px, double _py, double _w, double _h)
         m_gimbal->setDigitalStab(true);
     }
     m_vTrackWorker->setClick(_px, _py, _w, _h);
-}
-
-void VDisplay::setVideoSavingState(bool _state)
-{
-    //    m_vDisplayWorker->setVideoSavingState(_state);
-    m_vFrameGrabber->setVideoSavingState(_state);
 }
 
 void VDisplay::setStab(bool _en)

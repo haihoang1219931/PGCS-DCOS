@@ -4,6 +4,7 @@
 #include "src/Camera/GimbalController/GimbalInterface.h"
 CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(parent)
 {
+    m_enSaving = true;
     char cmd[100];
     std::string day = Utils::get_day();
 #ifdef __linux__
@@ -45,8 +46,7 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(pa
             SLOT(slTrackStateFound(int, double, double, double, double, double, double)));
     connect(this, &VideoEngine::sourceSizeChanged,
             this, &VideoEngine::onStreamFrameSizeChanged);
-    connect(m_process,&CVVideoProcess::readyDrawOnViewerID,this,&CVVideoCaptureThread::drawOnViewerID);
-    //    connect(m_process,SIGNAL(objectSizeChange(float)),this,SLOT(doChangeZoom(float)));
+    connect(m_process,&CVVideoProcess::readyDrawOnRenderID,this,&VideoEngine::drawOnRenderID);
     m_capture->m_imageQueue = &m_imageQueue;
     m_capture->m_mutexCapture = m_mutexCapture;
     m_capture->m_logFolder = m_logFolder;
@@ -192,31 +192,6 @@ void CVVideoCaptureThread::changeTrackSize(int newSize)
 {
     m_process->m_trackSize = newSize;
 }
-void CVVideoCaptureThread::doShowVideo()
-{
-    if (m_videoSurface != NULL) {
-        //        m_mutexCapture->lock();
-        if (m_sourceSize.width() != m_imgShow.cols ||
-            m_sourceSize.height() != m_imgShow.rows) {
-            m_sourceSize.setWidth(m_imgShow.cols);
-            m_sourceSize.setHeight(m_imgShow.rows);
-            Q_EMIT sourceSizeChanged(m_imgShow.cols, m_imgShow.rows);
-        }
-        if(m_updateVideoSurface){
-            update();
-            m_updateVideoSurface = false;
-        }
-        QImage tmp((uchar *)m_imgShow.data, m_imgShow.cols, m_imgShow.rows, QImage::Format_RGBA8888);
-        QVideoFrame output = QVideoFrame(tmp);
-
-//        printf("show image[%dx%d]\r\n",m_imgShow.cols,m_imgShow.rows);
-        if (!m_videoSurface->present(output)) {
-//            printf("Show failed\r\n");
-        } else {
-//            printf("Show success\r\n");
-        }
-    }
-}
 
 void CVVideoCaptureThread::disableObjectDetect(){
 
@@ -230,22 +205,31 @@ void CVVideoCaptureThread::setDigitalStab(bool _en){
 void CVVideoCaptureThread::setTrackAt(int _id, double _px, double _py, double _w, double _h)
 {
     if(m_gimbal != nullptr){
-        if(m_gimbal->context()->m_lockMode == "FREE"){
-            m_gimbal->context()->m_lockMode = "TRACK";
-            m_process->m_trackEnable = true;
-            m_enTrack = true;
-            m_enSteer = false;
-            int x = static_cast<int>(_px/_w*m_sourceSize.width());
-            int y = static_cast<int>(_py/_h*m_sourceSize.height());
-            printf("%s at (%dx%d)\r\n",__func__,x,y);
-            removeTrackObjectInfo(0);
-            TrackObjectInfo *object = new TrackObjectInfo(m_sourceSize,QRect(x-20,y-20,40,40),"Object",20.975092,105.307680,0,0,"Track");
-            object->setIsSelected(true);
-            addTrackObjectInfo(object);
+        if(!m_gimbal->context()->m_processOnBoard){
+            if(m_gimbal->context()->m_lockMode == "FREE"){
+                m_gimbal->context()->m_lockMode = "TRACK";
+                m_process->m_trackEnable = true;
+                m_enTrack = true;
+                m_enSteer = false;
+                int x = static_cast<int>(_px/_w*m_sourceSize.width());
+                int y = static_cast<int>(_py/_h*m_sourceSize.height());
+                printf("%s at (%dx%d)\r\n",__func__,x,y);
+                removeTrackObjectInfo(0);
+                TrackObjectInfo *object = new TrackObjectInfo(m_sourceSize,QRect(x-20,y-20,40,40),"Object",20.975092,105.307680,0,0,"Track");
+                object->setIsSelected(true);
+                addTrackObjectInfo(object);
+            }
+            m_gimbal->setDigitalStab(true);
+            m_process->setClick(_px, _py, _w, _h);
+        }else{
+            if(m_gimbal->context()->m_lockMode == "FREE" ||
+                    m_gimbal->context()->m_lockMode == "TRACK"){
+                m_gimbal->setLockMode("TRACK",QPointF(_px/_w,_py/_h));
+            }else{
+                m_gimbal->setLockMode("VISUAL",QPointF(_px/_w,_py/_h));
+            }
         }
-        m_gimbal->setDigitalStab(true);
-    }
-    m_process->setClick(_px, _py, _w, _h);
+    }    
 }
 void CVVideoCaptureThread::setRecord(bool _en){
     m_process->m_recordEnable = _en;

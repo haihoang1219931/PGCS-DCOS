@@ -25,7 +25,7 @@ public:
     void snapShot() override;
     void changeTrackSize(float trackSize) override;
     void setDigitalStab(bool enable) override;
-    void setLockMode(QString mode, QPoint location = QPoint(0,0)) override;
+    void setLockMode(QString mode, QPointF location = QPointF(0,0)) override;
     void setRecord(bool enable) override;
     void setShare(bool enable) override;
     void setGimbalPreset(QString mode) override;

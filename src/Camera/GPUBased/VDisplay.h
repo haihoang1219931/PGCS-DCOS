@@ -37,8 +37,6 @@ public:
     void setGimbal(GimbalInterface* gimbal) override;   
     void setdigitalZoom(float value) override;
 public Q_SLOTS:
-    void onReceivedFrame(int _id, QVideoFrame _frame);
-    void onReceivedFrame();
     void handleZoomTargetChangeStopped(float zoomTarget);
     void handleZoomCalculateChanged(int index,float zoomCalculate);
     void handleZoomTargetChanged(float zoomTarget);
@@ -54,7 +52,6 @@ public:
     Q_INVOKABLE void setTrackAt(int _id, double _px, double _py, double _w, double _h) override;
     Q_INVOKABLE void disableObjectDetect() override;
     Q_INVOKABLE void enableObjectDetect() override;
-    Q_INVOKABLE void setVideoSavingState(bool _state);
     Q_INVOKABLE void setVideo(QString _ip, int _port = 0) override;
     Q_INVOKABLE void setSensorColor(QString colorMode) override;
     Q_INVOKABLE void setStab(bool _en) override;

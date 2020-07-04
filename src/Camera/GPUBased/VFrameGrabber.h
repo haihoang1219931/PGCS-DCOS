@@ -7,6 +7,7 @@
 #include <QThread>
 #include <chrono>
 #include <gst/app/gstappsink.h>
+#include <gst/app/gstappsrc.h>
 #include <gst/gst.h>
 #include <gst/gstutils.h>
 #include <gst/gstsegment.h>
@@ -17,7 +18,7 @@
 #include <sys/stat.h>
 
 using namespace rva;
-
+class GimbalInterface;
 class VFrameGrabber : public QThread
 {
         Q_OBJECT
@@ -35,10 +36,13 @@ class VFrameGrabber : public QThread
         static gboolean wrapperOnBusCall(GstBus *_bus, GstMessage *_msg,
                                          gpointer uData);
 
-        static GstPadProbeReturn
-        wrapperPadDataMod(GstPad *_pad, GstPadProbeInfo *_info, gpointer _uData);
+        static GstPadProbeReturn wrapperPadDataMod(GstPad *_pad, GstPadProbeInfo *_info, gpointer _uData);
 
         static void wrapperRun(void *_pointer);
+
+        static gboolean wrapNeedKlv(void* userPointer);
+
+        static void wrapStartFeedKlv(GstElement * pipeline, guint size, void* userPointer);
 
         bool initPipeline();
 
@@ -62,7 +66,6 @@ class VFrameGrabber : public QThread
 
         void setSource(std::string _ip, int _port);
 
-        void setVideoSavingState(bool _state);
     private:
         GstFlowReturn onNewSample(GstAppSink *vsink, gpointer user_data);
 
@@ -74,7 +77,7 @@ class VFrameGrabber : public QThread
 
         GstPadProbeReturn padDataMod(GstPad *_pad, GstPadProbeInfo *_info,
                                      gpointer _uData);
-
+        gboolean needKlv(void* userPointer);
 
         std::string getFileNameByTime();
 
@@ -85,8 +88,9 @@ class VFrameGrabber : public QThread
         bool checkIfFolderExist(std::string _folderName);
 
 
-    private:
+    public:
         float m_speed = 1;
+        GstAppSrc* m_klvAppSrc = nullptr;
         GMainLoop *m_loop = nullptr;
         GstPipeline *m_pipeline = nullptr;
         std::string m_pipelineStr;
@@ -97,12 +101,13 @@ class VFrameGrabber : public QThread
         std::string m_ip;
         uint16_t m_port;
         gint64 m_totalTime = 1800000000000;
-        bool m_enSaving = true;
+        bool* m_enSaving = nullptr;
         bool m_stop = false;
-        index_type m_currID;
+        index_type m_currID = 0;
+        index_type m_metaID = 0;
         std::string m_filename;
         RollBuffer_<GstFrameCacheItem> *m_gstFrameBuff;
-        RollBuffer_<GstFrameCacheItem> *m_gstEOSavingBuff;
+        GimbalInterface* m_gimbal = nullptr;
 };
 
 #endif // VFrameGrabber_H

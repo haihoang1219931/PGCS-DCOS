@@ -1912,6 +1912,14 @@ ApplicationWindow {
             }
         }
     }
+    Timer{
+        repeat: true
+        interval: 1000
+        running: true
+        onTriggered: {
+            console.log("=================================================\r\n");
+        }
+    }
 
     Timer{
         id: timerStart

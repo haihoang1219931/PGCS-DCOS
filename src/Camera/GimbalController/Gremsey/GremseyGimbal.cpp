@@ -9,6 +9,7 @@
 GremseyGimbal::GremseyGimbal(GimbalInterface *parent) : GimbalInterface(parent)
 {
     m_targetLocation = new TargetLocalization();
+    m_targetLocation->visionViewInit(0.006f,1920,1080);
     m_zoom.append(0x0000); //1x
     m_zoom.append(0x0DC1); //2x
     m_zoom.append(0x186C); //3x
@@ -309,7 +310,7 @@ void GremseyGimbal::setDigitalStab(bool enable){
         m_context->m_videoStabMode = enable;
     }
 }
-void GremseyGimbal::setLockMode(QString mode, QPoint location){
+void GremseyGimbal::setLockMode(QString mode, QPointF location){
     m_context->m_lockMode = mode;
     if(mode == "FREE"){
         setDigitalStab(false);
@@ -464,50 +465,37 @@ void GremseyGimbal::handleVehicleMessage(mavlink_message_t message)
         mavlink_global_position_int_t gps_pos;
         mavlink_msg_global_position_int_decode(&message,&gps_pos);
         m_context->m_latitude = (static_cast<float>(gps_pos.lat))/10000000;
-        m_context->m_longtitude = (static_cast<float>(gps_pos.lon))/10000000;
+        m_context->m_longitude = (static_cast<float>(gps_pos.lon))/10000000;
 //        m_context->m_altitudeOffset = (static_cast<float>(gps_pos.alt))/1000;
-        m_context->m_altitudeOffset = 25;
-        if(m_targetLocation!=nullptr){
-            double centerLat,centerLon;
-            double cornerLat[4],cornerLon[4];
-            std::vector<QPointF> corners;
-            corners.push_back(QPointF(0,0));
-            corners.push_back(QPointF(1920,0));
-            corners.push_back(QPointF(1920,1080));
-            corners.push_back(QPointF(0,1080));
-            m_targetLocation->targetLocationMain(
-                    960,540,
-                    m_context->m_hfov[m_context->m_sensorID] / rad2Deg,
-                    m_context->m_rollOffset / rad2Deg,
-                    m_context->m_pitchOffset / rad2Deg,
-                    m_context->m_yawOffset / rad2Deg,
-                    m_context->m_panPosition / rad2Deg,
-                    m_context->m_tiltPosition / rad2Deg,
-                    m_context->m_latitude,
-                    m_context->m_longtitude,
-                    m_context->m_altitudeOffset,
-                    centerLat,
-                    centerLon);
-            m_context->m_centerLat = centerLat;
-            m_context->m_centerLon = centerLon;
-
-            for(int i=0; i< 4; i++){
-                m_targetLocation->targetLocationMain(
-                        corners[i].x(),corners[i].y(),
-                        m_context->m_hfov[m_context->m_sensorID] / rad2Deg,
-                        m_context->m_rollOffset / rad2Deg,
-                        m_context->m_pitchOffset / rad2Deg,
-                        m_context->m_yawOffset / rad2Deg,
-                        m_context->m_panPosition / rad2Deg,
-                        m_context->m_tiltPosition / rad2Deg,
-                        m_context->m_latitude,
-                        m_context->m_longtitude,
-                        m_context->m_altitudeOffset,
-                        cornerLat[i],
-                        cornerLon[i]);
-                m_context->m_cornerLat[i] = cornerLat[i];
-                m_context->m_cornerLon[i] = cornerLon[i];
-            }
+        m_context->m_altitudeOffset = m_vehicle->altitudeAGL();
+        if(m_targetLocation!=nullptr){            
+            double center[2];
+            double corner[4][2];
+            double uavPosition[2];
+            uavPosition[0] = m_context->m_latitude;
+            uavPosition[1] = m_context->m_longitude;
+            m_targetLocation->visionViewMain(
+                m_context->m_hfov[m_context->m_sensorID] / rad2Deg,
+                m_context->m_rollOffset / rad2Deg,
+                m_context->m_pitchOffset / rad2Deg,
+                m_context->m_yawOffset / rad2Deg,
+                m_context->m_panPosition / rad2Deg,
+                m_context->m_tiltPosition / rad2Deg,
+                uavPosition,
+                m_context->m_altitudeOffset,
+                0,
+                center,corner[0],corner[1],corner[2],corner[3]
+            );
+            m_context->m_centerLat = center[0];
+            m_context->m_centerLon = center[1];
+            m_context->m_cornerLat[0] = corner[0][0];
+            m_context->m_cornerLon[0] = corner[0][0];
+            m_context->m_cornerLat[1] = corner[1][0];
+            m_context->m_cornerLon[1] = corner[1][0];
+            m_context->m_cornerLat[2] = corner[2][0];
+            m_context->m_cornerLon[2] = corner[2][0];
+            m_context->m_cornerLat[3] = corner[3][0];
+            m_context->m_cornerLon[3] = corner[3][0];
         }
         break;
 

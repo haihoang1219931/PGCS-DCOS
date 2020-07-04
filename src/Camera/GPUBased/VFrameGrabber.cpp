@@ -1,18 +1,11 @@
 #include "VFrameGrabber.h"
-
-// VFrameGrabber::VFrameGrabber(QObject *_parent) : QObject(_parent) {
-//  gst_init(0, NULL);
-//  m_loop = g_main_loop_new(NULL, FALSE);
-//}
-
+#include <gobject/gobject.h>
+#include "Camera/VideoEngine/VideoEngineInterface.h"
 VFrameGrabber::VFrameGrabber()
 {
     gst_init(0, NULL);
     m_loop = g_main_loop_new(NULL, FALSE);
     m_gstFrameBuff = Cache::instance()->getGstFrameCache();
-    m_gstEOSavingBuff = Cache::instance()->getGstEOSavingCache();
-    m_ip = "232.4.130.146";
-    m_port = 18888;
 }
 
 VFrameGrabber::~VFrameGrabber()
@@ -27,7 +20,7 @@ VFrameGrabber::~VFrameGrabber()
 void VFrameGrabber::run()
 {
     GstStateChangeReturn result =
-        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
+            gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
 
     if (result != GST_STATE_CHANGE_SUCCESS) {
         printf("ReadingCam-gstreamer failed to set pipeline state to PLAYING "
@@ -71,7 +64,7 @@ void VFrameGrabber::wrapperRun(void *_pointer)
 }
 
 GstFlowReturn VFrameGrabber::wrapperOnNewSample(GstAppSink *_vsink,
-        gpointer _uData)
+                                                gpointer _uData)
 {
     VFrameGrabber *itseft = (VFrameGrabber *)_uData;
     return itseft->onNewSample(_vsink, _uData);
@@ -84,61 +77,81 @@ void VFrameGrabber::wrapperOnEOS(_GstAppSink *_sink, void *_uData)
 }
 
 gboolean VFrameGrabber::wrapperOnBusCall(GstBus *_bus, GstMessage *_msg,
-        gpointer _uData)
+                                         gpointer _uData)
 {
     VFrameGrabber *itseft = (VFrameGrabber *)_uData;
     return itseft->onBusCall(_bus, _msg, _uData);
 }
 
 GstFlowReturn VFrameGrabber::wrapperOnNewPreroll(_GstAppSink *_sink,
-        void *_uData)
+                                                 void *_uData)
 {
     VFrameGrabber *itseft = (VFrameGrabber *)_uData;
     return itseft->onNewPreroll(_sink, _uData);
 }
 
 GstPadProbeReturn VFrameGrabber::wrapperPadDataMod(GstPad *_pad,
-        GstPadProbeInfo *_info,
-        gpointer _uData)
+                                                   GstPadProbeInfo *_info,
+                                                   gpointer _uData)
 {
     VFrameGrabber *itseft = (VFrameGrabber *)_uData;
     return itseft->padDataMod(_pad, _info, _uData);
 }
+gboolean VFrameGrabber::wrapNeedKlv(void* userPointer){
+//    printf("%s\r\n",__func__);
+    VFrameGrabber *itseft = (VFrameGrabber *)userPointer;
+    return itseft->needKlv(userPointer);
+}
+void VFrameGrabber::wrapStartFeedKlv(GstElement * pipeline, guint size, void* userPointer){
+//    printf("%s\r\n",__func__);
+    VFrameGrabber *itseft = (VFrameGrabber *)userPointer;
+    itseft->needKlv(userPointer);
+//    g_idle_add ((GSourceFunc) wrapNeedKlv, userPointer);
+}
+gboolean VFrameGrabber::needKlv(void* userPointer)
+{
+    VFrameGrabber *itseft = (VFrameGrabber *)userPointer;
+    GstAppSrc* appsrc = itseft->m_klvAppSrc;
+    std::vector<uint8_t> klvData = VideoEngine::encodeMeta(m_gimbal);
+//    printf("%s [%d]\r\n",__func__,itseft->m_metaID);
+    GstBuffer *buffer = gst_buffer_new_allocate(nullptr, klvData.size(), nullptr);
+    GstMapInfo map;
+    GstClock *clock;
+    GstClockTime abs_time, base_time;
 
+    gst_buffer_map (buffer, &map, GST_MAP_WRITE);
+    memcpy(map.data, klvData.data(), klvData.size());
+    gst_buffer_unmap (buffer, &map);
+    int metaPerSecond = 5;
+    GstClockTime gstDuration = GST_SECOND / 30;
+    GST_BUFFER_PTS (buffer) = (itseft->m_metaID + 1) * gstDuration * metaPerSecond;
+    GST_BUFFER_DURATION (buffer) = GST_SECOND / 30;
+    gst_app_src_push_buffer(GST_APP_SRC(appsrc), buffer);
+
+    int ms = 1000 / 30 * metaPerSecond;
+    struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+    nanosleep(&ts, NULL);
+    itseft->m_metaID +=1;
+    return true;
+}
 GstFlowReturn VFrameGrabber::onNewSample(GstAppSink *_vsink, gpointer _uData)
 {
     GstSample *sample = gst_app_sink_pull_sample((GstAppSink *)_vsink);
-
     if (sample == NULL) {
         printf("\nError while pulling new sample");
         gst_sample_unref(sample);
         return GST_FLOW_ERROR;
     }
-
     m_currID++;
     GstBuffer *gstItem = gst_sample_get_buffer(sample);
-
-
     GstFrameCacheItem gstFrame;
     gstFrame.setIndex(m_currID);
     gstFrame.setGstBuffer(gst_buffer_copy(gstItem));
     m_gstFrameBuff->add(gstFrame);
-    if (m_enSaving) {
-        GstFrameCacheItem gstEOSaving;
-        gstEOSaving.setIndex(m_currID);
-        gstEOSaving.setGstBuffer(gst_buffer_copy(gstItem));
-        m_gstEOSavingBuff->add(gstEOSaving);
-    }
-    //    printf("\nReadFrame %d - %d", m_currID, gst_buffer_get_size(gst_sample_get_buffer(sample)));
+    printf("ReadFrame %d - %d\r\n", m_currID, gst_buffer_get_size(gst_sample_get_buffer(sample)));
     gst_sample_unref(sample);
     return GST_FLOW_OK;
 }
-
-void VFrameGrabber::setVideoSavingState(bool _state)
-{
-    m_enSaving = _state;
-}
-
 
 void VFrameGrabber::onEOS(_GstAppSink *_sink, void *_uData)
 {
@@ -153,7 +166,8 @@ gboolean VFrameGrabber::onBusCall(GstBus *_bus, GstMessage *_msg,
     switch (GST_MESSAGE_TYPE(_msg)) {
     case GST_MESSAGE_EOS: {
         g_print("\nEnd of stream");
-//        g_main_loop_quit(loop);
+        //        g_main_loop_quit(loop);
+        g_signal_stop_emission_by_name(m_klvAppSrc, "need-data");
         break;
     }
 
@@ -164,7 +178,6 @@ gboolean VFrameGrabber::onBusCall(GstBus *_bus, GstMessage *_msg,
         g_free(debug);
         g_printerr("\nError: %s", error->message);
         g_error_free(error);
-//        g_main_loop_quit(loop);
         break;
     }
 
@@ -183,7 +196,7 @@ GstFlowReturn VFrameGrabber::onNewPreroll(_GstAppSink *_sink, void *_uData)
 }
 
 GstPadProbeReturn VFrameGrabber::padDataMod(GstPad *_pad, GstPadProbeInfo *_info,
-        gpointer _uData)
+                                            gpointer _uData)
 {
     return GST_PAD_PROBE_OK;
 }
@@ -203,7 +216,7 @@ gint64 VFrameGrabber::getPosCurrent()
 void VFrameGrabber::restartPipeline()
 {
     GstStateChangeReturn result =
-        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
+            gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
 
     if (result != GST_STATE_CHANGE_SUCCESS) {
         printf("ReadingCam-gstreamer failed to set pipeline state to PLAYING "
@@ -223,10 +236,10 @@ void VFrameGrabber::setSpeed(float speed){
     m_speed = speed;
     pause(true);
     gst_element_seek(GST_ELEMENT(m_pipeline),speed,
-                            GST_FORMAT_TIME,
-                            GstSeekFlags(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE),
-                            GST_SEEK_TYPE_SET,(gint64)(posCurrent),
-                            GST_SEEK_TYPE_SET,GST_CLOCK_TIME_NONE);
+                     GST_FORMAT_TIME,
+                     GstSeekFlags(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE),
+                     GST_SEEK_TYPE_SET,(gint64)(posCurrent),
+                     GST_SEEK_TYPE_SET,GST_CLOCK_TIME_NONE);
     pause(false);
 }
 void VFrameGrabber::pause(bool pause){
@@ -244,14 +257,14 @@ void VFrameGrabber::goToPosition(float percent){
         return;
     }
     gint64 posNext = (gint64)((double)m_totalTime*(double)percent);
-//    printf("%ld = (gint64)(percent*100*GST_SECOND)\r\n",(gint64)(percent*100*GST_SECOND));
-//    printf("%ld = posNext\r\n",posNext);
-//    printf("%f = m_speed\r\n",m_speed);
+    //    printf("%ld = (gint64)(percent*100*GST_SECOND)\r\n",(gint64)(percent*100*GST_SECOND));
+    //    printf("%ld = posNext\r\n",posNext);
+    //    printf("%f = m_speed\r\n",m_speed);
     gst_element_seek(GST_ELEMENT(m_pipeline),m_speed,
-                            GST_FORMAT_TIME,
-                            GstSeekFlags(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE),
-                            GST_SEEK_TYPE_SET,(gint64)(posNext),
-                            GST_SEEK_TYPE_SET,GST_CLOCK_TIME_NONE);
+                     GST_FORMAT_TIME,
+                     GstSeekFlags(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE),
+                     GST_SEEK_TYPE_SET,(gint64)(posNext),
+                     GST_SEEK_TYPE_SET,GST_CLOCK_TIME_NONE);
 }
 bool VFrameGrabber::initPipeline()
 {
@@ -265,62 +278,11 @@ bool VFrameGrabber::initPipeline()
     }
     createFolder("img");
     createFolder("plates");
-    //
-    //----- 1
-    //    m_pipelineStr =
-    //        "udpsrc multicast-group=" + m_ip + " port=" + std::to_string(m_port) +
-    //        " ! application/x-rtp,media=video,clock-rate=90000,encoding-name=MP2T-ES "
-    //        "! rtpjitterbuffer mode=synced ! rtpmp2tdepay ! video/mpegts ! tsdemux ! "
-    //        "queue name=myqueue ! tee name=t t. ! h265parse ! "
-    //        "video/x-h265,stream-format=byte-stream ! nvh265dec ! glcolorconvert ! video/x-raw(memory:GLMemory),format=BGRA ! " +
-    //        "appsink  name=mysink sync=false async=false ";
-    //    +  "t. ! h265parse ! queue ! matroskamux ! filesink location=" + m_filename + ".mkv";
-    //----- 2
-    //    m_pipelineStr =
-    //        "udpsrc multicast-group=" + m_ip + " port=" + std::to_string(m_port) +
-    //        " ! application/x-rtp,media=video,clock-rate=90000,encoding-name=MP2T-ES "
-    //        "! rtpjitterbuffer mode=synced ! rtpmp2tdepay ! video/mpegts ! tsdemux ! "
-    //        "queue name=myqueue ! tee name=t t. ! h265parse ! "
-    //        "video/x-h265,stream-format=byte-stream ! nvh265dec ! " +
-    //        "appsink  name=mysink sync=false async=false ";
-    //
-    //----- 3
-    //    m_pipelineStr =
-    //        "udpsrc multicast-group=" + m_ip + " port=" + std::to_string(m_port) +
-    //        " ! application/x-rtp,media=video,clock-rate=90000,encoding-name=MP2T-ES "
-    //        "! rtpjitterbuffer mode=synced ! rtpmp2tdepay ! video/mpegts ! tsdemux ! "
-    //        "queue name=myqueue ! tee name=t t. ! h265parse ! "
-    //        "video/x-h265,stream-format=byte-stream ! avdec_h265 ! " +
-    //        "appsink  name=mysink sync=false async=false ";
-    //----- 4
-    //    m_pipelineStr = "rtspsrc location=" + m_ip + " ! queue ! rtph265depay ! h265parse ! nvh265dec ! glcolorconvert ! video/x-raw(memory:GLMemory),format=I420 ! appsink name=mysink sync=false async=false";
-    if(QString::fromStdString(m_ip).contains("filesrc"))
-        m_pipelineStr = m_ip + " ! appsink name=mysink sync=true async=true";
-    else
-        m_pipelineStr = m_ip + " ! appsink name=mysink sync=false async=false";
-//    m_pipelineStr = "filesrc location=/home/pgcs-04/Videos/vt/vt5.mp4 ! decodebin ! appsink name=mysink sync=true async=true";
-    //
-    //------ 2
-    //    m_pipelineStr =
-    //        "udpsrc multicast-group=" + m_ip + " port=" + std::to_string(m_port) +
-    //        " ! application/x-rtp,media=video,clock-rate=90000,encoding-name=MP2T-ES "
-    //        "! " +
-    //        "rtpjitterbuffer mode=synced ! rtpmp2tdepay ! video/mpegts ! tsdemux ! "
-    //        "queue name=myqueue ! tee name=t t. ! h265parse ! "
-    //        "video/x-h265,stream-format=byte-stream ! avdec_h265 max-threads=4 ! " +
-    //        "appsink  name=mysink sync=false async=false "
-    //        +  "t. ! h265parse ! queue ! matroskamux ! filesink location=" + m_filename + ".mkv";
-    //
-    //
-    //------ 3
-    //    m_pipelineStr = "filesrc location=/home/pgcs-03/Videos/flights/ahihi.avi ! avidemux ! "
-    //                    "h264parse ! avdec_h264 ! appsink name=mysink sync=true";
-    //    m_pipelineStr = "filesrc location=/home/qdt/Videos/fullhd_60.mp4 ! avidemux ! "
-    //                    "h264parse ! avdec_h264 ! appsink name=mysink sync=true";
-    //------ 4
-    //    m_pipelineStr = "filesrc location=/home/pgcs-03/Videos/flights/ahihi.mkv ! matroskademux ! "
-    //                    "h265parse ! nvh265dec ! glcolorconvert ! video/x-raw(memory:GLMemory),format=BGRA ! appsink name=mysink sync=true";
-    printf("\nReading pipeline: %s", m_pipelineStr.data());
+    std::string m_pipelineStr = m_ip + std::string(" ! appsink name=mysink async=true sync=")+
+        (QString::fromStdString(m_ip).contains("filesrc")?std::string("true"):std::string("false"))+""
+        " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
+        " appsrc name=klvsrc ! mux. ";
+    printf("\nReading pipeline: %s\r\n", m_pipelineStr.data());
     m_pipeline = GST_PIPELINE(gst_parse_launch(m_pipelineStr.data(), &m_err));
 
     if ((m_err != NULL) || (!m_pipeline)) {
@@ -330,35 +292,45 @@ bool VFrameGrabber::initPipeline()
     } else {
         g_print("gstreamer decoder create pipeline success\n");
     }
-
-    GstElement *m_sink = gst_bin_get_by_name((GstBin *)m_pipeline, "mysink");
-    GstAppSink *m_appsink = (GstAppSink *)m_sink;
-
-    if (!m_sink || !m_appsink) {
-        g_print("Fail to get element \n");
-        return false;
-    }
-
-    // drop
-    gst_app_sink_set_drop(m_appsink, true);
-    g_object_set(m_appsink, "emit-signals", TRUE, NULL);
     // check end of stream
     m_bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
     m_busWatchID = gst_bus_add_watch(m_bus, wrapperOnBusCall, (void *)this);
     gst_object_unref(m_bus);
-    // add call back received video data
-    GstAppSinkCallbacks cbs;
-    memset(&cbs, 0, sizeof(GstAppSinkCallbacks));
-    cbs.new_sample = wrapperOnNewSample;
-    cbs.eos = wrapperOnEOS;
-    cbs.new_preroll = wrapperOnNewPreroll;
-    gst_app_sink_set_callbacks(m_appsink, &cbs, (void *)this, NULL);
-    // add call back received meta data
-//    GstElement *vqueue = gst_bin_get_by_name(GST_BIN(m_pipeline), "myqueue");
-//    GstPad *pad = gst_element_get_static_pad(vqueue, "sink");
-//    gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER,
-//                      (GstPadProbeCallback)wrapperPadDataMod, (void *)this, NULL);
-//    gst_object_unref(pad);
+
+    GstAppSink *m_appsink = (GstAppSink *)gst_bin_get_by_name((GstBin *)m_pipeline, "mysink");
+
+    if (m_appsink == nullptr) {
+        g_print("Fail to get element \n");
+        //        return false;
+    }else{
+        // drop
+//        gst_app_sink_set_drop(m_appsink, true);
+        g_object_set(m_appsink, "emit-signals", TRUE, NULL);
+        // add call back received video data
+        GstAppSinkCallbacks cbs;
+        memset(&cbs, 0, sizeof(GstAppSinkCallbacks));
+        cbs.new_sample = wrapperOnNewSample;
+        cbs.eos = wrapperOnEOS;
+        cbs.new_preroll = wrapperOnNewPreroll;
+        gst_app_sink_set_callbacks(m_appsink, &cbs, (void *)this, NULL);
+    }
+
+
+
+    // add call back save meta to file
+    m_klvAppSrc = (GstAppSrc *)gst_bin_get_by_name((GstBin *)m_pipeline, "klvsrc");
+    if (m_klvAppSrc == nullptr) {
+        g_print("Fail to get klvsrc \n");
+    }else{
+        g_signal_connect (m_klvAppSrc, "need-data", G_CALLBACK (wrapStartFeedKlv), (void *)this);
+        /* set the caps on the source */
+        GstCaps *caps = gst_caps_new_simple ("meta/x-klv",
+                                             "parsed", G_TYPE_BOOLEAN, TRUE,
+                                             nullptr);
+        gst_app_src_set_caps(GST_APP_SRC(m_klvAppSrc), caps);
+        g_object_set(GST_APP_SRC(m_klvAppSrc), "format", GST_FORMAT_TIME, nullptr);
+    }
+
     return true;
 }
 

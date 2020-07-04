@@ -22,27 +22,28 @@ class CM160Gimbal : public GimbalInterface
 public:
     explicit CM160Gimbal(GimbalInterface *parent = nullptr);
     ~CM160Gimbal();
-Q_SIGNALS:
 
-public Q_SLOTS:
-    void connectToGimbal(Config* config = nullptr) override;
-    void disconnectGimbal() override;
-    void discoverOnLan() override;
-    void setPanRate(float rate) override;
-    void setTiltRate(float rate) override;
-    void setGimbalRate(float panRate,float tiltRate) override;
-    void setPanPos(float pos) override;
-    void setTiltPos(float pos) override;
-    void setGimbalPos(float panPos,float tiltPos) override;
-    void setEOZoom(QString command, float value) override;
-    void setIRZoom(QString command) override;
-    void changeSensor(QString sensorID) override;
-    void snapShot() override;
-    void setGimbalMode(QString mode) override;
-    void setGimbalPreset(QString mode) override;
-    void setGimbalRecorder(bool enable) override;
-    void setLockMode(QString mode, QPoint location=QPoint(0,0)) override;
-    void setGeoLockPosition(QPoint location) override;
+public:
+    Q_INVOKABLE void connectToGimbal(Config* config = nullptr) override;
+    Q_INVOKABLE void disconnectGimbal() override;
+    Q_INVOKABLE void discoverOnLan() override;
+    Q_INVOKABLE void setPanRate(float rate) override;
+    Q_INVOKABLE void setTiltRate(float rate) override;
+    Q_INVOKABLE void setGimbalRate(float panRate,float tiltRate) override;
+    Q_INVOKABLE void setPanPos(float pos) override;
+    Q_INVOKABLE void setTiltPos(float pos) override;
+    Q_INVOKABLE void setGimbalPos(float panPos,float tiltPos) override;
+    Q_INVOKABLE void setEOZoom(QString command, float value) override;
+    Q_INVOKABLE void setIRZoom(QString command) override;
+    Q_INVOKABLE void changeSensor(QString sensorID) override;
+    Q_INVOKABLE void snapShot() override;
+    Q_INVOKABLE void setGimbalMode(QString mode) override;
+    Q_INVOKABLE void setGimbalPreset(QString mode) override;
+    Q_INVOKABLE void setGimbalRecorder(bool enable) override;
+    Q_INVOKABLE void setLockMode(QString mode, QPointF location= QPointF(0,0)) override;
+    Q_INVOKABLE void setGeoLockPosition(QPoint location) override;
+Q_SIGNALS:
+public Q_SLOTS:   
     void handlePacketReceived();
     void handlePacketParsed(GimbalPacket packet,unsigned char checksum);
     void requestData();
@@ -75,7 +76,7 @@ private:
     GimbalDiscoverer* m_gimbalDiscover;
     QUdpSocket *_sendSocket; // to send gimbal packets to gimbal
     QUdpSocket *_receiveSocket; // to recevie packets from gimbal
-    GimbalPacketParser *_packetParser;
+    CM160GimbalPacketParser *_packetParser;
     UavvGimbalProtocolSystemPackets *_systemCommand;
     UavvGimbalProtocolGimbalPackets *_gimbalCommand;
     UavvGimbalProtocolEOSensorPackets *_eoCommand;

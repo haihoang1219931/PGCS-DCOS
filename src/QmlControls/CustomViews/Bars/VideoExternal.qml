@@ -26,7 +26,7 @@ ApplicationWindow{
         color: "black"
     }
 
-    ImageItem{
+    VideoRender{
         id: videoOutput
         anchors.fill: parent
     }
@@ -46,7 +46,7 @@ ApplicationWindow{
     }
     onPlayerChanged: {
         if(player !== undefined){
-            viewerID = player.addSubViewer(videoOutput);
+            viewerID = player.addVideoRender(videoOutput);
         }
     }
     onVisibleChanged: {
@@ -54,7 +54,7 @@ ApplicationWindow{
             camState.gcsExportVideo = false;
         }
         if(!visible && player !== undefined){
-            player.removeSubViewer(viewerID);
+            player.removeVideoRender(viewerID);
         }
     }
 }
