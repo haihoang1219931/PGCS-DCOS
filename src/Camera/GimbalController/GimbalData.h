@@ -55,12 +55,12 @@ public Q_SLOTS:
     ///
     void setPlatformPosition(float lat, float lon, float alt){
         m_latitude = lat;
-        m_longtitude = lon;
+        m_longitude = lon;
         m_altitudeOffset = alt;
         char data[256];
         // pn,pe,pd,roll,pitch,yaw,al,ez,targetLat,targetLon;
         sprintf(data,"%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
-                m_latitude,m_longtitude,m_altitudeOffset,
+                m_latitude,m_longitude,m_altitudeOffset,
                 m_rollOffset,m_pitchOffset,m_yawOffset,
                 m_panPosition,m_tiltPosition,
                 m_centerLat,m_centerLon);
@@ -182,7 +182,7 @@ public Q_SLOTS:
         map.insert("tiltVel", m_tiltVelocity);
 
         map.insert("pn", m_latitude);
-        map.insert("pe", m_longtitude);
+        map.insert("pe", m_longitude);
         map.insert("pd", m_altitudeOffset);
         map.insert("roll", m_rollOffset);
         map.insert("pitch", m_pitchOffset);
@@ -229,7 +229,7 @@ public Q_SLOTS:
         map.insert("CORNER03", QPointF(m_cornerLat[2],m_cornerLon[2]));
         map.insert("CORNER04", QPointF(m_cornerLat[3],m_cornerLon[3]));
         map.insert("CENTER", QPointF(m_centerLat,m_centerLon));
-        map.insert("UAV", QPointF(m_latitude,m_longtitude));
+        map.insert("UAV", QPointF(m_latitude,m_longitude));
         map.insert("RECORD",m_recording);
         map.insert("GIMBAL_MODE",(m_gimbalMode));
         map.insert("TRACK_SIZE",m_trackSize);
@@ -253,6 +253,9 @@ public:
     QString m_hardwareVersion = "";
     QString m_protocolVersion = "";
     QString m_logFile;
+    QString m_missionID = "KCB_Metadata_Collect";
+    QString m_platformTailNumber = "QL001";
+    QString m_platformDesignation = "QL1-1";
     float m_panPosition = 0;
     float m_tiltPosition = 0;
     float m_zoomPosition = 0;
@@ -263,7 +266,7 @@ public:
     float m_panOffset = 0;
     float m_tiltOffset = 0;
     float m_latitude = 0;
-    float m_longtitude = 0;
+    float m_longitude = 0;
     float m_altitudeOffset = 0;
     float m_rollOffset = 0;
     float m_pitchOffset = 0;
@@ -272,6 +275,7 @@ public:
     float m_cornerLon[4];    
     float m_centerLat = 0;
     float m_centerLon = 0;
+    float m_centerAlt = 0;
     int m_sensorID = 0;
     float m_hfov[MAX_SENSOR],m_vfov[MAX_SENSOR],m_zoom[MAX_SENSOR];
     float m_hfovMax[MAX_SENSOR];

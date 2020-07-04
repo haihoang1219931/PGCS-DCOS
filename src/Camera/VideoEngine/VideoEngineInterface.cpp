@@ -5,6 +5,8 @@
 #include "../Cache/TrackObject.h"
 #include "Joystick/JoystickLib/JoystickThreaded.h"
 #include "../GimbalController/GimbalInterface.h"
+#include "Camera/GimbalController/GimbalInterface.h"
+#include "Bytes/ByteManipulation.h"
 VideoEngine::VideoEngine(QObject *parent) : QObject(parent)
 {
 
@@ -159,7 +161,7 @@ void VideoEngine::slTrackStateLost(){
     Q_EMIT trackStateLost();
 }
 void VideoEngine::slTrackStateFound(int _id, double _px, double _py, double _oW, double _oH, double _w, double _h){
-//    printf("%s]\r\n",__func__);
+    //    printf("%s]\r\n",__func__);
     if(m_gimbal != nullptr){
         m_gimbal->lockScreenPoint(_id,_px,_py,_oW,_oH,_w,_h);
     }
@@ -182,7 +184,7 @@ int VideoEngine::addVideoRender(VideoRender *viewer){
     return m_listRender.size() - 1;
 }
 void VideoEngine::removeVideoRender(int viewerID){
-     printf("%s[%d] %d\r\n",__func__,m_listRender.size(),viewerID);
+    printf("%s[%d] %d\r\n",__func__,m_listRender.size(),viewerID);
     if(viewerID >= 0 && viewerID < m_listRender.size()){
         this->freezeMap().remove(viewerID);
         m_listRender.removeAt(viewerID);
@@ -195,14 +197,14 @@ void VideoEngine::drawOnRenderID(int viewerID, unsigned char *data, int width, i
         if(tmpViewer != nullptr){
             if((width != m_sourceSize.width() ||
                 height != m_sourceSize.height()) &&viewerID == 0){
-//                printf("drawOnRenderID (%dx%d)\r\n",width,height);
+                //                printf("drawOnRenderID (%dx%d)\r\n",width,height);
                 m_sourceSize.setWidth(width);
                 m_sourceSize.setHeight(height);
                 Q_EMIT VideoEngine::sourceSizeChanged(width,height);
             }
             tmpViewer->handleNewFrame(viewerID,data,width,height,warpMatrix,dataOut);
 
-//            printf("%s[%d] dataOut=%p\r\n",__func__,viewerID,dataOut);
+            //            printf("%s[%d] dataOut=%p\r\n",__func__,viewerID,dataOut);
         }
     }
 }
@@ -212,18 +214,18 @@ QSize VideoEngine::sourceSize()
 }
 void VideoEngine::onStreamFrameSizeChanged(int width, int height)
 {
-//    printf("%s [%dx%d]\r\n",__func__,width,height);
+    //    printf("%s [%dx%d]\r\n",__func__,width,height);
     if (m_enStream) {
         if(m_vRTSPServer == nullptr)
         {
-    #ifdef USE_VIDEO_CPU
-        setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
-                      8554,width,height);
-    #endif
-    #ifdef USE_VIDEO_GPU
-        setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=4000000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
-                      8554,width,height);
-    #endif
+#ifdef USE_VIDEO_CPU
+            setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
+                          8554,width,height);
+#endif
+#ifdef USE_VIDEO_GPU
+            setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=4000000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
+                          8554,width,height);
+#endif
         }
     }
 
@@ -233,31 +235,31 @@ void VideoEngine::onStreamFrameSizeChanged(int width, int height)
     }
 }
 void VideoEngine::drawSteeringCenter(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV,
-                                        int _wBoundary, int _centerX, int _centerY,
-                                        cv::Scalar _color)
+                                     int _wBoundary, int _centerX, int _centerY,
+                                     cv::Scalar _color)
 {
     _centerX -= _wBoundary / 2;
     _centerY -= _wBoundary / 2;
     VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY),
-             cv::Point(_centerX + _wBoundary / 4, _centerY), _color, 2);
+                      cv::Point(_centerX + _wBoundary / 4, _centerY), _color, 2);
     VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY),
-             cv::Point(_centerX, _centerY + _wBoundary / 4), _color, 2);
+                      cv::Point(_centerX, _centerY + _wBoundary / 4), _color, 2);
     VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY),
-             cv::Point(_centerX + 3 * _wBoundary / 4, _centerY), _color, 2);
+                      cv::Point(_centerX + 3 * _wBoundary / 4, _centerY), _color, 2);
     VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY),
-             cv::Point(_centerX + _wBoundary, _centerY + _wBoundary / 4), _color,
-             2);
+                      cv::Point(_centerX + _wBoundary, _centerY + _wBoundary / 4), _color,
+                      2);
     VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY + _wBoundary),
-             cv::Point(_centerX, _centerY + 3 * _wBoundary / 4), _color, 2);
+                      cv::Point(_centerX, _centerY + 3 * _wBoundary / 4), _color, 2);
     VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX, _centerY + _wBoundary),
-             cv::Point(_centerX + _wBoundary / 4, _centerY + _wBoundary), _color,
-             2);
+                      cv::Point(_centerX + _wBoundary / 4, _centerY + _wBoundary), _color,
+                      2);
     VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
-             cv::Point(_centerX + _wBoundary, _centerY + 3 * _wBoundary / 4),
-             _color, 2);
+                      cv::Point(_centerX + _wBoundary, _centerY + 3 * _wBoundary / 4),
+                      _color, 2);
     VideoEngine::line(imgY,imgU,imgV, cv::Point(_centerX + _wBoundary, _centerY + _wBoundary),
-             cv::Point(_centerX + 3 * _wBoundary / 4, _centerY + _wBoundary),
-             _color, 2);
+                      cv::Point(_centerX + 3 * _wBoundary / 4, _centerY + _wBoundary),
+                      _color, 2);
 }
 
 void VideoEngine::rectangle(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Rect rect,cv::Scalar color,int thickness, int lineType,int shift){
@@ -283,8 +285,8 @@ void VideoEngine::fillRectangle(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Re
 }
 
 void VideoEngine::line(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Point start,cv::Point stop,cv::Scalar color,
-          int thickness,
-          int lineType, int shift){
+                       int thickness,
+                       int lineType, int shift){
     double y,u,v;
     convertRGB2YUV((double)color.val[0],(double)color.val[1],(double)color.val[2],y,u,v);
 
@@ -294,9 +296,9 @@ void VideoEngine::line(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Point start
 }
 
 void VideoEngine::putText(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,const string& text, cv::Point org,
-             int fontFace, double fontScale, cv::Scalar color,
-             int thickness, int lineType,
-             bool bottomLeftOrigin){
+                          int fontFace, double fontScale, cv::Scalar color,
+                          int thickness, int lineType,
+                          bool bottomLeftOrigin){
     double y,u,v;
     convertRGB2YUV((double)color.val[0],(double)color.val[1],(double)color.val[2],y,u,v);
 
@@ -306,8 +308,8 @@ void VideoEngine::putText(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,const string
 }
 
 void VideoEngine::ellipse(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Point center,
-             cv::Size size,double angle,double startAngle,double endAngle,
-             cv::Scalar color,int thickness, int lineType, int shift){
+                          cv::Size size,double angle,double startAngle,double endAngle,
+                          cv::Scalar color,int thickness, int lineType, int shift){
     double y,u,v;
     convertRGB2YUV((double)color.val[0],(double)color.val[1],(double)color.val[2],y,u,v);
     cv::ellipse(imgY,center,size,angle,startAngle,endAngle,cv::Scalar(y),thickness,lineType,shift);
@@ -323,4 +325,205 @@ void VideoEngine::convertRGB2YUV(const double R, const double G, const double B,
     Y =  0.257 * R + 0.504 * G + 0.098 * B +  16;
     U = -0.148 * R - 0.291 * G + 0.439 * B + 128;
     V =  0.439 * R - 0.368 * G - 0.071 * B + 128;
+}
+
+unsigned short VideoEngine::checksum(
+        unsigned char * buff, // Pointer to the first byte in the 16-byte UAS Datalink LS key.
+        unsigned short len ) //Length from 16-byte US key up to 1-byte checksum length.
+{
+    unsigned short bcc = 0, i; // Initialize Checksum and counter variables.
+    for ( i = 0 ; i < len; i++)
+        bcc += buff[i] << (8 * ((i + 1) % 2));
+    return bcc;
+} // end of bcc_16 ()
+std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
+    printf("Encode data\r\n");
+    uint8_t keyST0601[] = {0X06,0X0E,0X2B,0X34,0X02,0X0B,0X01,0X01,0X0E,0X01,0X03,0X01,0X01,0X00,0X00,0X00};
+    int totalLength = 0X81F1;
+    uint16_t checkSum = 0;
+    int localHour,gmtHour;
+    time_t t = time(0);
+    struct tm * lcl = localtime(&t);
+    localHour = lcl->tm_hour;
+    struct tm * gmt = gmtime(&t);
+    gmtHour = gmt->tm_hour;
+    uint64_t timestamp = (t + (localHour-gmtHour)*3600)*1000000;
+    std::string missionID = gimbal->context()->m_missionID.toStdString();
+    std::string platformTailNumber = gimbal->context()->m_platformTailNumber.toStdString();
+    float m_platformHeadingAngle = gimbal->context()->m_yawOffset;
+    float m_platformPitchAngle = gimbal->context()->m_pitchOffset;
+    float m_platformRollAngle = gimbal->context()->m_rollOffset;
+    std::string m_platformDesignation = gimbal->context()->m_platformDesignation.toStdString();
+    float m_sensorLatitude = gimbal->context()->m_latitude;
+    float m_sensorLongitude = gimbal->context()->m_longitude;
+    float m_sensorAltitude = gimbal->context()->m_altitudeOffset;
+    float m_sensorHFOV = gimbal->context()->m_hfov[gimbal->context()->m_sensorID];
+    float m_sensorVFOV = gimbal->context()->m_vfov[gimbal->context()->m_sensorID];
+    float m_sensorRelativeAzimuth = gimbal->context()->m_panPosition;
+    float m_sensorRelativeElevation = gimbal->context()->m_tiltPosition;
+    float m_sensorRelativeRoll = gimbal->context()->m_rollOffset;
+    float m_slantRanged = gimbal->context()->m_targetSlr;
+    float m_frameCenterLatitude = gimbal->context()->m_centerLat;
+    float m_frameCenterLongitude = gimbal->context()->m_centerLon;
+    float m_frameCenterElevation = gimbal->context()->m_centerAlt;
+    float m_offsetCornerLatitudePoint1 = gimbal->context()->m_cornerLat[0] - gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint1 = gimbal->context()->m_cornerLon[0] - gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint2 = gimbal->context()->m_cornerLat[1] - gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint2 = gimbal->context()->m_cornerLon[1] - gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint3 = gimbal->context()->m_cornerLat[2] - gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint3 = gimbal->context()->m_cornerLon[2] - gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint4 = gimbal->context()->m_cornerLat[3] - gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint4 = gimbal->context()->m_cornerLon[3] - gimbal->context()->m_centerLon;
+
+    std::vector<uint8_t> metaData;
+
+    Klv kTimeStamp(0x02,8,ByteManipulation::ToBytes(timestamp,Endianness::Little));
+    metaData.insert(metaData.end(),kTimeStamp.m_encoded.begin(),kTimeStamp.m_encoded.end());
+
+    Klv kMissionID(0x03,static_cast<uint8_t>(missionID.length()),(uint8_t*)missionID.c_str());
+    metaData.insert(metaData.end(),kMissionID.m_encoded.begin(),kMissionID.m_encoded.end());
+
+    Klv kPlatformTailNumber(0x04,static_cast<uint8_t>(platformTailNumber.length()),(uint8_t*)platformTailNumber.c_str());
+    metaData.insert(metaData.end(),kPlatformTailNumber.m_encoded.begin(),kPlatformTailNumber.m_encoded.end());
+
+    unsigned short platformHeading = static_cast<unsigned short>(m_platformHeadingAngle*(65536-1)/360.0f);
+    Klv kPlatformHeadAngle(0x05,2,ByteManipulation::ToBytes(
+                               platformHeading,Endianness::Little));
+    metaData.insert(metaData.end(),kPlatformHeadAngle.m_encoded.begin(),kPlatformHeadAngle.m_encoded.end());
+
+    unsigned short platformPitch = static_cast<unsigned short>((m_platformPitchAngle+20)*(65534)/40.0f-32767);
+    Klv kPlatformPitchAngle(0x06,2,ByteManipulation::ToBytes(
+                                platformPitch,Endianness::Little));
+    metaData.insert(metaData.end(),kPlatformPitchAngle.m_encoded.begin(),kPlatformPitchAngle.m_encoded.end());
+
+    unsigned short platformRoll = static_cast<unsigned short>((m_platformRollAngle+50)*(65534)/100.0f-32767);
+    Klv kPlatformRollAngle(0x07,2,ByteManipulation::ToBytes(
+                               platformRoll,Endianness::Little));
+    metaData.insert(metaData.end(),kPlatformRollAngle.m_encoded.begin(),kPlatformRollAngle.m_encoded.end());
+
+    Klv kDesignation(0x0A,static_cast<uint8_t>(m_platformDesignation.length()),(uint8_t*)m_platformDesignation.c_str());
+    metaData.insert(metaData.end(),kDesignation.m_encoded.begin(),kDesignation.m_encoded.end());
+
+    int sensorLatitude = static_cast<int>((m_sensorLatitude)*(4294967294)/180.0f);
+    Klv kSensorLatitude(0x0D,4,ByteManipulation::ToBytes(
+                            sensorLatitude,Endianness::Little));
+    metaData.insert(metaData.end(),kSensorLatitude.m_encoded.begin(),kSensorLatitude.m_encoded.end());
+
+    int sensorLongitude = static_cast<int>((m_sensorLongitude)*(4294967294)/360.0f);
+    Klv kSensorLongitude(0x0E,4,ByteManipulation::ToBytes(
+                             sensorLongitude,Endianness::Little));
+    metaData.insert(metaData.end(),kSensorLongitude.m_encoded.begin(),kSensorLongitude.m_encoded.end());
+
+    unsigned short sensorAltitude = static_cast<unsigned short>((m_sensorAltitude+900)*(65535)/19900.0f);
+    Klv kSensorAltitude(0x0F,2,ByteManipulation::ToBytes(
+                            sensorAltitude,Endianness::Little));
+    metaData.insert(metaData.end(),kSensorAltitude.m_encoded.begin(),kSensorAltitude.m_encoded.end());
+
+    unsigned short sensorHFOV = static_cast<unsigned short>((m_sensorHFOV)*(65535)/180.0f);
+    Klv kSensorHFOV(0x10,2,ByteManipulation::ToBytes(
+                        sensorHFOV,Endianness::Little));
+    metaData.insert(metaData.end(),kSensorHFOV.m_encoded.begin(),kSensorHFOV.m_encoded.end());
+
+    unsigned short sensorVFOV = static_cast<unsigned short>((m_sensorVFOV)*(65535)/180.0f);
+    Klv kSensorVFOV(0x11,2,ByteManipulation::ToBytes(
+                        sensorVFOV,Endianness::Little));
+    metaData.insert(metaData.end(),kSensorVFOV.m_encoded.begin(),kSensorVFOV.m_encoded.end());
+
+    unsigned int sensorAzimuth = static_cast<unsigned int>((m_sensorRelativeAzimuth)*(4294967295)/360.0f);
+    Klv kSensorAzimuth(0x12,4,ByteManipulation::ToBytes(
+                           sensorAzimuth,Endianness::Little));
+    metaData.insert(metaData.end(),kSensorAzimuth.m_encoded.begin(),kSensorAzimuth.m_encoded.end());
+
+    int sensorElevation = static_cast<int>((m_sensorRelativeElevation)*(4294967295)/360.0f);
+    Klv kSensorElevation(0x13,4,ByteManipulation::ToBytes(
+                             sensorElevation,Endianness::Little));
+    metaData.insert(metaData.end(),kSensorElevation.m_encoded.begin(),kSensorElevation.m_encoded.end());
+
+    unsigned int sensorRoll = static_cast<unsigned int>((m_sensorRelativeRoll)*(4294967295)/360.0f);
+    Klv kSensorRoll(0x14,4,ByteManipulation::ToBytes(
+                        sensorRoll,Endianness::Little));
+    metaData.insert(metaData.end(),kSensorRoll.m_encoded.begin(),kSensorRoll.m_encoded.end());
+
+    unsigned int slantRanged = static_cast<unsigned int>((m_slantRanged)*(4294967295)/5000000.0f);
+    Klv kSlantRanged(0x15,4,ByteManipulation::ToBytes(
+                         slantRanged,Endianness::Little));
+    metaData.insert(metaData.end(),kSlantRanged.m_encoded.begin(),kSlantRanged.m_encoded.end());
+
+    int frameCenterLatitude = static_cast<int>((m_frameCenterLatitude)*(4294967294)/180.0f);
+    Klv kFrameCenterLatitude(0x17,4,ByteManipulation::ToBytes(
+                                 frameCenterLatitude,Endianness::Little));
+    metaData.insert(metaData.end(),kFrameCenterLatitude.m_encoded.begin(),kFrameCenterLatitude.m_encoded.end());
+
+    int frameCenterLongitude = static_cast<int>((m_frameCenterLongitude)*(4294967294)/360.0f);
+    Klv kFrameCenterLongitude(0x18,4,ByteManipulation::ToBytes(
+                                  frameCenterLongitude,Endianness::Little));
+    metaData.insert(metaData.end(),kFrameCenterLongitude.m_encoded.begin(),kFrameCenterLongitude.m_encoded.end());
+
+    unsigned short frameCenterElevation = static_cast<unsigned short>((m_frameCenterElevation+900)/19900.0f*(65535.0f));
+    Klv kFrameCenterElevation(0x19,2,ByteManipulation::ToBytes(
+                                  frameCenterElevation,Endianness::Little));
+    metaData.insert(metaData.end(),kFrameCenterElevation.m_encoded.begin(),kFrameCenterElevation.m_encoded.end());
+
+    unsigned short offsetLatitudePoint1 = static_cast<unsigned short>((m_offsetCornerLatitudePoint1)*(65534.0f)/0.15f);
+    Klv kOffsetLatitudePoint1(0x1A,2,ByteManipulation::ToBytes(
+                                  offsetLatitudePoint1,Endianness::Little));
+    metaData.insert(metaData.end(),kOffsetLatitudePoint1.m_encoded.begin(),kOffsetLatitudePoint1.m_encoded.end());
+
+    unsigned short offsetLongitudePoint1 = static_cast<unsigned short>((m_offsetCornerLongitudePoint1)*(65534.0f)/0.15f);
+    Klv kOffsetLongitudePoint1(0x1B,2,ByteManipulation::ToBytes(
+                                   offsetLongitudePoint1,Endianness::Little));
+    metaData.insert(metaData.end(),kOffsetLongitudePoint1.m_encoded.begin(),kOffsetLongitudePoint1.m_encoded.end());
+
+    unsigned short offsetLatitudePoint2 = static_cast<unsigned short>((m_offsetCornerLatitudePoint2)*(65534.0f)/0.15f);
+    Klv kOffsetLatitudePoint2(0x1C,2,ByteManipulation::ToBytes(
+                                  offsetLatitudePoint2,Endianness::Little));
+    metaData.insert(metaData.end(),kOffsetLatitudePoint2.m_encoded.begin(),kOffsetLatitudePoint2.m_encoded.end());
+
+    unsigned short offsetLongitudePoint2 = static_cast<unsigned short>((m_offsetCornerLongitudePoint2)*(65534.0f)/0.15f);
+    Klv kOffsetLongitudePoint2(0x1D,2,ByteManipulation::ToBytes(
+                                   offsetLongitudePoint2,Endianness::Little));
+    metaData.insert(metaData.end(),kOffsetLongitudePoint2.m_encoded.begin(),kOffsetLongitudePoint2.m_encoded.end());
+
+    unsigned short offsetLatitudePoint3 = static_cast<unsigned short>((m_offsetCornerLatitudePoint3)*(65534.0f)/0.15f);
+    Klv kOffsetLatitudePoint3(0x1E,2,ByteManipulation::ToBytes(
+                                  offsetLatitudePoint3,Endianness::Little));
+    metaData.insert(metaData.end(),kOffsetLatitudePoint3.m_encoded.begin(),kOffsetLatitudePoint3.m_encoded.end());
+
+    unsigned short offsetLongitudePoint3 = static_cast<unsigned short>((m_offsetCornerLongitudePoint3)*(65534.0f)/0.15f);
+    Klv kOffsetLongitudePoint3(0x1F,2,ByteManipulation::ToBytes(
+                                   offsetLongitudePoint3,Endianness::Little));
+    metaData.insert(metaData.end(),kOffsetLongitudePoint3.m_encoded.begin(),kOffsetLongitudePoint3.m_encoded.end());
+
+    unsigned short offsetLatitudePoint4 = static_cast<unsigned short>((m_offsetCornerLatitudePoint4)*(65534.0f)/0.15f);
+    Klv kOffsetLatitudePoint4(0x20,2,ByteManipulation::ToBytes(
+                                  offsetLatitudePoint4,Endianness::Little));
+    metaData.insert(metaData.end(),kOffsetLatitudePoint4.m_encoded.begin(),kOffsetLatitudePoint4.m_encoded.end());
+
+    unsigned short offsetLongitudePoint4 = static_cast<unsigned short>((m_offsetCornerLongitudePoint4)*(65534.0f)/0.15f);
+    Klv kOffsetLongitudePoint4(0x21,2,ByteManipulation::ToBytes(
+                                   offsetLongitudePoint4,Endianness::Little));
+    metaData.insert(metaData.end(),kOffsetLongitudePoint4.m_encoded.begin(),kOffsetLongitudePoint4.m_encoded.end());
+
+    unsigned int dataLength = metaData.size();
+    if(dataLength < 128){
+        uint8_t length = dataLength;
+        metaData.insert(metaData.begin(),length);
+        printf("Short Data length = %d\r\n",dataLength);
+    }else{
+        uint16_t length = (uint16_t)dataLength | 0x8000;
+        std::vector<uint8_t> aLength = ByteManipulation::ToBytes(length,Endianness::Little);
+        metaData.insert(metaData.begin(),aLength.begin(),aLength.end());
+        printf("Long Data length = %d [%04X]\r\n",dataLength,length);
+    }
+    std::vector<uint8_t> kKeyST0601(keyST0601,keyST0601+sizeof(keyST0601));
+    metaData.insert(metaData.begin(),kKeyST0601.begin(),kKeyST0601.end());
+
+    metaData.push_back(0X01);
+    metaData.push_back(0X02);
+    checkSum = checksum(metaData.data(),metaData.size());
+    std::vector<uint8_t> kChecksum = ByteManipulation::ToBytes(checkSum,Endianness::Little);
+    metaData.insert(metaData.end(),kChecksum.begin(),kChecksum.end());
+
+    printf("Encode done:\r\n");
+    return metaData;
 }

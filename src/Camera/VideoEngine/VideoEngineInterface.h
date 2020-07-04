@@ -41,6 +41,33 @@ class VSavingWorker;
 class VideoRender;
 class TrackObjectInfo;
 class GimbalInterface;
+class Klv{
+public:
+    Klv(uint8_t key, uint8_t length, std::vector<uint8_t> value){
+        m_key = key;
+        m_length = length;
+        m_value = value;
+        encode();
+    }
+    Klv(uint8_t key, uint8_t length, uint8_t* value){
+        m_key = key;
+        m_length = length;
+        m_value = std::vector<uint8_t>(value,value+length);
+        encode();
+    }
+    ~Klv(){}
+    void encode(){
+        m_encoded.clear();
+        m_encoded.push_back(m_key);
+        m_encoded.push_back(m_length);
+        m_encoded.insert(m_encoded.end(),m_value.begin(),m_value.end());
+    }
+public:
+    uint8_t m_key;
+    uint8_t m_length;
+    std::vector<uint8_t> m_value;
+    std::vector<uint8_t> m_encoded;
+};
 class VideoEngine : public QObject
 {
     Q_OBJECT
@@ -104,6 +131,8 @@ public:
                  cv::Size size,double angle,double startAngle,double endAngle,
                  cv::Scalar centerColor,int thickness = 1, int lineType = cv::LINE_8, int shift = 0);
     static void convertRGB2YUV(const double R, const double G, const double B, double& Y, double& U, double& V);
+    static unsigned short checksum(unsigned char * buff, unsigned short len);
+    static std::vector<uint8_t> encodeMeta(GimbalInterface* gimbal);
 public:
     Q_INVOKABLE virtual int addVideoRender(VideoRender *viewer);
     Q_INVOKABLE virtual void removeVideoRender(int viewerID);

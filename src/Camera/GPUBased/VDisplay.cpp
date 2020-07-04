@@ -55,6 +55,7 @@ void VDisplay::setdigitalZoom(float value){
 void VDisplay::setGimbal(GimbalInterface* gimbal){
     m_gimbal = gimbal;
     m_vTrackWorker->m_gimbal = gimbal;
+    m_vFrameGrabber->m_gimbal = gimbal;
 }
 void VDisplay::handleZoomTargetChangeStopped(float zoomTarget){
     if(m_gimbal!= nullptr){

@@ -18,7 +18,7 @@
 #include <sys/stat.h>
 
 using namespace rva;
-
+class GimbalInterface;
 class VFrameGrabber : public QThread
 {
         Q_OBJECT
@@ -107,6 +107,7 @@ class VFrameGrabber : public QThread
         index_type m_metaID = 0;
         std::string m_filename;
         RollBuffer_<GstFrameCacheItem> *m_gstFrameBuff;
+        GimbalInterface* m_gimbal = nullptr;
 };
 
 #endif // VFrameGrabber_H
