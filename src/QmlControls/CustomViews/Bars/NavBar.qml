@@ -57,6 +57,8 @@ Item {
 
     //----- List tab button
     property var listTab: [tabMP,tabPC,tabFlight]
+    property var itemListName: UIConstants.itemTextMultilanguages["NAVBAR"]
+
     function startFlightTimer(){
         timerFlightTime.start();
     }
@@ -144,7 +146,7 @@ Item {
             //---------- Menu navigation
             FlatButton {
                 id: tabMP
-                btnText: "Mission\nPlanner"
+                btnText: itemListName["MISSION"][UIConstants.language[UIConstants.languageID]]
                 btnTextColor: UIConstants.textFooterColor
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: width
@@ -163,7 +165,7 @@ Item {
             }
             FlatButton {
                 id: tabPC
-                btnText: "Preflight\nCheck"
+                btnText: itemListName["PRECHECK"][UIConstants.language[UIConstants.languageID]]
                 btnTextColor: UIConstants.textFooterColor
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: width
@@ -182,7 +184,7 @@ Item {
             }
             FlatButton {
                 id: tabFlight
-                btnText: "Flight"
+                btnText: itemListName["FLIGHT"][UIConstants.language[UIConstants.languageID]]
                 btnTextColor: UIConstants.textFooterColor
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: width
@@ -323,7 +325,7 @@ Item {
         SystemTime {
             id: systemTime
             height: parent.height
-            width: UIConstants.sRect*5
+            width: UIConstants.sRect*6.5
             anchors.right: btnSystemConfig.left
             anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
@@ -563,7 +565,7 @@ Item {
                 Label{
                     id: lblFlightTime
                     Layout.alignment: Qt.AlignVCenter
-                    text: "Flight Time"
+                    text: itemListName["FLIGHT_TIME"][UIConstants.language[UIConstants.languageID]]
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
@@ -625,7 +627,7 @@ Item {
                 Label{
                     id: lblWP0
                     Layout.alignment: Qt.AlignVCenter
-                    text: "UAV->WP["+
+                    text: itemListName["UAV_WP"][UIConstants.language[UIConstants.languageID]]+"["+
                           (vehicle?Number(vehicle.currentWaypoint).toFixed(0).toString():"")
                     +"]"
                     color: UIConstants.textColor
@@ -658,7 +660,7 @@ Item {
                 Label{
                     id: lblHome
                     Layout.alignment: Qt.AlignVCenter
-                    text: "UAV->Home"
+                    text: itemListName["UAV_HOME"][UIConstants.language[UIConstants.languageID]]
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
@@ -690,7 +692,7 @@ Item {
                     id: lblFlightMode
                     Layout.alignment: Qt.AlignVCenter
                     font.pixelSize: UIConstants.fontSize
-                    text: "Flight Mode"
+                    text: itemListName["FLIGHT_MODE"][UIConstants.language[UIConstants.languageID]]
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
                     width: UIConstants.sRect
@@ -698,7 +700,7 @@ Item {
                 Rectangle{
                     id: rectTxtFlightMode
                     Layout.alignment: Qt.AlignVCenter
-                    width: UIConstants.sRect * 6
+                    width: UIConstants.sRect * 5
                     height: UIConstants.sRect
                     color: "transparent"
                     border.color: "gray"

@@ -20,6 +20,8 @@ Rectangle {
     border.color: UIConstants.boundColor
     border.width: 1
     radius: UIConstants.rectRadius
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["MAP_CONTROL"]
     signal focusAll()
     signal zoomIn()
     signal zoomOut()
@@ -44,7 +46,8 @@ Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 horizontalAlignment: Label.AlignHCenter
                 anchors.bottom: parent.bottom
-                text: "Center"
+                text: itemListName["CENTER"]
+                      [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize
                 font.family: UIConstants.appFont
@@ -68,7 +71,8 @@ Rectangle {
                 horizontalAlignment: Label.AlignHCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 5
-                text: "In"
+                text: itemListName["IN"]
+                      [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize
                 font.family: UIConstants.appFont
@@ -92,7 +96,8 @@ Rectangle {
                 horizontalAlignment: Label.AlignHCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 5
-                text: "Out"
+                text: itemListName["OUT"]
+                      [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize
                 font.family: UIConstants.appFont

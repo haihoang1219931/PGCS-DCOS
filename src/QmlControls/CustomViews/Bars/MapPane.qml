@@ -594,6 +594,7 @@ Item {
             fontFamily: UIConstants.appFont
             anchors.fill: parent
             anchors.margins: 4
+            folderPath: cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder
         }
     }
 
@@ -1567,7 +1568,26 @@ Item {
     function updateHeadingPlane(angle){
         uavGraphic.symbol.angle = angle;
     }
+    function drawTargetLocalization(point1,point2,point3,point4,point5,plane){
+        planeFOVBuilder.parts.removeAll();
+        planeFOVBuilder.addPointXY(point1.y,point1.x);
+        planeFOVBuilder.addPointXY(point2.y,point2.x);
+        planeFOVBuilder.addPointXY(point3.y,point3.x);
+        planeFOVBuilder.addPointXY(point4.y,point4.x);
+        planeFOVGraphic.geometry = planeFOVBuilder.geometry;
 
+        centralFOVBuilder.parts.removeAll();
+        centralFOVBuilder.addPointXY(plane.y,plane.x);
+        centralFOVBuilder.addPointXY(point5.y,point5.x);
+        centralFOVGraphicLine.geometry = centralFOVBuilder.geometry;
+
+        var headPoint = ArcGISRuntimeEnvironment.createObject("Point", {
+                                                                   x: point5.y,
+                                                                   y: point5.x,
+                                                                   spatialReference: SpatialReference.createWgs84()
+                                                               });
+        centralFOVGraphic.geometry = headPoint;
+    }
     function updateTracker(position){
         // update plane position
 //        console.log("Tracker("+position.latitude+","+position.longitude+")")
@@ -2245,6 +2265,57 @@ Item {
             spatialReference: SpatialReference.createWebMercator()
         }
         GraphicsOverlay {
+            id: mapOverlayFOV
+            renderingMode: Enums.GraphicsRenderingModeDynamic
+            PolygonBuilder {
+                id: planeFOVBuilder
+                spatialReference: SpatialReference.createWgs84()
+            }
+
+            // symbol for nesting ground
+            Graphic{
+                id: planeFOVGraphic
+                symbol: SimpleFillSymbol {
+                    id: nestingGroundSymbol
+                    style: Enums.SimpleFillSymbolStyleSolid
+                    color: Qt.rgba(67.0/255.0, 223.0/255.0, 101.0/255.0, 0.75)
+                    // default property: ouline
+                    /**/
+                    SimpleLineSymbol {
+                        style: Enums.SimpleLineSymbolStyleSolid
+                        color: "black"
+                        width: 1
+                        antiAlias: true
+                    }
+
+                }
+            }
+
+            PolylineBuilder{
+                id: centralFOVBuilder
+                spatialReference: SpatialReference.createWgs84()
+            }
+            Graphic {
+                id: centralFOVGraphic
+                symbol: SimpleMarkerSymbol{
+                    style: Enums.SimpleMarkerSymbolStyleCross
+                    color: "black"
+                    size: 1
+                    angle: 45
+                }
+            }
+
+            Graphic {
+                id: centralFOVGraphicLine
+                symbol: SimpleLineSymbol{
+                    style: Enums.SimpleLineSymbolStyleSolid
+                    color: "black"
+                    width: 1
+                    //antiAlias: true
+                }
+            }
+        }
+        GraphicsOverlay {
             id: mapOverlayMouse
             PointBuilder{
                 id: mouseBuilder
@@ -2661,7 +2732,6 @@ Item {
                         var rulercoord2 = QtPositioning.coordinate(
                                     endLineLatLon['lat'],endLineLatLon['lon'],0);
                         profilePath.addElevation(
-                                    cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder,
                                     rulercoord1,rulercoord2);
                         rectProfilePath.visible = true;
                         startLine = [];

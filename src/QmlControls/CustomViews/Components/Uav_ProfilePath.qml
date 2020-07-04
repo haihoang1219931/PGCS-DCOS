@@ -7,8 +7,8 @@ Item
 {
     id:rootItem
     property string mapHeightFolder: null
-    property variant coord1: null
-    property variant coord2: null
+    property variant coord1: undefined
+    property variant coord2: undefined
 
     signal pinClicked()
 
@@ -60,6 +60,10 @@ Item
             }
         }
 
+        Computer{
+            id: cInfo
+        }
+
         ProfilePath{
             id: profilePath
             title: ""
@@ -70,11 +74,10 @@ Item
             anchors.fill: parent
             anchors{leftMargin: -8;rightMargin: -15;topMargin: -42;bottomMargin: -15;}
             isShowLineOfSight: true
+            folderPath: cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder
 
         }
-        Computer{
-            id: cInfo
-        }
+
 
         Rectangle
         {
@@ -107,15 +110,34 @@ Item
             }
         }
 
+        Rectangle
+        {
+            id: _uavPredictionPoint
+            color: "transparent"
+            width: 14
+            height: 14
+            radius: width/2
+            border.color: "brown"
+            border.width: 2
+
+//            RadialGradient{
+//                anchors.fill: parent
+//                gradient:  Gradient{
+//                    GradientStop{position: 0.0 ; color: "red"; }
+//                    GradientStop{position: 0.2 ; color: "red"; }
+//                    GradientStop{position: 0.5 ; color: "transparent" ; }
+//                }
+//            }
+
+        }
     }
 
-    function setLocation(_coord1,_coord2){
+    function setLocation(_coord1,_coord2){ //relative alt
+        //var altHome = vehicle.link ? (vehicle.altitudeAMSL - vehicle.altitudeRelative) : mapPane.virtualHomeAMSL
         coord1 = _coord1;
         coord2 = _coord2;
-        profilePath.addElevation(
-                    cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder,
-                    coord1,coord2);
-
+        profilePath.addElevation(coord1,coord2);
+        console.log("set location")
 
     }
 
@@ -127,24 +149,42 @@ Item
 
             _uavPoint.x = p.x + profilePath.axisXOffset - _uavPoint.width/2 + profilePath.anchors.leftMargin;
             _uavPoint.y = p.y + profilePath.height - profilePath.axisYOffset - _uavPoint.height/2 + profilePath.anchors.topMargin;
+
+            //update warning
+
+            var prePlanePos = profilePath.planePosPrediction(coord,coord2,vehicle.groundSpeed,60); //60s
+            //console.log("coord2:"+coord2.altitude)
+            p = profilePath.convertCoordinatetoXY(prePlanePos,coord1,coord2);
+            if( p.x < 0) p.x=0;
+            _uavPredictionPoint.x = p.x + profilePath.axisXOffset - _uavPredictionPoint.width/2 + profilePath.anchors.leftMargin;
+            _uavPredictionPoint.y = p.y + profilePath.height - profilePath.axisYOffset - _uavPredictionPoint.height/2 + profilePath.anchors.topMargin;
+
+            if(profilePath.checkAltitudeWarning(coord,prePlanePos)){
+                rectProfilePath.border.color = UIConstants.redColor;
+            }
+            else
+                rectProfilePath.border.color = UIConstants.grayColor;
         }
     }
 
     //waypoint
-    function setWpLineOfSight(coord1,coord2){
+    function setWpLineOfSight(coord1,coord2){ //absolute
 
         setLocation(coord1,coord2)
-        var altHome = vehicle.link ? (vehicle.altitudeAMSL - vehicle.altitudeRelative) : mapPane.virtualHomeAMSL
-        profilePath.setLineOfSight(0,coord1.altitude + altHome, coord1.distanceTo(coord2),coord2.altitude + altHome);
+        console.log("setLocaaiton light of sight")
+        //var altHome = vehicle.link ? (vehicle.altitudeAMSL - vehicle.altitudeRelative) : mapPane.virtualHomeAMSL
+        profilePath.setLineOfSight(0,coord1.altitude, coord1.distanceTo(coord2),coord2.altitude);
     }
 
     function setUavProfilePathMode(val){ //0:WPLineOfSight; 1:Vehicle
         if(val === 0){
             profilePath.isShowLineOfSight = true
             _uavPoint.visible = false
+            _uavPredictionPoint.visible = false
         }else if(val === 1){
             profilePath.isShowLineOfSight = false
             _uavPoint.visible = true
+            _uavPredictionPoint.visible = true
         }
     }
 }

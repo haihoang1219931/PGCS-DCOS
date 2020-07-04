@@ -16,6 +16,7 @@ class ProfilePath:public QQuickPaintedItem
     Q_PROPERTY(QString yName READ yName WRITE setYName NOTIFY yNameChanged)
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
     Q_PROPERTY(QString fontFamily READ fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
+    Q_PROPERTY(QString folderPath READ folderPath WRITE setFolderPath NOTIFY folderPathChanged)
 
     Q_PROPERTY(int axisXOffset READ xOffset NOTIFY xOffsetChanged)
     Q_PROPERTY(int axisYOffset READ yOffset NOTIFY yOffsetChanged)
@@ -29,6 +30,7 @@ public:
     QString yName(){ return _yName;}
     int     fontSize(){ return _fontSize;}
     QString fontFamily(){ return _fontFamily;}
+    QString folderPath(){ return _folderPath;}
 
     void setColor(QColor value){
         if(_color != value){
@@ -76,6 +78,13 @@ public:
         }
     }
 
+    void setFolderPath(QString path){
+        if(_folderPath != path){
+            _folderPath = path;
+            Q_EMIT folderPathChanged();
+        }
+    }
+
     ProfilePath(QQuickItem *parent = 0);
     void paint(QPainter *painter);
 
@@ -88,12 +97,18 @@ public:
 
     bool isShowLineOfSight(){return _isShowLineOfSight;}
 
-
     QGeoCoordinate findSlideShowCoord(QGeoCoordinate coord,QGeoCoordinate startcoord, QGeoCoordinate tocoord);
 
-    Q_INVOKABLE void addElevation(QString folder,QGeoCoordinate startcoord,QGeoCoordinate tocoord);
+    Q_INVOKABLE QGeoCoordinate planePosPrediction(QGeoCoordinate planePos, QGeoCoordinate toPos, double planeGroundSpeed, double timeSec);
+    Q_INVOKABLE bool checkAltitudeWarning(QGeoCoordinate planePos, QGeoCoordinate posPrediction);
+
+
+
+    Q_INVOKABLE void addElevation(QGeoCoordinate startcoord,QGeoCoordinate tocoord);
     Q_INVOKABLE QPoint convertCoordinatetoXY(QGeoCoordinate coord,QGeoCoordinate startcoord, QGeoCoordinate tocoord);
     Q_INVOKABLE void setLineOfSight(double fromDis,double fromAlt,double toDis,double toAlt);
+
+
 Q_SIGNALS:
     void colorChanged();
     void titleChanged();
@@ -104,6 +119,7 @@ Q_SIGNALS:
     void xOffsetChanged();
     void yOffsetChanged();
     void isShowLineOfSightChanged();
+    void folderPathChanged();
 private:
     QColor _color;
     QString _title;
@@ -111,6 +127,7 @@ private:
     QString _yName;
     int _fontSize;
     QString _fontFamily;
+    QString _folderPath;
     int mAxisXoffset = 45;
     int mAxisYoffset = 50;
 
@@ -136,6 +153,8 @@ private:
 
     double max_altitude_point_Y=0;
     double max_distance_point_X=0;
+
+    double getAltitudeCoordinate(QGeoCoordinate getCoord, QGeoCoordinate coord1, QGeoCoordinate coord2);
 
 };
 

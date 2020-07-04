@@ -26,10 +26,13 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]["LASER"]
     QLabel {
         id: lblTitle
         height: 54
-        text: "Checking Altitude measurement Laser"
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.left: parent.left
@@ -54,7 +57,8 @@ Rectangle{
             id: label
             y: 384
             height: 50
-            text: qsTr("Lift up the UAV and check Altitude parameter")
+            text: itemListName["QUESTION"]
+                  [UIConstants.language[UIConstants.languageID]]
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             color: UIConstants.textColor
@@ -85,7 +89,8 @@ Rectangle{
             y: 38
             width: 59
             height: 16
-            text: qsTr("Altitude:")
+            text: itemListName["ALTITUDE"]
+                  [UIConstants.language[UIConstants.languageID]]+":"
             verticalAlignment: Text.AlignVCenter
             color: UIConstants.textColor
             font.pixelSize: UIConstants.fontSize

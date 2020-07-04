@@ -23,9 +23,9 @@ ApplicationWindow {
     visibility: ApplicationWindow.FullScreen
     title: qsTr("DCOS - PGCSv0.1")
     flags: Qt.WindowMinMaxButtonsHint
-
     property int seqTab: 2
-
+    property var itemListName:
+        UIConstants.itemTextMultilanguages
     function switchMapFull(){
         Pane.x = paneControl.x;
         videoPane.y = paneControl.y;
@@ -637,11 +637,12 @@ ApplicationWindow {
                 footerBar.isShowConfirm = true;
                 footerBar.compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                 footerBar.confirmDialogObj = footerBar.compo.createObject(parent,{
-                                                                              "title":"Are you sure to change next flight mode to:\n"+currentMode,
-                                                                              "type": "CONFIRM",
-                                                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                              "z":200});
+                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["FLIGHT_MODE"]
+                                [UIConstants.language[UIConstants.languageID]]+":\n"+currentMode,
+                              "type": "CONFIRM",
+                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                              "z":200});
                 footerBar.confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
                         setFlightMode(currentMode);
@@ -692,7 +693,8 @@ ApplicationWindow {
             }
             ParamsShowDialog{
                 id: paramsShowPanel
-                title: "Minor params"
+                title: itemListName["PARAMS"]["SHOW"]
+                       [UIConstants.language[UIConstants.languageID]]
                 z:6
                 vehicle: vehicle
                 width: hud.width
@@ -706,7 +708,8 @@ ApplicationWindow {
             ParamsSelectDialog{
                 id: paramsSelectPanel
                 visible: false
-                title:"Select minor params to show"
+                title:itemListName["PARAMS"]["SELECT"]
+                      [UIConstants.language[UIConstants.languageID]]
                 type: "CONFIRM"
                 x:parent.width / 2 - width / 2
                 y:parent.height / 2 - height / 2
@@ -817,94 +820,94 @@ ApplicationWindow {
                 }
             }
 
-            //            MapPane{
-            //                id: mapPane
-            //                width: rectMap.width
-            //                height: rectMap.height
-            //                x: rectMap.x
-            //                y: rectMap.y
-            //                z: 1
-            //                function updateUsersOnMap(){
-            //                    if(UC_API){
-            //                        for (var id = 0; id < UCDataModel.listUsers.length; id++){
-            //                            var user = UCDataModel.listUsers[id];
-            //                            var pointMapOnScreen =
-            //                                    mapPane.convertLocationToScreen(user.latitude,user.longitude);
-            //                            console.log("updateUserOnMap["+id+"] from ["+user.latitude+","+user.longitude+"] to ["
-            //                                        +pointMapOnScreen.x+","+pointMapOnScreen.y+"]" );
-            //                            userOnMap.updateUCClientPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
-            //                        }
-            //                        userOnMap.updatePcdVideo(userOnMap.currentPcdId);
-            //                    }else{
-            //                        return;
-            //                    }
-            //                }
-            //                function updateObjectsOnMap(){
-            //                    if(cameraController.videoEngine !== undefined){
-            //                        for (var id = 0; id < cameraController.videoEngine.listTrackObjectInfos.length; id++){
-            //                            var object = cameraController.videoEngine.listTrackObjectInfos[id];
-            //                            var pointMapOnScreen =
-            //                                    mapPane.convertLocationToScreen(object.latitude,object.longitude);
-            //                            objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
-            //                        }
-            //                    }
-            //                }
+//            MapPane{
+//                id: mapPane
+//                width: rectMap.width
+//                height: rectMap.height
+//                x: rectMap.x
+//                y: rectMap.y
+//                z: 1
+//                function updateUsersOnMap(){
+//                    if(UC_API){
+//                        for (var id = 0; id < UCDataModel.listUsers.length; id++){
+//                            var user = UCDataModel.listUsers[id];
+//                            var pointMapOnScreen =
+//                                    mapPane.convertLocationToScreen(user.latitude,user.longitude);
+//                            console.log("updateUserOnMap["+id+"] from ["+user.latitude+","+user.longitude+"] to ["
+//                                        +pointMapOnScreen.x+","+pointMapOnScreen.y+"]" );
+//                            userOnMap.updateUCClientPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
+//                        }
+//                        userOnMap.updatePcdVideo(userOnMap.currentPcdId);
+//                    }else{
+//                        return;
+//                    }
+//                }
+//                function updateObjectsOnMap(){
+//                    if(cameraController.videoEngine !== undefined){
+//                        for (var id = 0; id < cameraController.videoEngine.listTrackObjectInfos.length; id++){
+//                            var object = cameraController.videoEngine.listTrackObjectInfos[id];
+//                            var pointMapOnScreen =
+//                                    mapPane.convertLocationToScreen(object.latitude,object.longitude);
+//                            objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
+//                        }
+//                    }
+//                }
 
-            //                onMapClicked: {
-            //                    footerBar.flightView = !isMap?"WP":"MAP";
-            //                    if(!isMap)
-            //                    {
-            //                        var listWaypoint = mapPane.getCurrentListWaypoint();
-            //                        for(var i=0; i< listWaypoint.length; i++){
-            //                            var missionItem = listWaypoint[i];
-            //                            if( missionItem.sequence === selectedIndex){
-            //                                footerBar.loiterSelected = (missionItem.command === 19);
-            //                                break;
-            //                            }else{
+//                onMapClicked: {
+//                    footerBar.flightView = !isMap?"WP":"MAP";
+//                    if(!isMap)
+//                    {
+//                        var listWaypoint = mapPane.getCurrentListWaypoint();
+//                        for(var i=0; i< listWaypoint.length; i++){
+//                            var missionItem = listWaypoint[i];
+//                            if( missionItem.sequence === selectedIndex){
+//                                footerBar.loiterSelected = (missionItem.command === 19);
+//                                break;
+//                            }else{
 
-            //                            }
-            //                        }
-            //                    }else{
-            //                        if(footerBar.addWPSelected){
-            //                            mapPane.addWP(mapPane.lastWPIndex()+1);
-            //                            // update mission items
-            //                            var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
-            //                            planController.writeMissionItems = listCurrentWaypoint;
-            //                        }
-            //                    }
-            //                }
-            //                onMapMoved: {
-            //                    updateUsersOnMap()
-            //                    updateObjectsOnMap();
-            //                }
-            //                onHomePositionChanged: {
-            //                    console.log("Home change to "+lat+","+lon);
-            //                    vehicle.setHomeLocation(lat,lon);
-            //                    vehicle.setAltitudeRTL(alt);
-            //                }
-            //                onShowAdvancedConfigChanged: {
-            //                    pageConfig.showAdvancedConfig(true);
-            //                }
+//                            }
+//                        }
+//                    }else{
+//                        if(footerBar.addWPSelected){
+//                            mapPane.addWP(mapPane.lastWPIndex()+1);
+//                            // update mission items
+//                            var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
+//                            planController.writeMissionItems = listCurrentWaypoint;
+//                        }
+//                    }
+//                }
+//                onMapMoved: {
+//                    updateUsersOnMap()
+//                    updateObjectsOnMap();
+//                }
+//                onHomePositionChanged: {
+//                    console.log("Home change to "+lat+","+lon);
+//                    vehicle.setHomeLocation(lat,lon);
+//                    vehicle.setAltitudeRTL(alt);
+//                }
+//                onShowAdvancedConfigChanged: {
+//                    pageConfig.showAdvancedConfig(true);
+//                }
 
-            //                Connections{
-            //                    target: vehicle
-            //                    onFlightModeChanged:{
-            //                        if(vehicle.flightMode !== "Guided"){
-            //                            mapPane.changeClickedPosition(mapPane.clickedLocation,false);
-            //                        }
-            //                    }
-            //                }
-            //                UserOnMap {
-            //                    id: userOnMap
-            //                    anchors.fill: parent
-            //                }
-            //                ObjectsOnMap{
-            //                    id: objectsOnMap
-            //                    anchors.fill: parent
-            //                    visible: camState.objectLocalization
-            //                    player: cameraController.videoEngine
-            //                }
-            //            }
+//                Connections{
+//                    target: vehicle
+//                    onFlightModeChanged:{
+//                        if(vehicle.flightMode !== "Guided"){
+//                            mapPane.changeClickedPosition(mapPane.clickedLocation,false);
+//                        }
+//                    }
+//                }
+//                UserOnMap {
+//                    id: userOnMap
+//                    anchors.fill: parent
+//                }
+//                ObjectsOnMap{
+//                    id: objectsOnMap
+//                    anchors.fill: parent
+//                    visible: camState.objectLocalization
+//                    player: cameraController.videoEngine
+//                }
+//            }
 
 
 
@@ -982,6 +985,11 @@ ApplicationWindow {
                 }
                 onShowAdvancedConfigChanged: {
                     pageConfig.showAdvancedConfig(true);
+                }
+                onTotalWPsDistanceChanged:{
+                    if(vehicle){
+                        vehicle.setTotalWPDistance(val);
+                    }
                 }
 
                 Connections{
@@ -1180,11 +1188,12 @@ ApplicationWindow {
                         if(func === "QUIT_APP"){
                             var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                             var confirmDialogObj = compo.createObject(parent,{
-                                                                          "title":"Are you sure to want to \n close application",
-                                                                          "type": "CONFIRM",
-                                                                          "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                          "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                          "z":200});
+                                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["QUIT_APP"]
+                                                        [UIConstants.language[UIConstants.languageID]],
+                                              "type": "CONFIRM",
+                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                              "z":200});
                             confirmDialogObj.clicked.connect(function (type,func){
                                 if(func === "DIALOG_OK"){
                                     confirmDialogObj.destroy();
@@ -1200,11 +1209,12 @@ ApplicationWindow {
                         }else if(func === "QUIT_COM"){
                             var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                             var confirmDialogObj = compo.createObject(parent,{
-                                                                          "title":"Are you sure to want to \n turn off computer",
-                                                                          "type": "CONFIRM",
-                                                                          "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                          "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                          "z":200});
+                                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["SHUTDOWN_COM"]
+                                                [UIConstants.language[UIConstants.languageID]],
+                                              "type": "CONFIRM",
+                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                              "z":200});
                             confirmDialogObj.clicked.connect(function (type,func){
                                 if(func === "DIALOG_OK"){
                                     confirmDialogObj.destroy();
@@ -1266,7 +1276,8 @@ ApplicationWindow {
                 var x = mainWindow.width/2-UIConstants.sRect*10/2;
                 var y = mainWindow.height/2-UIConstants.sRect*15/2;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/MapDialog.qml");
-                var fileDialogObj = compo.createObject(parent,{"title":"Please choose a file!",
+                var fileDialogObj = compo.createObject(parent,{"title":mainWindow.itemListName["DIALOG"]["LOAD_MAP"]
+                                                           [UIConstants.language[UIConstants.languageID]],
                                                            "folder":mapPane.dataPath+"tpk",
                                                            //                                                            "nameFilters":["*.tpk"],
                                                            "x": x,
@@ -1296,7 +1307,8 @@ ApplicationWindow {
                 var x = mainWindow.width/2-UIConstants.sRect*10/2;
                 var y = mainWindow.height/2-UIConstants.sRect*15/2;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/FileDialog.qml");
-                var fileDialogObj = compo.createObject(parent,{"title":"Please choose a map file!",
+                var fileDialogObj = compo.createObject(parent,{"title":mainWindow.itemListName["DIALOG"]["LOAD_MISSION"]
+                                                           [UIConstants.language[UIConstants.languageID]],
                                                            "fileMode": "FILE_OPEN",
                                                            "folder":applicationDirPath+"/"+"missions",
                                                            "nameFilters":["*.waypoints"],
@@ -1330,7 +1342,8 @@ ApplicationWindow {
                 var x = mainWindow.width/2-UIConstants.sRect*10/2;
                 var y = mainWindow.height/2-UIConstants.sRect*15/2;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/FileDialog.qml");
-                var fileDialogObj = compo.createObject(parent,{ "title":"Please insert file's name!",
+                var fileDialogObj = compo.createObject(parent,{ "title":mainWindow.itemListName["DIALOG"]["LOAD_MISSION"]
+                                                           [UIConstants.language[UIConstants.languageID]],
                                                            "fileMode": "FILE_SAVE",
                                                            "folder":applicationDirPath+"/"+"missions",
                                                            "nameFilters":["*.waypoints"],
@@ -1406,11 +1419,12 @@ ApplicationWindow {
                     console.log("Do Auto");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Are you sure to want to \n change flight mode to AUTO",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                                  "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["FLIGHT_MODE"]
+                                            [UIConstants.language[UIConstants.languageID]]+" Auto",
+                                  "type": "CONFIRM",
+                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "Auto";
@@ -1430,11 +1444,12 @@ ApplicationWindow {
                     console.log("Do Guided");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Are you sure to want to \n change flight mode to Guided",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                                  "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["FLIGHT_MODE"]
+                                        [UIConstants.language[UIConstants.languageID]]+" Guided",
+                                  "type": "CONFIRM",
+                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "Guided";
@@ -1454,11 +1469,18 @@ ApplicationWindow {
                     console.log("Do Takeoff");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Are you sure to want to \n"+(!vehicle.armed?"ARM and ":"")+"TAKE OFF ?",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                                  "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["WANT_TO"]
+                                      [UIConstants.language[UIConstants.languageID]]+
+                                      "\n"+(!vehicle.armed?
+                                                (mainWindow.itemListName["DIALOG"]["CONFIRM"]["ARM"]
+                                                 [UIConstants.language[UIConstants.languageID]]+" and "):
+                                                "")
+                                        +mainWindow.itemListName["DIALOG"]["CONFIRM"]["TAKE_OFF"]
+                                        [UIConstants.language[UIConstants.languageID]]+" ?",
+                                  "type": "CONFIRM",
+                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             //                            if(!vehicle.armed)
@@ -1493,12 +1515,12 @@ ApplicationWindow {
 
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/AltitudeEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
-                                                                  "z":200,
-                                                                  "minValue": minValue,
-                                                                  "maxValue": maxValue,
-                                                                  "currentValue": footerBar.getFlightAltitudeTarget()});
+                                      "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
+                                      "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
+                                      "z":200,
+                                      "minValue": minValue,
+                                      "maxValue": maxValue,
+                                      "currentValue": footerBar.getFlightAltitudeTarget()});
                     confirmDialogObj.confirmClicked.connect(function (){
                         console.log("vehicle.currentWaypoint = "+vehicle.currentWaypoint);
                         footerBar.isShowConfirm = false;
@@ -1604,7 +1626,8 @@ ApplicationWindow {
         onDoDownloadPlan: {
             planController.loadFromVehicle();
         }
-        onDoUploadPlan: {
+
+        function uploadMission(){
             var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
             console.log("listCurrentWaypoint = "+listCurrentWaypoint);
             for(var i =0; i< listCurrentWaypoint.length; i++){
@@ -1615,6 +1638,36 @@ ApplicationWindow {
             }
             planController.writeMissionItems = listCurrentWaypoint;
             planController.sendToVehicle();
+        }
+
+        onDoUploadPlan: {
+            var totalDistance = mapPane.getTotalDistanceWP()
+            if(totalDistance > UIConstants.maxDistance){
+                if(!isShowConfirm){
+                    isShowConfirm = true;
+                    console.log("Check total distance");
+                    var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
+                    var confirmDialogObj = compo.createObject(parent,{
+                                                                  "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["TOTAL_DISTANCE"]
+                                                                  [UIConstants.language[UIConstants.languageID]],
+                                                                  "type": "CONFIRM",
+                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                                                  "z":200});
+                    confirmDialogObj.clicked.connect(function (type,func){
+                        if(func === "DIALOG_OK"){
+                            uploadMission()
+                        }else if(func === "DIALOG_CANCEL"){
+
+                        }
+                        confirmDialogObj.destroy();
+                        compo.destroy();
+                        footerBar.isShowConfirm = false;
+                    });
+                }
+            }
+            else
+                uploadMission();
         }
 
         onDoGoWP: {
@@ -1632,11 +1685,12 @@ ApplicationWindow {
                     console.log("Do RTL");
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Are you sure to want to \n change flight mode to RTL",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                                  "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["FLIGHT_MODE"]
+                                         [UIConstants.language[UIConstants.languageID]]+" RTL",
+                                  "type": "CONFIRM",
+                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                  "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "RTL";
@@ -1657,11 +1711,17 @@ ApplicationWindow {
                 console.log("Do Arm");
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                 var confirmDialogObj = compo.createObject(parent,{
-                                                              "title":"Are you sure to want to \n"+(!vehicle.armed?"ARM":"DISARM")+"?",
-                                                              "type": "CONFIRM",
-                                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                              "z":200});
+                                  "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["WANT_TO"]
+                                        [UIConstants.language[UIConstants.languageID]]+" \n"+(!vehicle.armed?
+                                          mainWindow.itemListName["DIALOG"]["CONFIRM"]["ARM"]
+                                            [UIConstants.language[UIConstants.languageID]]:
+                                          mainWindow.itemListName["DIALOG"]["CONFIRM"]["DISARM"]
+                                            [UIConstants.language[UIConstants.languageID]]
+                                    )+"?",
+                                  "type": "CONFIRM",
+                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                  "z":200});
                 confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
                         vehicle.setArmed(!vehicle.armed);
@@ -1715,11 +1775,12 @@ ApplicationWindow {
                 if(vehicle.flightMode !== "Guided"){
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Vehicle is not in Guided mode\nDo you want to change and go?",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["GO_LOCATION_NOT_GUIDED"]
+                                [UIConstants.language[UIConstants.languageID]],
+                              "type": "CONFIRM",
+                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                              "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             vehicle.flightMode = "Guided";
@@ -1735,11 +1796,12 @@ ApplicationWindow {
                 }else{
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
-                                                                  "title":"Are you sure to go to \n selected location"+"?",
-                                                                  "type": "CONFIRM",
-                                                                  "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
-                                                                  "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
-                                                                  "z":200});
+                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["GO_LOCATION_GUIDED"]
+                                [UIConstants.language[UIConstants.languageID]]+"?",
+                              "type": "CONFIRM",
+                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                              "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             mapPane.changeClickedPosition(mapPane.clickedLocation,true);
@@ -1794,7 +1856,7 @@ ApplicationWindow {
     }
     Timer{
         id: timerRequestData
-        interval: 30; repeat: true;
+        interval: 100; repeat: true;
         running: false
         property int countGetData: 0
         onTriggered: {

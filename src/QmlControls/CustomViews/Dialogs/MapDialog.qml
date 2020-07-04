@@ -15,12 +15,14 @@ Rectangle {
     color: UIConstants.transparentBlue
     border.color: UIConstants.grayColor
     radius: UIConstants.rectRadius
-    signal clicked(string type,string func)
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["DIALOG"]["LOAD_MAP"]
     property alias title: lblTitle.text
     property alias nameFilters: folderModel.nameFilters
     property string folder
     property string fileMode: "FILE_LOAD"
     property string currentFile: ""
+    signal clicked(string type,string func)
     signal modeSelected(string mode)
     signal fileSelected(string file)
     signal addFileList(var lstFile)
@@ -53,7 +55,8 @@ Rectangle {
         anchors.margins: 4
         height: UIConstants.sRect+8
         color: UIConstants.transparentColor
-        btnText: "ONLINE MAP"
+        btnText: itemListName["ONLINE"]
+                 [UIConstants.language[UIConstants.languageID]]
         border.width: 1
         border.color: UIConstants.grayColor
         radius: UIConstants.rectRadius

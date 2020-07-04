@@ -363,6 +363,7 @@ public:
 
     Q_INVOKABLE void sendHomePosition(QGeoCoordinate location);
 
+    Q_INVOKABLE void setTotalWPDistance(int value);
     ///control gimbal with mavlink by nhatdn1
     void setGimbalRate(float pan,float tilt);
     void setGimbalAngle(float pan,float tilt);

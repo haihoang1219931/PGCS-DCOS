@@ -24,10 +24,12 @@ Rectangle {
     width: 1376
     height: 768
     property var vehicle
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["CONFIGURATION"]
     signal clicked(string type, string func)
     function showAdvancedConfig(enable){
-        console.log("modelConfig.get(2).visible_ = "+modelConfig.get(2).visible_);
-        console.log("modelConfig.get(3).visible_ = "+modelConfig.get(3).visible_);
+//        console.log("modelConfig.get(2).visible_ = "+modelConfig.get(2).visible_);
+//        console.log("modelConfig.get(3).visible_ = "+modelConfig.get(3).visible_);
         modelConfig.get(2).visible_ = enable;
         modelConfig.get(3).visible_ = enable;
 
@@ -44,7 +46,8 @@ Rectangle {
         anchors { top: parent.top; left: parent.left; }
         height: UIConstants.sRect * 2
         visible: true
-        title: "Menu settings"
+        title: itemListName["TITTLE"]
+               [UIConstants.language[UIConstants.languageID]]
         CustomViews.RectBorder {
             type: "right"
         }
@@ -60,15 +63,35 @@ Rectangle {
         anchors.leftMargin: 0
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
+        Connections{
+            target: UIConstants
+            onLanguageIDChanged:{
+                modelConfig.clear();
+                modelConfig.append({btnText_: itemListName["APPLICATION"]["SIDEBAR"]
+                           [UIConstants.language[UIConstants.languageID]], icon_: "\uf109", visible_: true});
+                modelConfig.append({btnText_: itemListName["SCREEN"]["SIDEBAR"]
+                           [UIConstants.language[UIConstants.languageID]], icon_: "\uf2d2", visible_: true});
+                modelConfig.append({btnText_: itemListName["PARAMETERS"]["SIDEBAR"]
+                           [UIConstants.language[UIConstants.languageID]], icon_: "\uf03c", visible_: false});
+                modelConfig.append({btnText_: itemListName["JOYSTICK"]["SIDEBAR"]
+                           [UIConstants.language[UIConstants.languageID]], icon_: "\uf11b", visible_: false});
+            }
+        }
 
         Repeater{
             id: listConfig
             model: ListModel{
                 id: modelConfig
-                ListElement{btnText_: "Application"; icon_: "\uf109"; visible_: true}
-                ListElement{btnText_: "Screen monitor"; icon_: "\uf2d2"; visible_: true}
-                ListElement{btnText_: "Parametes"; icon_: "\uf03c"; visible_: false}
-                ListElement{btnText_: "Joystick"; icon_: "\uf11b"; visible_: false}
+                Component.onCompleted: {
+                    append({btnText_: itemListName["APPLICATION"]["SIDEBAR"]
+                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf109", visible_: true});
+                    append({btnText_: itemListName["SCREEN"]["SIDEBAR"]
+                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf2d2", visible_: true});
+                    append({btnText_: itemListName["PARAMETERS"]["SIDEBAR"]
+                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf03c", visible_: false});
+                    append({btnText_: itemListName["JOYSTICK"]["SIDEBAR"]
+                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf11b", visible_: false});
+                }
             }
             delegate: Item {
                 width: lstItem.width
@@ -132,7 +155,8 @@ Rectangle {
                 height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
-                title: "Application config"
+                title: itemListName["APPLICATION"]["TITTLE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 iconType: "\uf197"
                 xPosition: 20
             }
@@ -153,7 +177,8 @@ Rectangle {
                 height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
-                title: "Screen Monitor Information"
+                title: itemListName["SCREEN"]["TITTLE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 iconType: "\uf197"
                 xPosition: 20
             }
@@ -170,7 +195,8 @@ Rectangle {
                 height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
-                title: "Parameter List"
+                title: itemListName["PARAMETERS"]["TITTLE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 iconType: "\uf197"
                 xPosition: 20
             }
@@ -189,7 +215,8 @@ Rectangle {
                 height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
-                title: "Joystick Configuration"
+                title: itemListName["JOYSTICK"]["TITTLE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 iconType: "\uf197"
                 xPosition: 20
             }

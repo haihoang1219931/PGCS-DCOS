@@ -29,6 +29,8 @@ Rectangle {
     radius: UIConstants.rectRadius
     border.color: "gray"
     border.width: 1
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["DIALOG"]["MARKER_EDITOR"]
     property real latitude: 0
     property real longitude: 0
     property real asl: 0
@@ -99,7 +101,8 @@ Rectangle {
 
     Label {
         id: lblTitle
-        text: qsTr("Marker Editor")
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         anchors.top: parent.top
         anchors.topMargin: 8
         anchors.horizontalCenter: parent.horizontalCenter
@@ -197,7 +200,8 @@ Rectangle {
                 id: cdeLat
                 Layout.fillHeight: true
                 width: UIConstants.sRect * 6
-                title: "Latitude"
+                title: itemListName["LATITUDE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 arrayDirLabel: ["E","W"]
                 value: root.latitude
                 validatorValue: root.validatorLat
@@ -210,7 +214,8 @@ Rectangle {
                 id: cdeLon
                 Layout.fillHeight: true
                 width: UIConstants.sRect * 6
-                title: "Longitude"
+                title: itemListName["LONGITUDE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 arrayDirLabel: ["N","S"]
                 value: root.longitude
                 validatorValue: root.validatorLon

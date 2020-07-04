@@ -52,6 +52,8 @@ class SymbolModel : public QAbstractListModel
         Q_INVOKABLE void scrollUp(const int id);
         Q_INVOKABLE void scrollDown(const int id);
 
+        Q_INVOKABLE int getTotalDistance();
+
         void refreshIndexSymbol();
 
         int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -78,6 +80,7 @@ class SymbolModel : public QAbstractListModel
 
     private:
         QList<symbol> _msymbol;
+        bool isWaypoint(symbol obj);
 
     Q_SIGNALS:
         void symbolModelChanged();

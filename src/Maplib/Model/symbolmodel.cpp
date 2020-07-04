@@ -103,7 +103,6 @@ void SymbolModel::scrollDown(const int id)
     }
 }
 
-
 void SymbolModel::refreshIndexSymbol()
 {
     for(int i=0;i<_msymbol.count();i++)
@@ -112,6 +111,30 @@ void SymbolModel::refreshIndexSymbol()
     }
 }
 
+int SymbolModel::getTotalDistance()
+{
+    double totalDistance = 0;
+    symbol firstSymbol;
+    symbol secondSymbol;
+    for(int i=0;i<_msymbol.count()-1;i++)
+    {
+        if(isWaypoint(_msymbol[i]))
+            firstSymbol = _msymbol[i];
+        else
+            continue;
+
+        for(int j=i+1;j<_msymbol.count();j++)
+        {
+            if(isWaypoint(_msymbol[j])){
+                secondSymbol = _msymbol[j];
+                double dist = firstSymbol.Coordinate.distanceTo(secondSymbol.Coordinate);
+                totalDistance += dist;
+                break;
+            }
+        }
+    }
+    return static_cast<int>(totalDistance);
+}
 
 int SymbolModel::rowCount(const QModelIndex &parent) const
 {
@@ -173,5 +196,15 @@ QVariantMap SymbolModel::get(int row)
 //                 qDebug() <<QString("j:%1").arg(j);
 //                 qDebug() <<res;
                 return res;
+}
+
+bool SymbolModel::isWaypoint(symbol obj)
+{
+    if(obj.Type == Waypoint || obj.Type == TakeOff || obj.Type == Land || obj.Type == VTOLLand || obj.Type == VTOLTakeOff)
+    {
+        return true;
+    }
+    else
+        return false;
 }
 

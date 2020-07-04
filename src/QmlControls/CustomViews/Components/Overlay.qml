@@ -21,6 +21,9 @@ Item {
     property real zoomTarget: cameraController.gimbal.zoomTarget
     property real zoomCalculate
     property color drawColor: UIConstants.redColor
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["VIDEO"]
+
     function loadVideo(isVideo){
         if(isVideo){
             timer.start();
@@ -154,7 +157,9 @@ Item {
 
         Label {
             id: lblZoomOptical
-            text: "Zoom: "+(root.zoomRatio <= root.zoomMax?
+            text: itemListName["ZOOM"]["OPTICAL"]
+                  [UIConstants.language[UIConstants.languageID]]+
+                  ": "+(root.zoomRatio <= root.zoomMax?
                                 Number(convertZoom(root.zoomRatio)).toFixed(2):
                                 Number(convertZoom(root.zoomMax)).toFixed(2)) +"/"+Number(convertZoom(root.zoomMax)).toFixed(0)
             horizontalAlignment: Text.AlignLeft
@@ -170,7 +175,9 @@ Item {
 
         Label {
             id: lblZoomDigital
-            text: "Digital: x"+ (root.zoomRatio > root.zoomMax ? Number(root.zoomRatio/root.zoomMax).toFixed(2): 1.00)
+            text: itemListName["ZOOM"]["DIGITAL"]
+                  [UIConstants.language[UIConstants.languageID]]+
+                  ": x"+ (root.zoomRatio > root.zoomMax ? Number(root.zoomRatio/root.zoomMax).toFixed(2): 1.00)
             anchors.horizontalCenterOffset: UIConstants.sRect * 3
             anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter
@@ -195,7 +202,11 @@ Item {
         Label {
             id: lblLockMode
             color: root.drawColor
-            text: "Lock: "+camState.lockMode
+            text: itemListName["LOCK"]["TITTLE"]
+                  [UIConstants.language[UIConstants.languageID]]+
+                  ": "+
+                    itemListName["LOCK"][camState.lockMode]
+                    [UIConstants.language[UIConstants.languageID]]
             anchors.leftMargin: 8
             verticalAlignment: Text.AlignVCenter
             anchors.bottomMargin: 8
@@ -211,7 +222,10 @@ Item {
             x: 9
             y: 9
             color: root.drawColor
-            text: "Stab: "+ (camState.digitalStab?"On":"Off")
+            text: itemListName["STAB"]["TITTLE"]
+                  [UIConstants.language[UIConstants.languageID]]+
+                  ": "+ itemListName["STAB"][(camState.digitalStab?"ON":"OFF")]
+                  [UIConstants.language[UIConstants.languageID]]
             verticalAlignment: Text.AlignVCenter
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottomMargin: 8

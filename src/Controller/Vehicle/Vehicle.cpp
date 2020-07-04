@@ -345,6 +345,11 @@ void Vehicle::sendHomePosition(QGeoCoordinate location){
     }
 }
 
+void Vehicle::setTotalWPDistance(int value)
+{
+    _setPropertyValue("TotalWPDistance",QString::fromStdString(std::to_string(value)),"m");
+}
+
 ///control gimbal with mavlink
 void Vehicle::setGimbalRate(float pan, float tilt)
 {

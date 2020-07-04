@@ -19,6 +19,7 @@ Item{
     property real maxSize: 0.75
     property real minSize: 0.10
     property string layoutMax: UIConstants.layoutMaxPaneVideo
+
     signal focusAll()
     signal zoomIn()
     signal zoomOut()

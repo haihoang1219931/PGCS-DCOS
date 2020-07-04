@@ -24,6 +24,8 @@ Rectangle {
     width: 1376
     height: 768
     property var vehicle
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["CONFIGURATION"]["PARAMETERS"]
     Rectangle{
         id: rectSearch
         width: UIConstants.sRect*10
@@ -35,7 +37,8 @@ Rectangle {
             id: txtSearch
             anchors.fill: parent
             clip: true
-            placeholderText: "Param name filter"
+            placeholderText: itemListName["FILTER"]
+                             [UIConstants.language[UIConstants.languageID]]
             inputMethodHints: Qt.ImhPreferUppercase
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize

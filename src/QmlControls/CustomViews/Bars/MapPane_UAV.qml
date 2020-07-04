@@ -83,6 +83,7 @@ Flickable {
 
     signal homePositionChanged(real lat, real lon, real alt)
     signal symbolMoving(var id,var position)
+    signal totalWPsDistanceChanged(var val)
     signal mapClicked(bool isMap)
 
 //    property url dataPath: "file:///home/ttuav/ArcGIS/Runtime/Data/"
@@ -395,9 +396,7 @@ Flickable {
                     {
                         acceptedRuler()
                         rectProfilePath.visible = true
-                        profilePath.addElevation(
-                                    cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder,
-                                    rulercoord1,rulercoord2);
+                        profilePath.addElevation(rulercoord1,rulercoord2);
 
                         map.gesture.enabled = true
                     }
@@ -458,7 +457,7 @@ Flickable {
             fontFamily: UIConstants.appFont
             anchors.fill: parent
             anchors.margins: 4
-
+            folderPath: cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder
         }
     }
 
@@ -559,6 +558,7 @@ Flickable {
                                                 _waypoint.coordinate.latitude,_waypoint.coordinate.longitude);
                     }
 
+                    totalWPsDistanceChanged(getTotalDistanceWP())
                 }
 
 
@@ -617,6 +617,7 @@ Flickable {
                             }
                         }
                         _waypoint.stopTimerEditSymbol()
+                        totalWPsDistanceChanged(getTotalDistanceWP())
                     }
 
                     onPositionChanged:{
@@ -1262,7 +1263,7 @@ Flickable {
 
         if(plane){
             plane.visible = true
-            plane.coordinate = QtPositioning.coordinate(position.latitude,position.longitude)
+            plane.coordinate = QtPositioning.coordinate(position.latitude,position.longitude,position.altitude)
 
             createPlaneTrajactory(position)
             if(planeTrajactory !== null)
@@ -1375,9 +1376,10 @@ Flickable {
 
     function changeCurrentWP(index)
     {
+        var altHome = vehicle.link ? (vehicle.altitudeAMSL - vehicle.altitudeRelative) : mapPane.virtualHomeAMSL
         currentWpIndex=index;
         if(currentWpIndex !== old_currentWpIndex)
-        {   
+        {
             _waypointModel.refreshModel()
 
             //show vehicle point on profile path
@@ -1386,29 +1388,46 @@ Flickable {
 
             if(currentWpIndex > 1 && p1 !== undefined && p2 !== undefined
                     && p1 !== null && p2 !== null){
+                var fromCoord = normalizeCoordinate(p1.coordinate,altHome)
+                var toCoord = normalizeCoordinate(p2.coordinate,altHome)
+
                 if(!isGotoWP){
                     if(mainWindow.seqTab === 2){
                         uav_profilePath.setUavProfilePathMode(1)
-                        if(currentWpIndex === 2 && old_currentWpIndex === 1)
-                            uav_profilePath.setLocation(plane.coordinate, p2.coordinate);
+                        if(p2.missionItemType === UIConstants.vtollandType || p2.missionItemType === UIConstants.landType){
+                                toCoord.altitude = fromCoord.altitude;
+                                uav_profilePath.setLocation(fromCoord, toCoord);
+                        }
+                        else if(currentWpIndex === 2 && old_currentWpIndex === 1)
+                            uav_profilePath.setLocation(plane.coordinate, toCoord);
                         else
-                            uav_profilePath.setLocation(p1.coordinate, p2.coordinate);
-
+                            uav_profilePath.setLocation(fromCoord, toCoord);
+                        console.log("set location 1")
                     }
                 }
                 else if(plane){
                     isGotoWP = false;
                     if(mainWindow.seqTab === 2){
                         uav_profilePath.setUavProfilePathMode(1)
-                        uav_profilePath.setLocation(plane.coordinate, p2.coordinate);}
+                        if(p2.missionItemType === UIConstants.vtollandType || p2.missionItemType === UIConstants.landType){
+                                toCoord.altitude = plane.coordinate.altitude;
+                        }
+                        else{
+                            console.log("set location 2")
+                        }
+                        uav_profilePath.setLocation(plane.coordinate, toCoord);
+                    }
                 }
             }
             else if(currentWpIndex === 0 && p2 !== undefined && p2 !== null){
+                var toPos = normalizeCoordinate(p2.coordinate,altHome)
                 if(plane && isGotoWP){
                     isGotoWP = false;
                     if(mainWindow.seqTab === 2){
                         uav_profilePath.setUavProfilePathMode(1)
-                        uav_profilePath.setLocation(plane.coordinate, p2.coordinate);}
+                        uav_profilePath.setLocation(plane.coordinate, toPos);
+                        console.log("set location 3")
+                    }
                 }
             }
 
@@ -1416,12 +1435,21 @@ Flickable {
             old_currentWpIndex = currentWpIndex
         }
         else if(isGotoWP){
+            console.log("goto wp"+currentWpIndex)
             isGotoWP = false;
             var p = listwaypoint[currentWpIndex]
             if(mainWindow.seqTab === 2){
+                var toPos2 = normalizeCoordinate(p.coordinate,altHome)
                 uav_profilePath.setUavProfilePathMode(1)
-                uav_profilePath.setLocation(plane.coordinate, p.coordinate);}
+                uav_profilePath.setLocation(plane.coordinate, toPos2);
+                console.log("set location 4")
+            }
         }
+    }
+
+    function normalizeCoordinate(coord,altHome){
+        var p = QtPositioning.coordinate(coord.latitude,coord.longitude,coord.altitude + altHome);
+        return p;
     }
 
     function removeSelectedMarker(){
@@ -1462,6 +1490,7 @@ Flickable {
     }
 
     function showWPDistancePath(index){
+        var altHome = vehicle.link ? (vehicle.altitudeAMSL - vehicle.altitudeRelative) : mapPane.virtualHomeAMSL
         var lastWP = listwaypoint[index-1]
         var currentWP = listwaypoint[index]
         while(index>0 && lastWP!==undefined && lastWP!==null &&
@@ -1477,20 +1506,24 @@ Flickable {
 
         if(lastWP!==undefined && lastWP!==null && currentWP!==undefined && currentWP!==null){
             uav_profilePath.setUavProfilePathMode(0)
+            lastWP.coordinate.altitude += altHome;
+            currentWP.coordinate.altitude += altHome;
             uav_profilePath.setWpLineOfSight(lastWP.coordinate,currentWP.coordinate);
         }
     }
 
-    function showNextWP()
-    {
+    function getTotalDistanceWP(){
+        return _waypointModel.getTotalDistance();
+    }
+
+    function showNextWP(){
         if(selectedIndex<listwaypoint.length-1)
             showWaypointId(selectedIndex+1)
         else
             showWaypointId(0)
     }
 
-    function normalizePoint(x,y)
-    {
+    function normalizePoint(x,y){
         var p = Qt.point(x,y)
         if(x>map.width-3)
             p.x=map.width-3
@@ -1505,14 +1538,12 @@ Flickable {
         return p
     }
 
-    function convertLocationToScreen(lat,lon)
-    {
+    function convertLocationToScreen(lat,lon){
         var p= Helper.convert_coordinator2screen(QtPositioning.coordinate(lat,lon),map)
         return p;
     }
 
-    function hideProfilePath()
-    {
+    function hideProfilePath(){
         rectProfilePath.visible = false;
     }
 
@@ -1722,9 +1753,11 @@ Flickable {
         }
         else
             gotohereSymbol.coordinate = position
-        if(mainWindow.seqTab === 2){
+        if(mainWindow.seqTab === 2 && vehicle.link && visible === true ){
+            position.altitude = plane.coordinate.altitude;
             uav_profilePath.setUavProfilePathMode(1)
             uav_profilePath.setLocation(plane.coordinate, position);
+            console.log("set location 5")
         }
 
         gotohereSymbol.visible = visible
@@ -1851,5 +1884,7 @@ Flickable {
     }
 
     //end target polygon
+
+
 }
 

@@ -209,7 +209,9 @@ QGeoCoordinate ProfilePath::findSlideShowCoord(QGeoCoordinate coord, QGeoCoordin
     return hCoord;
 }
 
-void ProfilePath::addElevation(QString folder,QGeoCoordinate startcoord, QGeoCoordinate tocoord)
+
+
+void ProfilePath::addElevation(QGeoCoordinate startcoord, QGeoCoordinate tocoord)
 {
     double distance =startcoord.distanceTo(tocoord);
     double azimuth = startcoord.azimuthTo(tocoord);//bearing
@@ -222,7 +224,7 @@ void ProfilePath::addElevation(QString folder,QGeoCoordinate startcoord, QGeoCoo
     {
         int distance_i = i * Elevation::resolution;
         QGeoCoordinate coord_i = startcoord.atDistanceAndAzimuth(distance_i,azimuth);
-        int alt_i = qRound(getAltitude(folder,coord_i));
+        int alt_i = qRound(getAltitude(_folderPath,coord_i));
         insertProfilePath(distance_i,alt_i);
     }
     this->update();
@@ -268,7 +270,7 @@ QPoint ProfilePath::convertCoordinatetoXY(QGeoCoordinate coord,QGeoCoordinate st
     {
         mMaxAltitude = mMaxVehicleAlt;
         this->update();
-        printf("update profile path\r\n");
+        //printf("update profile path\r\n");
     }
 
     return QPoint(static_cast<int>(px),static_cast<int>(py));
@@ -294,3 +296,60 @@ void ProfilePath::setLineOfSight(double fromDis, double fromAlt, double toDis, d
 
     this->update();
 }
+
+
+
+//update warning
+bool ProfilePath::checkAltitudeWarning(QGeoCoordinate planePos,QGeoCoordinate posPrediction)
+{
+    double distance =planePos.distanceTo(posPrediction);
+    double azimuth = planePos.azimuthTo(posPrediction);//bearing
+
+    int numOfSegments = qRound(distance)/Elevation::resolution;
+    int bufferSize = distance > numOfSegments * Elevation::resolution + 1 ? numOfSegments + 2 : numOfSegments + 1;
+    if(bufferSize > 100) return false;
+    for (int i = 0; i < bufferSize; i++)
+    {
+        int distance_i = i * Elevation::resolution;
+        QGeoCoordinate coord_i = planePos.atDistanceAndAzimuth(distance_i,azimuth);
+        int alt_i = qRound(getAltitude(_folderPath,coord_i));
+        double stepPlaneAlt = getAltitudeCoordinate(coord_i,planePos,posPrediction);
+        if(stepPlaneAlt <= alt_i) return true;
+    }
+    return false;
+}
+
+QGeoCoordinate ProfilePath::planePosPrediction(QGeoCoordinate planePos, QGeoCoordinate toPos, double planeGroundSpeed, double timeSec)
+{
+    double deltaAltToPos = toPos.altitude() - planePos.altitude();
+    double tanAlpha = deltaAltToPos /  planePos.distanceTo(toPos);
+
+    double azmithAngle = planePos.azimuthTo(toPos);
+
+    //planeGroundSpeed : m/s //distance : m
+    double preDistance = planeGroundSpeed * timeSec ;
+    double preDeltaAlt = tanAlpha * preDistance;
+    double preAltitude = planePos.altitude() + preDeltaAlt;
+
+    QGeoCoordinate preCoord = planePos.atDistanceAndAzimuth(preDistance,azmithAngle);
+    preCoord.setAltitude(preAltitude);
+
+    return preCoord;
+}
+
+double ProfilePath::getAltitudeCoordinate(QGeoCoordinate getCoord, QGeoCoordinate coord1, QGeoCoordinate coord2)
+{
+    double deltaAltToPos = coord2.altitude() - coord1.altitude();
+    double tanAlpha = deltaAltToPos /  coord1.distanceTo(coord2);
+
+    //double azmithAngle = coord1.azimuthTo(coord2);
+
+    //planeGroundSpeed : m/s //distance : m
+    double distance = coord1.distanceTo(getCoord) ;
+    double deltaAlt = tanAlpha * distance;
+    double altitude = coord1.altitude() + deltaAlt;
+
+    return  altitude;
+}
+
+

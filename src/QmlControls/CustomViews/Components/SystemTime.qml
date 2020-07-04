@@ -23,14 +23,16 @@ import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
 
 Item {
-    id: item1
+    id: item
+    property var itemListName: UIConstants.itemTextMultilanguages["NAVBAR"]
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         opacity: .7
+
         Text {
             id: headTitle
-            text: "System Time"
+            text: itemListName["SYSTEM_TIME"][UIConstants.language[UIConstants.languageID]]
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             font {pixelSize: UIConstants.fontSize;}
