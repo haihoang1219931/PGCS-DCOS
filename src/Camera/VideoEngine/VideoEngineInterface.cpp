@@ -376,14 +376,14 @@ std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
     float m_frameCenterLatitude = gimbal->context()->m_centerLat;
     float m_frameCenterLongitude = gimbal->context()->m_centerLon;
     float m_frameCenterElevation = gimbal->context()->m_centerAlt;
-    float m_offsetCornerLatitudePoint1 = gimbal->context()->m_cornerLat[0] - gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint1 = gimbal->context()->m_cornerLon[0] - gimbal->context()->m_centerLon;
-    float m_offsetCornerLatitudePoint2 = gimbal->context()->m_cornerLat[1] - gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint2 = gimbal->context()->m_cornerLon[1] - gimbal->context()->m_centerLon;
-    float m_offsetCornerLatitudePoint3 = gimbal->context()->m_cornerLat[2] - gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint3 = gimbal->context()->m_cornerLon[2] - gimbal->context()->m_centerLon;
-    float m_offsetCornerLatitudePoint4 = gimbal->context()->m_cornerLat[3] - gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint4 = gimbal->context()->m_cornerLon[3] - gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint1 = -gimbal->context()->m_cornerLat[0] + gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint1 = -gimbal->context()->m_cornerLon[0] + gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint2 = -gimbal->context()->m_cornerLat[1] + gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint2 = -gimbal->context()->m_cornerLon[1] + gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint3 = -gimbal->context()->m_cornerLat[2] + gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint3 = -gimbal->context()->m_cornerLon[2] + gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint4 = -gimbal->context()->m_cornerLat[3] + gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint4 = -gimbal->context()->m_cornerLon[3] + gimbal->context()->m_centerLon;
 
     std::vector<uint8_t> metaData;
 
