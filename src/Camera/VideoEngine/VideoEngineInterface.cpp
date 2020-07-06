@@ -339,15 +339,26 @@ unsigned short VideoEngine::checksum(
 std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
     printf("Encode data\r\n");
     uint8_t keyST0601[] = {0X06,0X0E,0X2B,0X34,0X02,0X0B,0X01,0X01,0X0E,0X01,0X03,0X01,0X01,0X00,0X00,0X00};
-    int totalLength = 0X81F1;
+    int totalLength = 0;
     uint16_t checkSum = 0;
-    int localHour,gmtHour;
-    time_t t = time(0);
-    struct tm * lcl = localtime(&t);
-    localHour = lcl->tm_hour;
-    struct tm * gmt = gmtime(&t);
-    gmtHour = gmt->tm_hour;
-    uint64_t timestamp = (t + (localHour-gmtHour)*3600)*1000000;
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+    uint64_t timestamp = (1000000*tv.tv_sec) + tv.tv_usec;
+    printf("");
+//    timespec ts;
+//    timespec_get(&ts,TIME_UTC);
+//    uint64_t timestamp = ts.tv_sec * 1000000 + ts.tv_nsec/1000;
+
+
+//    printf();
+//    int localHour,gmtHour;
+//    time_t t = time(0);
+//    struct tm * lcl = localtime(&t);
+//    localHour = lcl->tm_hour;
+
+//    struct tm * gmt = gmtime(&t);
+//    gmtHour = gmt->tm_hour;
+//    uint64_t timestamp = (t + (localHour-gmtHour)*3600)*1000000+ ts.tv_nsec/1000;
     std::string missionID = gimbal->context()->m_missionID.toStdString();
     std::string platformTailNumber = gimbal->context()->m_platformTailNumber.toStdString();
     float m_platformHeadingAngle = gimbal->context()->m_yawOffset;
@@ -504,13 +515,13 @@ std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
                                    offsetLongitudePoint4,Endianness::Little));
     metaData.insert(metaData.end(),kOffsetLongitudePoint4.m_encoded.begin(),kOffsetLongitudePoint4.m_encoded.end());
 
-    unsigned int dataLength = metaData.size();
+    unsigned int dataLength = metaData.size()+4;
     if(dataLength < 128){
         uint8_t length = dataLength;
         metaData.insert(metaData.begin(),length);
         printf("Short Data length = %d\r\n",dataLength);
     }else{
-        uint16_t length = (uint16_t)dataLength | 0x8000;
+        uint16_t length = (uint16_t)dataLength | 0x8100;
         std::vector<uint8_t> aLength = ByteManipulation::ToBytes(length,Endianness::Little);
         metaData.insert(metaData.begin(),aLength.begin(),aLength.end());
         printf("Long Data length = %d [%04X]\r\n",dataLength,length);

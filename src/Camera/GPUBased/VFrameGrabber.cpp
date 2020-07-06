@@ -148,7 +148,7 @@ GstFlowReturn VFrameGrabber::onNewSample(GstAppSink *_vsink, gpointer _uData)
     gstFrame.setIndex(m_currID);
     gstFrame.setGstBuffer(gst_buffer_copy(gstItem));
     m_gstFrameBuff->add(gstFrame);
-    printf("ReadFrame %d - %d\r\n", m_currID, gst_buffer_get_size(gst_sample_get_buffer(sample)));
+//    printf("ReadFrame %d - %d\r\n", m_currID, gst_buffer_get_size(gst_sample_get_buffer(sample)));
     gst_sample_unref(sample);
     return GST_FLOW_OK;
 }
@@ -268,9 +268,9 @@ void VFrameGrabber::goToPosition(float percent){
 }
 bool VFrameGrabber::initPipeline()
 {
-    if (m_pipeline != nullptr) {
-        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
-    }
+//    if (m_pipeline != nullptr) {
+//        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
+//    }
     m_filename =  getFileNameByTime();
 
     if (createFolder("flights")) {
@@ -281,7 +281,8 @@ bool VFrameGrabber::initPipeline()
     std::string m_pipelineStr = m_ip + std::string(" ! appsink name=mysink async=true sync=")+
         (QString::fromStdString(m_ip).contains("filesrc")?std::string("true"):std::string("false"))+""
         " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
-        " appsrc name=klvsrc ! mux. ";
+        " appsrc name=klvsrc ! mux. "
+            ;
     printf("\nReading pipeline: %s\r\n", m_pipelineStr.data());
     m_pipeline = GST_PIPELINE(gst_parse_launch(m_pipelineStr.data(), &m_err));
 
@@ -304,7 +305,7 @@ bool VFrameGrabber::initPipeline()
         //        return false;
     }else{
         // drop
-//        gst_app_sink_set_drop(m_appsink, true);
+        gst_app_sink_set_drop(m_appsink, true);
         g_object_set(m_appsink, "emit-signals", TRUE, NULL);
         // add call back received video data
         GstAppSinkCallbacks cbs;
@@ -315,9 +316,8 @@ bool VFrameGrabber::initPipeline()
         gst_app_sink_set_callbacks(m_appsink, &cbs, (void *)this, NULL);
     }
 
-
-
     // add call back save meta to file
+    m_klvAppSrc = nullptr;
     m_klvAppSrc = (GstAppSrc *)gst_bin_get_by_name((GstBin *)m_pipeline, "klvsrc");
     if (m_klvAppSrc == nullptr) {
         g_print("Fail to get klvsrc \n");
