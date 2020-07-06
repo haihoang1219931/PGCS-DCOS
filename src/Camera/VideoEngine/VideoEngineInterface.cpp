@@ -337,7 +337,6 @@ unsigned short VideoEngine::checksum(
     return bcc;
 } // end of bcc_16 ()
 std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
-    printf("Encode data\r\n");
     uint8_t keyST0601[] = {0X06,0X0E,0X2B,0X34,0X02,0X0B,0X01,0X01,0X0E,0X01,0X03,0X01,0X01,0X00,0X00,0X00};
     int totalLength = 0;
     uint16_t checkSum = 0;
@@ -377,14 +376,14 @@ std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
     float m_frameCenterLatitude = gimbal->context()->m_centerLat;
     float m_frameCenterLongitude = gimbal->context()->m_centerLon;
     float m_frameCenterElevation = gimbal->context()->m_centerAlt;
-    float m_offsetCornerLatitudePoint1 = gimbal->context()->m_cornerLat[0] - gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint1 = gimbal->context()->m_cornerLon[0] - gimbal->context()->m_centerLon;
-    float m_offsetCornerLatitudePoint2 = gimbal->context()->m_cornerLat[1] - gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint2 = gimbal->context()->m_cornerLon[1] - gimbal->context()->m_centerLon;
-    float m_offsetCornerLatitudePoint3 = gimbal->context()->m_cornerLat[2] - gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint3 = gimbal->context()->m_cornerLon[2] - gimbal->context()->m_centerLon;
-    float m_offsetCornerLatitudePoint4 = gimbal->context()->m_cornerLat[3] - gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint4 = gimbal->context()->m_cornerLon[3] - gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint1 = -gimbal->context()->m_cornerLat[0] + gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint1 = -gimbal->context()->m_cornerLon[0] + gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint2 = -gimbal->context()->m_cornerLat[1] + gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint2 = -gimbal->context()->m_cornerLon[1] + gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint3 = -gimbal->context()->m_cornerLat[2] + gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint3 = -gimbal->context()->m_cornerLon[2] + gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint4 = -gimbal->context()->m_cornerLat[3] + gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint4 = -gimbal->context()->m_cornerLon[3] + gimbal->context()->m_centerLon;
 
     std::vector<uint8_t> metaData;
 
@@ -519,12 +518,10 @@ std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
     if(dataLength < 128){
         uint8_t length = dataLength;
         metaData.insert(metaData.begin(),length);
-        printf("Short Data length = %d\r\n",dataLength);
     }else{
         uint16_t length = (uint16_t)dataLength | 0x8100;
         std::vector<uint8_t> aLength = ByteManipulation::ToBytes(length,Endianness::Little);
         metaData.insert(metaData.begin(),aLength.begin(),aLength.end());
-        printf("Long Data length = %d [%04X]\r\n",dataLength,length);
     }
     std::vector<uint8_t> kKeyST0601(keyST0601,keyST0601+sizeof(keyST0601));
     metaData.insert(metaData.begin(),kKeyST0601.begin(),kKeyST0601.end());
@@ -535,6 +532,5 @@ std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
     std::vector<uint8_t> kChecksum = ByteManipulation::ToBytes(checkSum,Endianness::Little);
     metaData.insert(metaData.end(),kChecksum.begin(),kChecksum.end());
 
-    printf("Encode done:\r\n");
     return metaData;
 }

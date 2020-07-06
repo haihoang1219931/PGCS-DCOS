@@ -142,10 +142,10 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
         float hfov = m_context->m_hfov[m_context->m_sensorID];
         float panRateScale = (alphaSpeed * hfov * x / m_context->m_hfovMax[m_context->m_sensorID]);
         float tiltRateScale = (alphaSpeed *  hfov * y / m_context->m_hfovMax[m_context->m_sensorID]);
-        //                printf("hfov[%.02f] hfovMax[%.02f] x[%.02f] y[%.02f] z[%.02f] panRateScale[%.02f] tiltRateScale[%.02f]\r\n",
-        //                       hfov,m_context->m_hfovMax[m_context->m_sensorID],
-        //                        x,y,z,
-        //                        panRateScale,tiltRateScale);
+                        printf("GREMSY hfov[%.02f] hfovMax[%.02f] x[%.02f] y[%.02f] z[%.02f] panRateScale[%.02f] tiltRateScale[%.02f]\r\n",
+                               hfov,m_context->m_hfovMax[m_context->m_sensorID],
+                                x,y,z,
+                                panRateScale,tiltRateScale);
 
         if(m_videoEngine == nullptr
                 || m_context->m_lockMode == "FREE"){
@@ -294,7 +294,14 @@ void GremseyGimbal::setGimbalRate(float panRate,float tiltRate){
 void GremseyGimbal::snapShot(){
     if(m_videoEngine!=nullptr){
         m_videoEngine->capture();
-        Q_EMIT functionHandled("Snapshot has been taken!");
+        struct TargetLocalization::GpsPosition from,to;
+        from.Latitude = m_context->m_latitude;
+        from.Longitude = m_context->m_longitude;
+        to.Latitude = m_context->m_centerLat;
+        to.Longitude = m_context->m_centerLon;
+        float flatDistance = m_targetLocation->distanceFlatEarth(from,to);
+        QGeoCoordinate target(m_context->m_centerLat,m_context->m_centerLon);
+        Q_EMIT functionHandled("SNAPSHOT",target,flatDistance);
     }
 }
 void GremseyGimbal::changeTrackSize(float trackSize){
@@ -341,7 +348,7 @@ void GremseyGimbal::setShare(bool enable){
 
 void GremseyGimbal::setGimbalPreset(QString mode)
 {
-    if(m_vehicle!= nullptr)
+    if(m_vehicle != nullptr)
     {
         if(mode == "NEXT"){
             QString nextPreset = "OFF";
@@ -374,6 +381,8 @@ void GremseyGimbal::setGimbalPreset(QString mode)
 //            handleGimbalModeChanged("ANGLE_BODY_MODE");
 //        else
             setGimbalMode("ANGLE_BODY_MODE");
+    }else{
+        printf("m_vehicle == nullptr\r\n");
     }
 }
 
@@ -428,6 +437,7 @@ void GremseyGimbal::handleQuery(QString data){
 
                 m_context->m_zoom[0] = zoomPosF;
                 m_context->m_hfov[0] = atanf(tan(m_context->m_hfovMax[0]/2/180*M_PI)/zoomPosF)/M_PI*180*2;
+                Q_EMIT GimbalInterface::zoomChanged();
                 break;
             }
         }
@@ -484,18 +494,18 @@ void GremseyGimbal::handleVehicleMessage(mavlink_message_t message)
                 uavPosition,
                 m_context->m_altitudeOffset,
                 0,
-                center,corner[0],corner[1],corner[2],corner[3]
+                center,corner[0],corner[1],corner[3],corner[2]
             );
             m_context->m_centerLat = center[0];
             m_context->m_centerLon = center[1];
             m_context->m_cornerLat[0] = corner[0][0];
-            m_context->m_cornerLon[0] = corner[0][0];
+            m_context->m_cornerLon[0] = corner[0][1];
             m_context->m_cornerLat[1] = corner[1][0];
-            m_context->m_cornerLon[1] = corner[1][0];
+            m_context->m_cornerLon[1] = corner[1][1];
             m_context->m_cornerLat[2] = corner[2][0];
-            m_context->m_cornerLon[2] = corner[2][0];
+            m_context->m_cornerLon[2] = corner[2][1];
             m_context->m_cornerLat[3] = corner[3][0];
-            m_context->m_cornerLon[3] = corner[3][0];
+            m_context->m_cornerLon[3] = corner[3][1];
         }
         break;
 

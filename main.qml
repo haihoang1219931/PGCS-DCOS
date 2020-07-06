@@ -108,14 +108,7 @@ ApplicationWindow {
 
     CameraController{
         id: cameraController
-        Component.onCompleted: {
-            console.log("vehicle----------------->:"+vehicle)
-            cameraController.gimbal.setVehicle(vehicle);
-        }
-
     }
-
-
     Joystick{
         id: joystick
     }
@@ -949,7 +942,6 @@ ApplicationWindow {
                         }
                     }
                 }
-
                 onMapClicked: {
                     footerBar.flightView = !isMap?"WP":"MAP";
                     if(!isMap)
@@ -1262,9 +1254,12 @@ ApplicationWindow {
                 onFunctionHandled:{
                     toastFlightControler.callActionAppearance = false;
                     toastFlightControler.rejectButtonAppearance = false;
-                    toastFlightControler.toastContent = message + " " +
-                            Number(vehicle.coordinate.latitude).toFixed(7) + "," +
-                            Number(vehicle.coordinate.longitude).toFixed(7);
+                    mapPane.createMarkerSymbol(target,"MARKER_TARGET",
+                                               Number(mapPane.markerModel.rowCount() + 1).toString());
+                    toastFlightControler.toastContent =
+                            itemListName["MESSAGE"][message][UIConstants.language[UIConstants.languageID]] +
+                            " : " +
+                            Number(distance).toFixed(7) + "m";
                     toastFlightControler.show();
                 }
             }
@@ -1869,7 +1864,6 @@ ApplicationWindow {
             var data = cameraController.context.getData(frameID);
             camState.sensorID = data["SENSOR"];
             camState.changeLockMode(data["LOCK_MODE"]);
-            videoOverlay.zoomRatio = data["ZOOM"][data["SENSOR"]];
             camState.record = data["RECORD"];
             camState.gcsShare = data["GCS_SHARED"];
             camState.digitalStab = data["STAB_DIGITAL"];
@@ -1941,6 +1935,7 @@ ApplicationWindow {
             if(CAMERA_CONTROL){
                 cameraController.loadConfig(PCSConfig);
                 cameraController.gimbal.joystick = joystick;
+                cameraController.gimbal.setVehicle(vehicle);
                 timerRequestData.start();
             }
             if(UC_API)

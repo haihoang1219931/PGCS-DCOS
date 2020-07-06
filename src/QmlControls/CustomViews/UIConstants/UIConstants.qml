@@ -704,6 +704,9 @@ QtObject {
                 ],
             }
         },
+        "MESSAGE":{
+            "SNAPSHOT":["Snapshot has been taken","Anh da duoc chup"]
+        }
     }
 
     function changeTheme(themeType){

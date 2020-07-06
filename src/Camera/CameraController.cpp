@@ -30,6 +30,7 @@ void CameraController::loadConfig(Config *config){
         }else{
             m_gimbal = m_gimbalManager->getGimbal(GimbalInterfaceManager::GIMBAL_TYPE::UNKNOWN);
         }
+        Q_EMIT gimbalChanged();
         m_gimbal->setVideoEngine(m_videoEngine);
         m_videoEngine->setGimbal(m_gimbal);
         m_gimbal->connectToGimbal(config);

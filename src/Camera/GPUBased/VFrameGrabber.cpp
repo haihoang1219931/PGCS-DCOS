@@ -128,9 +128,9 @@ gboolean VFrameGrabber::needKlv(void* userPointer)
     GST_BUFFER_DURATION (buffer) = GST_SECOND / 30;
     gst_app_src_push_buffer(GST_APP_SRC(appsrc), buffer);
 
-    int ms = 1000 / 30 * metaPerSecond;
-    struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
-    nanosleep(&ts, NULL);
+//    int ms = 1000 / 30 * metaPerSecond;
+//    struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+//    nanosleep(&ts, NULL);
     itseft->m_metaID +=1;
     return true;
 }

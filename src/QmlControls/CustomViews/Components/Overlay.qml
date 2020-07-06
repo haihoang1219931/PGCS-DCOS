@@ -23,6 +23,9 @@ Item {
     property color drawColor: UIConstants.redColor
     property var itemListName:
         UIConstants.itemTextMultilanguages["VIDEO"]
+    onZoomRatioChanged:{
+        console.log("Overlay Zoom = "+zoomRatio);
+    }
 
     function loadVideo(isVideo){
         if(isVideo){
