@@ -90,7 +90,7 @@ class VFrameGrabber : public QThread
 
     public:
         float m_speed = 1;
-        GstAppSrc* m_klvAppSrc = nullptr;
+
         GMainLoop *m_loop = nullptr;
         GstPipeline *m_pipeline = nullptr;
         std::string m_pipelineStr;
@@ -103,10 +103,11 @@ class VFrameGrabber : public QThread
         gint64 m_totalTime = 1800000000000;
         bool* m_enSaving = nullptr;
         bool m_stop = false;
-        index_type m_currID = 0;
-        index_type m_metaID = 0;
+        index_type m_currID = 0;        
         std::string m_filename;
         RollBuffer_<GstFrameCacheItem> *m_gstFrameBuff;
+        GstAppSrc* m_klvAppSrc = nullptr;
+        index_type m_metaID = 0;
         GimbalInterface* m_gimbal = nullptr;
 };
 

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gst/gst.h>
+#include <gst/app/gstappsrc.h>
 #include <QGuiApplication>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -38,6 +39,7 @@
 //#define SLEEP_TIME      25
 #define QUEUE_SIZE      3
 #define MAX_FRAME_ID    50000
+class GimbalInterface;
 class CVVideoCapture : public QObject
 {
         Q_OBJECT
@@ -56,6 +58,11 @@ class CVVideoCapture : public QObject
         static GstPadProbeReturn wrap_pad_data_mod(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
         GstFlowReturn read_frame_buffer(GstAppSink *vsink, gpointer user_data);
         static GstFlowReturn wrap_read_frame_buffer(GstAppSink *vsink, gpointer user_data);
+        static gboolean wrapNeedKlv(void* userPointer);
+
+        static void wrapStartFeedKlv(GstElement * pipeline, guint size, void* userPointer);
+
+        gboolean needKlv(void* userPointer);
         gboolean gstreamer_pipeline_operate();
         void setStateRun(bool running);
         void msleep(int ms);
@@ -66,6 +73,9 @@ class CVVideoCapture : public QObject
         gint64 getPosCurrent();
         void setSpeed(float speed);
         void goToPosition(float percent);
+private:
+        std::string getFileNameByTime();
+        void correctTimeLessThanTen(std::string &_inputStr, int _time);
     public:
         float m_speed = 1;
         int m_frameID = 0;
@@ -87,6 +97,10 @@ class CVVideoCapture : public QObject
         GstClockTime m_time = 0 ;
         int m_frameCaptureID = 0;
         gint64 m_totalTime = 1800000000000;
+        // metadata
+        GstAppSrc* m_klvAppSrc = nullptr;
+        int m_metaID = 0;
+        GimbalInterface* m_gimbal = nullptr;
 };
 
 #endif // CVVIDEOCAPTURE_H

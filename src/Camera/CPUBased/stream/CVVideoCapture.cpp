@@ -1,5 +1,7 @@
+#include <gst/app/gstappsrc.h>
 #include "CVVideoCapture.h"
-
+#include "Camera/GimbalController/GimbalInterface.h"
+#include "Camera/VideoEngine/VideoEngineInterface.h"
 CVVideoCapture::CVVideoCapture(QObject *parent) : QObject(parent)
 {
     gst_init(0, NULL);
@@ -195,24 +197,51 @@ GstFlowReturn CVVideoCapture::read_frame_buffer(GstAppSink *sink, gpointer user_
 
     return GST_FLOW_OK;
 }
+gboolean CVVideoCapture::wrapNeedKlv(void* userPointer){
+//    printf("%s\r\n",__func__);
+    CVVideoCapture *itseft = (CVVideoCapture *)userPointer;
+    return itseft->needKlv(userPointer);
+}
+void CVVideoCapture::wrapStartFeedKlv(GstElement * pipeline, guint size, void* userPointer){
+//    printf("%s\r\n",__func__);
+    CVVideoCapture *itseft = (CVVideoCapture *)userPointer;
+    itseft->needKlv(userPointer);
+//    g_idle_add ((GSourceFunc) wrapNeedKlv, userPointer);
+}
+gboolean CVVideoCapture::needKlv(void* userPointer)
+{
+    CVVideoCapture *itseft = (CVVideoCapture *)userPointer;
+    GstAppSrc* appsrc = itseft->m_klvAppSrc;
+    std::vector<uint8_t> klvData = VideoEngine::encodeMeta(m_gimbal);
+    printf("%s [%d]\r\n",__func__,itseft->m_metaID);
+    GstBuffer *buffer = gst_buffer_new_allocate(nullptr, klvData.size(), nullptr);
+    GstMapInfo map;
+    GstClock *clock;
+    GstClockTime abs_time, base_time;
 
+    gst_buffer_map (buffer, &map, GST_MAP_WRITE);
+    memcpy(map.data, klvData.data(), klvData.size());
+    gst_buffer_unmap (buffer, &map);
+    int metaPerSecond = 5;
+    GstClockTime gstDuration = GST_SECOND / 30;
+    GST_BUFFER_PTS (buffer) = (itseft->m_metaID + 1) * gstDuration * metaPerSecond;
+    GST_BUFFER_DURATION (buffer) = GST_SECOND / 30;
+    gst_app_src_push_buffer(GST_APP_SRC(appsrc), buffer);
+    itseft->m_metaID +=1;
+    return true;
+}
 
 gboolean CVVideoCapture::gstreamer_pipeline_operate()
 {
     loop = g_main_loop_new(NULL, FALSE);
     // launch pipeline
-    std::ostringstream ss;
-    // decode 02
-    //    ss << "udpsrc multicast-group="<<m_ip<<" port="<<m_port<<" ! application/x-rtp,media=video,clock-rate=90000,encoding-name=MP2T-ES ! ";
-    //    ss << "rtpjitterbuffer mode=synced ! rtpmp2tdepay ! video/mpegts ! tsdemux ! queue name=myqueue ! tee name=t t. ! h265parse ! video/x-h265,stream-format=byte-stream ! avdec_h265 max-threads=4 ! ";
-    //    ss << "appsink  name=mysink sync=false async=false ";
-    //    ss << "rtspsrc location="<<m_source<<" ! application/x-rtp,media=video,clock-rate=90000,encoding-name=H264 ! ";
-    //    ss << "rtpjitterbuffer ! rtph264depay ! tee name=t t. ! queue ! h264parse ! avdec_h264 ! ";
-    //    ss << "appsink name=mysink sync=false async=false ";
-    //    ss << "t. ! queue ! mpegtsmux ! filesink location="<<m_logFile<<".ts";
-    ss << m_source;
-    std::cout << ss.str().c_str() << std::endl;
-    m_pipeline = gst_parse_launch(ss.str().c_str(), &err);
+    std::string m_filename =  getFileNameByTime();
+    std::string m_pipelineStr = m_source + std::string(" ! appsink name=mysink async=true sync=")+
+        (QString::fromStdString(m_source).contains("filesrc")?std::string("true"):std::string("false"))+""
+        " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
+        " appsrc name=klvsrc ! mux. ";
+    std::cout << m_pipelineStr.c_str() << std::endl;
+    m_pipeline = gst_parse_launch(m_pipelineStr.c_str(), &err);
 
     if (err != NULL) {
         g_print("gstreamer decoder failed to create pipeline\n");
@@ -252,6 +281,22 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
     memset(&cbs, 0, sizeof(GstAppSinkCallbacks));
     cbs.new_sample = wrap_read_frame_buffer;
     gst_app_sink_set_callbacks(m_appsink, &cbs, (void *)this, NULL);
+    // add call back save meta to file
+    m_klvAppSrc = nullptr;
+    m_klvAppSrc = (GstAppSrc *)gst_bin_get_by_name((GstBin *)m_pipeline, "klvsrc");
+    if (m_klvAppSrc == nullptr) {
+        g_print("Fail to get klvsrc \n");
+    }else{
+        gst_app_src_set_latency(m_klvAppSrc,5,30);
+        g_signal_connect (m_klvAppSrc, "need-data", G_CALLBACK (wrapStartFeedKlv), (void *)this);
+        /* set the caps on the source */
+        GstCaps *caps = gst_caps_new_simple ("meta/x-klv",
+                                             "parsed", G_TYPE_BOOLEAN, TRUE,
+                                             nullptr);
+        gst_app_src_set_caps(GST_APP_SRC(m_klvAppSrc), caps);
+        g_object_set(GST_APP_SRC(m_klvAppSrc), "format", GST_FORMAT_TIME, nullptr);
+    }
+
     const GstStateChangeReturn result = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
 
     if (result != GST_STATE_CHANGE_SUCCESS) {
@@ -268,12 +313,44 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
     printf("gstreamer setup done\n");
     return TRUE;
 }
+std::string CVVideoCapture::getFileNameByTime()
+{
+    std::string fileName = "";
+    std::time_t t = std::time(0);
+    std::tm *now = std::localtime(&t);
+    fileName += std::to_string(now->tm_year + 1900);
+    correctTimeLessThanTen(fileName, now->tm_mon + 1);
+    correctTimeLessThanTen(fileName, now->tm_mday);
+    correctTimeLessThanTen(fileName, now->tm_hour);
+    correctTimeLessThanTen(fileName, now->tm_min);
+    correctTimeLessThanTen(fileName, now->tm_sec);
+    return fileName;
+}
+void CVVideoCapture::correctTimeLessThanTen(std::string &_inputStr, int _time)
+{
+    _inputStr += "_";
+
+    if (_time < 10) {
+        _inputStr += "0";
+        _inputStr += std::to_string(_time);
+    } else {
+        _inputStr += std::to_string(_time);
+    }
+}
 void CVVideoCapture::setSource(std::string source){
     m_source = source;
     if(m_pipeline != NULL){
-        GError *err = NULL;
+//        setStateRun(false);
         gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
-        m_pipeline = gst_parse_launch(source.c_str(), &err);
+        std::string m_filename =  getFileNameByTime();
+        std::string m_pipelineStr = m_source + std::string(" ! appsink name=mysink async=true sync=")+
+            (QString::fromStdString(m_source).contains("filesrc")?std::string("true"):std::string("false"))+""
+            " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
+            " appsrc name=klvsrc ! mux. "
+                ;
+        std::cout << m_pipelineStr.c_str() << std::endl;
+        GError *err = nullptr;
+        m_pipeline = gst_parse_launch(m_pipelineStr.c_str(), &err);
         if( err != NULL )
         {
 #ifdef DEBUG
@@ -318,12 +395,22 @@ void CVVideoCapture::setSource(std::string source){
         cbs.new_sample = wrap_read_frame_buffer;
         gst_app_sink_set_callbacks(m_appsink, &cbs, (void*)this, NULL);
         // add call back received meta data
-//        GstElement* vqueue = gst_bin_get_by_name(GST_BIN(mPipeline), "myqueue");
-//        GstPad* pad = gst_element_get_static_pad (vqueue, "sink");
-//        gst_pad_add_probe (pad, GST_PAD_PROBE_TYPE_BUFFER,
-//                (GstPadProbeCallback) wrap_pad_data_mod, (void*)this, NULL);
-//        gst_object_unref (pad);
-//        clearBuffer();
+        // add call back save meta to file
+        m_klvAppSrc = nullptr;
+
+        m_klvAppSrc = (GstAppSrc *)gst_bin_get_by_name((GstBin *)m_pipeline, "klvsrc");
+        if (m_klvAppSrc == nullptr) {
+            g_print("Fail to get klvsrc \n");
+        }else{
+            gst_app_src_set_latency(m_klvAppSrc,5,30);
+            g_signal_connect (m_klvAppSrc, "need-data", G_CALLBACK (wrapStartFeedKlv), (void *)this);
+            /* set the caps on the source */
+            GstCaps *caps = gst_caps_new_simple ("meta/x-klv",
+                                                 "parsed", G_TYPE_BOOLEAN, TRUE,
+                                                 nullptr);
+            gst_app_src_set_caps(GST_APP_SRC(m_klvAppSrc), caps);
+            g_object_set(GST_APP_SRC(m_klvAppSrc), "format", GST_FORMAT_TIME, nullptr);
+        }
         const GstStateChangeReturn result = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
         if(result != GST_STATE_CHANGE_SUCCESS)
         {
