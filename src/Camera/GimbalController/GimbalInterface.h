@@ -89,7 +89,7 @@ Q_SIGNALS:
     void zoomChanged();
     void zoomTargetChanged();
     void zoomCalculatedChanged(int viewIndex,float zoomCalculated);
-    void functionHandled(QString message);
+    void functionHandled(QString message,QGeoCoordinate target = QGeoCoordinate(0,0,0),float distance = 0);
     void presetChanged(bool result);
 public Q_SLOTS:
     virtual void connectToGimbal(Config* config = nullptr);

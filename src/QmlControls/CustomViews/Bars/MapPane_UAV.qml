@@ -81,6 +81,8 @@ Flickable {
 
     property real virtualHomeAMSL: 0
 
+    property var markerModel: _markerModel
+
     signal homePositionChanged(real lat, real lon, real alt)
     signal symbolMoving(var id,var position)
     signal totalWPsDistanceChanged(var val)

@@ -307,10 +307,10 @@ float TargetLocalization::distanceFlatEarth(struct GpsPosition fromPos, struct G
 	static const float RD1 = DEG_2_RAD / scaleFactor;
     static const float RD2 = (EARTH_RADIUS * DEG_2_RAD) / scaleFactor;
 
-    float dLon = static_cast<float>(toPos._longitude - fromPos._longitude);
-    float dLat = static_cast<float>(toPos._latitude - fromPos._latitude);
+    float dLon = static_cast<float>(toPos.Longitude * scaleFactorD - fromPos.Longitude * scaleFactorD);
+    float dLat = static_cast<float>(toPos.Latitude * scaleFactorD - fromPos.Latitude * scaleFactorD);
 
-    float lat0 = static_cast<float>(fromPos._latitude) * RD1;
+    float lat0 = static_cast<float>(fromPos.Latitude * scaleFactorD) * RD1;
 	float cLat0 = cosf (lat0);
     float d = RD2 * sqrtf (dLat*dLat + dLon*dLon*cLat0*cLat0);
 
@@ -463,8 +463,8 @@ void TargetLocalization::visionViewMain (float hfov_rad, float roll_rad, float p
 
 	// calculate the position of vision view
 	struct GpsPosition leftTopView, rightTopView, leftBottomView, rightBottomView;
-	targetLocationCompute(0.0f, 0.0f, UavDataState, 30000.0f, leftTopView);
-	targetLocationCompute(UavParams.imageWidth, 0.0f, UavDataState, 30000.0f, rightTopView);
+    targetLocationCompute(0.0f, 0.0f, UavDataState, 50000.0f, leftTopView);
+    targetLocationCompute(UavParams.imageWidth, 0.0f, UavDataState, 50000.0f, rightTopView);
 	targetLocationCompute(0.0f, UavParams.imageHeight, UavDataState, 20000.0f, leftBottomView);
 	targetLocationCompute(UavParams.imageWidth, UavParams.imageHeight, UavDataState, 20000.0f, rightBottomView);
 
