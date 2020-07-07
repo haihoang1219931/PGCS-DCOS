@@ -122,15 +122,15 @@ gboolean VFrameGrabber::needKlv(void* userPointer)
     gst_buffer_map (buffer, &map, GST_MAP_WRITE);
     memcpy(map.data, klvData.data(), klvData.size());
     gst_buffer_unmap (buffer, &map);
-    int metaPerSecond = 5;
-    GstClockTime gstDuration = GST_SECOND / 30;
-    GST_BUFFER_PTS (buffer) = (itseft->m_metaID + 1) * gstDuration * metaPerSecond;
-    GST_BUFFER_DURATION (buffer) = GST_SECOND / 30;
+    GstClockTime gstDuration = GST_SECOND / m_metaPerSecond;
+    GST_BUFFER_PTS (buffer) = (itseft->m_metaID + 1) * gstDuration;
+    GST_BUFFER_DURATION (buffer) = gstDuration;
+    GST_BUFFER_OFFSET(buffer) = itseft->m_metaID + 1;
     gst_app_src_push_buffer(GST_APP_SRC(appsrc), buffer);
 
-//    int ms = 1000 / 30 * metaPerSecond;
-//    struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
-//    nanosleep(&ts, NULL);
+    int ms = 1000 / m_metaPerSecond;
+    struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+    nanosleep(&ts, NULL);
     itseft->m_metaID +=1;
     return true;
 }
@@ -278,7 +278,7 @@ bool VFrameGrabber::initPipeline()
     }
     createFolder("img");
     createFolder("plates");
-    std::string m_pipelineStr = m_ip + std::string(" ! appsink name=mysink async=true sync=")+
+    std::string m_pipelineStr = m_ip + std::string(" ! appsink name=mysink async=false sync=")+
         (QString::fromStdString(m_ip).contains("filesrc")?std::string("true"):std::string("false"))+""
         " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
         " appsrc name=klvsrc ! mux. "
@@ -322,7 +322,7 @@ bool VFrameGrabber::initPipeline()
     if (m_klvAppSrc == nullptr) {
         g_print("Fail to get klvsrc \n");
     }else{
-        gst_app_src_set_latency(m_klvAppSrc,5,30);
+        gst_app_src_set_latency(m_klvAppSrc,m_metaPerSecond,30);
         g_signal_connect (m_klvAppSrc, "need-data", G_CALLBACK (wrapStartFeedKlv), (void *)this);
         /* set the caps on the source */
         GstCaps *caps = gst_caps_new_simple ("meta/x-klv",

@@ -28,7 +28,7 @@
 #ifdef USE_LINE_DETECTOR
 #include <S_PowerLineDetect/power_line_scan.hpp>
 #endif
-//#define TRACK_DANDO
+#define TRACK_DANDO
 //#define DEBUG_TIMER
 class ClickTrack;
 class GimbalInterface;
