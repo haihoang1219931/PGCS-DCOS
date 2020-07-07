@@ -88,5 +88,7 @@ extern std::vector<int> limitRect(cv::Rect &window, cv::Size im_sz);
 
 extern cv::Mat computeCorrelation(cv::Mat x1, cv::Mat x2);
 
+extern cv::Point2f correctPeak(cv::Mat &response, float peakVal);
+
 #endif // UTILITIES_HPP
 

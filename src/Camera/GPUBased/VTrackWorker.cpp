@@ -27,6 +27,9 @@ VTrackWorker::~VTrackWorker()
 
 void VTrackWorker::init()
 {
+#ifdef _test_ORBSearcher_
+    process.init();
+#endif
 }
 
 void VTrackWorker::changeTrackSize(float _trackSize)
@@ -196,6 +199,13 @@ void VTrackWorker::run()
     //    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
     ProcessImageCacheItem processImgItem;
 
+#ifdef _test_ORBSearcher_
+    cv::Mat bgrImg;
+    cv::Mat h_i420Img;
+    bool f_update = false;
+    cv::Rect dbg_center_img_roi;
+    std::vector<cv::Rect> init_set;
+#endif
     cv::Size imgSize;
     unsigned char *h_i420Image;
     unsigned char *d_i420Image;
@@ -207,6 +217,7 @@ void VTrackWorker::run()
         m_zoomRateCalculate[i] = 1;
     }
     while (m_running) {
+        auto start = std::chrono::high_resolution_clock::now();
         m_mutex->lock();
         if(m_pause)
             m_pauseCond->wait(m_mutex); // in this place, your thread will stop to execute until someone calls resume
@@ -234,6 +245,9 @@ void VTrackWorker::run()
         d_i420Image = processImgItem.getDeviceImage();
         h_i420Image = processImgItem.getHostImage();
         imgSize = processImgItem.getImageSize();
+#ifdef _test_ORBSearcher_
+        cv::Rect img_OSR(cv::Point(0,0),imgSize);
+#endif
         d_stabMat = processImgItem.getDeviceStabMatrix();
         h_gmeMat = processImgItem.getDeviceGMEMatrix();
         d_gmeMat = processImgItem.getHostGMEMatrix();
@@ -246,6 +260,11 @@ void VTrackWorker::run()
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
+        image_t i420Img;
+        i420Img.c = 1;
+        i420Img.h = imgSize.height * 3/2;
+        i420Img.w = imgSize.width;
+        i420Img.data = (float *)d_i420Image;
         cv::cvtColor(m_i420Img, m_grayFrame, CV_YUV2GRAY_YV12);
         if(m_plrEngine == nullptr){
             m_plrEngine = my_pli::createPlrEngine(m_grayFrame.size());
@@ -277,6 +296,7 @@ void VTrackWorker::run()
         if(m_clickSet || m_jsQueue.size()>0){
             if(m_clickSet){
                 m_clickSet=false;
+                m_objectType = -1;
                 cv::Mat ptzMatrixInvert;
                 cv::invert(m_ptzMatrix,ptzMatrixInvert);
                 cv::Mat pointBeforeStab(3, 1, CV_64FC1,cv::Scalar::all(0));
@@ -295,12 +315,88 @@ void VTrackWorker::run()
                     cv::Rect trackRectTmp(lockPoint.x-m_trackSize/2,
                                           lockPoint.y-m_trackSize/2,
                                           m_trackSize,m_trackSize);
+                    /** --- Object detect
+                     * @Editor: giapvn
+                     */
+                    // Create an area with maximum size of [512x512] or 4x m_trackSize expanded from click point for OD
+                    cv::Rect g_roi;
+
+                    g_roi.x       = ((lockPoint.x - m_trackSize * 2) < 0) ? 0 : (lockPoint.x - m_trackSize *2);
+                    g_roi.y       = ((lockPoint.y - m_trackSize * 2) < 0) ? 0 : (lockPoint.y - m_trackSize*2);
+                    g_roi.width   = ((g_roi.x + m_trackSize*4) >= w) ? (w - g_roi.x) : (m_trackSize*4);
+                    g_roi.height  = ((g_roi.y + m_trackSize*4) >= h) ? (h - g_roi.y) : (m_trackSize*4);
+
+                    if(g_roi.width > MAX_SIZE){
+                        g_roi.x += (g_roi.width-MAX_SIZE)/2;
+                        g_roi.width = MAX_SIZE;
+                    }
+                    if(g_roi.height > MAX_SIZE){
+                        g_roi.y += (g_roi.height-MAX_SIZE)/2;
+                        g_roi.height = MAX_SIZE;
+                    }
+                    // Detect objects inside the area
+                    std::vector<bbox_t> detection_boxes = m_detector->gpu_detect_roi_I420(i420Img, g_roi, 0.2, false);
+
+                    // If there is one object detected at least
+                    if(detection_boxes.size() > 0)
+                    {
+                        printf("==============================\r\n");
+                        float minDist = 1920.f;
+                        int minIdx = -1;
+                        for(size_t i = 0; i < detection_boxes.size(); i++)
+                        {
+                            if(detection_boxes[i].obj_id != 0 && detection_boxes[i].obj_id != 11)
+                            {
+                                float dist = ((detection_boxes[i].x + detection_boxes[i].w/2 - lockPoint.x) * (detection_boxes[i].x + detection_boxes[i].w/2 - lockPoint.x) +
+                                              (detection_boxes[i].y + detection_boxes[i].h/2 - lockPoint.y) * (detection_boxes[i].y + detection_boxes[i].h/2 - lockPoint.y));
+                                if(dist < minDist)
+                                {
+                                    minDist = dist;
+                                    minIdx = int(i);
+                                }
+                            }
+                        }
+                        // If there is no valid object detected
+                        if(minIdx == -1)
+                        {
+                            if(m_gimbal->context()->m_lockMode != "VISUAL")
+                                m_gimbal->context()->m_lockMode = "VISUAL";
+                        }
+                        else
+                        {
+                            m_objectType = int(detection_boxes[minIdx].obj_id);
+                            trackRectTmp = cv::Rect(int(detection_boxes[minIdx].x), int(detection_boxes[minIdx].y), int(detection_boxes[minIdx].w), int(detection_boxes[minIdx].h));
+                            if(m_gimbal->context()->m_lockMode != "TRACK")
+                                m_gimbal->context()->m_lockMode = "TRACK";
+                        }
+                    }
+                    // If there is no object detected then switch into Steering Mode at the click point
+                    else
+                    {
+                        if(m_gimbal->context()->m_lockMode != "VISUAL")
+                            m_gimbal->context()->m_lockMode = "VISUAL";
+                    }
+                    // Object detect ---
                     if(trackRectTmp.x > 0 && trackRectTmp.x + trackRectTmp.width < w &&
                             trackRectTmp.y > 0 && trackRectTmp.y + trackRectTmp.height < h){
                         if(m_tracker->isInitialized()){
                             m_tracker->resetTrack();
                         }
                         m_tracker->initTrack(m_grayFramePrev,trackRectTmp);
+#ifdef _test_ORBSearcher_
+                        cv::cvtColor(m_i420Img,bgrImg,CV_YUV2BGR_I420);
+                        init_set.clear();
+                        init_set.push_back(trackRectTmp);
+                        f_update = process.update(bgrImg,init_set);
+                        printf("=========== Searching for id: %d\n", m_objectType);
+
+                        if(f_update){
+                            cout << "Init searcher success!" << endl;
+                        }else{
+                            cout << "Init searcher fail!" << endl;
+                        }
+                        m_searchCount = 0;
+#endif
                     }
                 }else{
                     m_dx = lockPoint.x;
@@ -319,9 +415,9 @@ void VTrackWorker::run()
                             m_zoomIR = 1;
                         }
                         m_gimbal->context()->m_zoom[1]= m_zoomIR;
-//                        m_gimbal->context()->m_hfov[1] = atanf(
-//                                    tan(m_gimbal->context()->m_hfovMax[1]/2/180*M_PI)/m_zoomIR
-//                                )/M_PI*180*2;
+                        //                        m_gimbal->context()->m_hfov[1] = atanf(
+                        //                                    tan(m_gimbal->context()->m_hfovMax[1]/2/180*M_PI)/m_zoomIR
+                        //                                )/M_PI*180*2;
                         //                        printf("IR zoomMin[%f] zoomMax[%f] zoomRatio[%f] digitalZoomMax[%f]\r\n",
                         //                               m_gimbal->zoomMin(),
                         //                               m_gimbal->zoomMax(),
@@ -374,13 +470,32 @@ void VTrackWorker::run()
                 cv::Rect trackRect = m_tracker->getPosition();
                 m_dx = trackRect.x+trackRect.width/2;
                 m_dy = trackRect.y+trackRect.height/2;
-                m_trackRect.x = static_cast<int>(
-                            static_cast<float>(m_dx) - static_cast<float>(m_trackSize)/2);
-                m_trackRect.y = static_cast<int>(
-                            static_cast<float>(m_dy) - static_cast<float>(m_trackSize)/2);
-                m_trackRect.width = m_trackSize;
-                m_trackRect.height = m_trackSize;
+                //                m_trackRect.x = static_cast<int>(
+                //                            static_cast<float>(m_dx) - static_cast<float>(m_trackSize)/2);
+                //                m_trackRect.y = static_cast<int>(
+                //                            static_cast<float>(m_dy) - static_cast<float>(m_trackSize)/2);
+                //                m_trackRect.width = m_trackSize;
+                //                m_trackRect.height = m_trackSize;
+                m_trackRect = trackRect;
                 if(m_tracker->Get_State() == TRACK_INVISION || m_tracker->Get_State() == TRACK_OCCLUDED){
+                    if(m_gimbal->context()->m_lockMode == "TRACK"){
+#ifdef _test_ORBSearcher_
+
+                        if(!f_update){
+                            if(trackRect.width <= 0 || trackRect.height <= 0 || img_OSR.contains(trackRect.tl()) == false || img_OSR.contains(trackRect.br()) == false){
+                                cout << "Roi input wrong!" << endl;
+                            }else{
+//                                cout << "Re try update!" << endl;
+                                init_set.clear();
+                                init_set.push_back(trackRect);
+                                cv::cvtColor(m_i420Img,bgrImg,CV_YUV2BGR_I420);
+                                f_update = process.update(bgrImg,init_set);
+                            }
+
+                        }
+#endif
+                    }
+
                     Q_EMIT trackStateFound(0,
                                            static_cast<double>(m_trackRect.x),
                                            static_cast<double>(m_trackRect.y),
@@ -389,7 +504,80 @@ void VTrackWorker::run()
                                            static_cast<double>(w),
                                            static_cast<double>(h));
                 }else{
-                    Q_EMIT trackStateLost();
+                    if(m_gimbal->context()->m_lockMode == "TRACK"){
+                        m_searchCount++;
+                        if(m_searchCount >= m_maxSearchCount){
+                            Q_EMIT trackStateLost();
+                        }else{
+
+                            // --- Object detect
+//                            cv::Rect g_roi;
+//                            cv::Point lockPoint(m_dx,m_dy);
+//                            g_roi.x       = ((lockPoint.x - m_trackSize * 2) < 0) ? 0 : (lockPoint.x - m_trackSize *2);
+//                            g_roi.y       = ((lockPoint.y - m_trackSize * 2) < 0) ? 0 : (lockPoint.y - m_trackSize*2);
+//                            g_roi.width   = ((g_roi.x + m_trackSize*4) >= w) ? (w - g_roi.x) : (m_trackSize*4);
+//                            g_roi.height  = ((g_roi.y + m_trackSize*4) >= h) ? (h - g_roi.y) : (m_trackSize*4);
+
+//                            if(g_roi.width > MAX_SIZE){
+//                                g_roi.x += (g_roi.width-MAX_SIZE)/2;
+//                                g_roi.width = MAX_SIZE;
+//                            }
+//                            if(g_roi.height > MAX_SIZE){
+//                                g_roi.y += (g_roi.height-MAX_SIZE)/2;
+//                                g_roi.height = MAX_SIZE;
+//                            }
+//                            std::vector<bbox_t> detection_boxes = m_detector->gpu_detect_roi_I420(i420Img, g_roi, 0.2, false);
+                            std::vector<bbox_t> detection_boxes = m_detector->gpu_detect_I420(i420Img, int(w), int(h), 0.2f, false);
+                            // Object detect ---
+#ifdef _test_ORBSearcher_
+                            init_set.clear();
+                            for(size_t i=0; i < detection_boxes.size(); i++){
+                                printf("=========== Searching for id: %d\n", detection_boxes[i].obj_id);
+                                if(m_objectType == 3 || m_objectType == 10)
+                                {
+                                    if(detection_boxes[i].obj_id == 3 || detection_boxes[i].obj_id == 10)
+                                        init_set.push_back(cv::Rect(int(detection_boxes[i].x),
+                                                                    int(detection_boxes[i].y),
+                                                                    int(detection_boxes[i].w),
+                                                                    int(detection_boxes[i].h)));
+                                }
+                                else if(m_objectType == 1 || m_objectType == 2)
+                                {
+                                    if(detection_boxes[i].obj_id == 1 || detection_boxes[i].obj_id == 2)
+                                        init_set.push_back(cv::Rect(int(detection_boxes[i].x),
+                                                                    int(detection_boxes[i].y),
+                                                                    int(detection_boxes[i].w),
+                                                                    int(detection_boxes[i].h)));
+                                }
+                                else if(m_objectType > 3 && m_objectType < 10)
+                                {
+                                    if(detection_boxes[i].obj_id > 3 && detection_boxes[i].obj_id < 10)
+                                        init_set.push_back(cv::Rect(int(detection_boxes[i].x),
+                                                                    int(detection_boxes[i].y),
+                                                                    int(detection_boxes[i].w),
+                                                                    int(detection_boxes[i].h)));
+                                }
+                            }
+                            if(init_set.empty())
+                                continue;
+                            cv::RotatedRect detectedObjBound;
+                            cv::cvtColor(m_i420Img,bgrImg,CV_YUV2BGR_I420);
+                            if(process.predict(bgrImg,init_set,detectedObjBound)){
+                                printf("Candidate object found!\n");
+                                cv::Rect suggestRs = detectedObjBound.boundingRect();
+                                if(m_tracker->isInitialized()){
+                                    m_tracker->resetTrack();
+                                }
+                                m_tracker->initTrack(m_grayFrame,suggestRs);
+                            }else{
+                                printf("Try to search object fail!\n");
+                            }
+#endif
+                        }
+                    }
+                    else{
+                        Q_EMIT trackStateLost();
+                    }
                 }
             }else{
 
@@ -445,6 +633,9 @@ void VTrackWorker::run()
         std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
         //printf("VTrackWorker: %d - [%d, %d] \r\n", m_currID, imgSize.width, imgSize.height);
         //std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> eta = end - start;
+        printf("Average Time : %fms\r\n", eta.count() * 1000);
     }
 }
 
@@ -495,4 +686,7 @@ void VTrackWorker::setClicktrackDetector(Detector *_detector)
 void VTrackWorker::setOCR(OCR* _OCR)
 {
     m_clickTrack->setOCR(_OCR);
+}
+void VTrackWorker::setDetector(Detector* _detector){
+    m_detector = _detector;
 }

@@ -38,7 +38,13 @@ QML_IMPORT_PATH += \
 SOURCES += \
     main.cpp \
     src/Maplib/Model/symbol.cpp \
-    src/Maplib/Model/symbolmodel.cpp
+    src/Maplib/Model/symbolmodel.cpp \
+    src/Camera/Algorithms/search/featureColorName.cpp \
+    src/Camera/Algorithms/search/ipsearch_colornames.cpp \
+    src/Camera/Algorithms/search/ipsearch_oppoColor.cpp \
+    src/Camera/Algorithms/search/ipsearch_orbextractor.cpp \
+    src/Camera/Algorithms/search/ipsearch_orbSearcher.cpp \
+    src/Camera/Algorithms/search/ipsearch_utils.cpp
 
 INCLUDEPATH += $$PWD/src
 # Flight controller
@@ -733,4 +739,9 @@ HEADERS += \
 
 HEADERS += \
     src/Maplib/Model/symbol.h \
-    src/Maplib/Model/symbolmodel.h
+    src/Maplib/Model/symbolmodel.h \
+    src/Camera/Algorithms/search/ipsearch_oppoColor.h \
+    src/Camera/Algorithms/search/ipsearch_orbextractor.h \
+    src/Camera/Algorithms/search/ipsearch_orbSearcher.h \
+    src/Camera/Algorithms/search/ipsearch_stats.h \
+    src/Camera/Algorithms/search/ipsearch_utils.h
