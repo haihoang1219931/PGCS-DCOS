@@ -192,7 +192,7 @@ public:
     float pitch(){return _pitch;}
     float heading(){return _heading;}
     float airSpeed(){return _airSpeed;}
-    float altitudeRelative(){return _altitudeRelative;}
+    float altitudeRelative(){return _altitudeAGL;}
     float engineSensor_1(){return _engineSensor_1;}
     float engineSensor_2(){return _engineSensor_2;}
     QGeoCoordinate coordinate(){ return _coordinate;}
@@ -717,7 +717,7 @@ private:
     float           _heading = 0;
     float           _airSpeed = 0;
     float           _climbRate = 0;
-    float           _altitudeRelative = 0;
+    float           _altitudeAGL = 0;
     float           _engineSensor_1 = 0;
     float           _engineSensor_2 = 0;
     bool            _link = false;
@@ -733,7 +733,6 @@ private:
     float           _groundSpeed = 0;
     float           _climbSpeed = 0;
     float           _altitudeAMSL = 0;
-    float           _altitudeAGL = 0;
 
     float           _latGPS = 0;
     float           _lonGPS = 0;

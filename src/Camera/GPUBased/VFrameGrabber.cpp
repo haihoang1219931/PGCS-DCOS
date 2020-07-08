@@ -19,20 +19,21 @@ VFrameGrabber::~VFrameGrabber()
 
 void VFrameGrabber::run()
 {
-    GstStateChangeReturn result =
-            gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
+    while(!m_stop){
+        initPipeline();
+        GstStateChangeReturn result =
+                gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
 
-    if (result != GST_STATE_CHANGE_SUCCESS) {
-        printf("ReadingCam-gstreamer failed to set pipeline state to PLAYING "
-               "(error %u)\n",
-               result);
-        return;
+        if (result != GST_STATE_CHANGE_SUCCESS) {
+            printf("ReadingCam-gstreamer failed to set pipeline state to PLAYING "
+                   "(error %u)\n",
+                   result);
+        }
+        g_main_loop_run(m_loop);
+        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
+        gst_object_unref(m_pipeline);
+        printf("Pipeline stopped");
     }
-
-    g_main_loop_run(m_loop);
-    gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
-    gst_object_unref(m_pipeline);
-    printf("\n === 6");
     return;
 }
 
@@ -40,10 +41,10 @@ void VFrameGrabber::setSource(std::string _ip, int _port)
 {
     m_ip = _ip;
     m_port = (uint16_t)_port;
-
-    pause(true);
-    this->initPipeline();
-    pause(false);
+    g_main_loop_quit(m_loop);
+//    pause(true);
+//    this->initPipeline();
+//    pause(false);
 }
 
 bool VFrameGrabber::stop()
@@ -113,7 +114,7 @@ gboolean VFrameGrabber::needKlv(void* userPointer)
     VFrameGrabber *itseft = (VFrameGrabber *)userPointer;
     GstAppSrc* appsrc = itseft->m_klvAppSrc;
     std::vector<uint8_t> klvData = VideoEngine::encodeMeta(m_gimbal);
-//    printf("%s [%d]\r\n",__func__,itseft->m_metaID);
+    printf("%s [%d]\r\n",__func__,itseft->m_metaID);
     GstBuffer *buffer = gst_buffer_new_allocate(nullptr, klvData.size(), nullptr);
     GstMapInfo map;
     GstClock *clock;

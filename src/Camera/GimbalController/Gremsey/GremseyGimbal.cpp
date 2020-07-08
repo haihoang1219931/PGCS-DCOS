@@ -476,7 +476,6 @@ void GremseyGimbal::handleVehicleMessage(mavlink_message_t message)
         mavlink_msg_global_position_int_decode(&message,&gps_pos);
         m_context->m_latitude = (static_cast<float>(gps_pos.lat))/10000000;
         m_context->m_longitude = (static_cast<float>(gps_pos.lon))/10000000;
-//        m_context->m_altitudeOffset = (static_cast<float>(gps_pos.alt))/1000;
         m_context->m_altitudeOffset = m_vehicle->altitudeAGL();
         if(m_targetLocation!=nullptr){            
             double center[2];

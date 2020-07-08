@@ -317,7 +317,7 @@ void Vehicle::motorTest(int motor, int percent)
 void Vehicle::setHomeLocation(float lat, float lon){
     if(m_firmwarePlugin != nullptr){
         if(m_planController->m_missionItems.size() > 0)
-            m_firmwarePlugin->setHomeHere(lat, lon, _altitudeAMSL - _altitudeRelative);
+            m_firmwarePlugin->setHomeHere(lat, lon, _altitudeAMSL - _altitudeAGL);
     }
 }
 void Vehicle::setAltitudeRTL(float alt){
@@ -1327,8 +1327,8 @@ void Vehicle::_handleGlobalPositionInt(mavlink_message_t &message)
         _globalPositionIntMessageAvailable = true;
     }
 
-    _altitudeRelative = static_cast<float>(globalPositionInt.relative_alt) / 1000.0f;
-    _setPropertyValue("AltitudeAGL",QString::fromStdString(std::to_string(_altitudeRelative)),"m");
+    _altitudeAGL = static_cast<float>(globalPositionInt.relative_alt) / 1000.0f;
+    _setPropertyValue("AltitudeAGL",QString::fromStdString(std::to_string(_altitudeAGL)),"m");
     Q_EMIT altitudeRelativeChanged();
     if (!_gpsRawIntMessageAvailable) {
         _gpsRawIntMessageAvailable = true;
@@ -1354,7 +1354,7 @@ void Vehicle::_handleAltitude(mavlink_message_t &message)
 //    printf("altitude.altitude_relative = %f\r\n",altitude.altitude_relative);
     // If data from GPS is available it takes precedence over ALTITUDE message
     if (!_globalPositionIntMessageAvailable) {
-        _altitudeRelative = (altitude.altitude_relative);
+        _altitudeAGL = (altitude.altitude_relative);
         Q_EMIT altitudeRelativeChanged();
 
         if (!_gpsRawIntMessageAvailable) {
