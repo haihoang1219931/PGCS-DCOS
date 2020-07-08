@@ -85,7 +85,7 @@ void VDisplay::init()
     m_vODWorker->setDetector(m_detector);
     m_clicktrackDetector = new Detector(plate_cfg_file_click, plate_weights_file_click);
     m_vTrackWorker->setClicktrackDetector(m_clicktrackDetector);
-
+    m_vTrackWorker->setObjDetector(m_detector);
     m_searchDetector = new Detector(plate_cfg_search, plate_weights_search);
     m_vSearchWorker->setPlateDetector(m_searchDetector);
 
@@ -224,6 +224,9 @@ void VDisplay::setRecord(bool _en)
 {
     m_vDisplayWorker->setVideoSavingState(_en);
 }
+void VDisplay::setObjectSearch(bool enable){
+    m_vTrackWorker->m_objectSearch = enable;
+}
 void VDisplay::setShare(bool enable)
 {
     m_vDisplayWorker->m_enShare = enable;
@@ -255,6 +258,7 @@ qint64 VDisplay::getTime(QString type){
         return m_vFrameGrabber->getPosCurrent();
     }
 }
+
 void VDisplay::pause(bool pause){
     m_vFrameGrabber->pause(pause);
     m_vTrackWorker->pause(pause);

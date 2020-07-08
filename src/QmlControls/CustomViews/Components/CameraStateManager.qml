@@ -58,6 +58,8 @@ Item {
                               (longitude > -180 && longitude < 180)
     property bool digitalStab: true
     property bool gimbalStab: false
+    property bool gcsSearch: false
+    property bool gcsTargetLocalization: false
     property bool gcsStab: true
     property bool gcsRecord: true
     property bool record: true

@@ -28,6 +28,11 @@
 #ifdef USE_LINE_DETECTOR
 #include <S_PowerLineDetect/power_line_scan.hpp>
 #endif
+
+#define _test_ORBSearcher_
+#ifdef _test_ORBSearcher_
+#include "../Algorithms/search/ipsearch_orbSearcher.h"
+#endif
 #define TRACK_DANDO
 //#define DEBUG_TIMER
 class ClickTrack;
@@ -101,6 +106,7 @@ public:
     PlateLog* m_plateLog;
     QMap<QString,QString> m_mapPlates;
 public:
+    void setObjDetector(Detector *_detector);
     void setClicktrackDetector(Detector *_detector);
     void setOCR(OCR* _OCR);
     void startRollbackZoom() {
@@ -198,6 +204,10 @@ public:
 #endif
     // color mode
     QString m_colorMode = "WHITE_HOT";
+    // object search
+    ip::objsearch::ORBSearcher process;
+    Detector *m_detector;
+    bool m_objectSearch = true;
 };
 
 #endif // VTRACKWORKER_H

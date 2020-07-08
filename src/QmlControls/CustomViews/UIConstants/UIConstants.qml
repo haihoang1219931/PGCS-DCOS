@@ -505,6 +505,8 @@ QtObject {
             "EXPORT_VIDEO":["Export\nvideo","Xuất\nvideo"],
             "VISUAL_LOCK":["Visual\nlock","Giữ\nkhung"],
             "GCS_STAB":["GCS\nstab","Cân bằng\nảnh"],
+            "GCS_SEARCH":["GCS\nsearch","Tim\nkiem"],
+            "GCS_TL":["GCS\nTL","Dinh vi\nmuc tieu"],
             "INVERT_PAN":["Invert\npan","Đảo cần\npan"],
             "INVERT_TILT":["Invert\ntilt","Đảo cần\ntilt"],
             "INVERT_ZOOM":["Invert\nzoom","Đảo cần\nzoom"],

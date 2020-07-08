@@ -583,7 +583,12 @@ HEADERS += \
     src/Camera/Algorithms/tracker/dando/LME/lme.hpp \
     src/Camera/Algorithms/tracker/dando/ITrack.hpp \
     src/Camera/Algorithms/tracker/dando/Utilities.hpp \
-    src/Camera/Algorithms/tracker/mosse/tracker.h
+    src/Camera/Algorithms/tracker/mosse/tracker.h \
+    src/Camera/Algorithms/search/ipsearch_oppoColor.h \
+    src/Camera/Algorithms/search/ipsearch_orbextractor.h \
+    src/Camera/Algorithms/search/ipsearch_orbSearcher.h \
+    src/Camera/Algorithms/search/ipsearch_stats.h \
+    src/Camera/Algorithms/search/ipsearch_utils.h
 SOURCES += \
     src/Camera/Algorithms/stabilizer/dando_02/stab_gcs_kiir.cpp \
     src/Camera/Algorithms/tracker/dando/HTrack/ffttools.cpp \
@@ -592,7 +597,13 @@ SOURCES += \
     src/Camera/Algorithms/tracker/dando/LME/lme.cpp \
     src/Camera/Algorithms/tracker/dando/ITrack.cpp \
     src/Camera/Algorithms/tracker/dando/Utilities.cpp \
-    src/Camera/Algorithms/tracker/mosse/tracker.cpp
+    src/Camera/Algorithms/tracker/mosse/tracker.cpp \
+    src/Camera/Algorithms/search/featureColorName.cpp \
+    src/Camera/Algorithms/search/ipsearch_colornames.cpp \
+    src/Camera/Algorithms/search/ipsearch_oppoColor.cpp \
+    src/Camera/Algorithms/search/ipsearch_orbextractor.cpp \
+    src/Camera/Algorithms/search/ipsearch_orbSearcher.cpp \
+    src/Camera/Algorithms/search/ipsearch_utils.cpp
 }
 
 
@@ -802,3 +813,5 @@ SOURCES += \
 HEADERS += \
     src/Controller/Telemetry/TelemetryController.h
 }
+
+

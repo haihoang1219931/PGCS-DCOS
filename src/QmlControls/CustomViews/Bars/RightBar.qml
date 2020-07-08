@@ -350,6 +350,39 @@ Rectangle {
                     }
                 }
             }
+            SwitchFlatButton {
+                id: btnSearch
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iGCSStab
+                isSync: true
+                btnText: itemListName["GCS_SEARCH"]
+                         [UIConstants.language[UIConstants.languageID]]
+                color: UIConstants.bgAppColor
+                isOn: camState.gcsSearch
+                onClicked: {
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
+                        cameraController.gimbal.setObjectSearch(!camState.gcsSearch)
+                    }
+                }
+            }
+            SwitchFlatButton {
+                id: btnTL
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iGCSStab
+                isSync: true
+                btnText: itemListName["GCS_TL"]
+                         [UIConstants.language[UIConstants.languageID]]
+                color: UIConstants.bgAppColor
+                isOn: camState.gcsTargetLocalization
+                onClicked: {
+                    camState.gcsTargetLocalization = !camState.gcsTargetLocalization
+//                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
+//                        cameraController.gimbal.setObjectSearch(!camState.gcsSearch)
+//                    }
+                }
+            }
             FooterButton {
                 id: btnInvertPan
                 Layout.preferredWidth: parent.width

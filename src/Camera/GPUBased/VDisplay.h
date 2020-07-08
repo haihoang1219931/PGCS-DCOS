@@ -62,6 +62,7 @@ public:
     Q_INVOKABLE void goToPosition(float percent) override;
     Q_INVOKABLE void setSpeed(float speed) override;
     Q_INVOKABLE qint64 getTime(QString type) override;
+    Q_INVOKABLE void setObjectSearch(bool enable);
 private:
     QThread *m_threadEODisplay;
     VDisplayWorker *m_vDisplayWorker;

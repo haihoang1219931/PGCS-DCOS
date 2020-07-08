@@ -403,7 +403,12 @@ void GremseyGimbal::setGimbalPos(float panPos, float tiltPos)
         printf("set pan pos:%5.1f\r\n",-panPos);
     }
 }
-
+void GremseyGimbal::setObjectSearch(bool enable){
+    if(m_videoEngine!= nullptr){
+        m_context->m_gcsSearch = enable;
+        m_videoEngine->setObjectSearch(enable);
+    }
+}
 void GremseyGimbal::setVehicle(Vehicle *vehicle)
 {
     m_vehicle = vehicle;

@@ -745,7 +745,7 @@ ApplicationWindow {
 
                 ObjectsOnScreen{
                     anchors.fill: parent
-                    visible: camState.objectLocalization
+                    visible: camState.gcsTargetLocalization
                     player: cameraController.videoEngine
                 }
             }
@@ -1001,6 +1001,7 @@ ApplicationWindow {
                     id: objectsOnMap
                     anchors.fill: parent
                     player: videoPane.player
+                    visible: camState.gcsTargetLocalization
                 }
             }
 
@@ -1865,6 +1866,8 @@ ApplicationWindow {
             camState.sensorID = data["SENSOR"];
             camState.changeLockMode(data["LOCK_MODE"]);
             camState.record = data["RECORD"];
+//            camState.gcsTargetLocalization = data["LOCALIZATION"];
+            camState.gcsSearch = data["SEARCH"];
             camState.gcsShare = data["GCS_SHARED"];
             camState.digitalStab = data["STAB_DIGITAL"];
             camState.presetMode = data["PRESET"];

@@ -180,7 +180,9 @@ void GimbalInterface::setLockMode(QString mode, QPointF location){
 void GimbalInterface::setGeoLockPosition(QPoint location){
     Q_UNUSED(location);
 }
-
+void GimbalInterface::setObjectSearch(bool enable){
+    Q_UNUSED(enable);
+}
 void GimbalInterface::handleGimbalModeChanged(QString mode)
 {
     Q_UNUSED(mode);

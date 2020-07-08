@@ -27,6 +27,7 @@ VTrackWorker::~VTrackWorker()
 
 void VTrackWorker::init()
 {
+    process.init();
 }
 
 void VTrackWorker::changeTrackSize(float _trackSize)
@@ -533,7 +534,10 @@ void VTrackWorker::drawSteeringCenter(cv::Mat &_img, int _wBoundary,
              cv::Point(_centerX + 3 * _wBoundary / 4, _centerY + _wBoundary),
              _color, 2);
 }
-
+void VTrackWorker::setObjDetector(Detector *_detector)
+{
+    m_detector = _detector;
+}
 void VTrackWorker::setClicktrackDetector(Detector *_detector)
 {
     m_clickTrack->setDetector(_detector);

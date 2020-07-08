@@ -118,7 +118,7 @@ public Q_SLOTS:
     virtual void setGCSRecorder(bool enable);
     virtual void setLockMode(QString mode,QPointF location = QPointF(0,0));
     virtual void setGeoLockPosition(QPoint location);
-
+    virtual void setObjectSearch(bool enable);
     virtual void handleGimbalModeChanged(QString mode);
     virtual void handleGimbalSetModeFail();
 protected:

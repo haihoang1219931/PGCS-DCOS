@@ -162,6 +162,7 @@ public:
     Q_INVOKABLE virtual void goToPosition(float percent){}
     Q_INVOKABLE virtual void setSpeed(float speed){}
     Q_INVOKABLE virtual qint64 getTime(QString type){return 0;}
+    Q_INVOKABLE virtual void setObjectSearch(bool enable){}
 Q_SIGNALS:
     void sourceLinkChanged(bool isVideo);
     void listTrackObjectInfosChanged();

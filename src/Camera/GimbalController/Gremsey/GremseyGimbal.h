@@ -31,6 +31,7 @@ public:
     void setGimbalPreset(QString mode) override;
     void setGimbalMode(QString mode) override;
     void setGimbalPos(float panPos,float tiltPos) override;
+    void setObjectSearch(bool enable) override;
 
     Q_INVOKABLE void setVehicle(Vehicle* vehicle) override;
 Q_SIGNALS:
