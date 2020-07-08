@@ -328,3 +328,30 @@ cv::Mat doubleGaussCorrelation(cv::Mat x1, cv::Mat x2, cv::Mat _alphaf, float si
     return k;
 
 }
+
+// @Editor: giapvn
+cv::Point2f correctPeak(cv::Mat &response, float peakVal)
+{
+    float thres = 0.7 * peakVal;
+    cv::Mat thresMat;
+    cv::threshold(response, thresMat, thres, 255, CV_THRESH_BINARY);
+    std::vector<std::pair<cv::Point, float>> peaks;
+    for(int i = 0; i < response.rows; i++)
+        for(int j = 0; j < response.cols; j++)
+        {
+            if(thresMat.at<float>(i, j) == 255)
+            peaks.push_back(std::make_pair(cv::Point(j, i), response.at<float>(i, j) / peakVal * response.at<float>(i, j) / peakVal));
+        }
+
+    float sumX = 0,
+          sumY = 0,
+          sumW = 0;
+    for(size_t i = 0; i < peaks.size(); i++)
+    {
+        sumX += peaks[i].second * peaks[i].first.x;
+        sumY += peaks[i].second * peaks[i].first.y;
+        sumW += peaks[i].second;
+    }
+
+    return cv::Point2f(sumX / sumW, sumY / sumW);
+}

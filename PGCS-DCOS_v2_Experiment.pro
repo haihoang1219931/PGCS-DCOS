@@ -37,8 +37,6 @@ QML_IMPORT_PATH += \
     $$PWD/src/Controller
 SOURCES += \
     main.cpp
-
-
 INCLUDEPATH += $$PWD/src
 # Flight controller
 use_flight_control{
@@ -813,5 +811,4 @@ SOURCES += \
 HEADERS += \
     src/Controller/Telemetry/TelemetryController.h
 }
-
 

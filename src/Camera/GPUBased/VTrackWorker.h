@@ -28,16 +28,18 @@
 #ifdef USE_LINE_DETECTOR
 #include <S_PowerLineDetect/power_line_scan.hpp>
 #endif
-
+#define MAX_SIZE    640
 #define _test_ORBSearcher_
 #ifdef _test_ORBSearcher_
 #include "../Algorithms/search/ipsearch_orbSearcher.h"
+//#define _dbg_show_level_1_
 #endif
 #define TRACK_DANDO
 //#define DEBUG_TIMER
 class ClickTrack;
 class GimbalInterface;
 class OCR;
+class Detector;
 using namespace rva;
 typedef struct {
     int frameID;
@@ -109,6 +111,7 @@ public:
     void setObjDetector(Detector *_detector);
     void setClicktrackDetector(Detector *_detector);
     void setOCR(OCR* _OCR);
+    void setDetector(Detector* _detector);
     void startRollbackZoom() {
         for(unsigned int i=0; i< sizeof (m_stopRollBack); i++){
             m_stopRollBack[i] = false;
@@ -204,10 +207,16 @@ public:
 #endif
     // color mode
     QString m_colorMode = "WHITE_HOT";
-    // object search
+    // Object detect
+    Detector *m_detector = nullptr;
+    int m_objectType = -1;
+    // Object search
+#ifdef _test_ORBSearcher_
     ip::objsearch::ORBSearcher process;
-    Detector *m_detector;
-    bool m_objectSearch = true;
+    int m_maxSearchCount = 300;
+    int m_searchCount = 0;
+    bool m_objectSearch = false;
+#endif
 };
 
 #endif // VTRACKWORKER_H

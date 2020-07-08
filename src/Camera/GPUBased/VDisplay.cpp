@@ -91,6 +91,7 @@ void VDisplay::init()
 
     m_OCR = new OCR();
     m_vTrackWorker->setOCR(m_OCR);
+    m_vTrackWorker->setDetector(m_detector);
     m_vSearchWorker->setOCR(m_OCR);
 }
 

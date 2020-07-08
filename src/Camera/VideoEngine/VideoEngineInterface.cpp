@@ -7,9 +7,13 @@
 #include "../GimbalController/GimbalInterface.h"
 #include "Camera/GimbalController/GimbalInterface.h"
 #include "Bytes/ByteManipulation.h"
+#ifndef rad2Deg
+#define rad2Deg 57.2957795f
+#endif
 VideoEngine::VideoEngine(QObject *parent) : QObject(parent)
 {
-
+    m_targetLocation = new TargetLocalization();
+    m_targetLocation->visionViewInit(0.006f,1920,1080);
 }
 GimbalInterface* VideoEngine::gimbal(){
     return m_gimbal;
@@ -164,17 +168,39 @@ void VideoEngine::slTrackStateFound(int _id, double _px, double _py, double _oW,
     //    printf("%s]\r\n",__func__);
     if(m_gimbal != nullptr){
         m_gimbal->lockScreenPoint(_id,_px,_py,_oW,_oH,_w,_h);
+        if(m_targetLocation!= nullptr){
+            double uavPosition[2];
+            uavPosition[0] = m_gimbal->context()->m_latitude;
+            uavPosition[1] = m_gimbal->context()->m_longitude;
+            double center[2];
+            m_targetLocation->targetLocationMain(
+                        _px,_py,
+                        m_gimbal->context()->m_hfov[m_gimbal->context()->m_sensorID] / rad2Deg,
+                        m_gimbal->context()->m_rollOffset / rad2Deg,
+                        m_gimbal->context()->m_pitchOffset / rad2Deg,
+                        m_gimbal->context()->m_yawOffset / rad2Deg,
+                        m_gimbal->context()->m_panPosition / rad2Deg,
+                        m_gimbal->context()->m_tiltPosition / rad2Deg,
+                        uavPosition[0],
+                        uavPosition[1],
+                        m_gimbal->context()->m_altitudeOffset,
+                        0,
+                        center
+                    );
+            updateTrackObjectInfo("Object","RECT",QVariant(QRect(
+                                                               static_cast<int>(_px-_oW/2),
+                                                               static_cast<int>(_py-_oH/2),
+                                                               static_cast<int>(_oW),
+                                                               static_cast<int>(_oH)))
+                                  );
+            updateTrackObjectInfo("Object","LATITUDE",QVariant(center[0]));
+            updateTrackObjectInfo("Object","LONGIITUDE",QVariant(center[1]));
+            updateTrackObjectInfo("Object","SPEED",QVariant(_py));
+            updateTrackObjectInfo("Object","ANGLE",QVariant(_px));
+        }
+
     }
-    updateTrackObjectInfo("Object","RECT",QVariant(QRect(
-                                                       static_cast<int>(_px-_oW/2),
-                                                       static_cast<int>(_py-_oH/2),
-                                                       static_cast<int>(_oW),
-                                                       static_cast<int>(_oH)))
-                          );
-    updateTrackObjectInfo("Object","LATITUDE",QVariant(20.975092+_px/1000000));
-    updateTrackObjectInfo("Object","LONGIITUDE",QVariant(105.307680+_py/1000000));
-    updateTrackObjectInfo("Object","SPEED",QVariant(_py));
-    updateTrackObjectInfo("Object","ANGLE",QVariant(_px));
+
     Q_EMIT trackStateFound(_id,_px,_py,_oW, _oH, _w, _h);
 }
 int VideoEngine::addVideoRender(VideoRender *viewer){

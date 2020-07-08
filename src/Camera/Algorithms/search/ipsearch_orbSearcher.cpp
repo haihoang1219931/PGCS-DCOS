@@ -129,6 +129,7 @@ namespace objsearch {
 
     bool ORBSearcher::update( cv::Mat &_inputImg, std::vector<cv::Rect> &obj_roi){
         if(_inputImg.empty() || obj_roi.empty()){
+            std::cout << "Input wrong!" << std::endl;
             return false;
         }
         cv::Rect uBox = obj_roi[0];
@@ -389,14 +390,14 @@ namespace objsearch {
         std::vector<std::vector<cv::KeyPoint> > ssKeypoints;
         std::vector<cv::Mat> ssDescriptors;
         if(suggestObjectSet.empty()){
-            std::vector<cv::KeyPoint> searchKeypoints;
-            cv::Mat searchDescriptors;
-            m_orbGlobalSearch.setObjColor(m_objectColor);
-            m_orbGlobalSearch.detectAndCompute(_inputImg, cv::noArray(), searchKeypoints, searchDescriptors);
-            if(!searchKeypoints.empty()){
-                ssKeypoints.push_back(searchKeypoints);
-                ssDescriptors.push_back(searchDescriptors);
-            }
+//            std::vector<cv::KeyPoint> searchKeypoints;
+//            cv::Mat searchDescriptors;
+//            m_orbGlobalSearch.setObjColor(m_objectColor);
+//            m_orbGlobalSearch.detectAndCompute(_inputImg, cv::noArray(), searchKeypoints, searchDescriptors);
+//            if(!searchKeypoints.empty()){
+//                ssKeypoints.push_back(searchKeypoints);
+//                ssDescriptors.push_back(searchDescriptors);
+//            }
         }else{
             for(auto r : suggestObjectSet){
                 std::vector<cv::KeyPoint> searchKeypoints;

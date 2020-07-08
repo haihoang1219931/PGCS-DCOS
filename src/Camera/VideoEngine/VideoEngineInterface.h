@@ -34,6 +34,7 @@
 #include "../Cache/GstFrameCacheItem.h"
 #include "../../../Files/PlateLog.h"
 #include "../VideoDisplay/VideoRender.h"
+#include "Camera/TargetLocation/TargetLocalization.h"
 #include <opencv2/core.hpp>
 #include "Setting/config.h"
 class VRTSPServer;
@@ -227,6 +228,9 @@ protected:
 
     // Config
     Config* m_config = nullptr;
+
+    // Target localization
+    TargetLocalization* m_targetLocation = nullptr;
 };
 
 #endif // VIDEOENGINEINTERFACE_H

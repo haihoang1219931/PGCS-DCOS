@@ -279,10 +279,10 @@ bool VFrameGrabber::initPipeline()
     }
     createFolder("img");
     createFolder("plates");
-    std::string m_pipelineStr = m_ip + std::string(" ! appsink name=mysink async=false sync=")+
+    std::string m_pipelineStr = m_ip + std::string(" ! appsink name=mysink async=true sync=")+
         (QString::fromStdString(m_ip).contains("filesrc")?std::string("true"):std::string("false"))+""
-        " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
-        " appsrc name=klvsrc ! mux. "
+//        " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
+//        " appsrc name=klvsrc ! mux. "
             ;
     printf("\nReading pipeline: %s\r\n", m_pipelineStr.data());
     m_pipeline = GST_PIPELINE(gst_parse_launch(m_pipelineStr.data(), &m_err));
