@@ -745,7 +745,8 @@ ApplicationWindow {
 
                 ObjectsOnScreen{
                     anchors.fill: parent
-                    visible: camState.gcsTargetLocalization
+//                    visible: camState.gcsTargetLocalization
+                    visible: false
                     player: cameraController.videoEngine
                 }
             }
