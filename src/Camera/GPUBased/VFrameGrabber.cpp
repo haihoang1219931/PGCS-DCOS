@@ -392,4 +392,5 @@ void VFrameGrabber::stopPipeline()
     if (m_loop != nullptr &&  g_main_loop_is_running(m_loop) == TRUE) {
         g_main_loop_quit(m_loop);
     }
+    m_stop = true;
 }
