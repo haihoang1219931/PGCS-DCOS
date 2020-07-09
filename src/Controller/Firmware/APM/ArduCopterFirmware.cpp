@@ -346,11 +346,13 @@ void ArduCopterFirmware::setGimbalAngle(float pan, float tilt)
 
 void ArduCopterFirmware::setGimbalRate(float pan, float tilt)
 {
+
     if(m_gimbalCurrentMode == "RATE_MODE")
-    {
+    {        
+        printf("ArduCopterFirmware::%s panRate=[%f] tiltRate=[%f]\r\n",__func__,pan,tilt);
+        setGimbalMove(-pan,tilt);    
         m_gimbalLastPan = -pan;
         m_gimbalLastTilt = tilt;
-        setGimbalMove(-pan,tilt);    
     }
 }
 
@@ -372,9 +374,8 @@ void ArduCopterFirmware::setGimbalMode(QString mode)
 
 void ArduCopterFirmware::setGimbalMove(float pan, float tilt)
 {
-
-//    printf("%s - pan: %5.1f , tilt: %5.1f\r\n",__func__,pan,tilt);
-    float mode_mavlink_targeting = static_cast<float>(MAV_MOUNT_MODE_MAVLINK_TARGETING);
+    printf("%s - pan: %f , tilt: %f\r\n",__func__,pan,tilt);
+//    float mode_mavlink_targeting = static_cast<float>(MAV_MOUNT_MODE_MAVLINK_TARGETING);
 //    m_vehicle->sendMavCommand(m_vehicle->gimbalComponentId(),MAV_CMD_DO_MOUNT_CONTROL,
 //                              false,tilt,0,-pan,0,0,0,mode_mavlink_targeting);
     mavlink_message_t msg;

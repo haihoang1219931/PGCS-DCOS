@@ -1843,6 +1843,7 @@ Flickable {
             console.log("Error creating object");
         }
         else {
+
             map.addMapItem(targetPolygonObject)
             targetPolygonObject.z=UIConstants.z_targetPolygon
             targetPolygon =  targetPolygonObject

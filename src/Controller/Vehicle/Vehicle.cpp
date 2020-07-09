@@ -1999,7 +1999,7 @@ void Vehicle::_handleCommandAck(mavlink_message_t &message)
     bool showError = false;
     mavlink_command_ack_t ack;
     mavlink_msg_command_ack_decode(&message, &ack);
-    printf("%s ack.command[%d]\r\n", __func__, ack.command);
+//    printf("%s ack.command[%d]\r\n", __func__, ack.command);
     if (ack.command == MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES && ack.result != MAV_RESULT_ACCEPTED) {
         // We aren't going to get a response back for capabilities, so stop waiting for it before we ask for mission items
         //        qCDebug(VehicleLog) << QStringLiteral("Vehicle responded to MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES with error(%1). Setting no capabilities. Starting Plan request.").arg(ack.result);

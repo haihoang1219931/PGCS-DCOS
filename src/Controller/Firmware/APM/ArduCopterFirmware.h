@@ -162,7 +162,7 @@ private:
     QTimer m_gimbalHearbeatTimer;
     float m_gimbalLastPan = 0;
     float m_gimbalLastTilt = 0;
-    QString m_gimbalCurrentMode = "UNKNOWN";
+    QString m_gimbalCurrentMode = "RATE_MODE";
     QString m_gimbalSetMode = "UNKNOWN";
 
 };

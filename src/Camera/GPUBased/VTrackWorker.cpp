@@ -349,68 +349,70 @@ void VTrackWorker::run()
                     cv::Rect trackRectTmp(lockPoint.x-m_trackSize/2,
                                           lockPoint.y-m_trackSize/2,
                                           m_trackSize,m_trackSize);
-                    /** --- Object detect
-                     * @Editor: giapvn
-                     */
-                    // Create an area with maximum size of [512x512] or 4x m_trackSize expanded from click point for OD
-                    cv::Rect g_roi;
+                    if(m_objectSearch){
+                        /** --- Object detect
+                         * @Editor: giapvn
+                         */
+                        // Create an area with maximum size of [512x512] or 4x m_trackSize expanded from click point for OD
+                        cv::Rect g_roi;
 
-                    g_roi.x       = ((lockPoint.x - m_trackSize * 2) < 0) ? 0 : (lockPoint.x - m_trackSize *2);
-                    g_roi.y       = ((lockPoint.y - m_trackSize * 2) < 0) ? 0 : (lockPoint.y - m_trackSize*2);
-                    g_roi.width   = ((g_roi.x + m_trackSize*4) >= w) ? (w - g_roi.x) : (m_trackSize*4);
-                    g_roi.height  = ((g_roi.y + m_trackSize*4) >= h) ? (h - g_roi.y) : (m_trackSize*4);
+                        g_roi.x       = ((lockPoint.x - m_trackSize * 2) < 0) ? 0 : (lockPoint.x - m_trackSize *2);
+                        g_roi.y       = ((lockPoint.y - m_trackSize * 2) < 0) ? 0 : (lockPoint.y - m_trackSize*2);
+                        g_roi.width   = ((g_roi.x + m_trackSize*4) >= w) ? (w - g_roi.x) : (m_trackSize*4);
+                        g_roi.height  = ((g_roi.y + m_trackSize*4) >= h) ? (h - g_roi.y) : (m_trackSize*4);
 
-                    if(g_roi.width > MAX_SIZE){
-                        g_roi.x += (g_roi.width-MAX_SIZE)/2;
-                        g_roi.width = MAX_SIZE;
-                    }
-                    if(g_roi.height > MAX_SIZE){
-                        g_roi.y += (g_roi.height-MAX_SIZE)/2;
-                        g_roi.height = MAX_SIZE;
-                    }
-                    // Detect objects inside the area
-                    std::vector<bbox_t> detection_boxes = m_detector->gpu_detect_roi_I420(i420Img, g_roi, 0.2, false);
+                        if(g_roi.width > MAX_SIZE){
+                            g_roi.x += (g_roi.width-MAX_SIZE)/2;
+                            g_roi.width = MAX_SIZE;
+                        }
+                        if(g_roi.height > MAX_SIZE){
+                            g_roi.y += (g_roi.height-MAX_SIZE)/2;
+                            g_roi.height = MAX_SIZE;
+                        }
+                        // Detect objects inside the area
+                        std::vector<bbox_t> detection_boxes = m_detector->gpu_detect_roi_I420(i420Img, g_roi, 0.2, false);
 
-                    // If there is one object detected at least
-                    if(detection_boxes.size() > 0)
-                    {
-                        printf("==============================\r\n");
-                        float minDist = 1920.f;
-                        int minIdx = -1;
-                        for(size_t i = 0; i < detection_boxes.size(); i++)
+                        // If there is one object detected at least
+                        if(detection_boxes.size() > 0)
                         {
-                            if(detection_boxes[i].obj_id != 0 && detection_boxes[i].obj_id != 11)
+                            printf("==============================\r\n");
+                            float minDist = 1920.f;
+                            int minIdx = -1;
+                            for(size_t i = 0; i < detection_boxes.size(); i++)
                             {
-                                float dist = ((detection_boxes[i].x + detection_boxes[i].w/2 - lockPoint.x) * (detection_boxes[i].x + detection_boxes[i].w/2 - lockPoint.x) +
-                                              (detection_boxes[i].y + detection_boxes[i].h/2 - lockPoint.y) * (detection_boxes[i].y + detection_boxes[i].h/2 - lockPoint.y));
-                                if(dist < minDist)
+                                if(detection_boxes[i].obj_id != 0 && detection_boxes[i].obj_id != 11)
                                 {
-                                    minDist = dist;
-                                    minIdx = int(i);
+                                    float dist = ((detection_boxes[i].x + detection_boxes[i].w/2 - lockPoint.x) * (detection_boxes[i].x + detection_boxes[i].w/2 - lockPoint.x) +
+                                                  (detection_boxes[i].y + detection_boxes[i].h/2 - lockPoint.y) * (detection_boxes[i].y + detection_boxes[i].h/2 - lockPoint.y));
+                                    if(dist < minDist)
+                                    {
+                                        minDist = dist;
+                                        minIdx = int(i);
+                                    }
                                 }
                             }
+                            // If there is no valid object detected
+                            if(minIdx == -1)
+                            {
+                                if(m_gimbal->context()->m_lockMode != "VISUAL")
+                                    m_gimbal->context()->m_lockMode = "VISUAL";
+                            }
+                            else
+                            {
+                                m_objectType = int(detection_boxes[minIdx].obj_id);
+                                trackRectTmp = cv::Rect(int(detection_boxes[minIdx].x), int(detection_boxes[minIdx].y), int(detection_boxes[minIdx].w), int(detection_boxes[minIdx].h));
+                                if(m_gimbal->context()->m_lockMode != "TRACK")
+                                    m_gimbal->context()->m_lockMode = "TRACK";
+                            }
                         }
-                        // If there is no valid object detected
-                        if(minIdx == -1)
+                        // If there is no object detected then switch into Steering Mode at the click point
+                        else
                         {
                             if(m_gimbal->context()->m_lockMode != "VISUAL")
                                 m_gimbal->context()->m_lockMode = "VISUAL";
                         }
-                        else
-                        {
-                            m_objectType = int(detection_boxes[minIdx].obj_id);
-                            trackRectTmp = cv::Rect(int(detection_boxes[minIdx].x), int(detection_boxes[minIdx].y), int(detection_boxes[minIdx].w), int(detection_boxes[minIdx].h));
-                            if(m_gimbal->context()->m_lockMode != "TRACK")
-                                m_gimbal->context()->m_lockMode = "TRACK";
-                        }
+                        // Object detect ---
                     }
-                    // If there is no object detected then switch into Steering Mode at the click point
-                    else
-                    {
-                        if(m_gimbal->context()->m_lockMode != "VISUAL")
-                            m_gimbal->context()->m_lockMode = "VISUAL";
-                    }
-                    // Object detect ---
                     if(trackRectTmp.x > 0 && trackRectTmp.x + trackRectTmp.width < w &&
                             trackRectTmp.y > 0 && trackRectTmp.y + trackRectTmp.height < h){
                         if(m_tracker->isInitialized()){
@@ -507,13 +509,16 @@ void VTrackWorker::run()
                 cv::Rect trackRect = m_tracker->getPosition();
                 m_dx = trackRect.x+trackRect.width/2;
                 m_dy = trackRect.y+trackRect.height/2;
-                //                m_trackRect.x = static_cast<int>(
-                //                            static_cast<float>(m_dx) - static_cast<float>(m_trackSize)/2);
-                //                m_trackRect.y = static_cast<int>(
-                //                            static_cast<float>(m_dy) - static_cast<float>(m_trackSize)/2);
-                //                m_trackRect.width = m_trackSize;
-                //                m_trackRect.height = m_trackSize;
-                m_trackRect = trackRect;
+                if(m_objectSearch){
+                    m_trackRect = trackRect;
+                }else{
+                    m_trackRect.x = static_cast<int>(
+                                static_cast<float>(m_dx) - static_cast<float>(m_trackSize)/2);
+                    m_trackRect.y = static_cast<int>(
+                                static_cast<float>(m_dy) - static_cast<float>(m_trackSize)/2);
+                    m_trackRect.width = m_trackSize;
+                    m_trackRect.height = m_trackSize;
+                }
                 if(m_tracker->Get_State() == TRACK_INVISION || m_tracker->Get_State() == TRACK_OCCLUDED){
                     if(m_gimbal->context()->m_lockMode == "TRACK"){
 #ifdef _test_ORBSearcher_

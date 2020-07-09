@@ -168,12 +168,12 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
                     setEOZoom("ZOOM_STOP",0);
             }
         }
-        if(m_gimbalCurrentMode != "RATE_MODE")
-        {
-            m_panRateJoystick = 0;
-            m_tiltRateJoystick = 0;
-            setGimbalPreset("OFF");
-        }
+//        if(m_gimbalCurrentMode != "RATE_MODE")
+//        {
+//            m_panRateJoystick = 0;
+//            m_tiltRateJoystick = 0;
+//            setGimbalPreset("OFF");
+//        }
     }
 }
 void GremseyGimbal::connectToGimbal(Config* config){
@@ -286,9 +286,9 @@ void GremseyGimbal::setGimbalRate(float panRate,float tiltRate){
 //                              static_cast<int>(tiltRate),
 //                              static_cast<int>(panRate));
 //    }
+    printf("GremseyGimbal::%s panRate=[%f] tiltRate=[%f]\r\n",__func__,panRate,tiltRate);
     if (m_vehicle != nullptr) {
         m_vehicle->setGimbalRate(panRate,tiltRate);
-
     }
 }
 void GremseyGimbal::snapShot(){
@@ -391,7 +391,7 @@ void GremseyGimbal::setGimbalMode(QString mode)
     if(m_vehicle != nullptr &&  m_vehicle->m_firmwarePlugin != nullptr)
     {
         m_vehicle->m_firmwarePlugin->setGimbalMode(mode);
-//         printf("set preset mode \r\n");
+         printf("set preset mode \r\n");
     }
 }
 
@@ -502,6 +502,7 @@ void GremseyGimbal::handleVehicleMessage(mavlink_message_t message)
             );
             m_context->m_centerLat = center[0];
             m_context->m_centerLon = center[1];
+
             m_context->m_cornerLat[0] = corner[0][0];
             m_context->m_cornerLon[0] = corner[0][1];
             m_context->m_cornerLat[1] = corner[1][0];

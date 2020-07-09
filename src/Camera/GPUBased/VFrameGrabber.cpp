@@ -279,7 +279,7 @@ bool VFrameGrabber::initPipeline()
     }
     createFolder("img");
     createFolder("plates");
-    std::string m_pipelineStr = m_ip + std::string(" ! appsink name=mysink async=false sync=")+
+    std::string m_pipelineStr = m_ip + std::string(" ! appsink name=mysink sync=")+
         (QString::fromStdString(m_ip).contains("filesrc")?std::string("true"):std::string("false"))+""
         " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
         " appsrc name=klvsrc ! mux. "
