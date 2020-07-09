@@ -368,22 +368,15 @@ std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
     uint16_t checkSum = 0;
     struct timeval tv;
     gettimeofday(&tv,NULL);
-    uint64_t timestamp = (1000000*tv.tv_sec) + tv.tv_usec;
-    printf("");
-//    timespec ts;
-//    timespec_get(&ts,TIME_UTC);
-//    uint64_t timestamp = ts.tv_sec * 1000000 + ts.tv_nsec/1000;
+    int localHour,gmtHour;
+    time_t t = time(0);
+    struct tm * lcl = localtime(&t);
+    localHour = lcl->tm_hour;
 
+    struct tm * gmt = gmtime(&t);
+    gmtHour = gmt->tm_hour;
 
-//    printf();
-//    int localHour,gmtHour;
-//    time_t t = time(0);
-//    struct tm * lcl = localtime(&t);
-//    localHour = lcl->tm_hour;
-
-//    struct tm * gmt = gmtime(&t);
-//    gmtHour = gmt->tm_hour;
-//    uint64_t timestamp = (t + (localHour-gmtHour)*3600)*1000000+ ts.tv_nsec/1000;
+    uint64_t timestamp = (1000000*(tv.tv_sec+(localHour-gmtHour)*3600)) + tv.tv_usec;
     std::string missionID = gimbal->context()->m_missionID.toStdString();
     std::string platformTailNumber = gimbal->context()->m_platformTailNumber.toStdString();
     float m_platformHeadingAngle = gimbal->context()->m_yawOffset;

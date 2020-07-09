@@ -51,7 +51,6 @@ private:
     void enableDigitalZoom(bool enable);
 private:
     QTimer* m_timerQueryZoom;
-    GRGimbalController* m_gimbal;
     SensorController* m_sensor;
     QVector<int> m_zoom;
     QMap<int,int> m_mapZoom;

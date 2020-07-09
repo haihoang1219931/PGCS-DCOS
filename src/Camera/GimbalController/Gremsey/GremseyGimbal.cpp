@@ -142,10 +142,10 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
         float hfov = m_context->m_hfov[m_context->m_sensorID];
         float panRateScale = (alphaSpeed * hfov * x / m_context->m_hfovMax[m_context->m_sensorID]);
         float tiltRateScale = (alphaSpeed *  hfov * y / m_context->m_hfovMax[m_context->m_sensorID]);
-                        printf("GREMSY hfov[%.02f] hfovMax[%.02f] x[%.02f] y[%.02f] z[%.02f] panRateScale[%.02f] tiltRateScale[%.02f]\r\n",
-                               hfov,m_context->m_hfovMax[m_context->m_sensorID],
-                                x,y,z,
-                                panRateScale,tiltRateScale);
+//                        printf("GREMSY hfov[%.02f] hfovMax[%.02f] x[%.02f] y[%.02f] z[%.02f] panRateScale[%.02f] tiltRateScale[%.02f]\r\n",
+//                               hfov,m_context->m_hfovMax[m_context->m_sensorID],
+//                                x,y,z,
+//                                panRateScale,tiltRateScale);
 
         if(m_videoEngine == nullptr
                 || m_context->m_lockMode == "FREE"){
@@ -168,12 +168,12 @@ void GremseyGimbal::handleAxisValueChanged(int axisID, float value){
                     setEOZoom("ZOOM_STOP",0);
             }
         }
-//        if(m_gimbalCurrentMode != "RATE_MODE")
-//        {
-//            m_panRateJoystick = 0;
-//            m_tiltRateJoystick = 0;
-//            setGimbalPreset("OFF");
-//        }
+        if(m_gimbalCurrentMode != "RATE_MODE")
+        {
+            m_panRateJoystick = 0;
+            m_tiltRateJoystick = 0;
+            setGimbalPreset("OFF");
+        }
     }
 }
 void GremseyGimbal::connectToGimbal(Config* config){
@@ -184,13 +184,10 @@ void GremseyGimbal::connectToGimbal(Config* config){
     m_timerQueryZoom->setSingleShot(false);
 
     m_config = config;
-    m_gimbal = new GRGimbalController();
     printf("Gimbal[%s:%d]\r\n",m_config->value("Settings:GimbalIP:Value:data").toString().toStdString().c_str(),
            m_config->value("Settings:GimbalPortIn:Value:data").toInt());
     printf("Sensor[%s:%d]\r\n",m_config->value("Settings:SensorIP:Value:data").toString().toStdString().c_str(),
            m_config->value("Settings:SensorPortIn:Value:data").toInt());
-    m_gimbal->setupTCP(m_config->value("Settings:GimbalIP:Value:data").toString(),
-                       m_config->value("Settings:GimbalPortIn:Value:data").toInt());
     m_sensor = new SensorController();
     m_sensor->connectToHost(m_config->value("Settings:SensorIP:Value:data").toString(),
                             m_config->value("Settings:SensorPortIn:Value:data").toInt());
@@ -200,8 +197,7 @@ void GremseyGimbal::connectToGimbal(Config* config){
     setEOZoom("",1);
 }
 void GremseyGimbal::disconnectGimbal(){
-    if(m_gimbal==nullptr)
-        return;
+
 }
 
 void GremseyGimbal::changeSensor(QString sensorID){
@@ -286,7 +282,7 @@ void GremseyGimbal::setGimbalRate(float panRate,float tiltRate){
 //                              static_cast<int>(tiltRate),
 //                              static_cast<int>(panRate));
 //    }
-    printf("GremseyGimbal::%s panRate=[%f] tiltRate=[%f]\r\n",__func__,panRate,tiltRate);
+//    printf("GremseyGimbal::%s panRate=[%f] tiltRate=[%f]\r\n",__func__,panRate,tiltRate);
     if (m_vehicle != nullptr) {
         m_vehicle->setGimbalRate(panRate,tiltRate);
     }

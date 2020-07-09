@@ -113,7 +113,7 @@ gboolean VFrameGrabber::needKlv(void* userPointer)
 {
     VFrameGrabber *itseft = (VFrameGrabber *)userPointer;
     GstAppSrc* appsrc = itseft->m_klvAppSrc;
-    std::vector<uint8_t> klvData = VideoEngine::encodeMeta(m_gimbal);
+    std::vector<uint8_t> klvData = VideoEngine::encodeMeta(itseft->m_gimbal);
     printf("%s [%d]\r\n",__func__,itseft->m_metaID);
     GstBuffer *buffer = gst_buffer_new_allocate(nullptr, klvData.size(), nullptr);
     GstMapInfo map;
