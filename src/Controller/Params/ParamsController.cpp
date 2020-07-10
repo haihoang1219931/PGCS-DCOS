@@ -15,7 +15,9 @@ ParamsController::ParamsController(Vehicle *vehicle)
 ParamsController::~ParamsController(){
 
 }
-
+bool ParamsController::containKey(QString paramName){
+    return _paramMap.keys().contains(paramName);
+}
 void ParamsController::refreshAllParameters(uint8_t componentId)
 {
     printf("%s\r\n",__func__);

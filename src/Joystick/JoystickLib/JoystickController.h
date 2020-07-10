@@ -151,5 +151,4 @@ public:
   bool sample(JoystickEvent* event);
 
 };
-
 #endif

@@ -27,17 +27,24 @@ class PlanController;
 class IOFlightController;
 class FirmwarePlugin;
 class FirmwarePluginManager;
-
+class JoystickThreaded;
 class Vehicle : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(Vehicle*             uav                         READ uav            WRITE setUav)
+    Q_PROPERTY(JoystickThreaded*    joystick                    READ joystick       WRITE setJoystick)
     Q_PROPERTY(IOFlightController*  communication               READ communication      WRITE setCommunication)
     Q_PROPERTY(PlanController*      planController              READ planController     WRITE setPlanController)
     Q_PROPERTY(ParamsController*    paramsController            READ paramsController   WRITE setParamsController)
     Q_PROPERTY(QStringList          flightModes                 READ flightModes                                    NOTIFY flightModesChanged)
     Q_PROPERTY(QStringList          flightModesOnAir            READ flightModesOnAir                               NOTIFY flightModesOnAirChanged)
     Q_PROPERTY(QString              flightMode                  READ flightMode         WRITE setFlightMode         NOTIFY flightModeChanged)
+    Q_PROPERTY(float                rcinChan1                   READ rcinChan1                                      NOTIFY rcinChan1Changed)
+    Q_PROPERTY(float                rcinChan2                   READ rcinChan2                                      NOTIFY rcinChan2Changed)
+    Q_PROPERTY(float                rcinChan3                   READ rcinChan3                                      NOTIFY rcinChan3Changed)
+    Q_PROPERTY(float                rcinChan4                   READ rcinChan4                                      NOTIFY rcinChan4Changed)
+    Q_PROPERTY(bool                 useJoystick                 READ useJoystick        WRITE setUseJoystick        NOTIFY useJoystickChanged)
+    Q_PROPERTY(bool                 pic                         READ pic                                            NOTIFY picChanged)
     Q_PROPERTY(bool                 armed                       READ armed                                          NOTIFY armedChanged)
     Q_PROPERTY(bool                 landed                      READ landed                                         NOTIFY landedChanged)
     Q_PROPERTY(QGeoCoordinate       coordinate                  READ coordinate                                     NOTIFY coordinateChanged)
@@ -364,6 +371,11 @@ public:
 public:
     Vehicle* uav();
     void setUav(Vehicle* uav);
+    JoystickThreaded* joystick();
+    void setJoystick(JoystickThreaded* joystick);
+    bool useJoystick(void){ return _useJoystick;}
+    void setUseJoystick(bool enable){ _useJoystick = enable; Q_EMIT useJoystickChanged(_useJoystick); }
+    bool pic(void){ return _pic;}
     ParamsController* paramsController();
     void setParamsController(ParamsController* paramsController);
     PlanController* planController();
@@ -371,6 +383,10 @@ public:
     IOFlightController* communication();
     void setCommunication(IOFlightController* com);
     ParamsController* params();
+    float rcinChan1(){return _rcinChan1;}
+    float rcinChan2(){return _rcinChan2;}
+    float rcinChan3(){return _rcinChan3;}
+    float rcinChan4(){return _rcinChan4;}
     bool armed(void) { return _armed; }
     Q_INVOKABLE void setArmed(bool armed);
 
@@ -538,6 +554,12 @@ Q_SIGNALS:
     void propertiesModelChanged();
     void propertiesShowCountChanged();
     void paramsModelChanged();
+    void picChanged();
+    void useJoystickChanged(bool enable);
+    void rcinChan1Changed();
+    void rcinChan2Changed();
+    void rcinChan3Changed();
+    void rcinChan4Changed();
 public Q_SLOTS:
     void _loadDefaultParamsShow();
     void _setPropertyValue(QString name,QString value,QString unit);
@@ -550,6 +572,8 @@ public Q_SLOTS:
     void requestDataStream(int messageID, int hz, int enable = 1);
     void _startPlanRequest(void);
     void _mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t totalReceived, uint64_t totalLoss, float lossPercent);
+    void handlePIC();
+    void handleUseJoystick(bool useJoystick);
 public:
     IOFlightController* m_com = nullptr;
     FirmwarePlugin*      m_firmwarePlugin = nullptr;
@@ -739,6 +763,13 @@ private:
     QMap<QString,int> _paramsMap;
     int _propertiesShowCount = 0;
     bool _requestPlanAfterParams = false;
+    JoystickThreaded* m_joystick = nullptr;
+    bool _pic = false;
+    bool _useJoystick = true;
+    float _rcinChan1 = 0;
+    float _rcinChan2 = 0;
+    float _rcinChan3 = 0;
+    float _rcinChan4 = 0;
 };
 
 #endif // VEHICLE_H

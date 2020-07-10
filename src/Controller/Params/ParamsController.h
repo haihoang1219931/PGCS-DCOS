@@ -29,6 +29,7 @@ public:
     /// Re-request the full set of parameters from the autopilot
     void refreshAllParameters(uint8_t componentID = MAV_COMP_ID_ALL);
     QVariant getParam(QString paramName);
+    bool containKey(QString paramName);
 Q_SIGNALS:
     void parametersReadyChanged(bool parametersReady);
     void missingParametersChanged(bool missingParameters);

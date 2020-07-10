@@ -36,7 +36,7 @@ public:
         QRTL          = 21,
         modeCount
     };
-    explicit QuadPlaneFirmware(FirmwarePlugin *parent = nullptr);
+    QuadPlaneFirmware(Vehicle* vehicle = nullptr);
     QString flightMode(int flightModeId) override;
     bool flightModeID(QString flightMode,int* base_mode,int* custom_mode) override;
     void initializeVehicle(Vehicle* vehicle) override;
@@ -119,8 +119,12 @@ public:
 Q_SIGNALS:
 
 public Q_SLOTS:
-
-
+    void sendJoystickData();
+    void sendClearRC();
+    void handleJSButton(int id, bool clicked) override;
+    void handleUseJoystick(bool enable) override;
+private:
+    float convertRC(float input, int channel);
 };
 
 #endif // QUADPLANEFIRMWARE_H

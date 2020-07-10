@@ -1,9 +1,13 @@
 #include "FirmwarePlugin.h"
 #include "../Params/Fact.h"
 #include "../Vehicle/Vehicle.h"
-FirmwarePlugin::FirmwarePlugin(QObject *parent) : QObject(parent)
+FirmwarePlugin::FirmwarePlugin(Vehicle* vehicle)
 {
+    setVehicle(vehicle);
     loadFromFile("conf/Properties.conf");
+}
+void FirmwarePlugin::setVehicle(Vehicle *vehicle){
+    m_vehicle = vehicle;
 }
 void FirmwarePlugin::loadFromFile(QString fileName){
     if(_listParamShow.size() != 0){

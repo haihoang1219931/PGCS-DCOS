@@ -35,7 +35,7 @@ public:
         GUIDED_NOGPS= 20,
         SAFE_RTL   = 21,   //Safe Return to Launch
     };
-    explicit ArduCopterFirmware(FirmwarePlugin *parent = nullptr);
+    ArduCopterFirmware(Vehicle* vehicle = nullptr);
     QString flightMode(int flightModeId) override;
     bool flightModeID(QString flightMode,int* base_mode,int* custom_mode) override;
     void sendHomePosition(Vehicle* vehicle,QGeoCoordinate location) override;

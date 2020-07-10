@@ -1,7 +1,8 @@
 #include "ArduCopterFirmware.h"
 #include "../../Vehicle/Vehicle.h"
-ArduCopterFirmware::ArduCopterFirmware(FirmwarePlugin *parent) : FirmwarePlugin(parent)
+ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
 {
+    m_vehicle = vehicle;
     m_rtlAltParamName = "RTL_ALT";
     m_airSpeedParamName = "WPNAV_SPEED";
     m_mapFlightMode.insert(STABILIZE, "Stabilize");

@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QMap>
 #include <QGeoCoordinate>
+#include <QTimer>
 
 class Vehicle;
 class Fact;
@@ -13,7 +14,7 @@ class FirmwarePlugin : public QObject
 {
     Q_OBJECT
 public:
-    explicit FirmwarePlugin(QObject *parent = nullptr);
+    FirmwarePlugin(Vehicle* vehicle = nullptr);
     typedef enum {
         SetFlightModeCapability =           1 << 0, ///< FirmwarePlugin::setFlightMode method is supported
         PauseVehicleCapability =            1 << 1, ///< Vehicle supports pausing at current location
@@ -21,6 +22,7 @@ public:
         OrbitModeCapability =               1 << 3, ///< Vehicle supports orbit mode
         TakeoffVehicleCapability =          1 << 4, ///< Vehicle supports guided takeoff
     } FirmwareCapabilities;
+    virtual void setVehicle(Vehicle *vehicle);
     virtual void loadFromFile(QString fileName);
     virtual void saveToFile(QString fileName,QList<Fact*> _listParamShow);
     virtual QList<Fact*> listParamsShow();
@@ -156,7 +158,8 @@ public:
 Q_SIGNALS:
 
 public Q_SLOTS:
-
+    virtual void handleJSButton(int id, bool clicked){}
+    virtual void handleUseJoystick(bool enable){}
 public:
     QString m_rtlAltParamName;
     QString m_airSpeedParamName;
@@ -165,6 +168,11 @@ public:
     QMap<int,QString> m_mapFlightModeOnAir;
     QMap<int,QString> m_mapFlightModeOnGround;
     QList<Fact*> _listParamShow;
+    Vehicle *m_vehicle = nullptr;
+    QTimer m_joystickTimer;
+    QTimer m_joystickClearRCTimer;
+    int m_sendClearRCCount = 0;
+    int m_sendClearRCMax = 5;
 };
 
 #endif // FIRMWAREPLUGIN_H

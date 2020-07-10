@@ -2,13 +2,14 @@
 
 #include "../Firmware/FirmwarePluginManager.h"
 #include "../Firmware/FirmwarePlugin.h"
+#include "src/Joystick/JoystickLib/JoystickThreaded.h"
 Vehicle::Vehicle(QObject *parent) : QObject(parent)
 {
 
     _defaultComponentId = MAV_COMP_ID_ALL;
     m_uas = new UAS();
     m_firmwarePluginManager = new FirmwarePluginManager();
-    m_firmwarePlugin = m_firmwarePluginManager->firmwarePluginForAutopilot(_firmwareType, static_cast<MAV_TYPE>(_vehicleType));
+    m_firmwarePlugin = m_firmwarePluginManager->firmwarePluginForAutopilot(this,_firmwareType, static_cast<MAV_TYPE>(_vehicleType));
     _loadDefaultParamsShow();
     Q_EMIT flightModesChanged();
     Q_EMIT flightModesOnAirChanged();
@@ -34,8 +35,29 @@ void Vehicle::setUav(Vehicle* uav){
     if(uav != nullptr){
         m_uav = uav;
     }
-
 }
+JoystickThreaded* Vehicle::joystick(){
+    return m_joystick;
+}
+void Vehicle::setJoystick(JoystickThreaded* joystick){
+    m_joystick = joystick;
+    _pic = m_joystick->pic();
+    Q_EMIT picChanged();
+    _useJoystick = m_joystick->useJoystick();
+    Q_EMIT useJoystickChanged(_useJoystick);
+    connect(m_joystick,&JoystickThreaded::picChanged,this,&Vehicle::handlePIC);
+    connect(m_joystick,&JoystickThreaded::useJoystickChanged,this,&Vehicle::handleUseJoystick);
+}
+void Vehicle::handlePIC(){
+    _pic = m_joystick->pic();
+    Q_EMIT picChanged();
+    printf("%s = %s\r\n",__func__,_pic?"true":"false");
+}
+void Vehicle::handleUseJoystick(bool useJoystick){
+    _useJoystick = useJoystick;
+    Q_EMIT useJoystickChanged(_useJoystick);
+}
+
 ParamsController *Vehicle::paramsController()
 {
     return m_paramsController;
@@ -829,7 +851,7 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
             printf("Change firmware plugin to _vehicleType=%d\r\n", _vehicleType);
             FirmwarePlugin *newFimware =
                         m_firmwarePluginManager->firmwarePluginForAutopilot(
-                        _firmwareType, static_cast<MAV_TYPE>(heartbeat.type));
+                        this,_firmwareType, static_cast<MAV_TYPE>(heartbeat.type));
             if (newFimware != nullptr) {
                 if (m_firmwarePlugin != nullptr)
                     delete m_firmwarePlugin;

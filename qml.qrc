@@ -83,6 +83,7 @@
         <file alias="CustomViews/Components/FlatRectangle.qml">src/QmlControls/CustomViews/Components/FlatRectangle.qml</file>
         <file alias="CustomViews/Components/ToastLabel.qml">src/QmlControls/CustomViews/Components/ToastLabel.qml</file>
         <file alias="CustomViews/Components/QLabeledTextInput.qml">src/QmlControls/CustomViews/Components/QLabeledTextInput.qml</file>
+        <file alias="CustomViews/Components/QComboBox.qml">src/QmlControls/CustomViews/Components/QComboBox.qml</file>
         <file alias="CustomViews/Components/qmldir">src/QmlControls/CustomViews/Components/qmldir</file>
         <file alias="CustomViews/Advanced/AdvancedConfig.qml">src/QmlControls/CustomViews/Advanced/AdvancedConfig.qml</file>
         <file alias="CustomViews/Advanced/ConfigOverlay.qml">src/QmlControls/CustomViews/Advanced/ConfigOverlay.qml</file>
