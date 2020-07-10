@@ -37,6 +37,7 @@ Item {
     property int    _batteryPercent:       20
     property bool   _isMessageImportant:    false
     property int    _flightTime: 0 // second
+    property bool   _oldLandedFlag: true
     property int    _second: 0
     property int    _minute: 0
     property int    _hour: 0
@@ -202,6 +203,25 @@ Item {
         }
 
         //----------- Division
+        EngineIndicator{
+            id: btnEngine
+            anchors.right: btnLinkStatus.left
+            anchors.rightMargin: UIConstants.sRect * 3 / 2
+            anchors.top: parent.top
+            anchors.topMargin: 5
+            height: parent.height
+            width: parent.height
+            iconSize: UIConstants.sRect*3/2
+            z: navbarWrapper.z + 1
+            showIndicator: dialogShow === "DIALOG_ENGINE"
+            onClicked: {
+                if(dialogShow !== "DIALOG_ENGINE"){
+                    dialogShow = "DIALOG_ENGINE";
+                }else{
+                    dialogShow = "";
+                }
+            }
+        }
         SignalIndicator{
             id: btnLinkStatus
             anchors.right: btnMessage.left
@@ -575,13 +595,14 @@ Item {
                 Connections{
                     target: vehicle
                     onLandedChanged:{
-                        if(vehicle.landed === false){
+                        if(vehicle.landed === false && _oldLandedFlag === true){
+                            console.log("flight time started")
                             _flightTime = 0;
                             timerFlightTime.start();
-                        }else{
+                        }else if(vehicle.landed === true){
                             timerFlightTime.stop();
                         }
-
+                        _oldLandedFlag = vehicle.landed;
                     }
                 }
 

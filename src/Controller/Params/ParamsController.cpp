@@ -20,6 +20,7 @@ void ParamsController::refreshAllParameters(uint8_t componentId)
 {
     printf("%s\r\n",__func__);
     _parametersReady = false;
+    onebyone = false;
     _loadRetry = 0;
     _totalParamCount = 0;
     _paramsReceivedCount = 0;
@@ -117,12 +118,16 @@ void ParamsController::_updateParamTimeout(void){
 void ParamsController::_initialRequestMissingParams(void){
     printf("%s\r\n",__func__);
     QList<int> missParams;
+    onebyone = true;
     for(int componentId=0; componentId< _totalParamCount; componentId++){
         // check params loaded in every single component
         if(!_debugCacheMap.keys().contains(componentId)){
             missParams.push_back(componentId);
         }
     }
+    if(_totalLoopParamFail>=8)//~5s
+    {
+        //_totalLoopParamFail = 0;
     printf("Missing %d/%d = %f params\r\n",missParams.size(),_totalParamCount,
            static_cast<float>(missParams.size())/static_cast<float>(_totalParamCount));
     if(static_cast<float>(missParams.size()) < static_cast<float>(_totalParamCount) * 0.25f){
@@ -132,12 +137,10 @@ void ParamsController::_initialRequestMissingParams(void){
             _readParameterRaw("",missParams[i]);
             if(i==10) break;
         }
-        sleep(1);
+        //sleep(1);
     }else{
 
-        if(_totalLoopParamFail>=16)//~10s
-        {
-            _totalLoopParamFail = 0;
+        _totalLoopParamFail = 0;
             printf("Download missing params\r\n");
             _missingParameters = true;
             Q_EMIT missingParametersChanged(_missingParameters);
@@ -278,6 +281,8 @@ void ParamsController::_handleParamRequest(mavlink_message_t msg)
 //            _updateParamTimer.start();
             Q_EMIT _vehicle->paramsModelChanged();
         }
+        if(onebyone == false)
+            _totalLoopParamFail = 0;
     }else{
 //        printf("Current param [%s] update\r\n",rawValue.param_id);
         QString paramID = _convertParamID(rawValue.param_id);

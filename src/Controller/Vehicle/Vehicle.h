@@ -70,6 +70,10 @@ class Vehicle : public QObject
     Q_PROPERTY(float                courseOverGroundGPS         READ courseOverGroundGPS                            NOTIFY courseOverGroundGPSChanged)
     Q_PROPERTY(int                  countGPS                    READ countGPS                                       NOTIFY countGPSChanged)
     Q_PROPERTY(QString              lockGPS                     READ lockGPS                                        NOTIFY lockGPSChanged)
+
+    Q_PROPERTY(float                fuelUsed                    READ fuelUsed                                       NOTIFY fuelUsedChanged)
+    Q_PROPERTY(float                fuelAvailble                READ fuelAvailble                                   NOTIFY fuelAvailbleChanged)
+
     Q_PROPERTY(QString              messageSecurity             READ messageSecurity    WRITE setMessageSecurity    NOTIFY messageSecurityChanged)
     Q_PROPERTY(UAS*                 uas                         READ uas                                            NOTIFY uasChanged)
     Q_PROPERTY(QStringList          unhealthySensors            READ unhealthySensors                               NOTIFY unhealthySensorsChanged)
@@ -243,6 +247,10 @@ public:
     float courseOverGroundGPS(){ return _courseOverGroundGPS;}
     int   countGPS(){ return _countGPS;}
     QString lockGPS(){ return _lockGPS;}
+
+    float fuelUsed(){return _fuelUsed;}
+    float fuelAvailble(){return _fuelAvailble;}
+
     QString messageSecurity(){ return _messageSecurity;}
     void setMessageSecurity(QString messageSecurity){
         if(_messageSecurity != messageSecurity){
@@ -312,6 +320,8 @@ public:
     Q_INVOKABLE void abortLanding(double climbOutAltitude);
 
     Q_INVOKABLE void startMission(void);
+
+    Q_INVOKABLE void startEngine(void);
 
     /// Alter the current mission item on the vehicle
     Q_INVOKABLE void setCurrentMissionSequence(int seq);
@@ -500,6 +510,10 @@ Q_SIGNALS:
     void courseOverGroundGPSChanged();
     void countGPSChanged();
     void lockGPSChanged();
+
+    void fuelUsedChanged();
+    void fuelAvailbleChanged();
+
     void uasChanged();
     void firmwareVersionChanged(void);
     void firmwareCustomVersionChanged(void);
@@ -616,6 +630,10 @@ private:
     void _handleCameraImageCaptured(const mavlink_message_t& message);
     void _handleADSBVehicle(const mavlink_message_t& message);
     void _handlePMU(mavlink_message_t& message);
+    void _handlePW(mavlink_message_t& message);
+    void _handleECU(mavlink_message_t& message);
+    void _handleAUX_ADC(mavlink_message_t& message);
+
     void _updateArmed(bool armed);
     // data
     MAV_AUTOPILOT       _firmwareType = MAV_AUTOPILOT_ARDUPILOTMEGA;
@@ -693,6 +711,9 @@ private:
     float           _courseOverGroundGPS = 0;
     int             _countGPS  = 0;
     QString         _lockGPS;
+    float           _fuelUsed=0;
+    float           _fuelAvailble=0;
+
     QString         _messageSecurity = "MSG_INFO";
     float           _sonarRange = 0;
     int             _cameraLinkLast = 0;

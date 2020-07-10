@@ -1072,7 +1072,7 @@ ApplicationWindow {
             width: UIConstants.sRect*20
             color: UIConstants.transparentBlue
             border.width: 1
-            border.color: UIConstants.grayColor
+            border.color: UIConstants.navIconColor //UIConstants.grayColor
             radius: UIConstants.rectRadius
             anchors {
                 bottom: parent.top;
@@ -1400,6 +1400,32 @@ ApplicationWindow {
             }
 
         }
+
+        onDoStartEngine: {
+            if(!isShowConfirm){
+                isShowConfirm = true;
+                console.log("Do Start Engine");
+                var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
+                var confirmDialogObj = compo.createObject(parent,{
+                    "title":"Are you sure to want to start Engine\n",
+                    "type": "CONFIRM",
+                    "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                    "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                    "z":200});
+                confirmDialogObj.clicked.connect(function (type,func){
+                    if(func === "DIALOG_OK"){
+                        vehicle.startEngine()
+//                            navbar.startFlightTimer();
+                    }else if(func === "DIALOG_CANCEL"){
+
+                    }
+                    confirmDialogObj.destroy();
+                    compo.destroy();
+                    footerBar.isShowConfirm = false;
+                });
+            }
+        }
+
         onDoNewMission: {
             mapPane.clearWPs();
 //            mapPane.clearMarkers();

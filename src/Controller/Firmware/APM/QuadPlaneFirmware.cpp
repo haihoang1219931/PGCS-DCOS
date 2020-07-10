@@ -55,11 +55,11 @@ void QuadPlaneFirmware::initializeVehicle(Vehicle* vehicle){
     vehicle->requestDataStream(MAV_DATA_STREAM_RAW_SENSORS,     2);
     vehicle->requestDataStream(MAV_DATA_STREAM_EXTENDED_STATUS, 2);
     vehicle->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS,     2);
-    vehicle->requestDataStream(MAV_DATA_STREAM_RAW_CONTROLLER,  10);
-    vehicle->requestDataStream(MAV_DATA_STREAM_POSITION,        3);
-    vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA1,          10);
-    vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA2,          10);
-    vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA3,          10);
+    vehicle->requestDataStream(MAV_DATA_STREAM_RAW_CONTROLLER,  2);
+    vehicle->requestDataStream(MAV_DATA_STREAM_POSITION,        5);
+    vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA1,          6);
+    vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA2,          6);
+    vehicle->requestDataStream(MAV_DATA_STREAM_EXTRA3,          2);
 //    Q_UNUSED(vehicle);
 }
 QString QuadPlaneFirmware::gotoFlightMode(void) const
@@ -154,6 +154,11 @@ void QuadPlaneFirmware::abortLanding(double climbOutAltitude){
 
 void QuadPlaneFirmware::startMission(Vehicle* vehicle){
     vehicle->sendMavCommand(vehicle->defaultComponentId(), MAV_CMD_MISSION_START, true /*show error */);
+}
+
+void QuadPlaneFirmware::startEngine(Vehicle *vehicle)
+{
+    vehicle->sendMavCommand(vehicle->defaultComponentId(),MAV_CMD_START_ENGINE,true);//send command start engine
 }
 
 void QuadPlaneFirmware::setCurrentMissionSequence(Vehicle* vehicle, int seq){

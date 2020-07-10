@@ -86,6 +86,9 @@ public:
 
     void startMission(Vehicle* vehicle) override;
 
+    /// command start engine
+    void startEngine(Vehicle* vehicle) override;
+
     /// Alter the current mission item on the vehicle
     void setCurrentMissionSequence(Vehicle* vehicle, int seq) override;
 

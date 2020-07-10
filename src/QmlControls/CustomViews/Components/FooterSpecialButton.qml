@@ -35,6 +35,7 @@ Item {
     property bool isEnable: true
     property bool fontBold: false
     property int fontSize: UIConstants.fontSize * 3 / 2
+    property var midColor:  UIConstants.textFooterValueColor
 
     //--- Signals
     signal clicked()
@@ -73,7 +74,7 @@ Item {
                 font.pixelSize: rootItem.fontSize
                 font.bold: rootItem.fontBold
                 font.family: UIConstants.appFont
-                color: isEnable ? UIConstants.textFooterValueColor : UIConstants.textFooterValueColorDisable
+                color: isEnable ? midColor : UIConstants.textFooterValueColorDisable
             }
 
             //--- Bottom value

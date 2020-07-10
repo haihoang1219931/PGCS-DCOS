@@ -70,6 +70,8 @@ public:
     QMap<QString, mavlink_param_value_t> _paramMap;
     QTimer _waitingParamTimeoutTimer;
     QTimer _updateParamTimer;
+
+    bool onebyone = false;
 };
 
 #endif // PARAMSCONTROLLER_H

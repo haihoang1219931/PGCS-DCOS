@@ -68,6 +68,8 @@ Item {
     signal doDeleteMarker()
     signal doNextWP()
 
+    signal doStartEngine()
+
 
     function getFlightAltitudeTarget(){
         return Math.round(btnFlightAltitude.topValue);
@@ -382,6 +384,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         Layout.alignment: Qt.AlignTop
+                        midColor: UIConstants.normalValueColor
                         topValue: "100"
                         middleValue: (vehicle?Number(vehicle.altitudeRelative).toFixed(0).toString():"0")
                         bottomValue: "m"
@@ -431,6 +434,8 @@ Item {
                                                    (vehicle.vehicleType === 2?vehicle.groundSpeed:vehicle.airSpeed)
                                                    *3.6).toString():"0")
                         bottomValue: "km/h"
+                        midColor:  (middleValue < UIConstants.speedMinValue)? UIConstants.dangerousValueColor:
+                                    ((middleValue > UIConstants.speedGoodValue)? UIConstants.normalValueColor : UIConstants.warningValueColor)
                         isEnable: vehicle.link
                                   &&
                                   ((vehicle.vehicleType === 2 && vehicle.flightMode === "Guided")
@@ -608,6 +613,17 @@ Item {
 //                        timeout: 1000
                         onClicked: {
                             rootItem.doArm(!rootItem._armed);
+                        }
+                    }
+                    FooterButton {
+                        id: btnStartEngine
+                        Layout.preferredWidth: parent.height
+                        Layout.preferredHeight: parent.height
+//                        icon:
+                        btnText: "Start\nEngine"
+                        isEnable: vehicle.link
+                        onClicked: {
+                            rootItem.doStartEngine()
                         }
                     }
                     StackLayout{

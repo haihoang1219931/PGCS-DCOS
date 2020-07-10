@@ -61,6 +61,36 @@ void FirmwarePlugin::loadFromFile(QString fileName){
         _listParamShow.append(new Fact(true,"PMU_vBatt12S","0","V"));
         _listParamShow.append(new Fact(true,"PMU_vBatA","0","V"));
         _listParamShow.append(new Fact(true,"PMU_vBatB","0","V"));
+
+        //pw
+        _listParamShow.append(new Fact(true,"PW_VBattA","0","V"));
+        _listParamShow.append(new Fact(true,"PW_IBattA","0","A"));
+        _listParamShow.append(new Fact(true,"PW_EBattA","0","mAh"));
+        _listParamShow.append(new Fact(true,"PW_VBattB","0","V"));
+        _listParamShow.append(new Fact(true,"PW_IBattB","0","A"));
+        _listParamShow.append(new Fact(true,"PW_EBattB","0","mAh"));
+        _listParamShow.append(new Fact(true,"PW_VBat12S","0","V"));
+        _listParamShow.append(new Fact(true,"PW_Temp","0","°C"));
+
+        //ecu
+        _listParamShow.append(new Fact(true,"ECU_Throttle","0","%"));
+        _listParamShow.append(new Fact(true,"ECU_FuelUsed","0","l"));
+        _listParamShow.append(new Fact(true,"ECU_CHT","0","°C"));
+        _listParamShow.append(new Fact(true,"ECU_FuelPressure","0","Bar"));
+        _listParamShow.append(new Fact(true,"ECU_Hobbs","0","s"));
+        _listParamShow.append(new Fact(true,"ECU_CPULoad","0","%"));
+        _listParamShow.append(new Fact(true,"ECU_ChargeTemp","0","°C"));
+        _listParamShow.append(new Fact(true,"ECU_FlowRate","0"," "));
+        _listParamShow.append(new Fact(true,"ECU_Rpm","0","RPM"));
+        _listParamShow.append(new Fact(true,"ECU_ThrottlePulse","0"," "));
+
+        //aux_adc
+        _listParamShow.append(new Fact(true,"ADC_FuelLevel","0"," "));
+        _listParamShow.append(new Fact(true,"ADC_RawFuelLevel","0"," "));
+        _listParamShow.append(new Fact(true,"ADC_EnvTemp","0"," "));
+        _listParamShow.append(new Fact(true,"ADC_EnvRH","0"," "));
+
+
         _listParamShow.append(new Fact(false,"PTU_Alt","0","m"));
         _listParamShow.append(new Fact(false,"PTU_Heading","0","m"));
         _listParamShow.append(new Fact(false,"PTU_Press","0","m"));
@@ -250,6 +280,11 @@ void FirmwarePlugin::abortLanding(double climbOutAltitude){
 }
 
 void FirmwarePlugin::startMission(Vehicle* vehicle){
+    Q_UNUSED(vehicle);
+}
+
+void FirmwarePlugin::startEngine(Vehicle *vehicle)
+{
     Q_UNUSED(vehicle);
 }
 

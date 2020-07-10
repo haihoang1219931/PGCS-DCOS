@@ -123,6 +123,8 @@ public:
 
     virtual void startMission(Vehicle* vehicle);
 
+    virtual void startEngine(Vehicle* vehicle);
+
     /// Alter the current mission item on the vehicle
     virtual void setCurrentMissionSequence(Vehicle* vehicle, int seq);
 

@@ -85,7 +85,7 @@ Item {
         id:                 gpsIcon
         anchors.top:        parent.top
         source:             "qrc:/qmlimages/ToolBar/Images/Gps.svg"
-        color:              vehicle && vehicle.countGPS > 0 ? UIConstants.greenColor : UIConstants.textColor
+        color:              vehicle && vehicle.countGPS > 0 ? UIConstants.navIconColor : UIConstants.textColor
         anchors.horizontalCenter: parent.horizontalCenter
         width:              iconSize
         height:             iconSize
@@ -105,7 +105,7 @@ Item {
         Label {
             anchors.horizontalCenter:   hdopValue.horizontalCenter
             visible:                    vehicle && !isNaN(vehicle.hdopGPS)
-            color:                      vehicle && vehicle.countGPS > 0 ? UIConstants.greenColor : UIConstants.textColor
+            color:                      vehicle && vehicle.countGPS > 0 ? UIConstants.navIconColor : UIConstants.textColor
             text:                       vehicle ? Number(vehicle.countGPS).toString() : ""
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize
@@ -114,7 +114,7 @@ Item {
         Label {
             id:         hdopValue
             visible:    vehicle && !isNaN(vehicle.hdopGPS)
-            color:      vehicle && vehicle.countGPS > 0 ? UIConstants.greenColor : UIConstants.textColor
+            color:      vehicle && vehicle.countGPS > 0 ? UIConstants.navIconColor : UIConstants.textColor
             text:       vehicle ? vehicle.hdopGPS.toFixed(1) : ""
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize

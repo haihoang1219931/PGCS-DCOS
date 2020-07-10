@@ -56,7 +56,7 @@ Rectangle{
             text: "This is sample notification"
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont
-            color: UIConstants.textColor
+            color: UIConstants.navIconColor
             wrapMode: Text.NoWrap
             z: 1000
         }

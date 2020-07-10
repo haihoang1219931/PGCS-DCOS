@@ -35,10 +35,10 @@
         <file alias="CustomViews/Dialogs/LoiterRadiusEditor.qml">src/QmlControls/CustomViews/Dialogs/LoiterRadiusEditor.qml</file>
         <file alias="CustomViews/Dialogs/WaypointEditor.qml">src/QmlControls/CustomViews/Dialogs/WaypointEditor.qml</file>
         <file alias="CustomViews/Dialogs/FileDialog.qml">src/QmlControls/CustomViews/Dialogs/FileDialog.qml</file>
-        <file alias="CustomViews/Dialogs/MapDialog.qml">src/QmlControls/CustomViews/Dialogs/MapDialog.qml</file>   
-        <file alias="CustomViews/Dialogs/ObjectInformation.qml">src/QmlControls/CustomViews/Dialogs/ObjectInformation.qml</file>   
-        <file alias="CustomViews/Dialogs/ObjectsOnMap.qml">src/QmlControls/CustomViews/Dialogs/ObjectsOnMap.qml</file>   
-        <file alias="CustomViews/Dialogs/ObjectsOnScreen.qml">src/QmlControls/CustomViews/Dialogs/ObjectsOnScreen.qml</file>                           
+        <file alias="CustomViews/Dialogs/MapDialog.qml">src/QmlControls/CustomViews/Dialogs/MapDialog.qml</file>
+        <file alias="CustomViews/Dialogs/ObjectInformation.qml">src/QmlControls/CustomViews/Dialogs/ObjectInformation.qml</file>
+        <file alias="CustomViews/Dialogs/ObjectsOnMap.qml">src/QmlControls/CustomViews/Dialogs/ObjectsOnMap.qml</file>
+        <file alias="CustomViews/Dialogs/ObjectsOnScreen.qml">src/QmlControls/CustomViews/Dialogs/ObjectsOnScreen.qml</file>
         <file alias="CustomViews/Dialogs/qmldir">src/QmlControls/CustomViews/Dialogs/qmldir</file>
         <file alias="CustomViews/Bars/ListPlatesLog.qml">src/QmlControls/CustomViews/Bars/ListPlatesLog.qml</file>
         <file alias="CustomViews/Bars/MapControl.qml">src/QmlControls/CustomViews/Bars/MapControl.qml</file>
@@ -73,16 +73,16 @@
         <file alias="CustomViews/Components/SubRight.qml">src/QmlControls/CustomViews/Components/SubRight.qml</file>
         <file alias="CustomViews/Components/SubNav.qml">src/QmlControls/CustomViews/Components/SubNav.qml</file>
         <file alias="CustomViews/Components/SwitchFlatButton.qml">src/QmlControls/CustomViews/Components/SwitchFlatButton.qml</file>
-        <file alias="CustomViews/Components/SystemTime.qml">src/QmlControls/CustomViews/Components/SystemTime.qml</file>      
+        <file alias="CustomViews/Components/SystemTime.qml">src/QmlControls/CustomViews/Components/SystemTime.qml</file>
         <file alias="CustomViews/Components/CoordinateEditor.qml">src/QmlControls/CustomViews/Components/CoordinateEditor.qml</file>
-        <file alias="CustomViews/Components/QTextInput.qml">src/QmlControls/CustomViews/Components/QTextInput.qml</file>            
-        <file alias="CustomViews/Components/ScrollBar.qml">src/QmlControls/CustomViews/Components/ScrollBar.qml</file>        
+        <file alias="CustomViews/Components/QTextInput.qml">src/QmlControls/CustomViews/Components/QTextInput.qml</file>
+        <file alias="CustomViews/Components/ScrollBar.qml">src/QmlControls/CustomViews/Components/ScrollBar.qml</file>
         <file alias="CustomViews/Components/QLabel.qml">src/QmlControls/CustomViews/Components/QLabel.qml</file>
         <file alias="CustomViews/Components/FlatButtonText.qml">src/QmlControls/CustomViews/Components/FlatButtonText.qml</file>
         <file alias="CustomViews/Components/FlatCorner.qml">src/QmlControls/CustomViews/Components/FlatCorner.qml</file>
         <file alias="CustomViews/Components/FlatRectangle.qml">src/QmlControls/CustomViews/Components/FlatRectangle.qml</file>
-        <file alias="CustomViews/Components/ToastLabel.qml">src/QmlControls/CustomViews/Components/ToastLabel.qml</file>                        
-        <file alias="CustomViews/Components/QLabeledTextInput.qml">src/QmlControls/CustomViews/Components/QLabeledTextInput.qml</file>                
+        <file alias="CustomViews/Components/ToastLabel.qml">src/QmlControls/CustomViews/Components/ToastLabel.qml</file>
+        <file alias="CustomViews/Components/QLabeledTextInput.qml">src/QmlControls/CustomViews/Components/QLabeledTextInput.qml</file>
         <file alias="CustomViews/Components/qmldir">src/QmlControls/CustomViews/Components/qmldir</file>
         <file alias="CustomViews/Advanced/AdvancedConfig.qml">src/QmlControls/CustomViews/Advanced/AdvancedConfig.qml</file>
         <file alias="CustomViews/Advanced/ConfigOverlay.qml">src/QmlControls/CustomViews/Advanced/ConfigOverlay.qml</file>
@@ -96,7 +96,7 @@
         <file alias="CustomViews/Advanced/ConfigMotionCParams.qml">src/QmlControls/CustomViews/Advanced/ConfigMotionCParams.qml</file>
         <file alias="CustomViews/Advanced/ConfigSearchPlate.qml">src/QmlControls/CustomViews/Advanced/ConfigSearchPlate.qml</file>
         <file alias="CustomViews/Advanced/PlateIDItem.qml">src/QmlControls/CustomViews/Advanced/PlateIDItem.qml</file>
-        <file alias="CustomViews/Advanced/qmldir">src/QmlControls/CustomViews/Advanced/qmldir</file>        
+        <file alias="CustomViews/Advanced/qmldir">src/QmlControls/CustomViews/Advanced/qmldir</file>
         <file alias="CustomViews/Pages/PreflightCheck.qml">src/QmlControls/CustomViews/Pages/PreflightCheck.qml</file>
         <file alias="CustomViews/Pages/ModeCheck.qml">src/QmlControls/CustomViews/Pages/ModeCheck.qml</file>
         <file alias="CustomViews/Pages/Propellers.qml">src/QmlControls/CustomViews/Pages/Propellers.qml</file>
@@ -132,12 +132,12 @@
         <file alias="CustomViews/Configs/PageConfig.qml">src/QmlControls/CustomViews/Configs/PageConfig.qml</file>
         <file alias="CustomViews/Configs/ThemeConfig.qml">src/QmlControls/CustomViews/Configs/ThemeConfig.qml</file>
         <file alias="CustomViews/Configs/ParamsConfig.qml">src/QmlControls/CustomViews/Configs/ParamsConfig.qml</file>
-        <file alias="CustomViews/Configs/AppConfig.qml">src/QmlControls/CustomViews/Configs/AppConfig.qml</file>        
+        <file alias="CustomViews/Configs/AppConfig.qml">src/QmlControls/CustomViews/Configs/AppConfig.qml</file>
         <file alias="CustomViews/Configs/qmldir">src/QmlControls/CustomViews/Configs/qmldir</file>
         <file alias="CustomViews/ToolBar/GPSIndicator.qml">src/QmlControls/CustomViews/ToolBar/GPSIndicator.qml</file>
         <file alias="CustomViews/ToolBar/SignalIndicator.qml">src/QmlControls/CustomViews/ToolBar/SignalIndicator.qml</file>
-        <file alias="CustomViews/ToolBar/MessageIndicator.qml">src/QmlControls/CustomViews/ToolBar/MessageIndicator.qml</file>        
-        <file alias="CustomViews/ToolBar/qmldir">src/QmlControls/CustomViews/ToolBar/qmldir</file>        
+        <file alias="CustomViews/ToolBar/MessageIndicator.qml">src/QmlControls/CustomViews/ToolBar/MessageIndicator.qml</file>
+        <file alias="CustomViews/ToolBar/qmldir">src/QmlControls/CustomViews/ToolBar/qmldir</file>
         <file alias="Maplib/transform.js">src/Maplib/transform.js</file>
         <file alias="UC/OnlineCCs.qml">src/QmlControls/UC/OnlineCCs.qml</file>
         <file alias="UC/OnlineFCSs.qml">src/QmlControls/UC/OnlineFCSs.qml</file>
@@ -183,7 +183,8 @@
         <file alias="qmlimages/vehicleArrowOpaque.svg">src/QmlControls/CustomViews/assets/images/widgets/vehicleArrowOpaque.svg</file>
         <file alias="qmlimages/vehicleArrowOutline.svg">src/QmlControls/CustomViews/assets/images/widgets/vehicleArrowOutline.svg</file>
         <file alias="qmlimages/ZoomMinus.svg">src/QmlControls/CustomViews/assets/images/widgets/ZoomMinus.svg</file>
-        <file alias="qmlimages/ZoomPlus.svg">src/QmlControls/CustomViews/assets/images/widgets/ZoomPlus.svg</file>        
+        <file alias="qmlimages/ZoomPlus.svg">src/QmlControls/CustomViews/assets/images/widgets/ZoomPlus.svg</file>
+        <file alias="CustomViews/ToolBar/EngineIndicator.qml">src/QmlControls/CustomViews/ToolBar/EngineIndicator.qml</file>
     </qresource>
     <qresource prefix="/qmlimages">
         <file alias="markers/AntiClockwiseCircle.png">src/QmlControls/CustomViews/assets/images/markers/AntiClockwiseCircle.png</file>
@@ -207,7 +208,7 @@
         <file alias="markers/WarningIconHighlighted.png">src/QmlControls/CustomViews/assets/images/markers/WarningIconHighlighted.png</file>
         <file alias="markers/WarningIcon.png">src/QmlControls/CustomViews/assets/images/markers/WarningIcon.png</file>
         <file alias="land.png">src/QmlControls/CustomViews/assets/images/land.png</file>
-        <file alias="home.png">src/QmlControls/CustomViews/assets/images/home.png</file>        
+        <file alias="home.png">src/QmlControls/CustomViews/assets/images/home.png</file>
         <file alias="takeoff.png">src/QmlControls/CustomViews/assets/images/takeoff.png</file>
         <file alias="ToolBar/Images/Gps.svg">src/QmlControls/CustomViews/ToolBar/Images/Gps.svg</file>
         <file alias="ToolBar/Images/Megaphone.svg">src/QmlControls/CustomViews/ToolBar/Images/Megaphone.svg</file>
@@ -262,5 +263,6 @@
         <file alias="objects/human.png">src/QmlControls/CustomViews/assets/objects/human.png</file>
         <file alias="objects/jet.png">src/QmlControls/CustomViews/assets/objects/jet.png</file>
         <file alias="objects/tree.png">src/QmlControls/CustomViews/assets/objects/tree.png</file>
+        <file alias="ToolBar/Images/engine.svg">src/QmlControls/CustomViews/ToolBar/Images/engine.svg</file>
     </qresource>
 </RCC>

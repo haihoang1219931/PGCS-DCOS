@@ -3,3 +3,4 @@ Module CustomViews.ToolBar
 GPSIndicator           1.0 GPSIndicator.qml    
 MessageIndicator       1.0 MessageIndicator.qml
 SignalIndicator        1.0 SignalIndicator.qml
+EngineIndicator        1.0 EngineIndicator.qml

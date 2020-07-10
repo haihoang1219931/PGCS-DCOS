@@ -176,6 +176,12 @@ void Vehicle::startMission(void)
         m_firmwarePlugin->startMission(this);
 }
 
+void Vehicle::startEngine(void)
+{
+    if (m_firmwarePlugin != nullptr)
+        m_firmwarePlugin->startEngine(this);
+}
+
 void Vehicle::setCurrentMissionSequence(int seq)
 {
     if (m_firmwarePlugin != nullptr)
@@ -519,6 +525,16 @@ void Vehicle::_mavlinkMessageReceived(mavlink_message_t message)
     case MAVLINK_MSG_ID_PMU:
         _handlePMU(message);
         break;
+    case MAVLINK_MSG_ID_PW:
+        _handlePW(message);
+        break;
+    case MAVLINK_MSG_ID_ECU:
+        _handleECU(message);
+        break;
+    case MAVLINK_MSG_ID_AUX_ADC:
+        _handleAUX_ADC(message);
+        break;
+
     case MAVLINK_MSG_ID_COMMAND_ACK:
         _handleCommandAck(message);
         break;
@@ -1477,8 +1493,88 @@ void Vehicle::_handlePMU(mavlink_message_t &message)
     _setPropertyValue("PMU_frame_ok",
             QString::fromStdString(std::to_string(pmu.PMU_frame_ok)),"");
     _setPropertyValue("PMU_com",
-                   QString::fromStdString(std::to_string(pmu.PMU_com)),"");
+                      QString::fromStdString(std::to_string(pmu.PMU_com)),"");
 }
+
+void Vehicle::_handlePW(mavlink_message_t &message)
+{
+    mavlink_pw_t pw;
+    mavlink_msg_pw_decode(&message, &pw);
+#ifdef DEBUG_FUNC
+    printf("%s \r\n", __func__);
+#endif
+    _setPropertyValue("PW_VBattA",
+                   QString::fromStdString(std::to_string(pw.VbattA)),"V");
+    _setPropertyValue("PW_IBattA",
+                   QString::fromStdString(std::to_string(pw.IbattA)),"A");
+    _setPropertyValue("PW_EBattA",
+                   QString::fromStdString(std::to_string(pw.EbattA)),"mAh");
+    _setPropertyValue("PW_VBattB",
+                   QString::fromStdString(std::to_string(pw.VbattB)),"V");
+    _setPropertyValue("PW_IBattB",
+                   QString::fromStdString(std::to_string(pw.IbattB)),"A");
+    _setPropertyValue("PW_EBattB",
+                   QString::fromStdString(std::to_string(pw.EbattB)),"mAh");
+    _setPropertyValue("PW_VBat12S",
+                   QString::fromStdString(std::to_string(pw.Vbatt12S)),"V");
+    _setPropertyValue("PW_Temp",
+                   QString::fromStdString(std::to_string(pw.pw_temp)),"°C");
+    }
+
+void Vehicle::_handleECU(mavlink_message_t &message)
+{
+    mavlink_ecu_t ecu;
+    mavlink_msg_ecu_decode(&message, &ecu);
+#ifdef DEBUG_FUNC
+    printf("%s \r\n", __func__);
+#endif
+
+    _fuelUsed = static_cast<float>(ecu.fuelUsed)  / 750;
+
+    _setPropertyValue("ECU_Throttle",
+                   QString::fromStdString(std::to_string(ecu.throttle)),"%");
+    _setPropertyValue("ECU_FuelUsed",
+                   QString::fromStdString(std::to_string(_fuelUsed)),"l");
+    _setPropertyValue("ECU_CHT",
+                   QString::fromStdString(std::to_string(ecu.CHT)),"°C");
+    _setPropertyValue("ECU_FuelPressure",
+                   QString::fromStdString(std::to_string(ecu.fuelPressure)),"Bar");
+    _setPropertyValue("ECU_Hobbs",
+                   QString::fromStdString(std::to_string(ecu.hobbs)),"s");
+    _setPropertyValue("ECU_CPULoad",
+                   QString::fromStdString(std::to_string(ecu.cpuLoad)),"%");
+    _setPropertyValue("ECU_ChargeTemp",
+                   QString::fromStdString(std::to_string(ecu.chargeTemp)),"°C");
+    _setPropertyValue("ECU_FlowRate",
+                   QString::fromStdString(std::to_string(ecu.flowRate))," ");
+    _setPropertyValue("ECU_Rpm",
+                   QString::fromStdString(std::to_string(ecu.rpm)),"RPM");
+    _setPropertyValue("ECU_ThrottlePulse",
+                   QString::fromStdString(std::to_string(ecu.throttlePulse))," ");
+
+
+    Q_EMIT fuelUsedChanged();
+}
+
+
+void Vehicle::_handleAUX_ADC(mavlink_message_t &message)
+{
+    mavlink_aux_adc_t aux_adc;
+    mavlink_msg_aux_adc_decode(&message, &aux_adc);
+#ifdef DEBUG_FUNC
+    printf("%s \r\n", __func__);
+#endif
+    _setPropertyValue("ADC_FuelLevel",
+                   QString::fromStdString(std::to_string(aux_adc.Fuel_level))," ");
+    _setPropertyValue("ADC_RawFuelLevel",
+                   QString::fromStdString(std::to_string(aux_adc.Raw_fuel_level))," ");
+    _setPropertyValue("ADC_EnvTemp",
+                   QString::fromStdString(std::to_string(aux_adc.env_temp))," ");
+    _setPropertyValue("ADC_EnvRH",
+                   QString::fromStdString(std::to_string(aux_adc.env_RH))," ");
+
+}
+
 void Vehicle::_handleAutopilotVersion(mavlink_message_t &message)
 {
 #ifdef DEBUG_FUNC

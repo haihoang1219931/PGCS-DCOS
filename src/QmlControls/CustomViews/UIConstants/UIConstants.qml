@@ -129,6 +129,13 @@ QtObject {
     readonly property color tableHeaderColor:      "#3c6382"
     readonly property color blackColor:            "#2f3640"
     readonly property color textSideActive:        "#23B99A"
+    readonly property color normalValueColor:      "#60bfeb"
+    readonly property color warningValueColor:     "yellow"
+    readonly property color dangerousValueColor:   "red"
+
+    //------- nav icon color
+    readonly property color navIconColor:          "#60bfeb" //"#67A0F5"
+
     //------- Button
     readonly property color btnCateColor:          "#CAD3C8"
     readonly property color btnSelectedColor:      "#38729A"
@@ -144,6 +151,12 @@ QtObject {
 
     //------- Button
     readonly property color savingBtn:             "#487eb0"
+
+    //button value
+    readonly property real  speedMinValue:           70
+
+    readonly property real  speedGoodValue:          85
+
     //------- Others
     readonly property color grayColor:             "gray"
     readonly property color greyColor:             "grey"
