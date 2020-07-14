@@ -1867,6 +1867,10 @@ void Vehicle::setUseJoystick(bool enable){
 bool Vehicle::pic(void){
     return _pic;
 }
+void Vehicle::setPic(bool pic){
+    _pic = pic;
+    picChanged();
+}
 QString Vehicle::flightMode(void)
 {
     //    return _firmwarePlugin->flightMode(_base_mode, _custom_mode);

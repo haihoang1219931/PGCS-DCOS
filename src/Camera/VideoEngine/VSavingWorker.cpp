@@ -57,7 +57,7 @@ void VSavingWorker::onNeedData(GstAppSrc *_appSrc, guint _size, gpointer _uData)
 
     m_currID = gstBuff.getIndex();
     GstBuffer *img_save = gst_buffer_copy(gstBuff.getGstBuffer());
-    printf("\n===> Saving Video:  |  id = %d",m_currID);
+//    printf("\n===> Saving Video:  |  id = %d",m_currID);
     GstClockTime gstDuration = GST_SECOND / m_frameRate;
     GST_BUFFER_PTS(img_save) = (m_countFrame + 1) * gstDuration;
     GST_BUFFER_DTS(img_save) = (m_countFrame + 1) * gstDuration;

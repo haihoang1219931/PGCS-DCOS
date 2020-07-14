@@ -44,7 +44,7 @@ class Vehicle : public QObject
     Q_PROPERTY(float                rcinChan3                   READ rcinChan3                                      NOTIFY rcinChan3Changed)
     Q_PROPERTY(float                rcinChan4                   READ rcinChan4                                      NOTIFY rcinChan4Changed)
     Q_PROPERTY(bool                 useJoystick                 READ useJoystick        WRITE setUseJoystick        NOTIFY useJoystickChanged)
-    Q_PROPERTY(bool                 pic                         READ pic                                            NOTIFY picChanged)
+    Q_PROPERTY(bool                 pic                         READ pic                WRITE setPic                NOTIFY picChanged)
     Q_PROPERTY(bool                 armed                       READ armed                                          NOTIFY armedChanged)
     Q_PROPERTY(bool                 landed                      READ landed                                         NOTIFY landedChanged)
     Q_PROPERTY(QGeoCoordinate       coordinate                  READ coordinate                                     NOTIFY coordinateChanged)
@@ -398,6 +398,7 @@ public:
     bool useJoystick(void);
     void setUseJoystick(bool enable);
     bool pic(void);
+    void setPic(bool pic);
     bool armed(void) { return _armed; }
     Q_INVOKABLE void setArmed(bool armed);
 

@@ -36,6 +36,13 @@ QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
 //    m_mapFlightModeOnAir.insert(MANUAL,         "Manual");
 //    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
 //    m_mapFlightModeOnAir.insert(QHOVER,         "QuadPlane Hover");
+
+    connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
+    connect(&m_joystickClearRCTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendClearRC);
+    m_joystickTimer.start();
+    if(m_vehicle->joystick()!=nullptr){
+        m_vehicle->setFlightMode(m_vehicle->pic()?"Loiter":"Guided");
+    }
 }
 QString QuadPlaneFirmware::flightMode(int flightModeId){
     if(m_mapFlightMode.contains(flightModeId)) {
@@ -247,10 +254,7 @@ void QuadPlaneFirmware::sendJoystickData(){
     if (m_vehicle == nullptr)
         return;
     if(m_vehicle->pic()){
-//        printf("m_vehicle->pic()=%s\r\n",m_vehicle->pic()?"true":"false");
-//        if(m_vehicle->flightMode()!= "Loiter" && m_vehicle->flightMode()!= "RTL"){
-//            m_vehicle->setFlightMode("Loiter");
-//        }
+
     }else{
         if(m_vehicle->flightMode() == "Loiter"){
             m_vehicle->setFlightMode("Guided");

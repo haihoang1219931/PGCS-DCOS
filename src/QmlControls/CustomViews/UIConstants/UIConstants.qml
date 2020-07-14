@@ -138,9 +138,6 @@ QtObject {
     readonly property color warningValueColor:     "yellow"
     readonly property color dangerousValueColor:   "red"
 
-    //------- nav icon color
-    readonly property color navIconColor:          "#60bfeb" //"#67A0F5"
-
     //------- Button
     readonly property color btnCateColor:          "#CAD3C8"
     readonly property color btnSelectedColor:      "#38729A"

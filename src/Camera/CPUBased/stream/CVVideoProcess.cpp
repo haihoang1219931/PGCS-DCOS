@@ -514,7 +514,7 @@ void CVVideoProcess::doWork()
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = 33333 - timeSpan.count();
-        std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
+//        std::cout << "timeSpan: " << timeSpan.count() <<std::endl;
         msleep(sleepTime/1000);
     }
 

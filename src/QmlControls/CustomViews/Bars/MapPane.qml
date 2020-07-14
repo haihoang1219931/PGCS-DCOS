@@ -597,6 +597,9 @@ Item {
             folderPath: cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder
         }
     }
+    function getTotalDistanceWP(){
+        return 0;
+    }
 
     function identifyGraphic(listGraphics,x,y){
         var result = undefined;

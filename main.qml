@@ -903,8 +903,6 @@ ApplicationWindow {
 //                }
 //            }
 
-
-
             MapPane_UAV
             {
                 id: mapPane
