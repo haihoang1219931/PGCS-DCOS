@@ -342,8 +342,14 @@ std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
     uint16_t checkSum = 0;
     struct timeval tv;
     gettimeofday(&tv,NULL);
-    uint64_t timestamp = (1000000*tv.tv_sec) + tv.tv_usec;
-    printf("");
+    int localHour,gmtHour;
+    time_t t = time(0);
+    struct tm * lcl = localtime(&t);
+    localHour = lcl->tm_hour;
+
+    struct tm * gmt = gmtime(&t);
+    gmtHour = gmt->tm_hour;
+    uint64_t timestamp = (1000000*(tv.tv_sec + (localHour-gmtHour)*3600)) + tv.tv_usec;
 //    timespec ts;
 //    timespec_get(&ts,TIME_UTC);
 //    uint64_t timestamp = ts.tv_sec * 1000000 + ts.tv_nsec/1000;
@@ -376,18 +382,25 @@ std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
     float m_frameCenterLatitude = gimbal->context()->m_centerLat;
     float m_frameCenterLongitude = gimbal->context()->m_centerLon;
     float m_frameCenterElevation = gimbal->context()->m_centerAlt;
-    float m_offsetCornerLatitudePoint1 = -gimbal->context()->m_cornerLat[0] + gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint1 = -gimbal->context()->m_cornerLon[0] + gimbal->context()->m_centerLon;
-    float m_offsetCornerLatitudePoint2 = -gimbal->context()->m_cornerLat[1] + gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint2 = -gimbal->context()->m_cornerLon[1] + gimbal->context()->m_centerLon;
-    float m_offsetCornerLatitudePoint3 = -gimbal->context()->m_cornerLat[2] + gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint3 = -gimbal->context()->m_cornerLon[2] + gimbal->context()->m_centerLon;
-    float m_offsetCornerLatitudePoint4 = -gimbal->context()->m_cornerLat[3] + gimbal->context()->m_centerLat;
-    float m_offsetCornerLongitudePoint4 = -gimbal->context()->m_cornerLon[3] + gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint1 = gimbal->context()->m_cornerLat[0] - gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint1 = gimbal->context()->m_cornerLon[0] - gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint2 = gimbal->context()->m_cornerLat[1] - gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint2 = gimbal->context()->m_cornerLon[1] - gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint3 = gimbal->context()->m_cornerLat[2] - gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint3 = gimbal->context()->m_cornerLon[2] - gimbal->context()->m_centerLon;
+    float m_offsetCornerLatitudePoint4 = gimbal->context()->m_cornerLat[3] - gimbal->context()->m_centerLat;
+    float m_offsetCornerLongitudePoint4 = gimbal->context()->m_cornerLon[3] - gimbal->context()->m_centerLon;
 
     std::vector<uint8_t> metaData;
 
-    Klv kTimeStamp(0x02,8,ByteManipulation::ToBytes(timestamp,Endianness::Little));
+    byte    swaptest[2] = {1,0};
+    bool bigendien = true;
+    if ( *(short *)swaptest == 1) {
+        bigendien = false;
+    }
+
+    Klv kTimeStamp(0x02,8,ByteManipulation::ToBytes(timestamp,
+                                                    bigendien?Endianness::Big : Endianness::Little));
     metaData.insert(metaData.end(),kTimeStamp.m_encoded.begin(),kTimeStamp.m_encoded.end());
 
     Klv kMissionID(0x03,static_cast<uint8_t>(missionID.length()),(uint8_t*)missionID.c_str());

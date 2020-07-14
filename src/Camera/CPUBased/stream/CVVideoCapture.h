@@ -53,16 +53,20 @@ class CVVideoCapture : public QObject
     public Q_SLOTS:
         void doWork();
     public:
-        void create_pipeline();
         GstPadProbeReturn pad_data_mod(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
         static GstPadProbeReturn wrap_pad_data_mod(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
         GstFlowReturn read_frame_buffer(GstAppSink *vsink, gpointer user_data);
         static GstFlowReturn wrap_read_frame_buffer(GstAppSink *vsink, gpointer user_data);
         static gboolean wrapNeedKlv(void* userPointer);
-
         static void wrapStartFeedKlv(GstElement * pipeline, guint size, void* userPointer);
-
         gboolean needKlv(void* userPointer);
+        static gboolean wrapperOnBusCall(GstBus *_bus, GstMessage *_msg,
+                                         gpointer uData);
+        gboolean onBusCall(GstBus *bus, GstMessage *msg, gpointer data);
+        static void wrapperOnEOS(_GstAppSink *_sink, void *_uData);
+        void onEOS(_GstAppSink *_sink, void *_uData);
+        GstFlowReturn onNewPreroll(GstAppSink *_sink, void *_uData);
+        static GstFlowReturn wrapperOnNewPreroll(GstAppSink *_sink, void *_uData);
         gboolean gstreamer_pipeline_operate();
         void setStateRun(bool running);
         void msleep(int ms);
@@ -90,8 +94,6 @@ private:
         //    shared_ptr<EyePhoenix::VideoSaver> m_recorder;
         GError *err = NULL;
         GMainLoop *loop  = NULL;
-        GstPipeline *pipeline = NULL;
-        GstElement *vsink = NULL;
         GstElement *m_pipeline = NULL;
         GstClockTime m_time_bef = 0;
         GstClockTime m_time = 0 ;
@@ -100,7 +102,11 @@ private:
         // metadata
         GstAppSrc* m_klvAppSrc = nullptr;
         int m_metaID = 0;
+        int m_metaPerSecond = 10;
         GimbalInterface* m_gimbal = nullptr;
+        GstBus *m_bus = nullptr;
+        GError *m_err = nullptr;
+        guint m_busWatchID;
 };
 
 #endif // CVVIDEOCAPTURE_H
