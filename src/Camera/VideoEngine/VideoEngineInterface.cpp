@@ -375,7 +375,6 @@ std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
 
     struct tm * gmt = gmtime(&t);
     gmtHour = gmt->tm_hour;
-
     uint64_t timestamp = (1000000*(tv.tv_sec+(localHour-gmtHour)*3600)) + tv.tv_usec;
     std::string missionID = gimbal->context()->m_missionID.toStdString();
     std::string platformTailNumber = gimbal->context()->m_platformTailNumber.toStdString();
@@ -406,7 +405,14 @@ std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
 
     std::vector<uint8_t> metaData;
 
-    Klv kTimeStamp(0x02,8,ByteManipulation::ToBytes(timestamp,Endianness::Little));
+    byte    swaptest[2] = {1,0};
+    bool bigendien = true;
+    if ( *(short *)swaptest == 1) {
+        bigendien = false;
+    }
+
+    Klv kTimeStamp(0x02,8,ByteManipulation::ToBytes(timestamp,
+                                                    bigendien?Endianness::Big : Endianness::Little));
     metaData.insert(metaData.end(),kTimeStamp.m_encoded.begin(),kTimeStamp.m_encoded.end());
 
     Klv kMissionID(0x03,static_cast<uint8_t>(missionID.length()),(uint8_t*)missionID.c_str());

@@ -1,5 +1,7 @@
+#include <gst/app/gstappsrc.h>
 #include "CVVideoCapture.h"
-
+#include "Camera/GimbalController/GimbalInterface.h"
+#include "Camera/VideoEngine/VideoEngineInterface.h"
 CVVideoCapture::CVVideoCapture(QObject *parent) : QObject(parent)
 {
     gst_init(0, NULL);
@@ -12,18 +14,6 @@ CVVideoCapture::~CVVideoCapture()
     //    GstPipeline *pipeline;
     //    GstElement *vsink;
     //    GstElement* mPipeline;
-}
-
-void CVVideoCapture::create_pipeline()
-{
-    /* Init gstreamer pipeline for receiver side */
-    pipeline = GST_PIPELINE(gst_pipeline_new(nullptr));
-
-    if (pipeline == NULL) {
-        g_print("gst_pipeline_new failed\r\n");
-    } else {
-        g_print("gst_pipeline_new done\r\n");
-    }
 }
 gint64 CVVideoCapture::getTotalTime()
 {
@@ -195,25 +185,118 @@ GstFlowReturn CVVideoCapture::read_frame_buffer(GstAppSink *sink, gpointer user_
 
     return GST_FLOW_OK;
 }
+gboolean CVVideoCapture::wrapNeedKlv(void* userPointer){
+//    printf("%s\r\n",__func__);
+    CVVideoCapture *itseft = (CVVideoCapture *)userPointer;
+    return itseft->needKlv(userPointer);
+}
+void CVVideoCapture::wrapStartFeedKlv(GstElement * pipeline, guint size, void* userPointer){
+//    printf("%s\r\n",__func__);
+    CVVideoCapture *itseft = (CVVideoCapture *)userPointer;
+    itseft->needKlv(userPointer);
+//    g_idle_add ((GSourceFunc) wrapNeedKlv, userPointer);
+}
+gboolean CVVideoCapture::needKlv(void* userPointer)
+{
+    CVVideoCapture *itseft = (CVVideoCapture *)userPointer;
+    GstAppSrc* appsrc = itseft->m_klvAppSrc;
+    std::vector<uint8_t> klvData = VideoEngine::encodeMeta(m_gimbal);
+    printf("%s [%d]\r\n",__func__,itseft->m_metaID);
+    GstBuffer *buffer = gst_buffer_new_allocate(nullptr, klvData.size(), nullptr);
+    GstMapInfo map;
 
+    gst_buffer_map (buffer, &map, GST_MAP_WRITE);
+    memcpy(map.data, klvData.data(), klvData.size());
+    gst_buffer_unmap (buffer, &map);
+    GstClockTime gstDuration = GST_SECOND / m_metaPerSecond;
+    GST_BUFFER_PTS (buffer) = (itseft->m_metaID) * gstDuration;
+    GST_BUFFER_DTS (buffer) = (itseft->m_metaID) * gstDuration;
+    GST_BUFFER_DURATION (buffer) = gstDuration;
+    GST_BUFFER_OFFSET(buffer) = itseft->m_metaID + 1;
+    gst_app_src_push_buffer(GST_APP_SRC(appsrc), buffer);
+    if(QString::fromStdString(m_source).contains("filesrc")){
+        int ms = 1000 / m_metaPerSecond;
+        struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+        nanosleep(&ts, NULL);
+    }
+    itseft->m_metaID ++;
+    return true;
+}
+gboolean CVVideoCapture::wrapperOnBusCall(GstBus *_bus, GstMessage *_msg,
+                                         gpointer _uData)
+{
+    CVVideoCapture *itseft = (CVVideoCapture *)_uData;
+    return itseft->onBusCall(_bus, _msg, _uData);
+}
+gboolean CVVideoCapture::onBusCall(GstBus *_bus, GstMessage *_msg,
+                                  gpointer _uData)
+{
+    GMainLoop *loop = (GMainLoop *)_uData;
+    printf("GST_MESSAGE_TYPE(_msg) = %d\r\n",GST_MESSAGE_TYPE(_msg));
+    switch (GST_MESSAGE_TYPE(_msg)) {
+    case GST_MESSAGE_EOS: {
+        g_print("End of stream\r\n");
+        g_signal_stop_emission_by_name(m_klvAppSrc, "need-data");
+//        gst_app_src_end_of_stream(m_klvAppSrc);
+        break;
+    }
 
+    case GST_MESSAGE_ERROR: {
+        gchar *debug;
+        GError *error;
+        gst_message_parse_error(_msg, &error, &debug);
+        g_free(debug);
+        g_printerr("Error: %s\r\n", error->message);
+        g_error_free(error);
+        break;
+    }
+
+    default: {
+        break;
+    }
+    }
+
+    return TRUE;
+}
+void CVVideoCapture::wrapperOnEOS(_GstAppSink *_sink, void *_uData)
+{
+    CVVideoCapture *itseft = (CVVideoCapture *)_uData;
+    return itseft->onEOS(_sink, _uData);
+}
+void CVVideoCapture::onEOS(_GstAppSink *_sink, void *_uData)
+{
+    printf("gstreamer decoder onEOS\r\n");
+    g_signal_stop_emission_by_name(m_klvAppSrc, "need-data");
+    gst_app_src_end_of_stream(m_klvAppSrc);
+}
+GstFlowReturn CVVideoCapture::onNewPreroll(GstAppSink *_sink, void *_uData)
+{
+    printf("gstreamer decoder onPreroll\r\n");
+//    gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
+    return GST_FLOW_OK;
+}
+GstFlowReturn CVVideoCapture::wrapperOnNewPreroll(GstAppSink *_sink,
+                                                 void *_uData)
+{
+    CVVideoCapture *itseft = (CVVideoCapture *)_uData;
+    return itseft->onNewPreroll(_sink, _uData);
+}
 gboolean CVVideoCapture::gstreamer_pipeline_operate()
 {
     loop = g_main_loop_new(NULL, FALSE);
     // launch pipeline
-    std::ostringstream ss;
-    // decode 02
-    //    ss << "udpsrc multicast-group="<<m_ip<<" port="<<m_port<<" ! application/x-rtp,media=video,clock-rate=90000,encoding-name=MP2T-ES ! ";
-    //    ss << "rtpjitterbuffer mode=synced ! rtpmp2tdepay ! video/mpegts ! tsdemux ! queue name=myqueue ! tee name=t t. ! h265parse ! video/x-h265,stream-format=byte-stream ! avdec_h265 max-threads=4 ! ";
-    //    ss << "appsink  name=mysink sync=false async=false ";
-    //    ss << "rtspsrc location="<<m_source<<" ! application/x-rtp,media=video,clock-rate=90000,encoding-name=H264 ! ";
-    //    ss << "rtpjitterbuffer ! rtph264depay ! tee name=t t. ! queue ! h264parse ! avdec_h264 ! ";
-    //    ss << "appsink name=mysink sync=false async=false ";
-    //    ss << "t. ! queue ! mpegtsmux ! filesink location="<<m_logFile<<".ts";
-    ss << m_source;
-    std::cout << ss.str().c_str() << std::endl;
-    m_pipeline = gst_parse_launch(ss.str().c_str(), &err);
-
+    std::string m_filename =  "flights/"+getFileNameByTime();
+    std::string m_pipelineStr = m_source + std::string(" ! appsink name=mysink async=true sync=")+
+        (QString::fromStdString(m_source).contains("filesrc")?std::string("true"):std::string("false"))+""
+        " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4"
+        " appsrc name=klvsrc ! mux. "
+            ;
+    std::cout << m_pipelineStr.c_str() << std::endl;
+    m_pipeline = gst_parse_launch(m_pipelineStr.c_str(), &err);
+    // check end of stream
+    m_bus = gst_pipeline_get_bus (GST_PIPELINE(m_pipeline));
+    m_busWatchID = gst_bus_add_watch (m_bus, wrapperOnBusCall, (void*)this);
+    gst_object_unref (m_bus);
     if (err != NULL) {
         g_print("gstreamer decoder failed to create pipeline\n");
         g_error_free(err);
@@ -222,24 +305,15 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
         g_print("gstreamer decoder create pipeline success\n");
     }
 
-    pipeline = GST_PIPELINE(m_pipeline);
+    GstAppSink *m_appsink = (GstAppSink *)gst_bin_get_by_name((GstBin *)m_pipeline, "mysink");
 
-    if (!pipeline) {
-        printf("gstreamer failed to cast GstElement into GstPipeline\n");
-        return FALSE;
-    } else {
-        g_print("gstreamer decoder create Gstpipeline success\n");
-    }
-
-    GstElement *m_sink = gst_bin_get_by_name((GstBin *)m_pipeline, "mysink");
-    GstAppSink *m_appsink = (GstAppSink *)m_sink;
-
-    if (!m_sink || !m_appsink) {
+    if (!m_appsink) {
 #ifdef DEBUG
         g_print("Fail to get element \n");
 #endif
         return FALSE;
     }
+
 
     gst_app_sink_set_drop(m_appsink, true);
     g_object_set(m_appsink, "emit-signals", TRUE, NULL);
@@ -251,7 +325,25 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
     GstAppSinkCallbacks cbs;
     memset(&cbs, 0, sizeof(GstAppSinkCallbacks));
     cbs.new_sample = wrap_read_frame_buffer;
+    cbs.eos = wrapperOnEOS;
+    cbs.new_preroll = wrapperOnNewPreroll;
     gst_app_sink_set_callbacks(m_appsink, &cbs, (void *)this, NULL);
+    // add call back save meta to file
+    m_klvAppSrc = nullptr;
+    m_klvAppSrc = (GstAppSrc *)gst_bin_get_by_name((GstBin *)m_pipeline, "klvsrc");
+    if (m_klvAppSrc == nullptr) {
+        g_print("Fail to get klvsrc \n");
+    }else{
+        gst_app_src_set_latency(m_klvAppSrc,m_metaPerSecond,30);
+        g_signal_connect (m_klvAppSrc, "need-data", G_CALLBACK (wrapStartFeedKlv), (void *)this);
+        /* set the caps on the source */
+        GstCaps *caps = gst_caps_new_simple ("meta/x-klv",
+                                             "parsed", G_TYPE_BOOLEAN, TRUE,
+                                             nullptr);
+        gst_app_src_set_caps(GST_APP_SRC(m_klvAppSrc), caps);
+        g_object_set(GST_APP_SRC(m_klvAppSrc), "format", GST_FORMAT_TIME, nullptr);
+    }
+
     const GstStateChangeReturn result = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
 
     if (result != GST_STATE_CHANGE_SUCCESS) {
@@ -259,78 +351,120 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
     }
 
     g_main_loop_run(loop);
-    gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
-    //    g_object_unref(m_sink);
-    //    g_object_unref(m_appsink);
+    gst_app_src_end_of_stream(m_klvAppSrc);
+    gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);    
+    g_object_unref(m_appsink);
     g_object_unref(m_pipeline);
-    //    g_main_loop_unref(loop);
-    //    g_object_unref(pipeline);
+    g_main_loop_unref(loop);
+    g_object_unref(m_klvAppSrc);
     printf("gstreamer setup done\n");
     return TRUE;
+}
+std::string CVVideoCapture::getFileNameByTime()
+{
+    std::string fileName = "";
+    std::time_t t = std::time(0);
+    std::tm *now = std::localtime(&t);
+    fileName += std::to_string(now->tm_year + 1900);
+    correctTimeLessThanTen(fileName, now->tm_mon + 1);
+    correctTimeLessThanTen(fileName, now->tm_mday);
+    correctTimeLessThanTen(fileName, now->tm_hour);
+    correctTimeLessThanTen(fileName, now->tm_min);
+    correctTimeLessThanTen(fileName, now->tm_sec);
+    return fileName;
+}
+void CVVideoCapture::correctTimeLessThanTen(std::string &_inputStr, int _time)
+{
+    _inputStr += "_";
+
+    if (_time < 10) {
+        _inputStr += "0";
+        _inputStr += std::to_string(_time);
+    } else {
+        _inputStr += std::to_string(_time);
+    }
 }
 void CVVideoCapture::setSource(std::string source){
     m_source = source;
     if(m_pipeline != NULL){
-        GError *err = NULL;
-        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
-        m_pipeline = gst_parse_launch(source.c_str(), &err);
-        if( err != NULL )
-        {
-#ifdef DEBUG
-            g_print("gstreamer decoder failed to reset filesrc\n");
-#endif
-            g_error_free(err);
-        }else{
-            #ifdef DEBUG
-            g_print("gstreamer decoder reset filesrc success\n");
-#endif
-        }
-        pipeline = GST_PIPELINE(m_pipeline);
+        g_main_loop_quit(loop);
+//        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
+//        std::string m_filename =  getFileNameByTime();
+//        std::string m_pipelineStr = m_source + std::string(" ! appsink name=mysink async=true sync=")+
+//            (QString::fromStdString(m_source).contains("filesrc")?std::string("true"):std::string("false"))+""
+//            " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
+//            " appsrc name=klvsrc ! mux. "
+//                ;
+//        std::cout << m_pipelineStr.c_str() << std::endl;
+//        GError *err = nullptr;
+//        m_pipeline = gst_parse_launch(m_pipelineStr.c_str(), &err);
+//        if( err != NULL )
+//        {
+//#ifdef DEBUG
+//            g_print("gstreamer decoder failed to reset filesrc\n");
+//#endif
+//            g_error_free(err);
+//        }else{
+//            #ifdef DEBUG
+//            g_print("gstreamer decoder reset filesrc success\n");
+//#endif
+//        }
+//        pipeline = GST_PIPELINE(m_pipeline);
 
-        if( !pipeline )
-        {
-            #ifdef DEBUG
-            printf("gstreamer failed to cast GstElement into GstPipeline\n");
-#endif
-        }else{
-            #ifdef DEBUG
-            g_print("gstreamer decoder create Gstpipeline success\n");
-#endif
-        }
-        GstElement *m_sink = gst_bin_get_by_name((GstBin*)m_pipeline, "mysink");
-        GstAppSink *m_appsink = (GstAppSink *)m_sink;
-        if(!m_sink || !m_appsink)
-        {
-    #ifdef DEBUG
-            g_print("Fail to get element \n");
-    #endif
-        }
-        // drop
-        gst_app_sink_set_drop(m_appsink, true);
-        g_object_set(m_appsink, "emit-signals", TRUE, NULL);
-        // check end of stream
-//        m_bus = gst_pipeline_get_bus (GST_PIPELINE(mPipeline));
-//        m_bus_watch_id = gst_bus_add_watch (m_bus, wrap_bus_call, (void*)this);
-//        gst_object_unref (m_bus);
-        // add call back received video data
-        GstAppSinkCallbacks cbs;
-        memset(&cbs, 0, sizeof(GstAppSinkCallbacks));
-        cbs.new_sample = wrap_read_frame_buffer;
-        gst_app_sink_set_callbacks(m_appsink, &cbs, (void*)this, NULL);
-        // add call back received meta data
-//        GstElement* vqueue = gst_bin_get_by_name(GST_BIN(mPipeline), "myqueue");
-//        GstPad* pad = gst_element_get_static_pad (vqueue, "sink");
-//        gst_pad_add_probe (pad, GST_PAD_PROBE_TYPE_BUFFER,
-//                (GstPadProbeCallback) wrap_pad_data_mod, (void*)this, NULL);
-//        gst_object_unref (pad);
-//        clearBuffer();
-        const GstStateChangeReturn result = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
-        if(result != GST_STATE_CHANGE_SUCCESS)
-        {
-            #ifdef DEBUG
-            g_print("gstreamer failed to playing\n");
-#endif
-        }
+//        if( !pipeline )
+//        {
+//            #ifdef DEBUG
+//            printf("gstreamer failed to cast GstElement into GstPipeline\n");
+//#endif
+//        }else{
+//            #ifdef DEBUG
+//            g_print("gstreamer decoder create Gstpipeline success\n");
+//#endif
+//        }
+//        GstElement *m_sink = gst_bin_get_by_name((GstBin*)m_pipeline, "mysink");
+//        GstAppSink *m_appsink = (GstAppSink *)m_sink;
+//        if(!m_sink || !m_appsink)
+//        {
+//    #ifdef DEBUG
+//            g_print("Fail to get element \n");
+//    #endif
+//        }
+//        // drop
+//        gst_app_sink_set_drop(m_appsink, true);
+//        g_object_set(m_appsink, "emit-signals", TRUE, NULL);
+//        // check end of stream
+////        m_bus = gst_pipeline_get_bus (GST_PIPELINE(mPipeline));
+////        m_bus_watch_id = gst_bus_add_watch (m_bus, wrap_bus_call, (void*)this);
+////        gst_object_unref (m_bus);
+//        // add call back received video data
+//        GstAppSinkCallbacks cbs;
+//        memset(&cbs, 0, sizeof(GstAppSinkCallbacks));
+//        cbs.new_sample = wrap_read_frame_buffer;
+//        gst_app_sink_set_callbacks(m_appsink, &cbs, (void*)this, NULL);
+//        // add call back received meta data
+//        // add call back save meta to file
+//        m_klvAppSrc = nullptr;
+
+//        m_klvAppSrc = (GstAppSrc *)gst_bin_get_by_name((GstBin *)m_pipeline, "klvsrc");
+//        if (m_klvAppSrc == nullptr) {
+//            g_print("Fail to get klvsrc \n");
+//        }else{
+//            gst_app_src_set_latency(m_klvAppSrc,5,30);
+//            g_signal_connect (m_klvAppSrc, "need-data", G_CALLBACK (wrapStartFeedKlv), (void *)this);
+//            /* set the caps on the source */
+//            GstCaps *caps = gst_caps_new_simple ("meta/x-klv",
+//                                                 "parsed", G_TYPE_BOOLEAN, TRUE,
+//                                                 nullptr);
+//            gst_app_src_set_caps(GST_APP_SRC(m_klvAppSrc), caps);
+//            g_object_set(GST_APP_SRC(m_klvAppSrc), "format", GST_FORMAT_TIME, nullptr);
+//        }
+//        const GstStateChangeReturn result = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
+//        if(result != GST_STATE_CHANGE_SUCCESS)
+//        {
+//            #ifdef DEBUG
+//            g_print("gstreamer failed to playing\n");
+//#endif
+//        }
     }else{
 
     }
@@ -351,12 +485,13 @@ void CVVideoCapture::setStateRun(bool running)
 
 void CVVideoCapture::doWork()
 {
-    CVVideoCapture::create_pipeline();
-
-    if (CVVideoCapture::gstreamer_pipeline_operate()) {
-        g_print("Pipeline running successfully . . .\n");
-    } else {
-        g_print("Running Error!");
+    while(!m_stop){
+        printf("Restart pipepline ==================================\r\n");
+        if (CVVideoCapture::gstreamer_pipeline_operate()) {
+            g_print("Pipeline running successfully . . .\n");
+        } else {
+            g_print("Running Error!");
+        }
     }
 
     Q_EMIT stopped();
