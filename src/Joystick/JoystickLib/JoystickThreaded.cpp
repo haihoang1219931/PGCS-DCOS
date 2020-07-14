@@ -212,7 +212,7 @@ void JoystickThreaded::updateButtonAxis(bool connected){
             // update axes
             m_axes.clear();
             for(int i=0; i< m_task->m_joystick.m_axes; i++)
-                m_axes.append(new JSAxis(i));
+                m_axes.append(new JSAxis(i));            
             // update buttons
             m_buttons.clear();
             for(int i=0; i< m_task->m_joystick.m_buttons; i++)

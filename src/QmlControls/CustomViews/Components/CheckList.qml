@@ -26,8 +26,10 @@ Rectangle {
     id: rootItem
 
     //-------------- properties
-    property int currentItem: 1
-
+    property int currentItem: 0
+    property alias model: sidebarElements.model
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]
     //-------------- signal
     signal displayActiveConfigBoard( real boardId_ )
 
@@ -40,7 +42,8 @@ Rectangle {
         anchors { top: parent.top; left: parent.left; right: parent.right }
         height: UIConstants.sRect * 2
         visible: true
-        title: "Check List"
+        title: itemListName["MENU_TITTLE"]
+               [UIConstants.language[UIConstants.languageID]]
     }
 
     //--------------- Sidebar list / Sidebar content
@@ -49,32 +52,19 @@ Rectangle {
         //--- Sidebar Elements
         Repeater {
             id: sidebarElements
-            anchors.fill: parent
-            model: ListModel {
-                id: listElesData
-                Component.onCompleted: {
-                    append({id_: 1, state_: "uncheck", text_: "ModeCheck" });
-                    append({id_: 2, state_: "uncheck", text_: "Propellers" });
-                    append({id_: 3, state_: "uncheck", text_: "Steering" });
-                    append({id_: 4, state_: "uncheck", text_: "Pitot" });
-                    append({id_: 5, state_: "uncheck", text_: "Laser" });
-                    append({id_: 6, state_: "uncheck", text_: "GPS" });
-                    append({id_: 7, state_: "uncheck", text_: "RPM" });
-                    append({id_: 8, state_: "uncheck", text_: "Payload" });
-                }
-            }
-            CheckListEle {
+            anchors.fill: parent            
+            delegate: CheckListEle {
                 width: parent.width
                 height: 60
                 stateE: state_
                 textSide: text_
-                eleId: id_
+                eleId: index
                 onActiveSide: {
                     currentItem = eleId_;
-                    rootItem.displayActiveConfigBoard( eleId_ - 1);
-                    for( var i = 0; i < listElesData.count; i++ )
+                    rootItem.displayActiveConfigBoard( eleId_);
+                    for( var i = 0; i < sidebarElements.model.count; i++ )
                     {
-                        if( i == eleId_ - 1 )
+                        if( i === eleId_)
                         {
                             sidebarElements.itemAt(i).setActive();
                         }
@@ -105,13 +95,14 @@ Rectangle {
     //---------------- Js supported functions
     function next()
     {
-        if( currentItem == (listElesData.count+1) )
-            return
-        currentItem = currentItem + 1;
-        rootItem.displayActiveConfigBoard( currentItem - 1);
-        for( var i = 0; i < listElesData.count; i++ )
+        if( currentItem + 1 > sidebarElements.model.count ){
+            return;
+        }else
+            currentItem += 1;
+        rootItem.displayActiveConfigBoard(currentItem);
+        for( var i = 0; i < sidebarElements.model.count; i++ )
         {
-            if( i == currentItem - 1 )
+            if( i === currentItem)
             {
                 sidebarElements.itemAt(i).setActive();
             }
@@ -120,18 +111,19 @@ Rectangle {
                 sidebarElements.itemAt(i).setDeactive();
             }
         }
+
     }
 
     function prev()
     {
-        if( currentItem == 1 )
-            return
-
-        currentItem = currentItem - 1;
-        rootItem.displayActiveConfigBoard( currentItem - 1);
-        for( var i = 0; i < listElesData.count; i++ )
+        if( currentItem -1 < 0 ){
+            return;
+        }else
+            currentItem -= 1;
+        rootItem.displayActiveConfigBoard( currentItem);
+        for( var i = 0; i < sidebarElements.model.count; i++ )
         {
-            if( i == currentItem - 1 )
+            if( i === currentItem)
             {
                 sidebarElements.itemAt(i).setActive();
             }
@@ -144,8 +136,8 @@ Rectangle {
 
     function doCheck()
     {
-        if(currentItem - 1 < listElesData.count){
-            sidebarElements.itemAt(currentItem - 1).doCheck();
+        if(currentItem < sidebarElements.model.count){
+            sidebarElements.itemAt(currentItem).doCheck();
             sidebarMouseArea.hoverEnabled = true;
             sidebarMouseArea.preventStealing = true;
             sidebarMouseArea.enabled = !sidebarMouseArea.enabled

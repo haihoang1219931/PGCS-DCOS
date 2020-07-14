@@ -2,8 +2,10 @@ import QtQuick 2.9
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 import QtWebEngine 1.7
-import QtGraphicalEffects 1.0
 
+import QSyncable    1.0
+
+import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
 import io.qdt.dev   1.0
 // This is available in all editors.
@@ -12,6 +14,7 @@ Flickable {
     clip: true
     width: UIConstants.sRect * 12
     height: UIConstants.sRect * 22
+    property var listUsers: UCDataModel.listUsers
     //[ {ipAddress: String, user_id: String, available: bool, ... }, {...}, {...} ]
 
     //signal doubleClicked(string ipAddress)
@@ -24,19 +27,24 @@ Flickable {
         id: listUsersView
         anchors.fill: parent
         clip: true
-        model: UC_API?UCDataModel.listUsers:[]
+        model: JsonListModel {
+           keyField: "uid"
+           source: JSON.parse(JSON.stringify(Object.keys(UCDataModel.listUsers).map(function(key) {return UCDataModel.listUsers[key]})))
+           fields: ["ipAddress", "userId", "roomName", "available", "role", "shared", "latitude", "longitude", "uid", "name", "isSelected", "warning", "connectionState"]
+        }
 
         delegate: Rectangle {
+            id: userItem
             width: rootItem.width
-            height: UIConstants.sRect * 3/2
-            color: isSelected ? UIConstants.cSelectedColor : UIConstants.transparentColor
+            height: UIConstants.sRect * 2
+            color: model.isSelected ? UIConstants.cSelectedColor : UIConstants.transparentColor
             Text {
                 text: UIConstants.iPatrolMan
-                font{
-                    pixelSize: UIConstants.fontSize
+                font{ pixelSize: 20;
                     weight: Font.Bold;
-                    family: ExternalFontLoader.solidFont}
-                color: connectionState ? UIConstants.greenColor: UIConstants.cDisableColor
+                    // family: ExternalFontLoader.solidFont
+                }
+                color: model.connectionState ? UIConstants.greenColor: UIConstants.cDisableColor
                 anchors {
                     left: parent.left;
                     leftMargin: 20;
@@ -45,7 +53,7 @@ Flickable {
             }
 
             Text {
-                text: "<p>" + name + "</p>"
+                text: "<p><strong>" + model.name + "</strong></p>"
                 color: connectionState?UIConstants.textColor:UIConstants.cDisableColor
                 textFormat: Text.RichText
                 font.family: UIConstants.appFont
@@ -58,16 +66,17 @@ Flickable {
             }
 
             Text {
-                text: role === UserRoles.FCS ?
-                          UIConstants.iCircle : (available ?
-                            UIConstants.iAddUser  : (shared ?
-                                UIConstants.iShareVideo :
-                                    UIConstants.iRemoveUser + (roomName ? "<span style='font-size: 10px'>(" + roomName + ")</span>" : "")))
-                color: connectionState ?
-                           (available ? "#2ecc71" : "#c0392b") : UIConstants.cDisableColor
+                text: model.role === UserRoles.FCS ?
+                          UIConstants.iCircle : (model.available ?
+                            UIConstants.iAddUser  : (model.shared ?
+                                UIConstants.iPlayState :
+                                    UIConstants.iRemoveUser + (model.roomName ? "<span style='font-size: 10px'>(" + model.roomName + ")</span>" : "")))
+                color: model.connectionState ?
+                           (model.available ? "#2ecc71" : "#c0392b") : UIConstants.cDisableColor
                 font{ pixelSize: 16;
                     weight: Font.Bold;
-                    family: ExternalFontLoader.solidFont}
+                    //family: ExternalFontLoader.solidFont
+                }
                 textFormat: Text.RichText
                 anchors {
                     right:parent.right;
@@ -76,10 +85,14 @@ Flickable {
                 }
 
                 MouseArea {
-                    visible: connectionState ? (available ? (role === UserRoles.FCS ? false : true)  : false): false
+                    visible: model.connectionState ? (model.available ? (model.role === UserRoles.FCS ? false : true)  : (model.shared ? true : false)): false
                     anchors.fill: parent
                     onClicked: {
-                        UcApi.addPcdToRoom(uid);
+                        if (model.shared) {
+                            UcApi.stopSharePcdVideoFromRoom(model.uid);
+                        } else {
+                            UcApi.addPcdToRoom(model.uid);
+                        }
                     }
                 }
             }
@@ -106,10 +119,32 @@ Flickable {
                 anchors.left: parent.left
                 onClicked: {
                     //--- Reset state
-                    console.log("Selected = "+UCDataModel.listUsers[index].isSelected);
-                    console.log("role["+role+"] vs UserRoles.FCS["+UserRoles.FCS+"]");
-                    UCDataModel.updateUser(uid, 10, !isSelected);
-                    UCEventListener.pointToPcdFromSidebar(uid, !isSelected);
+                    UCDataModel.updateUser(model.uid, 10, !model.isSelected);
+                    UCEventListener.pointToPcdFromSidebar(model.uid, !model.isSelected);
+                }
+            }
+
+            SequentialAnimation {
+                running: warning
+                loops: Animation.Infinite
+                PropertyAnimation {
+                    target: userItem
+                    properties: "color"
+                    to: "#fc5c65"
+                    duration: 700
+                    easing.type: Easing.InOutBounce
+                }
+                PropertyAnimation {
+                    target: userItem
+                    properties: "color"
+                    to: UIConstants.transparentColor
+                    duration: 300
+                    easing.type: Easing.InOutBounce
+                }
+                onRunningChanged: {
+                    if (!model.warning) {
+                        UCDataModel.updateUser(model.id, 10, false);
+                    }
                 }
             }
         }

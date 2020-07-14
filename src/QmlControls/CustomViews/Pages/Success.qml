@@ -26,7 +26,8 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
-
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]["SUCCESS"]
     Rectangle {
         id: rectangle
         x: 120
@@ -41,7 +42,8 @@ Rectangle{
             id: label
             y: 384
             height: UIConstants.sRect * 2
-            text: qsTr("Preflight check success. Ready to take off.")
+            text: itemListName["MENU_TITTLE"]
+                  [UIConstants.language[UIConstants.languageID]]
             font.pixelSize: UIConstants.fontSize
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
@@ -68,7 +70,7 @@ Rectangle{
         anchors.top: parent.top
         anchors.topMargin: 195
         border.width: 4
-        border.color: "green"
+        border.color: UIConstants.greenColor
 
         Label {
             id: label2

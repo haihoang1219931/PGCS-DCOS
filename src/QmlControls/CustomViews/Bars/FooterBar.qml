@@ -37,7 +37,7 @@ Item {
     property var footerBarCorresFlyingBtnsEnable: [true,false]
     property string flightView: "MAP" // "WP"
     property bool   _armed: vehicle.armed
-
+    property var itemListName: UIConstants.itemTextMultilanguages["FOOTERBAR"]
     //-------------------- Signals
     signal preflightCheckNext()
     signal preflightCheckPrev()
@@ -113,7 +113,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iOpenFolder
-                        btnText: "Load\nMap"
+                        btnText: itemListName["MISSION"]["LOAD_MAP"][UIConstants.language[UIConstants.languageID]]
                         onClicked: {
                             rootItem.doLoadMap();
                         }
@@ -123,7 +123,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iOpenFolder
-                        btnText: "Load\nMission"
+                        btnText: itemListName["MISSION"]["LOAD_MISSION"][UIConstants.language[UIConstants.languageID]]
                         onClicked: {
                             rootItem.doLoadMission();
                         }
@@ -133,7 +133,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iSaveFolder
-                        btnText: "Save\nMission"
+                        btnText: itemListName["MISSION"]["SAVE_MISSION"][UIConstants.language[UIConstants.languageID]]
                         onClicked: {
                             rootItem.doSaveMission();
                         }
@@ -143,7 +143,7 @@ Item {
                         id: btnAddNewMission
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
-                        btnText: "New\nMission"
+                        btnText: itemListName["MISSION"]["NEW_MISSION"][UIConstants.language[UIConstants.languageID]]
                         icon: UIConstants.iNewFolder
                         onClicked: {
                             rootItem.doNewMission();
@@ -161,7 +161,7 @@ Item {
                         id: btnNextWP
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
-                        btnText: "Next\nWP"
+                        btnText: itemListName["MISSION"]["NEXT_WP"][UIConstants.language[UIConstants.languageID]]
                         icon: UIConstants.iNextWP
                         onClicked: {
                             rootItem.doNextWP();
@@ -172,7 +172,7 @@ Item {
                         id: btnAddWP
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
-                        btnText: "Add WP"
+                        btnText: itemListName["MISSION"]["ADD_WP"][UIConstants.language[UIConstants.languageID]]
                         isEnable: mapPane.mousePressed && UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint
                         icon: UIConstants.iAddWaypoint
                         isAutoReturn: false
@@ -187,9 +187,10 @@ Item {
                         id: btnDeleteWP
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
-                        btnText: "Delete\nWP"
+                        btnText: itemListName["MISSION"]["DELETE_WP"][UIConstants.language[UIConstants.languageID]]
                         isEnable: mapPane.selectedWP !== undefined
-                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
+//                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
+                                  && (mapPane.selectedWP.wpId>0)
                                   && (UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint)
                         isSolid: false
                         icon: UIConstants.iDeleteWP
@@ -202,7 +203,7 @@ Item {
                         id: btnAddMarker
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
-                        btnText: "Add\nMarker"
+                        btnText: itemListName["MISSION"]["ADD_MARKER"][UIConstants.language[UIConstants.languageID]]
                         isEnable: mapPane.mousePressed && UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint
                         icon: UIConstants.iAddMarker
                         onClicked: {
@@ -214,7 +215,7 @@ Item {
                         id: btnDeleteMarker
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
-                        btnText: "Delete\nMarker"
+                        btnText: itemListName["MISSION"]["DELETE_MARKER"][UIConstants.language[UIConstants.languageID]]
                         isEnable: mapPane.selectedMarker !== undefined && UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint
                         icon: UIConstants.iRemoveMarker
                         onClicked: {
@@ -235,7 +236,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iUpload
-                        btnText: qsTr("Upload\nPlan")
+                        btnText: itemListName["MISSION"]["UPLOAD_PLAN"][UIConstants.language[UIConstants.languageID]]
                         isTimerActive: true
                         timeout: 1000
                         isEnable: vehicle.link
@@ -248,7 +249,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iDownload
-                        btnText: "Down\nPlan"
+                        btnText: itemListName["MISSION"]["DOWNLOAD_PLAN"][UIConstants.language[UIConstants.languageID]]
                         isTimerActive: true
                         timeout: 1000
                         isEnable: vehicle.link
@@ -272,7 +273,9 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: !rootItem._armed?UIConstants.iArmed:UIConstants.iDisarmed
-                        btnText: !rootItem._armed?"Arm":"Disarm"
+                        btnText: !rootItem._armed?
+                                     itemListName["MISSION"]["ARM"][UIConstants.language[UIConstants.languageID]]:
+                                     itemListName["MISSION"]["DISARM"][UIConstants.language[UIConstants.languageID]]
                         isEnable: vehicle.link
                         isTimerActive: true
                         timeout: 1000
@@ -299,7 +302,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iTracker
-                        btnText: "Tracker"
+                        btnText: itemListName["PRECHECK"]["TRACKER"][UIConstants.language[UIConstants.languageID]]
                         isOn: true
                     }
                     FooterButton {
@@ -308,7 +311,7 @@ Item {
                         Layout.preferredHeight: parent.height
                         iconRotate: 180
                         icon: UIConstants.iTurnRight
-                        btnText: "Turn\nLeft"
+                        btnText: itemListName["PRECHECK"]["TRACKER_LEFT"][UIConstants.language[UIConstants.languageID]]
                     }
 
                     FooterButton {
@@ -316,7 +319,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iTurnRight
-                        btnText: "Turn\nRight"
+                        btnText: itemListName["PRECHECK"]["TRACKER_RIGHT"][UIConstants.language[UIConstants.languageID]]
                     }
                 }
 
@@ -332,7 +335,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iChecked
-                        btnText: "Check"
+                        btnText: itemListName["PRECHECK"]["CHECK"][UIConstants.language[UIConstants.languageID]]
                         onClicked: {
                             rootItem.doPreflightItemCheck();
                         }
@@ -352,7 +355,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iStop
-                        btnText: "Next"
+                        btnText: itemListName["PRECHECK"]["NEXT"][UIConstants.language[UIConstants.languageID]]
                         onClicked: {
                             rootItem.preflightCheckNext();
                         }
@@ -362,7 +365,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iCaretLeft
-                        btnText: "Previous"
+                        btnText: itemListName["PRECHECK"]["PREVIOUS"][UIConstants.language[UIConstants.languageID]]
                         onClicked: {
                             rootItem.preflightCheckPrev();
                         }
@@ -388,9 +391,11 @@ Item {
                         topValue: "100"
                         middleValue: (vehicle?Number(vehicle.altitudeRelative).toFixed(0).toString():"0")
                         bottomValue: "m"
+                        middleColor: UIConstants.btnMiddleColorNormal
+                        disableColor: UIConstants.btnMiddleColorNormal
                         isEnable: vehicle.link
                                   &&
-                                  ((vehicle.vehicleType === 2 && vehicle.flightMode === "Guided")
+                                  (((vehicle.vehicleType === 2 || vehicle.vehicleType === 14) && vehicle.flightMode === "Guided")
                                    ||
                                    (vehicle.vehicleType === 1))
                         Connections{
@@ -399,7 +404,7 @@ Item {
                                 if((vehicle.flightMode === "Auto" || vehicle.flightMode === "RTL" )&&
                                         planController.missionItems.length > sequence
                                         ){
-                                    if(sequence !== rootItem.waypointIDSetProperty){
+                                    if(sequence !== rootItem.waypointIDSetProperty || missionController.forceCurrentWP === true){
                                         if(sequence > 0){
                                             rootItem.setFlightAltitudeTarget(
                                                 sequence,
@@ -431,14 +436,15 @@ Item {
                         Layout.alignment: Qt.AlignTop
                         topValue: Math.round(vehicle.paramAirSpeed*3.6)
                         middleValue: (vehicle?Math.round(
-                                                   (vehicle.vehicleType === 2?vehicle.groundSpeed:vehicle.airSpeed)
+                                                   ((vehicle.vehicleType === 2 || vehicle.vehicleType === 14)?vehicle.groundSpeed:vehicle.airSpeed)
                                                    *3.6).toString():"0")
                         bottomValue: "km/h"
                         midColor:  (middleValue < UIConstants.speedMinValue)? UIConstants.dangerousValueColor:
                                     ((middleValue > UIConstants.speedGoodValue)? UIConstants.normalValueColor : UIConstants.warningValueColor)
+                        disableColor: UIConstants.btnMiddleColorNormal
                         isEnable: vehicle.link
                                   &&
-                                  ((vehicle.vehicleType === 2 && vehicle.flightMode === "Guided")
+                                  (((vehicle.vehicleType === 2 || vehicle.vehicleType === 14) && vehicle.flightMode === "Guided")
                                    ||
                                    (vehicle.vehicleType === 1))
                         onClicked: {
@@ -454,7 +460,8 @@ Item {
                             anchors.top: parent.top
                             anchors.left: parent.left
                             color: UIConstants.textColor
-                            text: "Ground Speed:\n"+(vehicle?Number(vehicle.groundSpeed*3.6).toFixed(2).toString():"--")+" km/h"
+                            text: itemListName["MISSION"]["GROUND_SPEED"][UIConstants.language[UIConstants.languageID]]+
+                                  ":\n"+(vehicle?Number(vehicle.groundSpeed*3.6).toFixed(2).toString():"--")+" km/h"
                             font.pixelSize: UIConstants.fontSize - 2
                             font.family: UIConstants.appFont
                         }
@@ -464,20 +471,22 @@ Item {
                             anchors.left: parent.left
                             anchors.bottomMargin: 5
                             color: UIConstants.textColor
-                            text: "AMSL:\n"+(vehicle?Math.round(vehicle.altitudeAMSL).toString():"--")+" m"
+                            text: itemListName["MISSION"]["AMSL"][UIConstants.language[UIConstants.languageID]]+
+                                  ":\n"+(vehicle?Math.round(vehicle.altitudeAMSL).toString():"--")+" m"
                             font.pixelSize: UIConstants.fontSize - 2
                             font.family: UIConstants.appFont
                         }
                     }
                     Item{
-                        Layout.preferredWidth: parent.height*1.5
+                        Layout.preferredWidth: parent.height*1.6
                         Layout.preferredHeight: parent.height
                         Label{
                             id: lblClimbSpeed
                             anchors.top: parent.top
                             anchors.left: parent.left
                             color: UIConstants.textColor
-                            text: "Climb Speed:\n"+(vehicle?Number(vehicle.climbSpeed*3.6).toFixed(2).toString():"--")+" km/h"
+                            text: itemListName["MISSION"]["CLIMB_SPEED"][UIConstants.language[UIConstants.languageID]]+
+                                  ":\n"+(vehicle?Number(vehicle.climbSpeed*3.6).toFixed(2).toString():"--")+" km/h"
                             font.pixelSize: UIConstants.fontSize - 2
                             font.family: UIConstants.appFont
                         }
@@ -487,7 +496,8 @@ Item {
                             anchors.left: parent.left
                             anchors.bottomMargin: 5
                             color: UIConstants.textColor
-                            text: "AGL:\n"+(vehicle?Number(vehicle.altitudeRelative).toFixed(2).toString():"--")+" m"
+                            text: itemListName["MISSION"]["AGL"][UIConstants.language[UIConstants.languageID]]+
+                                  ":\n"+(vehicle?Number(vehicle.altitudeRelative).toFixed(2).toString():"--")+" m"
                             font.pixelSize: UIConstants.fontSize - 2
                             font.family: UIConstants.appFont
                         }
@@ -499,13 +509,14 @@ Item {
                         Layout.alignment: Qt.AlignTop
                         Layout.leftMargin: -20
                         icon: UIConstants.iRtl
-                        btnText: mapPane.selectedWP !== undefined ? "Go to\nWP":
-                                                                    ("Go to\nLocation")
+                        btnText: mapPane.selectedWP !== undefined ?
+                                    itemListName["MISSION"]["GO_WP"][UIConstants.language[UIConstants.languageID]]:
+                                    itemListName["MISSION"]["GO_LOCATION"][UIConstants.language[UIConstants.languageID]]
                         isEnable: vehicle.link
                                   &&
-                                  ((vehicle.vehicleType === 2)
+                                  ((vehicle.vehicleType === 2 && !vehicle.pic)
                                    ||
-                                   (vehicle.vehicleType === 14)
+                                   (vehicle.vehicleType === 14 && !vehicle.pic)
                                    ||
                                    (vehicle.vehicleType === 1 && mapPane.selectedWP !== undefined ) )
                         onClicked: {
@@ -524,7 +535,7 @@ Item {
                         Layout.preferredHeight: parent.height
                         Layout.alignment: Qt.AlignTop
                         icon: UIConstants.iNextWP
-                        btnText: "Next WP"
+                        btnText: itemListName["MISSION"]["NEXT_WP"][UIConstants.language[UIConstants.languageID]]
                         onClicked: {
                             rootItem.doNextWP();
                         }
@@ -536,9 +547,10 @@ Item {
                         Layout.preferredHeight: parent.height
                         Layout.alignment: Qt.AlignTop
                         icon: UIConstants.iDeleteWP
-                        btnText: "Delete\nWP"
+                        btnText: itemListName["MISSION"]["DELETE_WP"][UIConstants.language[UIConstants.languageID]]
                         isEnable: mapPane.selectedWP !== undefined
-                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
+//                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
+                                  && (mapPane.selectedWP.wpId>0)
                                   && (UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint)
                         onClicked: {
                             rootItem.deleteWP();
@@ -550,7 +562,7 @@ Item {
                         Layout.preferredHeight: parent.height
                         Layout.alignment: Qt.AlignTop
                         icon: UIConstants.iAddWaypoint
-                        btnText: "Add WP"
+                        btnText: itemListName["MISSION"]["ADD_WP"][UIConstants.language[UIConstants.languageID]]
                         isAutoReturn: false
                         isEnable: mapPane.mousePressed && UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint
                         onClicked: {
@@ -565,8 +577,8 @@ Item {
                         Layout.preferredHeight: parent.height
                         Layout.alignment: Qt.AlignTop
                         icon: UIConstants.iAuto
-                        btnText: "Auto"
-                        isEnable: vehicle.link
+                        btnText: itemListName["MISSION"]["AUTO"][UIConstants.language[UIConstants.languageID]]
+                        isEnable: vehicle.link && !vehicle.pic
                         onClicked: {
                             rootItem.doFlyAction(1);
                         }
@@ -596,8 +608,8 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iDeparture
-                        btnText: "Take Off"
-                        isEnable: vehicle.link
+                        btnText: itemListName["MISSION"]["TAKE_OFF"][UIConstants.language[UIConstants.languageID]]
+                        isEnable: vehicle.link && !vehicle.pic && vehicle.armed && vehicle.landed
                         onClicked: {
                             rootItem.doFlyAction(3);
                         }
@@ -607,7 +619,9 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         icon: !rootItem._armed?UIConstants.iArmed:UIConstants.iDisarmed
-                        btnText: !rootItem._armed?"Arm":"Disarm"
+                        btnText: !rootItem._armed?
+                                     itemListName["MISSION"]["ARM"][UIConstants.language[UIConstants.languageID]]:
+                                     itemListName["MISSION"]["DISARM"][UIConstants.language[UIConstants.languageID]]
                         isEnable: vehicle.link
 //                        isTimerActive: true
 //                        timeout: 1000
@@ -641,7 +655,7 @@ Item {
                                 Layout.preferredWidth: parent.height
                                 Layout.preferredHeight: parent.height
                                 icon: UIConstants.iUpload
-                                btnText: qsTr("Upload\nPlan")
+                                btnText: itemListName["MISSION"]["UPLOAD_PLAN"][UIConstants.language[UIConstants.languageID]]
                                 isTimerActive: true
                                 timeout: 1000
                                 isEnable: vehicle.link
@@ -654,7 +668,7 @@ Item {
                                 Layout.preferredWidth: parent.height
                                 Layout.preferredHeight: parent.height
                                 icon: UIConstants.iDownload
-                                btnText: "Down\nPlan"
+                                btnText: itemListName["MISSION"]["DOWNLOAD_PLAN"][UIConstants.language[UIConstants.languageID]]
                                 isTimerActive: true
                                 timeout: 1000
                                 isEnable: vehicle.link
@@ -666,7 +680,7 @@ Item {
                                 id: btnDeleteMarker02
                                 Layout.preferredWidth: parent.height
                                 Layout.preferredHeight: parent.height
-                                btnText: "Delete\nMarker"
+                                btnText: itemListName["MISSION"]["DELETE_MARKER"][UIConstants.language[UIConstants.languageID]]
                                 icon: UIConstants.iRemoveMarker
                                 isEnable: mapPane.selectedMarker !== undefined && UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint
                                 onClicked: {
@@ -677,7 +691,7 @@ Item {
                                 id: btnAddMarker02
                                 Layout.preferredWidth: parent.height
                                 Layout.preferredHeight: parent.height
-                                btnText: "Add\nMarker"
+                                btnText: itemListName["MISSION"]["ADD_MARKER"][UIConstants.language[UIConstants.languageID]]
                                 isEnable: mapPane.mousePressed && UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint
                                 icon: UIConstants.iAddMarker
                                 onClicked: {
@@ -697,7 +711,7 @@ Item {
                                 icon: Math.round(vehicle.paramLoiterRadius)
                                 isEnable: btnLoiter.isOn
                                 isSolid: true
-                                btnText: "Loiter\nRadius"
+                                btnText: itemListName["MISSION"]["LOITER_RADIUS"][UIConstants.language[UIConstants.languageID]]
                                 onClicked: {
                                     rootItem.doFlyAction(6);
                                 }
@@ -708,7 +722,7 @@ Item {
                                 Layout.preferredWidth: parent.height
                                 Layout.preferredHeight: parent.height
                                 icon: !isClockWise?UIConstants.iCircleClockWise:UIConstants.iCircleCounterClock
-                                btnText: "Loiter\nDir"
+                                btnText: itemListName["MISSION"]["LOITER_DIR"][UIConstants.language[UIConstants.languageID]]
                                 isEnable: btnLoiter.isOn
                                 onClicked: {
                                     isClockWise = !isClockWise;
@@ -721,7 +735,7 @@ Item {
                                 Layout.preferredHeight: parent.height
                                 isSolid: false
                                 icon: UIConstants.iCircle
-                                btnText: "Loiter"
+                                btnText: itemListName["MISSION"]["LOITER"][UIConstants.language[UIConstants.languageID]]
                                 isOn: false
                                 onClicked: {
                                     if(isOn === false){
@@ -757,7 +771,7 @@ Item {
         visible: false
         Label {
             id: label
-            text: qsTr("Plan is not synchronized")
+            text: itemListName["MISSION"]["PLAN_NOT_SYNC"][UIConstants.language[UIConstants.languageID]]
             color: UIConstants.textColor
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont

@@ -29,6 +29,8 @@ Rectangle {
     radius: UIConstants.rectRadius
     border.color: "gray"
     border.width: 1
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["DIALOG"]["MARKER_EDITOR"]
     property real latitude: 0
     property real longitude: 0
     property real asl: 0
@@ -59,8 +61,8 @@ Rectangle {
             cdeTxt[i].changeAllFocus(enable);
         }
         for(var i =0; i < lstTxt.length; i++){
-            if(lstTxt[i].editting !== enable)
-                lstTxt[i].editting = enable;
+            lstTxt[i].editting = enable;
+            lstTxt[i].changeFocus(enable);
         }
     }
     function changeCoordinate(_coordinate){
@@ -68,6 +70,8 @@ Rectangle {
         root.latitude = _coordinate.latitude;
         root.longitude = _coordinate.longitude;
         root.agl = _coordinate.altitude;
+        cdeLat.value = root.latitude;
+        cdeLon.value = root.longitude;
     }
 
     function loadInfo(_coordinate,_type,text){
@@ -97,7 +101,8 @@ Rectangle {
 
     Label {
         id: lblTitle
-        text: qsTr("Marker Editor")
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         anchors.top: parent.top
         anchors.topMargin: 8
         anchors.horizontalCenter: parent.horizontalCenter
@@ -195,7 +200,8 @@ Rectangle {
                 id: cdeLat
                 Layout.fillHeight: true
                 width: UIConstants.sRect * 6
-                title: "Latitude"
+                title: itemListName["LATITUDE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 arrayDirLabel: ["E","W"]
                 value: root.latitude
                 validatorValue: root.validatorLat
@@ -208,7 +214,8 @@ Rectangle {
                 id: cdeLon
                 Layout.fillHeight: true
                 width: UIConstants.sRect * 6
-                title: "Longitude"
+                title: itemListName["LONGITUDE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 arrayDirLabel: ["N","S"]
                 value: root.longitude
                 validatorValue: root.validatorLon
@@ -257,7 +264,7 @@ Rectangle {
         width: UIConstants.sRect * 4
         icon: UIConstants.iChecked
         isSolid: true
-        color: "green"
+        color: UIConstants.greenColor
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.bottom: parent.bottom

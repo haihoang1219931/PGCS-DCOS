@@ -99,6 +99,9 @@ void UCDataModel::updateUser(const QString& userUid, const int& attr, const QVar
                 case UserAttribute::Attribute::CONNECTION_STATE:
                     user->setConnectionState(newValue.value<bool>());
                     break;
+                case UserAttribute::Attribute::WARNING:
+                    user->setWarning(newValue.value<bool>());
+                    break;
             }
         }else{
             if((UserAttribute::Attribute) attr ==

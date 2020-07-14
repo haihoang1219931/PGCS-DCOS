@@ -24,14 +24,30 @@ Rectangle {
     width: 1376
     height: 768
     property var vehicle
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["CONFIGURATION"]
     signal clicked(string type, string func)
+    function showAdvancedConfig(enable){
+//        console.log("modelConfig.get(2).visible_ = "+modelConfig.get(2).visible_);
+//        console.log("modelConfig.get(3).visible_ = "+modelConfig.get(3).visible_);
+        modelConfig.get(2).visible_ = enable;
+        modelConfig.get(3).visible_ = enable;
+
+//        modelConfig.setData(2,"visible_",enable);
+//        modelConfig.setData(3,"visible_",enable);
+        if(!enable && lstItem.currentIndex > 1){
+            lstItem.currentIndex = 0;
+        }
+    }
+
     CustomViews.SidebarTitle {
         id: sidebarTitle
         width: UIConstants.sRect * 9
         anchors { top: parent.top; left: parent.left; }
         height: UIConstants.sRect * 2
         visible: true
-        title: "Menu settings"
+        title: itemListName["TITTLE"]
+               [UIConstants.language[UIConstants.languageID]]
         CustomViews.RectBorder {
             type: "right"
         }
@@ -47,28 +63,50 @@ Rectangle {
         anchors.leftMargin: 0
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
+        Connections{
+            target: UIConstants
+            onLanguageIDChanged:{
+                modelConfig.clear();
+                modelConfig.append({btnText_: itemListName["APPLICATION"]["SIDEBAR"]
+                           [UIConstants.language[UIConstants.languageID]], icon_: "\uf109", visible_: true});
+                modelConfig.append({btnText_: itemListName["SCREEN"]["SIDEBAR"]
+                           [UIConstants.language[UIConstants.languageID]], icon_: "\uf2d2", visible_: true});
+                modelConfig.append({btnText_: itemListName["PARAMETERS"]["SIDEBAR"]
+                           [UIConstants.language[UIConstants.languageID]], icon_: "\uf03c", visible_: false});
+                modelConfig.append({btnText_: itemListName["JOYSTICK"]["SIDEBAR"]
+                           [UIConstants.language[UIConstants.languageID]], icon_: "\uf11b", visible_: false});
+            }
+        }
 
         Repeater{
+            id: listConfig
             model: ListModel{
-    //            ListElement{name: "Theme"; icon: UIConstants.iWindowStore}
-                ListElement{id_: 0; btnText_: "Joystick"; icon_: "\uf11b"}
-                ListElement{id_: 1; btnText_: "Screen monitor"; icon_: "\uf2d2"}
-                ListElement{id_: 2; btnText_: "Parametes"; icon_: "\uf03c"}
-                ListElement{id_: 3; btnText_: "Application"; icon_: "\uf109"}
+                id: modelConfig
+                Component.onCompleted: {
+                    append({btnText_: itemListName["APPLICATION"]["SIDEBAR"]
+                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf109", visible_: true});
+                    append({btnText_: itemListName["SCREEN"]["SIDEBAR"]
+                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf2d2", visible_: true});
+                    append({btnText_: itemListName["PARAMETERS"]["SIDEBAR"]
+                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf03c", visible_: false});
+                    append({btnText_: itemListName["JOYSTICK"]["SIDEBAR"]
+                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf11b", visible_: false});
+                }
             }
             delegate: Item {
                 width: lstItem.width
                 height: 60
+                visible: visible_
                 Rectangle {
                     anchors.fill: parent
-                    color: lstItem.currentIndex === id_?
+                    color: lstItem.currentIndex === index?
                         UIConstants.sidebarActiveBg:UIConstants.bgColorOverlay
                     Label {
                         id: textSide
                         text: btnText_
                         font.pixelSize: UIConstants.fontSize
                         font.family: UIConstants.appFont
-                        color: lstItem.currentIndex === id_?
+                        color: lstItem.currentIndex === index?
                                    UIConstants.textColor:UIConstants.textFooterColor
                         anchors.left: parent.left
                         anchors.leftMargin: parent.height
@@ -94,8 +132,8 @@ Rectangle {
                 MouseArea{
                     anchors.fill: parent
                     onClicked: {
-                        lstItem.currentIndex = id_;
-                        if(id_ === 2){
+                        lstItem.currentIndex = index;
+                        if(index === 2){
                             rootItem.vehicle.paramsController._updateParamTimeout();
                         }
                     }
@@ -113,31 +151,24 @@ Rectangle {
         currentIndex: lstItem.currentIndex
         Item{
             CustomViews.SidebarTitle {
-                id: sdbJoystick
+                id: sdbApplication
                 height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
-                title: "Joystick Configuration"
+                title: itemListName["APPLICATION"]["TITTLE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 iconType: "\uf197"
                 xPosition: 20
             }
-            JoystickConfig{
-                id: cfgJoystick
-                anchors.top: sdbJoystick.bottom
+            AppConfig{
+                id: appConfig
+                anchors.top: sdbApplication.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-            }
-            CustomViews.ScrollBar {
-                id: verticalScrollBar
-                width: 12;
-                height: cfgJoystick.height
-                anchors.top: sdbJoystick.bottom
-                anchors.right: cfgJoystick.right
-                anchors.bottom: parent.bottom
-                orientation: Qt.Vertical
-                position: cfgJoystick.visibleArea.yPosition / 2
-                pageSize: cfgJoystick.visibleArea.heightRatio
+                onClicked: {
+                    rootItem.clicked(type,action);
+                }
             }
         }
         Item{
@@ -146,7 +177,8 @@ Rectangle {
                 height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
-                title: "Screen Monitor Information"
+                title: itemListName["SCREEN"]["TITTLE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 iconType: "\uf197"
                 xPosition: 20
             }
@@ -163,7 +195,8 @@ Rectangle {
                 height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
-                title: "Parameter List"
+                title: itemListName["PARAMETERS"]["TITTLE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 iconType: "\uf197"
                 xPosition: 20
             }
@@ -178,25 +211,24 @@ Rectangle {
         }
         Item{
             CustomViews.SidebarTitle {
-                id: sdbApplication
+                id: sdbJoystick
                 height: UIConstants.sRect * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
-                title: "Application config"
+                title: itemListName["JOYSTICK"]["TITTLE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 iconType: "\uf197"
                 xPosition: 20
             }
-            AppConfig{
-                id: appConfig
-                anchors.top: sdbApplication.bottom
+            JoystickConfig{
+                id: cfgJoystick
+                anchors.top: sdbJoystick.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                onClicked: {
-                    rootItem.clicked(type,action);
-                }
             }
         }
+
     }
     Rectangle{
         anchors.left: parent.left

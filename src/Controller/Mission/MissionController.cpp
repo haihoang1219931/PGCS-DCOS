@@ -36,16 +36,24 @@ void MissionController::_mavlinkMessageReceived(const mavlink_message_t& message
     }
 }
 
+bool MissionController::forceCurrentWP()
+{
+    return m_forceShowCurrentWP;
+}
+
 void MissionController::_handleMissionCurrent(const mavlink_message_t& message)
 {
     mavlink_mission_current_t missionCurrent;
 
     mavlink_msg_mission_current_decode(&message, &missionCurrent);
-    if (missionCurrent.seq != _currentMissionIndex) {
+    if ((missionCurrent.seq != _currentMissionIndex || m_forceShowCurrentWP == true) && m_vehicle->flightMode() != "RTL") {
 //        printf("MissionController._handleMissionCurrent[%d]\r\n",missionCurrent.seq);
+
         _currentMissionIndex = missionCurrent.seq;
        currentIndexChanged(_currentMissionIndex);
        m_vehicle->setCurrentWaypoint(_currentMissionIndex);
+
+       m_forceShowCurrentWP = false;
     }else{
         if(m_vehicle->flightMode() == "RTL"){
 //            printf("MissionController._handleMissionCurrent[%d] at RTL\r\n",1);
@@ -64,4 +72,10 @@ void MissionController::_handleMissionCurrent(const mavlink_message_t& message)
 void MissionController::_handleHeartbeat(const mavlink_message_t& message)
 {
     Q_UNUSED(message);
+}
+
+void MissionController::setForceShowCurrentWP(bool force)
+{
+    m_forceShowCurrentWP = force;
+    printf("set Force: %d \r\n",static_cast<int>(m_forceShowCurrentWP));
 }

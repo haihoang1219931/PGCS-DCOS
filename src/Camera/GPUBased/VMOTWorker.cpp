@@ -14,8 +14,8 @@ void VMOTWorker::run()
     m_matImageBuff = Cache::instance()->getProcessImageCache();
     m_rbDetectedObjs = Cache::instance()->getDetectedObjectsCache();
     m_rbMOTObjs = Cache::instance()->getMOTCache();
-    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
-    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
+//    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
+//    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
     ProcessImageCacheItem processImgItem;
     int prevID = -1;
     float *h_gmeMat;
@@ -30,20 +30,22 @@ void VMOTWorker::run()
         }
 
         start = std::chrono::high_resolution_clock::now();
-        processImgItem = m_matImageBuff->at(m_matImageBuff->size() - 3);;//m_matImageBuff->last();
+        processImgItem = m_matImageBuff->at(m_matImageBuff->size() - 3);;//m_matImageBuff->last(); ?giapvn: Why -3?
 
+        // Check if buffer is empty or there have no new image is pushed, waiting for 10ms and then go to the next loop.
         if ((processImgItem.getIndex() == -1) ||
             (processImgItem.getIndex() == m_currID)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             continue;
         }
 
+        // Get image from cache memory
         m_currID = processImgItem.getIndex();
         unsigned char *d_imageData = processImgItem.getDeviceImage();
         cv::Size imgSize = processImgItem.getImageSize();
         image_t input;
         input.c = 1;
-        input.h = imgSize.height * 3 / 2;
+        input.h = imgSize.height * 3 / 2;   // ?giapvn: Why x1.5?
         input.w = imgSize.width;
         input.data = (float *)d_imageData;
         //TODO: canculate GME
@@ -51,8 +53,6 @@ void VMOTWorker::run()
         d_gmeMat = (float *)processImgItem.getDeviceGMEMatrix();
         cv::Mat trans = cv::Mat(3, 3, CV_32F, h_gmeMat);
         trans.convertTo(trans, CV_64F);
-
-//        std::cout << "\nMOT Trans: \n" << trans << std::endl;
 
         //TODO: get Detected boxes from VODWorker
         auto detectionCachedItem = m_rbDetectedObjs->getElementById(m_currID);
@@ -63,7 +63,7 @@ void VMOTWorker::run()
         // TODO: get gpu_gray_resized from input I420
         cv::cuda::GpuMat gpu_i420_frame(cv::Size(input.w, input.h), CV_8UC1, input.data);
         cv::cuda::GpuMat gpu_gray = gpu_i420_frame(cv::Rect(0, 0, gpu_i420_frame.cols, gpu_i420_frame.rows * 2/3));;
-        cv::Size multitrack_size(640, 480);
+        cv::Size multitrack_size(640, 480);                         // ?giapvn: Why declare multitrack_size for resizing?
         float dx = (float)multitrack_size.width  / gpu_gray.cols;
         float dy = (float)multitrack_size.height / gpu_gray.rows;
 
@@ -79,6 +79,7 @@ void VMOTWorker::run()
         }
 
         //TODO: Multitracking
+        // Restore size
         std::vector<bbox_t> track_result = m_mulTracker->run(gpu_gray_resized, detection_boxes, trans);
         for(auto &b: track_result)
         {
@@ -91,7 +92,7 @@ void VMOTWorker::run()
         //TODO: add track result
         DetectedObjectsCacheItem motCacheItem;
         motCacheItem.setIndex(m_currID);
-        motCacheItem.setDetectedObjects(track_result);
+        motCacheItem.setDetectedObjects(track_result);  /**< Push results to cache memory*/
         m_rbMOTObjs->add(motCacheItem);
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;

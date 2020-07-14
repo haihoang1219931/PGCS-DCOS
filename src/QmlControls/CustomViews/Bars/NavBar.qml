@@ -58,6 +58,8 @@ Item {
 
     //----- List tab button
     property var listTab: [tabMP,tabPC,tabFlight]
+    property var itemListName: UIConstants.itemTextMultilanguages["NAVBAR"]
+
     function startFlightTimer(){
         timerFlightTime.start();
     }
@@ -100,7 +102,7 @@ Item {
         target: vehicle
         onLandedChanged:{
             if(vehicle.landed){
-                setFlightModes(vehicle.flightModes);
+                setFlightModes(vehicle.flightModesOnGround);
             }else{
                 setFlightModes(vehicle.flightModesOnAir);
             }
@@ -108,7 +110,7 @@ Item {
         onFlightModesChanged:{
             console.log("List flight mode update");
             if(vehicle.landed){
-                setFlightModes(vehicle.flightModes);
+                setFlightModes(vehicle.flightModesOnGround);
             }else{
                 setFlightModes(vehicle.flightModesOnAir);
             }
@@ -145,7 +147,7 @@ Item {
             //---------- Menu navigation
             FlatButton {
                 id: tabMP
-                btnText: "Mission\nPlanner"
+                btnText: itemListName["MISSION"][UIConstants.language[UIConstants.languageID]]
                 btnTextColor: UIConstants.textFooterColor
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: width
@@ -164,7 +166,7 @@ Item {
             }
             FlatButton {
                 id: tabPC
-                btnText: "Preflight\nCheck"
+                btnText: itemListName["PRECHECK"][UIConstants.language[UIConstants.languageID]]
                 btnTextColor: UIConstants.textFooterColor
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: width
@@ -183,7 +185,7 @@ Item {
             }
             FlatButton {
                 id: tabFlight
-                btnText: "Flight"
+                btnText: itemListName["FLIGHT"][UIConstants.language[UIConstants.languageID]]
                 btnTextColor: UIConstants.textFooterColor
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: width
@@ -343,7 +345,7 @@ Item {
         SystemTime {
             id: systemTime
             height: parent.height
-            width: UIConstants.sRect*5
+            width: UIConstants.sRect*6.5
             anchors.right: btnSystemConfig.left
             anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
@@ -406,8 +408,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 3
                 height: parent.height
-//                color: vehicle.link?"green":"red"
-                color: vehicle.link?"green":"red"
+                color: vehicle.link?UIConstants.greenColor:UIConstants.redColor
                 radius: UIConstants.rectRadius
                 property var timeCount: 0 // time count in second
                 Label{
@@ -452,7 +453,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.gpsSignal?"green":"red"
+                color: vehicle.gpsSignal?UIConstants.greenColor:UIConstants.redColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor
@@ -469,7 +470,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.ekfSignal
+                color: vehicle.ekfSignal !== "green"? vehicle.ekfSignal: UIConstants.greenColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor
@@ -486,11 +487,28 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.vibeSignal
+                color: vehicle.vibeSignal !== "green"? vehicle.vibeSignal: UIConstants.greenColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor
                     text: "VIBE"
+                    font.family: UIConstants.appFont
+                    anchors.fill: parent
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: UIConstants.fontSize
+                }
+            }
+            Rectangle{
+                id: rectPICCIC
+                Layout.alignment: Qt.AlignVCenter
+                width: UIConstants.sRect * 2
+                height: parent.height
+                color: vehicle.pic?UIConstants.blueColor:UIConstants.greenColor
+                radius: UIConstants.rectRadius
+                Label{
+                    color: UIConstants.textColor
+                    text: vehicle.pic?"PIC":"CIC"
                     font.family: UIConstants.appFont
                     anchors.fill: parent
                     verticalAlignment: Text.AlignVCenter
@@ -567,7 +585,7 @@ Item {
                 Label{
                     id: lblFlightTime
                     Layout.alignment: Qt.AlignVCenter
-                    text: "Flight Time"
+                    text: itemListName["FLIGHT_TIME"][UIConstants.language[UIConstants.languageID]]
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
@@ -630,7 +648,7 @@ Item {
                 Label{
                     id: lblWP0
                     Layout.alignment: Qt.AlignVCenter
-                    text: "UAV->WP["+
+                    text: itemListName["UAV_WP"][UIConstants.language[UIConstants.languageID]]+"["+
                           (vehicle?Number(vehicle.currentWaypoint).toFixed(0).toString():"")
                     +"]"
                     color: UIConstants.textColor
@@ -663,7 +681,7 @@ Item {
                 Label{
                     id: lblHome
                     Layout.alignment: Qt.AlignVCenter
-                    text: "UAV->Home"
+                    text: itemListName["UAV_HOME"][UIConstants.language[UIConstants.languageID]]
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
@@ -695,7 +713,7 @@ Item {
                     id: lblFlightMode
                     Layout.alignment: Qt.AlignVCenter
                     font.pixelSize: UIConstants.fontSize
-                    text: "Flight Mode"
+                    text: itemListName["FLIGHT_MODE"][UIConstants.language[UIConstants.languageID]]
                     font.family: UIConstants.appFont
                     color: UIConstants.textColor
                     width: UIConstants.sRect
@@ -703,7 +721,7 @@ Item {
                 Rectangle{
                     id: rectTxtFlightMode
                     Layout.alignment: Qt.AlignVCenter
-                    width: UIConstants.sRect * 6
+                    width: UIConstants.sRect * 5
                     height: UIConstants.sRect
                     color: "transparent"
                     border.color: "gray"
@@ -721,7 +739,7 @@ Item {
                     }
                     MouseArea{
                         anchors.fill: parent
-                        enabled: lstFlightMode.model.length > 0
+//                        enabled: lstFlightMode.model.length > 0
                         onClicked: {
                             if(dialogShow !== "FLIGHT_MODES"){
                                 dialogShow = "FLIGHT_MODES";
@@ -765,6 +783,7 @@ Item {
                         color: UIConstants.transparentBlue
                         orientation: ListView.Vertical
                         layoutDirection: Qt.LeftToRight
+                        model: []
                         onListViewClicked: {
                             rootItem.doSwitchPlaneMode(prevItem,choosedItem);
                         }

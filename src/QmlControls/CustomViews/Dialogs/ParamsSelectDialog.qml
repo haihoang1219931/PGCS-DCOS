@@ -15,7 +15,6 @@ Rectangle {
     radius: UIConstants.rectRadius
     border.color: "gray"
     border.width: 1
-    property var vehicle
     property alias title: txtDialog.text
     property string type: ""
     property color fontColor: UIConstants.textColor
@@ -31,29 +30,12 @@ Rectangle {
         id: rectangle
         anchors.fill: parent
         hoverEnabled: true
-        FlatButtonIcon{
-            id: btnCancel
-            height: UIConstants.sRect * 2
-            width: UIConstants.sRect * 2
-            icon: UIConstants.iMouse
-            isSolid: true
-            color: "red"
-            isAutoReturn: true
-            radius: root.radius
-            anchors.top: parent.top
-            anchors.topMargin: 8
-            anchors.right: parent.right
-            anchors.rightMargin: 8
-            onPressed: {
-                console.log("pressed");
-                root.clicked(root.type,"DIALOG_CANCEL");
-            }
-        }
+
         GridView {
             id: gridView
+            anchors.topMargin: UIConstants.sRect*2 + 16
+            anchors.top: parent.top
             clip: true
-            anchors.top: btnCancel.bottom
-            anchors.topMargin: 8
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 8
             anchors.right: parent.right
@@ -62,7 +44,7 @@ Rectangle {
             anchors.leftMargin: 8
             cellWidth: UIConstants.sRect * 7
             cellHeight: UIConstants.sRect * 3 / 2
-
+            model: vehicle.propertiesModel
             layoutDirection: Qt.LeftToRight
             flow: GridView.FlowTopToBottom
             delegate: Item {
@@ -108,27 +90,49 @@ Rectangle {
                 }
             }
         }
-
-        Label {
-            id: txtDialog
-            height: btnCancel.height
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            color: UIConstants.textColor
-            anchors.top: parent.top
-            anchors.topMargin: 8
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            anchors.right: btnCancel.left
-            anchors.rightMargin: 8
-            anchors.left: parent.left
-            anchors.leftMargin: 8
+    }
+    Label {
+        id: txtDialog
+        height: btnCancel.height
+        font.pixelSize: UIConstants.fontSize
+        font.family: UIConstants.appFont
+        color: UIConstants.textColor
+        anchors.top: parent.top
+        anchors.topMargin: 8
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+        anchors.right: btnCancel.left
+        anchors.rightMargin: 8
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+    }
+    FlatButtonIcon{
+        id: btnCancel
+        height: UIConstants.sRect * 2
+        width: UIConstants.sRect * 2
+        icon: UIConstants.iMouse
+        isSolid: true
+        color: "red"
+        isAutoReturn: true
+        radius: root.radius
+        anchors.top: parent.top
+        anchors.topMargin: 8
+        anchors.right: parent.right
+        anchors.rightMargin: 8
+        onClicked: {
+            console.log("pressed");
+            root.clicked(root.type,"DIALOG_CANCEL");
         }
     }
-    Component.onCompleted: {
-        console.log("Set Focus true");
-        setFocus(true);
-        if(vehicle !== null)
-            gridView.model = vehicle.propertiesModel;
-    }
+//    Component.onCompleted: {
+//        console.log("Set Focus true");
+//        setFocus(true);
+//        if(vehicle !== null)
+//            gridView.model = vehicle.propertiesModel;
+//    }
 }
+
+/*##^## Designer {
+    D{i:2;anchors_height:0}
+}
+ ##^##*/

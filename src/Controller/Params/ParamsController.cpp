@@ -1,7 +1,11 @@
 #include "ParamsController.h"
 #include <QVariant>
 #include "../Vehicle/Vehicle.h"
-class Vehicle;
+#include "../Firmware/FirmwarePlugin.h"
+#include <QObject>
+#include <QTimer>
+#include <QVariantMap>
+#include <QVariant>
 ParamsController::ParamsController(Vehicle *vehicle)
 {
     _vehicle = vehicle;
@@ -48,11 +52,12 @@ void ParamsController::refreshAllParameters(uint8_t componentId)
 }
 QVariant ParamsController::getParam(QString paramName){
     QVariant result;
-//    if(_paramMap.keys().contains(paramName)){
-//        result = _paramMap[paramName];
-//    }
+    if(_paramMap.keys().contains(paramName)){
+        result = QVariant(_paramMap[paramName].param_value);
+    }
     return result;
 }
+
 void ParamsController::_handleMessageReceived(mavlink_message_t msg)
 {
 #ifdef DEBUG_FUNC

@@ -16,9 +16,11 @@ import QtQuick.Window 2.11
 QtObject {
     //---------------------- Size of smallest rect  --------------------
     property int sRect:                    Screen.pixelDensity*5.5
+    property int wpScrollRect:             55
     //------------------------------ App Font --------------------------
     property bool isMobile:                         false
     property int fontSize:                          Screen.pixelDensity*3.5
+    property int miniFontSize:                      fontSize * 0.6
     property string appFont:                        "monospace"
     property int rectRadius:                        5
     property color transparentRed:                  "#b3ff0000"
@@ -52,6 +54,9 @@ QtObject {
     property color cfProcessingOverlayBg:           "#2D3436"
     property color sidebarConfigBg:                 "#2D3C4B"
     property color sidebarActiveBg:                 "#283441"
+
+    readonly property color waypointTrajactoryColor:  "#02e6ed"
+    readonly property color navIconColor:             "#02e6ed"
 
     //------------------ Notification type messages color --------------
     readonly property color success:                "#1dd1a1"
@@ -139,6 +144,9 @@ QtObject {
     //------- Button
     readonly property color btnCateColor:          "#CAD3C8"
     readonly property color btnSelectedColor:      "#38729A"
+
+    readonly property color btnMiddleColorNormal:  "#33f8ff"
+
     //------- Shadow
     readonly property color dropshadowColor:       "#57606f"
     readonly property color headerTxtShadowColor:  "#3c6382"
@@ -164,7 +172,7 @@ QtObject {
     readonly property color orangeColor:             "orange"
     readonly property color redColor:             "red"
     readonly property color grayLighterColor:      "#808080"
-    readonly property color greenColor:            "green"
+    readonly property color greenColor:            "#4cd137"
     readonly property color activeNav:             "#222f3e"
     property int defaultFontPixelWidth:             5
     property int defaultFontPixelHeight:            UIConstants.fontSize
@@ -213,6 +221,8 @@ QtObject {
     readonly property string iZoomIn:               "\uf00e"
     readonly property string iZoomOut:              "\uf010"
     readonly property string iLockGeo:              "\uf689"
+    readonly property string iCar:                  "\uf1b9"
+    readonly property string iBolt:                 "\uf0e7"
     readonly property color  btnDefaultColor:       "#40739e"
     readonly property string iFlag:                 "\uf024"
     readonly property string iBatteryThreeQuaters:  "\uf241"
@@ -262,6 +272,7 @@ QtObject {
     readonly property string iGCSRecord:            "\uf03d"
     readonly property string iGimbalStab:           "\uf2b5"
     readonly property string iVisualLock:           "\uf05b"
+    readonly property string iFree:                 "\uf067"
     readonly property string iDigitalStab:          "\uf529"
     readonly property string iGCSStab:              "\uf5cb"
     readonly property string iHUD:                  "\uf037"
@@ -269,6 +280,7 @@ QtObject {
     readonly property string iInvertTilt:           "\uf338"
     readonly property string iVideoConfig:          "\uf1de"
     readonly property string iAdvanced:             "\uf085"
+    readonly property string iDisplay:              "\uf26c"
     readonly property string iBack:                 "\uf3e5"
     readonly property string iEnabled:              "\uf111"
     //------- sharing button
@@ -289,6 +301,11 @@ QtObject {
     readonly property string iWindowStore:          "\uf2d2"
     readonly property string iDown:                 "\uf0dd"
     readonly property string iUp:                   "\uf151"
+
+    readonly property string iArrowUp:              "\uf35b"
+    readonly property string iArrowDown:            "\uf358"
+    readonly property string iPin:                  "\uf08d"
+
     //------- drone  button
     readonly property string iDrone:                "\uf55b"
     readonly property string iPatrolMan:            "\uf007"
@@ -338,102 +355,6 @@ QtObject {
             "UAV_WP":["UAV->WP","Máy bay->Điểm"],
             "FLIGHT_TIME":["Flight time","Thời gian bay"],
         },
-        //        "RIGHTBAR": {
-        //            "MISSION_SENSOR":["Sensor","Hình ảnh"],
-        //                // sensor id
-        //                "MISSION_SENSOR_EO":["DAY","NGÀY"],
-        //                "MISSION_SENSOR_IR":["IR","NHIỆT"],
-        //            "MISSION_OBSERV":["Observe\nmode","Chế độ\nTheo dõi"],
-        //                // observe mode
-        //                "MISSION_OBSERV_FREE":["FREE","TỰ DO"],
-        //                "MISSION_OBSERV_VISUAL":["TLOCK","GIỮ\nKHUNG"],
-        //                "MISSION_OBSERV_GEO":["GEO","GIỮ\nTỌA ĐỘ"],
-        //                "MISSION_OBSERV_TRACK":["TRACK","BÁM\nBẮT"],
-        //            "MISSION_PRESET":["Preset","Quan sát\nvị trí"],
-        //                // preset mode
-        //                "MISSION_PRESET_FRONT":["FRONT","PHÍA\nTRƯỚC"],
-        //                "MISSION_PRESET_RIGHT":["RIGHT\nWING","CÁNH\nPHẢI"],
-        //                "MISSION_PRESET_BEHIND":["BEHIND","PHÍA\nSAU"],
-        //                "MISSION_PRESET_LEFT":["LEFT\nWING","CÁNH\nTRÁI"],
-        //                "MISSION_PRESET_NADIR":["NADIR","DƯỚI\nBỤNG"],
-        //                "MISSION_PRESET_OFF":["OFF","OFF"],
-        //            "MISSION_SNAPSHOT":["Snapshot","Chụp ảnh"],
-        //                // snapshot mode
-        //            "MISSION_COLOR":["Daylight\nmode","Màu ảnh"],
-        //                // sensor color
-        //                // eo
-        //                "MISSION_COLOR_EO_AUTO":["AUTO","TỰ\nĐỘNG"],
-        //                "MISSION_COLOR_EO_COLOR":["COLOR","MÀU"],
-        //                "MISSION_COLOR_EO_DAWN":["DAWN","NHẠY\nSÁNG"],
-        //                //ir
-        //                "MISSION_COLOR_IR_WHITE_HOT":["WHITE\nHOT","NHIỆT\nTRẮNG"],
-        //                "MISSION_COLOR_IR_BLACK_HOT":["BLACK\nHOT","NHIỆT\nĐEN"],
-        //                "MISSION_COLOR_IR_REDDISH":["REDDISH","NHIỆT\nĐỎ"],
-        //                "MISSION_COLOR_IR_COLOR":["COLOR","NHIỆT\nMÀU"],
-        //            "MISSION_DEFOG":{
-        //                    "EO":["Defog\nEO","Khử mây\nảnh ngày"],
-        //                    "IR":["Defog\nIR","Khử mây\nảnh nhiệt"]
-        //                },
-        //                // sensor defog mode
-        //                // eo
-        //                "MISSION_DEFOG_EO_OFF":["OFF","TẮT"],
-        //                "MISSION_DEFOG_EO_AUTO":["AUTO","TỰ\nĐỘNG"],
-        //                "MISSION_DEFOG_EO_LOW":["LOW","THẤP"],
-        //                "MISSION_DEFOG_EO_MEDIUM":["MEDIUM","TRUNG"],
-        //                "MISSION_DEFOG_EO_HIGH":["HIGH","CAO"],
-        //                // ir
-        //                "MISSION_DEFOG_IR_OFF":["OFF","TẮT"],
-        //                "MISSION_DEFOG_IR_AUTO":["AUTO","TỰ\nĐỘNG"],
-        //                "MISSION_DEFOG_IR_LOW":["LOW","THẤP"],
-        //                "MISSION_DEFOG_IR_MEDIUM":["MEDIUM","TRUNG"],
-        //                "MISSION_DEFOG_IR_HIGH":["HIGH","CAO"],
-        //            "MISSION_MEASURE_DISTANCE":["Measure\ndistance","Khoảng\ncách"],
-        //            "MISSION_GIMBAL":["Gimbal\nmode","Chế độ\ngimbal"],
-        //                // gimbal mode
-        //                "MISSION_GIMBAL_OFF":["OFF","TẮT"],
-        //                "MISSION_GIMBAL_ON":["ON","BẬT"],
-        //                "MISSION_GIMBAL_SECURE":["SECURE","AN\nTOÀN"],
-        //                "MISSION_GIMBAL_SLEEP":["SLEEP","NGHỈ"],
-        //                "MISSION_GIMBAL_NA":["?","?"],
-        //            "MISSION_RECORDER":["Gimbal\nrecorder","Ghi lại\nhình ảnh"],
-        //                // recorder mode
-        //                "MISSION_RECORDER_NA":["?","?"],
-        //                "MISSION_RECORDER_OFF":["OFF","TẮT"],
-        //                "MISSION_RECORDER_ON":["ON","BẬT"],
-        //            "MISSION_CONTROLLER":["Gimbal\ncontroller","Điều khiển\ncamera"],
-        //            // selet button
-        //            "SELECT_UAV": ["Select\nUAV","Vị trí\nUAV"],
-        //            "SELECT_GDT": ["Select\nGDT","Vị trí\nGDT"],
-        //            // markers button
-        //            "MARKER_SAVE": ["Save\nmarkers","Lưu lại\nnhãn"],
-        //            "MARKER_LOAD": ["Load\nmarkers","Tải lên\nnhãn"],
-        //            "MARKER_CLEAR": ["Clear\nmarkers","Xóa tất \ncả nnhãn"],
-        //            // map tab
-        //            "MAP_LOOK": ["Look\nhere","Khóa\nvị trí"],
-        //            "MAP_ADD": ["Add\nmarker","Thêm\nnhãn"],
-        //            "MAP_REMOVE": ["Remove\nmarker","Xóa\nnhãn"],
-        //            "MAP_CLEAR": ["Clear\nmarkers","Xóa tất\ncả nhãn"],
-        //            "MAP_EDIT": ["Edit\nmarker","Sửa\nnhãn"],
-        //            // image processing
-        //            "GCS_DETECT": ["Object\ndetect","Phat\nhien"],
-        //            // advance tab
-        //            "ADVANCED":["Advanced","Nâng cao"],
-        //            "BACK":["Back","Trở lại"],
-        //            "ADVANCED_STAB_GIMBAL":["Gimbal\nStab","Cân bằng\nđiện"],
-        //            "ADVANCED_LOCK_VISUAL":["Visual\nlock","Giữ trường\nnhìn"],
-        //            "ADVANCED_STAB_DIGITAL":["Digital\nStab","Cân bằng\nảnh"],
-        //            "ADVANCED_STAB_GCS":["GCS\nStab","Cân bằng\ntrên GCS"],
-        //            "ADVANCED_OBJECT_DETECT":["Object\nDetect","Phat hien\nDoi tuong"],
-        //            "ADVANCED_HUD":["HUD","HUD"],
-        //            "ADVANCED_LANGUAGE":["Language","Ngôn ngữ"],
-        //                // language
-        //                "ADVANCED_LANGUAGE_VI":"VI",
-        //                "ADVANCED_LANGUAGE_EN":"EN",
-        //            "ADVANCED_INVERT_PAN":["Invert\nPan","Đảo\nPan"],
-        //            "ADVANCED_INVERT_TILT":["Invert\nTilt","Đảo\nTilt"],
-        //            "ADVANCED_VIDEO_CONFIG":["Video\nConfig","Cấu hình\nhình ảnh"],
-        //            "ADVANCED_SYSTEM_CONFIG":["System\nConfig","Cấu hình\nhệ thống"],
-        //        },
         "FOOTERBAR":{
             "MISSION":{
                 "LOAD_MAP":["Load\nmap","Tải\nbản đồ"],
@@ -513,7 +434,7 @@ QtObject {
             "GPS":{
                 "MENU_TITTLE":["GPS","Định vị"],
                 "TITTLE":["Wait untill UAV Location show bellow!\nCompare it with Other GPS device!",
-                    "Đợi cho tới khi vị trí máy bay xuất hiện bên dưới!\nSo sánh với thiết bị khác"],
+                            "Đợi cho tới khi vị trí máy bay xuất hiện bên dưới!\nSo sánh với thiết bị khác"],
                 "QUESTION":["Is UAV Location correct?","Tọa độ của máy bay có chính xác không?"],
                 "LATITUDE":["LATITUDE","VĨ ĐỘ"],
                 "LONGITUDE":["LONGITUDE","KINH ĐỘ"],
@@ -541,32 +462,32 @@ QtObject {
                 "MENU_TITTLE":["Pitot","Pitot"],
                 "TITTLE":["Cover the pitot, monitor velocity parameter", "Che đầu ống pitot, quan sát vận tốc trả về"],
                 "QUESTION":["Does velocity parameter change when cover the pitot?",
-                    "Vận tốc có thay đổi khi che đầu ống pitot?"],
+                            "Vận tốc có thay đổi khi che đầu ống pitot?"],
                 "VELOCITY":["Current Velocity","Vận tốc trả về"]
             },
             "PROPELLERS":{
                 "MENU_TITTLE":["Propellers","Cánh quạt"],
                 "TITTLE":["Press Safety and continue to check propellers",
-                    "Nhấn nút an toàn và kiểm tra các cánh quạt"],
+                        "Nhấn nút an toàn và kiểm tra các cánh quạt"],
                 "PROPELLER":["Propeller","Cánh quạt"],
             },
             "RPM":{
                 "MENU_TITTLE":["RPM","RPM"],
                 "TITTLE":["Checking UAV Propulsion motor",
-                    "Kiểm tra động cơ đẩy"],
+                        "Kiểm tra động cơ đẩy"],
                 "QUESTION":["Lift up the UAV and check Altitude parameter",
-                    ""]                                                                                                                                             ,
+                        ""],
                 "SPEED":["Engine speed","Tốc độ quay"]
             },
             "STEERING":{
                 "MENU_TITTLE":["Steering","Cánh liệng"],
                 "TITTLE":["Checking steering","Kiểm tra cánh liệng"],
                 "QUESTION":["Pilot check steering at Manual mode and FBWA mode",
-                    "Phi công kiểm tra cánh liệng ở chế độ Manual và FBWA"],
+                            "Phi công kiểm tra cánh liệng ở chế độ Manual và FBWA"],
             },
             "SUCCESS":{
                 "MENU_TITTLE":["Preflight check success. Ready to take off.",
-                    "Kiểm tra trước bay thành công. Sẵn sàng cất cánh"]
+                                "Kiểm tra trước bay thành công. Sẵn sàng cất cánh"]
             },
         },
         "PARAMS":{
@@ -730,4 +651,34 @@ QtObject {
             break;
         }
     }
+
+    //nhatdn1 define
+    //------- waypoint type
+    readonly property int waypointType : 16
+    readonly property int loitertimeType : 19
+    readonly property int landType : 21
+    readonly property int takeoffType : 22
+    readonly property int vtoltakeoffType : 84
+    readonly property int vtollandType : 85
+    readonly property int dojumpType : 177
+
+    //---------z_index
+    readonly property int z_targetPolygon: 0
+    readonly property int z_mouseArrow: 1
+    readonly property int z_tracjactory: 2
+    readonly property int z_tracjactoryPlane: 3
+    readonly property int z_marker: 4
+    readonly property int z_waypoint: 5
+    readonly property int z_plane: 5000
+    readonly property int z_gotohere: 6
+    readonly property int z_ruler: 7
+
+    readonly property int z_map: 0
+    readonly property int z_profilePath: 1
+    readonly property int z_dialog: 2
+
+    readonly property color planeTrajactoryColor: "#ffee44"
+
+    readonly property int maxDistance: 20000 //m
+
 }

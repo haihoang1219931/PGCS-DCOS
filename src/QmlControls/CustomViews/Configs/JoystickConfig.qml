@@ -466,12 +466,3 @@ Item {
         joystick.start();
     }
 } // SetupPage
-
-
-
-
-/*##^##
-Designer {
-    D{i:33;anchors_width:850}D{i:50;anchors_height:700;anchors_width:668}D{i:48;anchors_height:743;anchors_width:680}
-}
-##^##*/

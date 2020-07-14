@@ -26,10 +26,13 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]["RPM"]
     Label {
         id: lblTitle1
         height: 54
-        text: "Checking UAV Propulsion motor"
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         wrapMode: Text.WordWrap
         anchors.right: parent.right
         anchors.rightMargin: 8
@@ -103,7 +106,8 @@ Rectangle{
             y: 38
             width: 92
             height: 16
-            text: qsTr("Engine speed")
+            text: itemListName["SPEED"]
+                  [UIConstants.language[UIConstants.languageID]]
             verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
             anchors.leftMargin: 8

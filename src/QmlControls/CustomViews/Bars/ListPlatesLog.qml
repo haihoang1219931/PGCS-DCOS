@@ -17,6 +17,8 @@ Rectangle {
     border.width: 1
     border.color: UIConstants.grayColor
     property alias plateLog: plateLog
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["OCR"]
     function addPlate(time,plateNumber,plateSourceImage){
         lstPlateLog.model.append({
                     "time": time,
@@ -77,7 +79,8 @@ Rectangle {
             Label{
                 Layout.preferredWidth: UIConstants.sRect*4
                 Layout.preferredHeight: parent.height
-                text: "Plate"
+                text: itemListName["PLATE"]
+                      [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.textColor
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
@@ -87,7 +90,8 @@ Rectangle {
             Label{
                 Layout.preferredWidth: UIConstants.sRect*6
                 Layout.preferredHeight: parent.height
-                text: "Date time"
+                text: itemListName["DATE_TIME"]
+                      [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.textColor
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
@@ -185,7 +189,8 @@ Rectangle {
             TextField {
                 id: txtPlateSearch
                 text: qsTr("")
-                placeholderText: "License number"
+                placeholderText: itemListName["FILTER"]
+                                 [UIConstants.language[UIConstants.languageID]]
                 font.capitalization: Font.AllUppercase
                 anchors.fill: parent
                 font.family: UIConstants.appFont
@@ -198,7 +203,8 @@ Rectangle {
             anchors.leftMargin: 8
             width: UIConstants.sRect * 4
             height: UIConstants.sRect
-            text: qsTr("Read log")
+            text: itemListName["BTN_READ"]
+                  [UIConstants.language[UIConstants.languageID]]
             isAutoReturn: true
             color: UIConstants.transparentBlueDarker
             border.color: UIConstants.grayColor
@@ -231,7 +237,8 @@ Rectangle {
                 Label {
                     id: label
                     anchors.fill: parent
-                    text: qsTr("Time line")
+                    text: itemListName["TIME_LINE"]
+                          [UIConstants.language[UIConstants.languageID]]
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
                     color: UIConstants.textColor
@@ -363,7 +370,8 @@ Rectangle {
                     Layout.fillWidth: true
 
                     Label {
-                        text: qsTr("Plate")
+                        text: itemListName["PLATE"]
+                              [UIConstants.language[UIConstants.languageID]]
                         Layout.preferredWidth: UIConstants.sRect * 3
                         color: UIConstants.textColor
                         font.family: UIConstants.appFont
@@ -398,7 +406,8 @@ Rectangle {
                     Label {
                         id: label2
                         Layout.preferredWidth: UIConstants.sRect * 3
-                        text: qsTr("Speed")
+                        text: itemListName["SPEED"]
+                              [UIConstants.language[UIConstants.languageID]]
                         color: UIConstants.textColor
                         font.family: UIConstants.appFont
                         font.pixelSize: UIConstants.fontSize
@@ -419,7 +428,8 @@ Rectangle {
                     Label {
                         id: label4
                         Layout.preferredWidth: UIConstants.sRect * 3
-                        text: qsTr("Count")
+                        text: itemListName["COUNT"]
+                              [UIConstants.language[UIConstants.languageID]]
                         color: UIConstants.textColor
                         font.family: UIConstants.appFont
                         font.pixelSize: UIConstants.fontSize

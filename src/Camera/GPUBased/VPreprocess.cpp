@@ -2,8 +2,6 @@
 
 VPreprocess::VPreprocess()
 {
-    m_stabilizer = new stab_gcs_kiir::vtx_KIIRStabilizer();
-    m_stabilizer->setMotionEstimnator(GOOD_FEATURE, RIGID_TRANSFORM);
     m_gstFrameBuff = Cache::instance()->getGstFrameCache();
     m_matImageBuff = Cache::instance()->getProcessImageCache();
     m_currID = 0;
@@ -25,7 +23,7 @@ void VPreprocess::run()
     cv::Mat imgStab;
     unsigned char *h_i420Image;
     unsigned char *d_i420Image;
-    float *h_stabMat;
+    cv::Mat h_stabMat;
     float *d_stabMat;
     float *h_gmeMat;
     float *d_gmeMat;
@@ -54,7 +52,7 @@ void VPreprocess::run()
         grayImg = cv::Mat(imgSize.height, imgSize.width, CV_8UC1, map.data);
         h_i420Image = fixedMemI420.getHeadHost();
         d_i420Image = fixedMemI420.getHeadDevice();
-        h_stabMat = (float *)fixedMemStabMatrix.getHeadHost();
+//        h_stabMat = (float *)fixedMemStabMatrix.getHeadHost();
         d_stabMat = (float *)fixedMemStabMatrix.getHeadDevice();
         h_gmeMat = (float *)fixedMemGMEMatrix.getHeadHost();
         d_gmeMat = (float *)fixedMemGMEMatrix.getHeadDevice();
@@ -62,30 +60,7 @@ void VPreprocess::run()
         memcpy(h_i420Image, map.data, imgSize.height * imgSize.width * 3 / 2);
         //        cudaMemcpy(d_image, map.data, imgSize.height * imgSize.width * 4, cudaMemcpyDeviceToDevice);
         gst_buffer_unmap(gstData, &map);
-        // Image Stabilization
-        cv::Mat stabMatrix = cv::Mat::eye(2, 3, CV_64FC1);
 
-        if (m_enStab) {
-            if (m_stabilizer->run(grayImg, stabMatrix, h_gmeMat) != SUCCESS) {
-                printf("===> No keypoints\r\n");
-            }
-        }
-
-        // add stab Matrix
-        h_stabMat[0] = (float)stabMatrix.at<double>(0, 0);
-        h_stabMat[1] = (float)stabMatrix.at<double>(0, 1);
-        h_stabMat[2] = (float)stabMatrix.at<double>(0, 2);
-        h_stabMat[3] = (float)stabMatrix.at<double>(1, 0);
-        h_stabMat[4] = (float)stabMatrix.at<double>(1, 1);
-        h_stabMat[5] = (float)stabMatrix.at<double>(1, 2);
-        h_stabMat[6] = 0.f;
-        h_stabMat[7] = 0.f;
-        h_stabMat[8] = 0.f;
-        // convert I420 to BRGA
-        //        unsigned char *h_BRGAImage = fixedMemBRGA.getHeadHost();
-        //        unsigned char *d_BRGAImage = fixedMemBRGA.getHeadDevice();
-        //        cv::Mat brgaImg = cv::Mat(imgSize.height, imgSize.width, CV_8UC4, h_BRGAImage);
-        //        cv::cvtColor(i420Img, brgaImg, cv::COLOR_YUV2BGRA_I420);
         // Adding to buffer
         ProcessImageCacheItem processImgItem;
         index_type frameID = m_currID;
@@ -93,7 +68,7 @@ void VPreprocess::run()
         processImgItem.setHostImage(h_i420Image);
         processImgItem.setDeviceImage(d_i420Image);
         processImgItem.setImageSize(imgSize);
-        processImgItem.setHostStabMatrix(h_stabMat);
+//        processImgItem.setHostStabMatrix(h_stabMat);
         processImgItem.setDeviceStabMatrix(d_stabMat);
         processImgItem.setHostGMEMatrix(h_gmeMat);
         processImgItem.setDeviceGMEMatrix(d_gmeMat);
@@ -107,8 +82,7 @@ void VPreprocess::run()
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
-//        printf("\nPreProcess: %d - [%d, %d]", m_currID, imgSize.width, imgSize.height);
-        //        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+//        printf("PreProcess: %d - [%d, %d]\r\n", m_currID, imgSize.width, imgSize.height);
     }
 }
 

@@ -5,11 +5,11 @@
 #include <QTimer>
 #include <QVariantMap>
 #include <QVariant>
-#include "../Vehicle/Vehicle.h"
-#include "../Firmware/FirmwarePlugin.h"
+#include <mavlink_types.h>
+#include <mavlink.h>
 //#define DEBUG_FUNC
-
 class Vehicle;
+class FirmwarePlugin;
 class ParamsController : public QObject
 {
     Q_OBJECT

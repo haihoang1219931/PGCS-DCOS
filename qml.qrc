@@ -48,6 +48,7 @@
         <file alias="CustomViews/Bars/HUD.qml">src/QmlControls/CustomViews/Bars/HUD.qml</file>
         <file alias="CustomViews/Bars/MapPane.qml">src/QmlControls/CustomViews/Bars/MapPane.qml</file>
         <file alias="CustomViews/Bars/VideoPane.qml">src/QmlControls/CustomViews/Bars/VideoPane.qml</file>
+        <file alias="CustomViews/Bars/VideoExternal.qml">src/QmlControls/CustomViews/Bars/VideoExternal.qml</file>
         <file alias="CustomViews/Bars/PaneControl.qml">src/QmlControls/CustomViews/Bars/PaneControl.qml</file>
         <file alias="CustomViews/Bars/FooterBar.qml">src/QmlControls/CustomViews/Bars/FooterBar.qml</file>
         <file alias="CustomViews/Bars/NavBar.qml">src/QmlControls/CustomViews/Bars/NavBar.qml</file>
@@ -102,6 +103,7 @@
         <file alias="CustomViews/Pages/ModeCheck.qml">src/QmlControls/CustomViews/Pages/ModeCheck.qml</file>
         <file alias="CustomViews/Pages/Propellers.qml">src/QmlControls/CustomViews/Pages/Propellers.qml</file>
         <file alias="CustomViews/Pages/Steering.qml">src/QmlControls/CustomViews/Pages/Steering.qml</file>
+        <file alias="CustomViews/Pages/JoystickCheck.qml">src/QmlControls/CustomViews/Pages/JoystickCheck.qml</file>
         <file alias="CustomViews/Pages/Pitot.qml">src/QmlControls/CustomViews/Pages/Pitot.qml</file>
         <file alias="CustomViews/Pages/Laser.qml">src/QmlControls/CustomViews/Pages/Laser.qml</file>
         <file alias="CustomViews/Pages/GPS.qml">src/QmlControls/CustomViews/Pages/GPS.qml</file>
@@ -186,6 +188,25 @@
         <file alias="qmlimages/ZoomMinus.svg">src/QmlControls/CustomViews/assets/images/widgets/ZoomMinus.svg</file>
         <file alias="qmlimages/ZoomPlus.svg">src/QmlControls/CustomViews/assets/images/widgets/ZoomPlus.svg</file>
         <file alias="CustomViews/ToolBar/EngineIndicator.qml">src/QmlControls/CustomViews/ToolBar/EngineIndicator.qml</file>
+        <file alias="assets/images/BasePosition.png">src/QmlControls/CustomViews/assets/images/BasePosition.png</file>
+        <file alias="assets/images/Landing.png">src/QmlControls/CustomViews/assets/images/Landing.png</file>
+        <file alias="assets/images/scale.png">src/QmlControls/CustomViews/assets/images/scale.png</file>
+        <file alias="assets/images/scale_end.png">src/QmlControls/CustomViews/assets/images/scale_end.png</file>
+        <file alias="assets/images/Takeoff.png">src/QmlControls/CustomViews/assets/images/Takeoff.png</file>
+        <file alias="CustomViews/Bars/MapPane_UAV.qml">src/QmlControls/CustomViews/Bars/MapPane_UAV.qml</file>
+        <file alias="CustomViews/SubComponents/MouseArrow.qml">src/QmlControls/CustomViews/SubComponents/MouseArrow.qml</file>
+        <file alias="CustomViews/SubComponents/Plane.qml">src/QmlControls/CustomViews/SubComponents/Plane.qml</file>
+        <file alias="CustomViews/SubComponents/Ruler2.qml">src/QmlControls/CustomViews/SubComponents/Ruler2.qml</file>
+        <file alias="CustomViews/SubComponents/Symbol.qml">src/QmlControls/CustomViews/SubComponents/Symbol.qml</file>
+        <file alias="CustomViews/SubComponents/Tracker.qml">src/QmlControls/CustomViews/SubComponents/Tracker.qml</file>
+        <file alias="CustomViews/SubComponents/Trajactory.qml">src/QmlControls/CustomViews/SubComponents/Trajactory.qml</file>
+        <file alias="assets/images/home.png">src/QmlControls/CustomViews/assets/images/home.png</file>
+        <file alias="assets/images/land.png">src/QmlControls/CustomViews/assets/images/land.png</file>
+        <file alias="assets/images/takeoff.png">src/QmlControls/CustomViews/assets/images/takeoff.png</file>
+        <file alias="CustomViews/SubComponents/PolyTrajactory.qml">src/QmlControls/CustomViews/SubComponents/PolyTrajactory.qml</file>
+        <file alias="CustomViews/SubComponents/TargetPolygon.qml">src/QmlControls/CustomViews/SubComponents/TargetPolygon.qml</file>
+        <file alias="CustomViews/Components/ScrollWaypoint.qml">src/QmlControls/CustomViews/Components/ScrollWaypoint.qml</file>
+        <file alias="CustomViews/Components/Uav_ProfilePath.qml">src/QmlControls/CustomViews/Components/Uav_ProfilePath.qml</file>
     </qresource>
     <qresource prefix="/qmlimages">
         <file alias="markers/AntiClockwiseCircle.png">src/QmlControls/CustomViews/assets/images/markers/AntiClockwiseCircle.png</file>

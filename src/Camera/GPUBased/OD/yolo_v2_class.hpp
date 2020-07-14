@@ -20,11 +20,11 @@
 #include <string>
 #include <vector>
 
-
 struct track_info_t {
-	std::string stringinfo;
-	int age;
-	float prob;
+    std::string stringinfo;
+    int age;
+    float prob;
+    bool found = false;
 };
 
 
@@ -35,14 +35,14 @@ struct bbox_t {
     unsigned int track_id;         // tracking id for video (0 - untracked, 1 - inf - tracked object)
     unsigned int frames_counter;   // counter of frames on which the object was detected
     bool operator > (const bbox_t& other) const
-	{
-		return (w*h > other.w*other.h);
-	}
-	// track_info_t * track_info;
-	// bbox_t() {
-	// 	track_info = new track_info_t();
-	// }
-	track_info_t track_info;
+    {
+        return (w*h > other.w*other.h);
+    }
+    // track_info_t * track_info;
+    // bbox_t() {
+    // 	track_info = new track_info_t();
+    // }
+    track_info_t track_info;
 };
 
 struct image_t {
@@ -90,24 +90,24 @@ LIB_API void getROI_blobed_gpu_I420(image_t in, image_t blob_resized, int roi_to
 
 class Detector
 {
-	std::shared_ptr<void> detector_gpu_ptr;
-	float nms = 0.4f;
+    std::shared_ptr<void> detector_gpu_ptr;
+    float nms = 0.4f;
 public:
-	LIB_API Detector(std::string cfg_filename, std::string weight_filename);
-	LIB_API ~Detector();
+    LIB_API Detector(std::string cfg_filename, std::string weight_filename);
+    LIB_API ~Detector();
 
-	LIB_API std::vector<bbox_t> gpu_detect_RGBA(image_t img, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
-	LIB_API std::vector<bbox_t> gpu_detect_roi_RGBA(image_t img, cv::Rect roi, float thresh = 0.2f, bool use_mean = false);
+    LIB_API std::vector<bbox_t> gpu_detect_RGBA(image_t img, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
+    LIB_API std::vector<bbox_t> gpu_detect_roi_RGBA(image_t img, cv::Rect roi, float thresh = 0.2f, bool use_mean = false);
 
-	LIB_API std::vector<bbox_t> gpu_detect_I420(image_t img, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
-	LIB_API std::vector<bbox_t> gpu_detect_roi_I420(image_t img, cv::Rect roi, float thresh = 0.2f, bool use_mean = false);
+    LIB_API std::vector<bbox_t> gpu_detect_I420(image_t img, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
+    LIB_API std::vector<bbox_t> gpu_detect_roi_I420(image_t img, cv::Rect roi, float thresh = 0.2f, bool use_mean = false);
 
 public:
-	LIB_API int get_net_height();
-	LIB_API int get_net_width();
-	LIB_API std::vector<bbox_t> gpu_detect_resized(image_t img, float thresh, bool use_mean);
+    LIB_API int get_net_height();
+    LIB_API int get_net_width();
+    LIB_API std::vector<bbox_t> gpu_detect_resized(image_t img, float thresh, bool use_mean);
 private:
-	image_t blob_resized;
+    image_t blob_resized;
 };
 
 #endif    // __cplusplus

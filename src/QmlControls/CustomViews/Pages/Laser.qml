@@ -26,22 +26,20 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
-    Label {
-        id: lblTitle1
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]["LASER"]
+    QLabel {
+        id: lblTitle
         height: 54
-        text: "Checking Altitude measurement Laser"
-        wrapMode: Text.WordWrap
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.leftMargin: 8
         anchors.topMargin: 0
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignLeft
-        color: UIConstants.textColor
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
+        border.width: 0
     }
 
     Rectangle {
@@ -55,24 +53,12 @@ Rectangle{
         anchors.bottomMargin: 8
         anchors.horizontalCenter: parent.horizontalCenter
 
-        Image {
-            id: imgLogo1
-            y: -226
-            height: 346
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            source: "qrc:/assets/images/Shikra_4.png"
-        }
-
         Label {
             id: label
             y: 384
             height: 50
-            text: qsTr("Lift up the UAV and check Altitude parameter")
+            text: itemListName["QUESTION"]
+                  [UIConstants.language[UIConstants.languageID]]
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             color: UIConstants.textColor
@@ -103,7 +89,8 @@ Rectangle{
             y: 38
             width: 59
             height: 16
-            text: qsTr("Altitude:")
+            text: itemListName["ALTITUDE"]
+                  [UIConstants.language[UIConstants.languageID]]+":"
             verticalAlignment: Text.AlignVCenter
             color: UIConstants.textColor
             font.pixelSize: UIConstants.fontSize

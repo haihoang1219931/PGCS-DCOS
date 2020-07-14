@@ -17,7 +17,6 @@
 #include "../UAS/UAS.h"
 #include "../Com/QGCMAVLink.h"
 #include <ardupilotmega/ardupilotmega.h>
-#include "../../Joystick/Files/FileControler.h"
 //#define DEBUG
 //#define DEBUG_FUNC
 //#define DEBUG_MESSAGE_RECV
@@ -38,6 +37,7 @@ class Vehicle : public QObject
     Q_PROPERTY(ParamsController*    paramsController            READ paramsController   WRITE setParamsController)
     Q_PROPERTY(QStringList          flightModes                 READ flightModes                                    NOTIFY flightModesChanged)
     Q_PROPERTY(QStringList          flightModesOnAir            READ flightModesOnAir                               NOTIFY flightModesOnAirChanged)
+    Q_PROPERTY(QStringList          flightModesOnGround         READ flightModesOnGround                            NOTIFY flightModesOnGroundChanged)
     Q_PROPERTY(QString              flightMode                  READ flightMode         WRITE setFlightMode         NOTIFY flightModeChanged)
     Q_PROPERTY(float                rcinChan1                   READ rcinChan1                                      NOTIFY rcinChan1Changed)
     Q_PROPERTY(float                rcinChan2                   READ rcinChan2                                      NOTIFY rcinChan2Changed)
@@ -188,11 +188,15 @@ public:
     Q_ENUMS(VEHICLE_MAV_TYPE)
 public:
     int defaultComponentId(){return _defaultComponentId;}
+    //nhatdn1
+    int gimbalComponentId(){return MAV_COMP_ID_GIMBAL;}
+    uint8_t gimbalSystemId(){return 4;}
+
     float roll(){return _roll;}
     float pitch(){return _pitch;}
     float heading(){return _heading;}
     float airSpeed(){return _airSpeed;}
-    float altitudeRelative(){return _altitudeRelative;}
+    float altitudeRelative(){return _altitudeAGL;}
     float engineSensor_1(){return _engineSensor_1;}
     float engineSensor_2(){return _engineSensor_2;}
     QGeoCoordinate coordinate(){ return _coordinate;}
@@ -283,6 +287,10 @@ public:
     float pressABS(){ return _pressABS; }
     float sonarRange(){ return _sonarRange; }
     int temperature(){ return _temperature; }
+    float rcinChan1(){return _rcinChan1;}
+    float rcinChan2(){return _rcinChan2;}
+    float rcinChan3(){return _rcinChan3;}
+    float rcinChan4(){return _rcinChan4;}
 public:
     /// Command vehicle to change loiter time
     Q_INVOKABLE void commandLoiterRadius(float radius);
@@ -365,6 +373,13 @@ public:
 
     Q_INVOKABLE void sendHomePosition(QGeoCoordinate location);
 
+    Q_INVOKABLE void setTotalWPDistance(int value);
+    ///control gimbal with mavlink by nhatdn1
+    void setGimbalRate(float pan,float tilt);
+    void setGimbalAngle(float pan,float tilt);
+
+
+
 public:
     Q_INVOKABLE void activeProperty(QString name,bool active);
     Q_INVOKABLE int countActiveProperties();
@@ -373,9 +388,6 @@ public:
     void setUav(Vehicle* uav);
     JoystickThreaded* joystick();
     void setJoystick(JoystickThreaded* joystick);
-    bool useJoystick(void){ return _useJoystick;}
-    void setUseJoystick(bool enable){ _useJoystick = enable; Q_EMIT useJoystickChanged(_useJoystick); }
-    bool pic(void){ return _pic;}
     ParamsController* paramsController();
     void setParamsController(ParamsController* paramsController);
     PlanController* planController();
@@ -383,10 +395,9 @@ public:
     IOFlightController* communication();
     void setCommunication(IOFlightController* com);
     ParamsController* params();
-    float rcinChan1(){return _rcinChan1;}
-    float rcinChan2(){return _rcinChan2;}
-    float rcinChan3(){return _rcinChan3;}
-    float rcinChan4(){return _rcinChan4;}
+    bool useJoystick(void);
+    void setUseJoystick(bool enable);
+    bool pic(void);
     bool armed(void) { return _armed; }
     Q_INVOKABLE void setArmed(bool armed);
 
@@ -394,6 +405,7 @@ public:
 
     bool flightModeSetAvailable(void);
     QStringList flightModes(void);
+    QStringList flightModesOnGround(void);
     QStringList flightModesOnAir(void);
     QString flightMode(void);
     void setFlightMode(const QString& flightMode);
@@ -428,7 +440,7 @@ public:
     void setFirmwareVersion(int majorVersion, int minorVersion, int patchVersion, FIRMWARE_VERSION_TYPE versionType = FIRMWARE_VERSION_TYPE_OFFICIAL);
     void setFirmwareCustomVersion(int majorVersion, int minorVersion, int patchVersion);
     // Property accesors
-    int id(void) { return _id; }
+    uint8_t id() { return static_cast<uint8_t>(_id); }
     MAV_AUTOPILOT firmwareType(void) const { return _firmwareType; }
     VEHICLE_MAV_TYPE vehicleType(void) const { return _vehicleType; }
     void setVehicleType(VEHICLE_MAV_TYPE vehicleType){
@@ -478,11 +490,14 @@ Q_SIGNALS:
     void mavlinkMessageReceived(mavlink_message_t message);
     void mavCommandResult(int vehicleId, int component, int command, int result, bool noReponseFromVehicle);
     void homePositionChanged(const QGeoCoordinate& currentHomePosition);
+    void picChanged();
+    void useJoystickChanged(bool enable);
     void armedChanged(bool armed);
     void landedChanged();
     void flightModeChanged(const QString& flightMode);
     void flightModesChanged(void);
     void flightModesOnAirChanged(void);
+    void flightModesOnGroundChanged(void);
     void coordinateChanged(const QGeoCoordinate& position);
     void homePositionReceivedChanged();
     //// Communication count
@@ -554,13 +569,17 @@ Q_SIGNALS:
     void propertiesModelChanged();
     void propertiesShowCountChanged();
     void paramsModelChanged();
-    void picChanged();
-    void useJoystickChanged(bool enable);
     void rcinChan1Changed();
     void rcinChan2Changed();
     void rcinChan3Changed();
     void rcinChan4Changed();
+    void gimbalModeChanged(QString mode);
+    void gimbalModeSetFail();
+
+    void mavlinkGimbalMessageReceived(mavlink_message_t message);
 public Q_SLOTS:
+    void handlePIC();
+    void handleUseJoystick(bool useJoystick);
     void _loadDefaultParamsShow();
     void _setPropertyValue(QString name,QString value,QString unit);
     void _sendMessageOnLink(IOFlightController* link, mavlink_message_t message);
@@ -572,8 +591,9 @@ public Q_SLOTS:
     void requestDataStream(int messageID, int hz, int enable = 1);
     void _startPlanRequest(void);
     void _mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t totalReceived, uint64_t totalLoss, float lossPercent);
-    void handlePIC();
-    void handleUseJoystick(bool useJoystick);
+    void _mavlinkGimbalMessageReceived(mavlink_message_t message);
+    void handleMavCommandResult(int vehicleId, int component, int command, int result, bool noReponseFromVehicle);
+
 public:
     IOFlightController* m_com = nullptr;
     FirmwarePlugin*      m_firmwarePlugin = nullptr;
@@ -594,6 +614,7 @@ public:
     quint64 _uid;
 private:
     Vehicle* m_uav = nullptr;
+    JoystickThreaded*  m_joystick = nullptr;
     UAS* m_uas;
     ParamsController *              m_paramsController;
     PlanController *                m_planController;
@@ -710,7 +731,7 @@ private:
     float           _heading = 0;
     float           _airSpeed = 0;
     float           _climbRate = 0;
-    float           _altitudeRelative = 0;
+    float           _altitudeAGL = 0;
     float           _engineSensor_1 = 0;
     float           _engineSensor_2 = 0;
     bool            _link = false;
@@ -726,7 +747,6 @@ private:
     float           _groundSpeed = 0;
     float           _climbSpeed = 0;
     float           _altitudeAMSL = 0;
-    float           _altitudeAGL = 0;
 
     float           _latGPS = 0;
     float           _lonGPS = 0;
@@ -747,6 +767,11 @@ private:
     bool            _active;
     bool            _offlineEditingVehicle; ///< This Vehicle is a "disconnected" vehicle for ui use while offline editing
 
+    //distance Traveled;
+    float           _distanceTraveled = 0;
+    QGeoCoordinate  _lastCoord = QGeoCoordinate(0,0,0);
+    int32_t         _lastCount = 0;
+
     bool    _armed = false;         ///< true: vehicle is armed
     uint8_t _base_mode = 0;     ///< base_mode from HEARTBEAT
     uint32_t _custom_mode = 0;  ///< custom_mode from HEARTBEAT
@@ -757,19 +782,18 @@ private:
     uint64_t    _mavlinkLossCount       = 0;
     float       _mavlinkLossPercent     = 100.0f;
     float _pressABS = 0;
-    int _temperature = 0;
+    int _temperature = 0;    
+    float _rcinChan1 = 0;
+    float _rcinChan2 = 0;
+    float _rcinChan3 = 0;
+    float _rcinChan4 = 0;
+    bool _pic = false;
+    bool _useJoystick = true;
     QList<Fact*> _propertiesModel;
     QList<Fact*> _paramsModel;
     QMap<QString,int> _paramsMap;
     int _propertiesShowCount = 0;
     bool _requestPlanAfterParams = false;
-    JoystickThreaded* m_joystick = nullptr;
-    bool _pic = false;
-    bool _useJoystick = true;
-    float _rcinChan1 = 0;
-    float _rcinChan2 = 0;
-    float _rcinChan3 = 0;
-    float _rcinChan4 = 0;
 };
 
 #endif // VEHICLE_H

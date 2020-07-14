@@ -25,6 +25,8 @@ Rectangle {
     property bool showInfoDrones: true
     property bool showInfoPMCC: true
     property int fontSize: 15
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["POPUP"]
     signal changeShowState(string type, int id, bool show);
     signal openChatBoxClicked(string ip);
     function showInfo(type,show){
@@ -62,12 +64,13 @@ Rectangle {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 2
             source: "qrc:/assets/images/icons/Quad.svg"
-            color: "green"
+            color: UIConstants.greenColor
         }
 
         Label {
             id: lblDroneOnline
-            text: UC_API?"Drone Online "+"["+Number(UCDataModel.listRooms.length)+"]":""
+            text: UC_API?itemListName["DRONE"]
+                          [UIConstants.language[UIConstants.languageID]]+" ["+Number(UCDataModel.listRooms.length)+"]":""
             color: UIConstants.textColor
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize
@@ -113,14 +116,15 @@ Rectangle {
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 2
-            color: "green"
+            color: UIConstants.greenColor
             iconSize: UIConstants.sRect
             icon:  UIConstants.iPatrolMan
         }
 
         Label {
             id: lblPMOnline
-            text: "PM Online "+"["+Number(UCDataModel.listUsers.length).toFixed(0).toString()+"]"
+            text: itemListName["PCD"]
+                  [UIConstants.language[UIConstants.languageID]]+" ["+Number(UCDataModel.listUsers.length).toFixed(0).toString()+"]"
             color: UIConstants.textColor
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize
@@ -163,14 +167,15 @@ Rectangle {
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 2
-            color: "green"
+            color: UIConstants.greenColor
             iconSize: UIConstants.sRect
             icon:  UIConstants.iCenterCommander
         }
 
         Label {
             id: lblCCOnline
-            text: "C&C Online "+qsTr("[0]")
+            text: itemListName["CC"]
+                  [UIConstants.language[UIConstants.languageID]]+qsTr("[0]")
             color: UIConstants.textColor
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize

@@ -247,6 +247,7 @@ namespace sio
     
     void socket::impl::emit_(std::string const& name, message::list const& msglist, std::function<void (message::list const&)> const& ack)
     {
+        printf("Run into emit ----> ");
         NULL_GUARD(m_client);
         message::ptr msg_ptr = msglist.to_array_message(name);
         int pack_id;

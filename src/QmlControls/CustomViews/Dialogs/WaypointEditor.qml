@@ -41,7 +41,8 @@ Rectangle {
     signal confirmClicked()
     signal cancelClicked()
     signal textChanged(string newText)
-
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["DIALOG"]["WAYPOINT_EDITOR"]
     property bool editting: false
     property real latitude: 0
     property real longitude: 0
@@ -605,7 +606,8 @@ Rectangle {
         anchors.topMargin: 8
         anchors.leftMargin: 8
         color: UIConstants.textColor
-        text: "Waypoint Editor"
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         font.family: UIConstants.appFont
         font.pixelSize: UIConstants.fontSize
     }
@@ -628,7 +630,8 @@ Rectangle {
                 id: cdeLat
                 Layout.fillHeight: true
                 width: UIConstants.sRect * 6
-                title: "Latitude"
+                title: itemListName["LATITUDE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 arrayDirLabel: ["E","W"]
                 validatorValue: root.validatorLat
                 validatorValueDecimal: root.validatorLatDecimal
@@ -640,7 +643,8 @@ Rectangle {
                 id: cdeLon
                 Layout.fillHeight: true
                 width: UIConstants.sRect * 6
-                title: "Longitude"
+                title: itemListName["LONGITUDE"]
+                       [UIConstants.language[UIConstants.languageID]]
                 arrayDirLabel: ["N","S"]
                 validatorValue: root.validatorLon
                 validatorValueDecimal: root.validatorLonDecimal
@@ -809,7 +813,7 @@ Rectangle {
         width: UIConstants.sRect * 4
         icon: UIConstants.iChecked
         isSolid: true
-        color: (root.latitude !== 0 && root.longitude !== 0)?"green":"gray"
+        color: (root.latitude !== 0 && root.longitude !== 0)?UIConstants.greenColor:UIConstants.grayColor
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.bottom: parent.bottom

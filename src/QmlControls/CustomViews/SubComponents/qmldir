@@ -10,3 +10,10 @@ CCGraphics      1.0 CCGraphics.qml
 DroneGraphics   1.0 DroneGraphics.qml
 PMGraphics      1.0 PMGraphics.qml
 MarkerGraphics  1.0 MarkerGraphics.qml
+
+Symbol          1.0 Symbol.qml
+MouseArrow      1.0 MouseArrow.qml
+Plane           1.0 Plane.qml
+Trajactory      1.0 Trajactory.qml
+Ruler2          1.0 Ruler2.qml
+Tracker         1.0 Tracker.qml

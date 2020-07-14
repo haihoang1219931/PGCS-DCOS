@@ -28,73 +28,58 @@ Rectangle{
     width: 600
     height: 300
     color: "transparent"
-
-    Label {
+    property var itemListName:  UIConstants.itemTextMultilanguages["PRECHECK"]["MODECHECK"]
+    QLabel {
         id: lblTitle
         height: 54
-        text: "Check Flight Mode"
-        wrapMode: Text.WordWrap
-        anchors.right: imgLogo.left
-        anchors.rightMargin: 6
-
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
+        anchors.right: parent.right
+        anchors.rightMargin: 8
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.leftMargin: 8
         anchors.topMargin: 0
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignLeft
-        color: UIConstants.textColor
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
+        border.width: 0
     }
-    Image {
-        id: imgLogo
-        x: 379
-        width: 446
-        height: 285
-        anchors.top: parent.top
-        anchors.topMargin: 8
-        anchors.right: parent.right
-        anchors.rightMargin: 8
-        source: "qrc:/assets/images/Shikra_1.png"
-    }
-    Label {
-        id: lblModeTiltle
-        text: "Test Mode"
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 87
+    Column{
         anchors.horizontalCenter: parent.horizontalCenter
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignHCenter
-        color: UIConstants.textColor
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
-    }
-
-    Rectangle{
-        x: 250
-        y: 219
-        color: "transparent"
-        width: UIConstants.sRect * 8
-        height: UIConstants.sRect
-        border.color: "gray"
-        border.width: 2
-        radius: 10
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 51
-        anchors.horizontalCenterOffset: 1
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: UIConstants.sRect
+        spacing: 8
+        QLabel {
+            id: lblModeCommandTiltle
+            text: itemListName["COMMAND_MODE"]
+                  [UIConstants.language[UIConstants.languageID]]
+            anchors.horizontalCenter: parent.horizontalCenter
+            border.width: 0
+            clip: false
+        }
 
-        Label {
-            id: lblModeCurrent
+        QTextInput{
+            width: UIConstants.sRect * 8
+            height: UIConstants.sRect
+            anchors.horizontalCenter: parent.horizontalCenter
+            enabled: false
+            horizontalAlignment: TextInput.AlignHCenter
+            text: vehicle.pic ? "PIC":"CIC"
+        }
+        QLabel {
+            id: lblModeTiltle
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: itemListName["TEST_MODE"]
+                  [UIConstants.language[UIConstants.languageID]]
+            border.width: 0
+            clip: false
+        }
+
+        QTextInput{
+            width: UIConstants.sRect * 8
+            height: UIConstants.sRect
+            anchors.horizontalCenter: parent.horizontalCenter
             text: vehicle.flightMode
-            anchors.fill: parent
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            color: UIConstants.textColor
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
+            horizontalAlignment: TextInput.AlignHCenter
+            enabled: false
         }
     }
-
 }

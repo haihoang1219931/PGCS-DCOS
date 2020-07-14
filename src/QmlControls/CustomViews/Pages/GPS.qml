@@ -26,10 +26,13 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]["GPS"]
     Label {
         id: lblTitle1
         height: 54
-        text: "Wait untill UAV Location show bellow!\nCompare it with Other GPS device!"
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         wrapMode: Text.WordWrap
         anchors.right: parent.right
         anchors.rightMargin: 8
@@ -60,7 +63,8 @@ Rectangle{
             id: label
             y: 384
             height: 50
-            text: qsTr("Is UAV Location correct?")
+            text: itemListName["QUESTION"]
+                  [UIConstants.language[UIConstants.languageID]]
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             color: UIConstants.textColor
@@ -92,8 +96,10 @@ Rectangle{
 
         Label {
             id: label2
-            text: vehicle?("LATITUDE   "+Number(vehicle.coordinate.latitude).toFixed(7).toString()+
-                          "\nLONGITUDE  "+Number(vehicle.coordinate.longitude).toFixed(7).toString()):
+            text: vehicle?(itemListName["LATITUDE"]
+                           [UIConstants.language[UIConstants.languageID]]+"   "+Number(vehicle.coordinate.latitude).toFixed(7).toString()+
+                          "\n"+itemListName["LONGITUDE"]
+                           [UIConstants.language[UIConstants.languageID]]+"  "+Number(vehicle.coordinate.longitude).toFixed(7).toString()):
                           qsTr("0")
             color: UIConstants.textColor
             font.pixelSize: UIConstants.fontSize

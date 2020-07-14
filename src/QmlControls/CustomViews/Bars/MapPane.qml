@@ -550,7 +550,7 @@ Item {
     }
     property var vehicleSymbolLink: {
         "MAV_TYPE_QUADROTOR":"qrc:/qmlimages/uavIcons/QuadRotorX.png",
-        "MAV_TYPE_COAXIAL":"qrc:/qmlimages/uavIcons/QuadRotorX.png",
+        "MAV_TYPE_OCTOROTOR":"qrc:/qmlimages/uavIcons/QuadRotorX.png",
         "MAV_TYPE_VTOL_QUADROTOR":"qrc:/qmlimages/uavIcons/VTOLPlane.png",
         "MAV_TYPE_FIXED_WING":"qrc:/qmlimages/uavIcons/Plane.png",
         "MAV_TYPE_GENERIC":"qrc:/qmlimages/uavIcons/Unknown.png"
@@ -558,7 +558,8 @@ Item {
     signal clicked(real lat,real lon,real alt)
     signal mapClicked(bool isMap)
     signal mapMoved()
-    signal homePositionChanged(real lat, real lon, real alt);
+    signal homePositionChanged(real lat, real lon, real alt)
+    signal showAdvancedConfigChanged()
     Computer{
         id: cInfo
     }
@@ -593,6 +594,7 @@ Item {
             fontFamily: UIConstants.appFont
             anchors.fill: parent
             anchors.margins: 4
+            folderPath: cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder
         }
     }
 
@@ -945,10 +947,10 @@ Item {
             waypointEditor.vehicleType = rootItem.vehicleType;
             vehicleSymbolUrl = vehicleSymbolLink["MAV_TYPE_QUADROTOR"];
             break;
-        case 3:
-            rootItem.vehicleType = "MAV_TYPE_COAXIAL";
+        case 14:
+            rootItem.vehicleType = "MAV_TYPE_OCTOROTOR";
             waypointEditor.vehicleType = rootItem.vehicleType;
-            vehicleSymbolUrl = vehicleSymbolLink["MAV_TYPE_COAXIAL"];
+            vehicleSymbolUrl = vehicleSymbolLink["MAV_TYPE_OCTOROTOR"];
             break;
         case 20:
             rootItem.vehicleType = "MAV_TYPE_VTOL_QUADROTOR";
@@ -1566,7 +1568,26 @@ Item {
     function updateHeadingPlane(angle){
         uavGraphic.symbol.angle = angle;
     }
+    function drawTargetLocalization(point1,point2,point3,point4,point5,plane){
+        planeFOVBuilder.parts.removeAll();
+        planeFOVBuilder.addPointXY(point1.y,point1.x);
+        planeFOVBuilder.addPointXY(point2.y,point2.x);
+        planeFOVBuilder.addPointXY(point3.y,point3.x);
+        planeFOVBuilder.addPointXY(point4.y,point4.x);
+        planeFOVGraphic.geometry = planeFOVBuilder.geometry;
 
+        centralFOVBuilder.parts.removeAll();
+        centralFOVBuilder.addPointXY(plane.y,plane.x);
+        centralFOVBuilder.addPointXY(point5.y,point5.x);
+        centralFOVGraphicLine.geometry = centralFOVBuilder.geometry;
+
+        var headPoint = ArcGISRuntimeEnvironment.createObject("Point", {
+                                                                   x: point5.y,
+                                                                   y: point5.x,
+                                                                   spatialReference: SpatialReference.createWgs84()
+                                                               });
+        centralFOVGraphic.geometry = headPoint;
+    }
     function updateTracker(position){
         // update plane position
 //        console.log("Tracker("+position.latitude+","+position.longitude+")")
@@ -1761,9 +1782,6 @@ Item {
                 changeWPCommand(selectedWP.attributes.attributeValue("command"),
                             param1,param2,param3,param4);
             }
-            var pointLatLon = Conv.mercatorToLatLon(
-                        selectedWP.geometry.extent.center.x,
-                        selectedWP.geometry.extent.center.y);
             if(selectedWP.attributes.attributeValue("id") === 0){
                 if(newPosition.altitude !== selectedWP.attributes.attributeValue("altitude")){
                     homePositionChanged(selectedWP.attributes.attributeValue("latitude"),
@@ -2232,6 +2250,10 @@ Item {
                 rootItem.setFocus(true);
             }else if(event.key === Qt.Key_C){
                 clearFlightPath();
+            }else if(rootItem.ctrlPress && event.key === Qt.Key_F6){
+                rootItem.showAdvancedConfigChanged();
+                console.log("showAdvancedConfigChanged");
+                rootItem.ctrlPress = false;
             }
 
         }
@@ -2241,6 +2263,57 @@ Item {
                id: basemap
             }
             spatialReference: SpatialReference.createWebMercator()
+        }
+        GraphicsOverlay {
+            id: mapOverlayFOV
+            renderingMode: Enums.GraphicsRenderingModeDynamic
+            PolygonBuilder {
+                id: planeFOVBuilder
+                spatialReference: SpatialReference.createWgs84()
+            }
+
+            // symbol for nesting ground
+            Graphic{
+                id: planeFOVGraphic
+                symbol: SimpleFillSymbol {
+                    id: nestingGroundSymbol
+                    style: Enums.SimpleFillSymbolStyleSolid
+                    color: Qt.rgba(67.0/255.0, 223.0/255.0, 101.0/255.0, 0.75)
+                    // default property: ouline
+                    /**/
+                    SimpleLineSymbol {
+                        style: Enums.SimpleLineSymbolStyleSolid
+                        color: "black"
+                        width: 1
+                        antiAlias: true
+                    }
+
+                }
+            }
+
+            PolylineBuilder{
+                id: centralFOVBuilder
+                spatialReference: SpatialReference.createWgs84()
+            }
+            Graphic {
+                id: centralFOVGraphic
+                symbol: SimpleMarkerSymbol{
+                    style: Enums.SimpleMarkerSymbolStyleCross
+                    color: "black"
+                    size: 1
+                    angle: 45
+                }
+            }
+
+            Graphic {
+                id: centralFOVGraphicLine
+                symbol: SimpleLineSymbol{
+                    style: Enums.SimpleLineSymbolStyleSolid
+                    color: "black"
+                    width: 1
+                    //antiAlias: true
+                }
+            }
         }
         GraphicsOverlay {
             id: mapOverlayMouse
@@ -2659,7 +2732,6 @@ Item {
                         var rulercoord2 = QtPositioning.coordinate(
                                     endLineLatLon['lat'],endLineLatLon['lon'],0);
                         profilePath.addElevation(
-                                    cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder,
                                     rulercoord1,rulercoord2);
                         rectProfilePath.visible = true;
                         startLine = [];
@@ -2725,7 +2797,8 @@ Item {
                         waypointEditor.changeASL(asl);
                         waypointEditor.changeCoordinate(waypointCoordinate);
                         updateWPDoJump();
-                        isMapSync = false;
+                        if(selectedWP.attributes.attributeValue("id") > 0)
+                            isMapSync = false;
                     }
                 }
                 onPressAndHold: {

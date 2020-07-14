@@ -26,35 +26,21 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
-    Label {
-        id: lblTitle1
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]["PROPELLERS"]
+    QLabel {
+        id: lblTitle
         height: 54
-        text: "Press Safety and continue to check propellers"
-        wrapMode: Text.WordWrap
-        anchors.right: imgLogo1.left
-        anchors.rightMargin: 6
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
+        anchors.right: parent.right
+        anchors.rightMargin: 8
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.leftMargin: 8
         anchors.topMargin: 0
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignLeft
-        color: UIConstants.textColor
-        font.pixelSize: UIConstants.fontSize
-        font.family: UIConstants.appFont
+        border.width: 0
     }
-    Image {
-        id: imgLogo1
-        x: 379
-        width: 446
-        height: 285
-        anchors.top: parent.top
-        anchors.topMargin: 8
-        anchors.right: parent.right
-        anchors.rightMargin: 8
-        source: "qrc:/assets/images/Shikra_4.png"
-    }
-
     Rectangle {
         id: rectangle
         x: 120
@@ -66,7 +52,8 @@ Rectangle{
 
         FlatButtonIcon {
             id: btnP1
-            icon: qsTr("Propeller A")
+            icon: itemListName["PROPELLER"]
+                  [UIConstants.language[UIConstants.languageID]]+" A"
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
@@ -86,7 +73,8 @@ Rectangle{
         FlatButtonIcon {
             id: btnP2
             x: 280
-            icon: qsTr("Propeller B")
+            icon: itemListName["PROPELLER"]
+                  [UIConstants.language[UIConstants.languageID]]+" B"
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
@@ -105,7 +93,8 @@ Rectangle{
         FlatButtonIcon {
             id: btnP3
             y: 187
-            icon: qsTr("Propeller C")
+            icon: itemListName["PROPELLER"]
+                  [UIConstants.language[UIConstants.languageID]]+" C"
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6
@@ -123,7 +112,8 @@ Rectangle{
 
         FlatButtonIcon {
             id: btnP4
-            icon: qsTr("Propeller D")
+            icon: itemListName["PROPELLER"]
+                  [UIConstants.language[UIConstants.languageID]]+" D"
             iconSize: UIConstants.fontSize
             border.color: UIConstants.greenColor
             width: UIConstants.sRect * 6

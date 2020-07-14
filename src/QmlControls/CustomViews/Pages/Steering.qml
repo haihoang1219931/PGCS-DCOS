@@ -26,10 +26,13 @@ Rectangle{
     width: 600
     height: 600
     color: "transparent"
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["PRECHECK"]["STEERING"]
     Label {
         id: lblTitle1
         height: 54
-        text: "Checking steering"
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         wrapMode: Text.WordWrap
         anchors.right: parent.right
         anchors.rightMargin: 8
@@ -55,25 +58,12 @@ Rectangle{
         anchors.bottomMargin: 8
         anchors.horizontalCenter: parent.horizontalCenter
 
-        Image {
-            id: imgLogo1
-            y: -226
-            height: 346
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            source: "qrc:/assets/images/Shikra_5.png"
-            rotation: 0
-        }
-
         Label {
             id: label
             y: 384
             height: 50
-            text: qsTr("Pilot check steering at Manual mode and FBWA mode")
+            text: itemListName["QUESTION"]
+                  [UIConstants.language[UIConstants.languageID]]
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             anchors.right: parent.right

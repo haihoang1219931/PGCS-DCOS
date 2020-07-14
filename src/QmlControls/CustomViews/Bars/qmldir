@@ -12,3 +12,5 @@ PaneControl     1.0 PaneControl.qml
 WarningPane     1.0 WarningPane.qml
 MapControl      1.0 MapControl.qml
 ListPlatesLog   1.0 ListPlatesLog.qml
+VideoExternal	1.0 VideoExternal.qml
+MapPane_UAV     1.0 MapPane_UAV.qml

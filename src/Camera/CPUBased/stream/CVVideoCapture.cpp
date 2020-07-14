@@ -25,7 +25,59 @@ void CVVideoCapture::create_pipeline()
         g_print("gst_pipeline_new done\r\n");
     }
 }
+gint64 CVVideoCapture::getTotalTime()
+{
+    return m_totalTime;
+}
 
+gint64 CVVideoCapture::getPosCurrent()
+{
+    gint64 pos;
+    gst_element_query_position(GST_ELEMENT(m_pipeline), GST_FORMAT_TIME, &pos);
+    return pos;
+}
+
+void CVVideoCapture::setSpeed(float speed){
+    if(m_pipeline == NULL) {
+        printf("m_pipeline == NULL\r\n");
+        return;
+    }
+    printf("Change speed to %f\r\n",speed);
+    gint64 posCurrent = getPosCurrent();
+    printf("%ld = posCurrent\r\n",posCurrent);
+    m_speed = speed;
+    pause(true);
+    gst_element_seek(GST_ELEMENT(m_pipeline),speed,
+                            GST_FORMAT_TIME,
+                            GstSeekFlags(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE),
+                            GST_SEEK_TYPE_SET,(gint64)(posCurrent),
+                            GST_SEEK_TYPE_SET,GST_CLOCK_TIME_NONE);
+    pause(false);
+}
+void CVVideoCapture::pause(bool pause){
+    if(m_pipeline == NULL) return;
+    if(pause){
+        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PAUSED);
+    }else{
+        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
+    }
+}
+void CVVideoCapture::goToPosition(float percent){
+    printf("goToPosition %f%\r\n",percent);
+    if(m_pipeline == NULL) {
+        printf("m_pipeline == NULL\r\n");
+        return;
+    }
+    gint64 posNext = (gint64)((double)m_totalTime*(double)percent);
+//    printf("%ld = (gint64)(percent*100*GST_SECOND)\r\n",(gint64)(percent*100*GST_SECOND));
+//    printf("%ld = posNext\r\n",posNext);
+//    printf("%f = m_speed\r\n",m_speed);
+    gst_element_seek(GST_ELEMENT(m_pipeline),m_speed,
+                            GST_FORMAT_TIME,
+                            GstSeekFlags(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE),
+                            GST_SEEK_TYPE_SET,(gint64)(posNext),
+                            GST_SEEK_TYPE_SET,GST_CLOCK_TIME_NONE);
+}
 GstPadProbeReturn CVVideoCapture::wrap_pad_data_mod(GstPad *pad, GstPadProbeInfo *info, gpointer user_data)
 {
     //    g_print("wrap_pad_data_mod create \r\n");
@@ -160,7 +212,7 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
     //    ss << "t. ! queue ! mpegtsmux ! filesink location="<<m_logFile<<".ts";
     ss << m_source;
     std::cout << ss.str().c_str() << std::endl;
-    mPipeline = gst_parse_launch(ss.str().c_str(), &err);
+    m_pipeline = gst_parse_launch(ss.str().c_str(), &err);
 
     if (err != NULL) {
         g_print("gstreamer decoder failed to create pipeline\n");
@@ -170,7 +222,7 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
         g_print("gstreamer decoder create pipeline success\n");
     }
 
-    pipeline = GST_PIPELINE(mPipeline);
+    pipeline = GST_PIPELINE(m_pipeline);
 
     if (!pipeline) {
         printf("gstreamer failed to cast GstElement into GstPipeline\n");
@@ -179,7 +231,7 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
         g_print("gstreamer decoder create Gstpipeline success\n");
     }
 
-    GstElement *m_sink = gst_bin_get_by_name((GstBin *)mPipeline, "mysink");
+    GstElement *m_sink = gst_bin_get_by_name((GstBin *)m_pipeline, "mysink");
     GstAppSink *m_appsink = (GstAppSink *)m_sink;
 
     if (!m_sink || !m_appsink) {
@@ -200,17 +252,17 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
     memset(&cbs, 0, sizeof(GstAppSinkCallbacks));
     cbs.new_sample = wrap_read_frame_buffer;
     gst_app_sink_set_callbacks(m_appsink, &cbs, (void *)this, NULL);
-    const GstStateChangeReturn result = gst_element_set_state(mPipeline, GST_STATE_PLAYING);
+    const GstStateChangeReturn result = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
 
     if (result != GST_STATE_CHANGE_SUCCESS) {
         g_print("gstreamer failed to playing\n");
     }
 
     g_main_loop_run(loop);
-    gst_element_set_state(GST_ELEMENT(mPipeline), GST_STATE_NULL);
+    gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
     //    g_object_unref(m_sink);
     //    g_object_unref(m_appsink);
-    g_object_unref(mPipeline);
+    g_object_unref(m_pipeline);
     //    g_main_loop_unref(loop);
     //    g_object_unref(pipeline);
     printf("gstreamer setup done\n");
@@ -218,10 +270,10 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
 }
 void CVVideoCapture::setSource(std::string source){
     m_source = source;
-    if(mPipeline != NULL){
+    if(m_pipeline != NULL){
         GError *err = NULL;
-        gst_element_set_state(GST_ELEMENT(mPipeline), GST_STATE_NULL);
-        mPipeline = gst_parse_launch(source.c_str(), &err);
+        gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
+        m_pipeline = gst_parse_launch(source.c_str(), &err);
         if( err != NULL )
         {
 #ifdef DEBUG
@@ -233,7 +285,7 @@ void CVVideoCapture::setSource(std::string source){
             g_print("gstreamer decoder reset filesrc success\n");
 #endif
         }
-        pipeline = GST_PIPELINE(mPipeline);
+        pipeline = GST_PIPELINE(m_pipeline);
 
         if( !pipeline )
         {
@@ -245,7 +297,7 @@ void CVVideoCapture::setSource(std::string source){
             g_print("gstreamer decoder create Gstpipeline success\n");
 #endif
         }
-        GstElement *m_sink = gst_bin_get_by_name((GstBin*)mPipeline, "mysink");
+        GstElement *m_sink = gst_bin_get_by_name((GstBin*)m_pipeline, "mysink");
         GstAppSink *m_appsink = (GstAppSink *)m_sink;
         if(!m_sink || !m_appsink)
         {
@@ -272,7 +324,7 @@ void CVVideoCapture::setSource(std::string source){
 //                (GstPadProbeCallback) wrap_pad_data_mod, (void*)this, NULL);
 //        gst_object_unref (pad);
 //        clearBuffer();
-        const GstStateChangeReturn result = gst_element_set_state(mPipeline, GST_STATE_PLAYING);
+        const GstStateChangeReturn result = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
         if(result != GST_STATE_CHANGE_SUCCESS)
         {
             #ifdef DEBUG
@@ -325,5 +377,5 @@ void CVVideoCapture::stop()
 {
     m_stop = true;
     printf("Stopping capture thread\r\n");
-    gst_element_set_state(GST_ELEMENT(mPipeline), GST_STATE_NULL);
+    gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
 }

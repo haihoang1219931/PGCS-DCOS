@@ -29,7 +29,7 @@ public:
     /// \param objectPosition
     /// \return plateNumber
     ///
-    int updateNewImage_I420(image_t input, cv::Mat h_gray, cv::Rect objectPosition);
+    int updateNewImage_I420(image_t input, cv::Mat h_gray, cv::Rect objectPosition, cv::Mat bgr_img);
     std::string getPlateNumber_I420();
 
 public:

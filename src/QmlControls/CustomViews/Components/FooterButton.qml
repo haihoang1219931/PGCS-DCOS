@@ -163,10 +163,19 @@ Rectangle {
     {
         btnSelectedArea.hoverEnabled = true;
         btnSelectedArea.preventStealing = true;
-        btnSelectedArea.enabled = false;
+        isEnable = false;
 
         btnBackground.color = UIConstants.cDisableColor
         textBtn.color = UIConstants.cDisableColor
+    }
+    function setButtonEnable()
+    {
+        btnSelectedArea.hoverEnabled = true;
+        btnSelectedArea.preventStealing = true;
+        isEnable= true;
+
+        btnBackground.color = UIConstants.cateOverlayBg;
+        textBtn.color = UIConstants.textFooterColor
     }
 }
 

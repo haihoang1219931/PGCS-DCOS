@@ -1,8 +1,9 @@
 #include "Vehicle.h"
-
+#include "../../Joystick/JoystickLib/JoystickThreaded.h"
 #include "../Firmware/FirmwarePluginManager.h"
 #include "../Firmware/FirmwarePlugin.h"
 #include "src/Joystick/JoystickLib/JoystickThreaded.h"
+
 Vehicle::Vehicle(QObject *parent) : QObject(parent)
 {
 
@@ -10,6 +11,8 @@ Vehicle::Vehicle(QObject *parent) : QObject(parent)
     m_uas = new UAS();
     m_firmwarePluginManager = new FirmwarePluginManager();
     m_firmwarePlugin = m_firmwarePluginManager->firmwarePluginForAutopilot(this,_firmwareType, static_cast<MAV_TYPE>(_vehicleType));
+    connect(this,&Vehicle::mavCommandResult,this,&Vehicle::handleMavCommandResult);
+
     _loadDefaultParamsShow();
     Q_EMIT flightModesChanged();
     Q_EMIT flightModesOnAirChanged();
@@ -48,7 +51,7 @@ void Vehicle::setJoystick(JoystickThreaded* joystick){
     connect(m_joystick,&JoystickThreaded::picChanged,this,&Vehicle::handlePIC);
     connect(m_joystick,&JoystickThreaded::useJoystickChanged,this,&Vehicle::handleUseJoystick);
 }
-void Vehicle::handlePIC(){
+void Vehicle::handlePIC(){    
     _pic = m_joystick->pic();
     Q_EMIT picChanged();
     printf("%s = %s\r\n",__func__,_pic?"true":"false");
@@ -87,6 +90,10 @@ void Vehicle::setCommunication(IOFlightController *com)
     // Request firmware version
     connect(m_com,SIGNAL(messageReceived(mavlink_message_t)),
             this,SLOT(_mavlinkMessageReceived(mavlink_message_t)));
+
+    connect(m_com,SIGNAL(gimbalMessageReceived(mavlink_message_t)),
+            this,SLOT(_mavlinkGimbalMessageReceived(mavlink_message_t)));
+
     connect(this, SIGNAL(_sendMessageOnLinkOnThread(IOFlightController*,mavlink_message_t)),
             this, SLOT(_sendMessageOnLink(IOFlightController*,mavlink_message_t)),Qt::QueuedConnection);
     connect(m_com, SIGNAL(mavlinkMessageStatus(int,uint64_t,uint64_t,uint64_t,float)),
@@ -109,7 +116,7 @@ void Vehicle::setCommunication(IOFlightController *com)
             this, SLOT(_startPlanRequest(void)));
 
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->initializeVehicle(this);
+        m_firmwarePlugin->initializeVehicle();
 
     _mavHeartbeat.start();
     _cameraLink.start();
@@ -135,7 +142,7 @@ void Vehicle::commandLand(void)
 void Vehicle::commandTakeoff(double altitudeRelative)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->commandTakeoff(this, altitudeRelative);
+        m_firmwarePlugin->commandTakeoff(altitudeRelative);
 }
 
 double Vehicle::minimumTakeoffAltitude(void)
@@ -147,7 +154,7 @@ double Vehicle::minimumTakeoffAltitude(void)
 void Vehicle::commandGotoLocation(const QGeoCoordinate &gotoCoord)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->commandGotoLocation(this,gotoCoord);
+        m_firmwarePlugin->commandGotoLocation(gotoCoord);
 }
 
 void Vehicle::commandChangeAltitude(double altitudeChange)
@@ -159,13 +166,13 @@ void Vehicle::commandChangeAltitude(double altitudeChange)
 void Vehicle::commandSetAltitude(double newAltitude)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->commandSetAltitude(this,newAltitude);
+        m_firmwarePlugin->commandSetAltitude(newAltitude);
 }
 
 void Vehicle::commandChangeSpeed(double speedChange)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->commandChangeSpeed(this,speedChange);
+        m_firmwarePlugin->commandChangeSpeed(speedChange);
 }
 
 void Vehicle::commandOrbit(const QGeoCoordinate &centerCoord, double radius, double amslAltitude)
@@ -195,19 +202,19 @@ void Vehicle::abortLanding(double climbOutAltitude)
 void Vehicle::startMission(void)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->startMission(this);
+        m_firmwarePlugin->startMission();
 }
 
 void Vehicle::startEngine(void)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->startEngine(this);
+        m_firmwarePlugin->startEngine();
 }
 
 void Vehicle::setCurrentMissionSequence(int seq)
 {
     if (m_firmwarePlugin != nullptr)
-        m_firmwarePlugin->setCurrentMissionSequence(this, seq);
+        m_firmwarePlugin->setCurrentMissionSequence(seq);
 }
 
 void Vehicle::rebootVehicle()
@@ -301,26 +308,29 @@ void Vehicle::_mavlinkMessageStatus(int uasId, uint64_t totalSent, uint64_t tota
         _mavlinkReceivedCount   = totalReceived;
         _mavlinkLossCount       = totalLoss;
         _mavlinkLossPercent     = lossPercent;
+        #ifdef DEBUG
+        printf("%s _mavlinkLossPercent = %f\r\n",__func__,_mavlinkLossPercent);
+#endif
         Q_EMIT mavlinkStatusChanged();
     }
 }
+
 void Vehicle::motorTest(int motor, int percent)
 {
     if (m_firmwarePlugin != nullptr) {
-        m_firmwarePlugin->motorTest(this, motor, percent);
+        m_firmwarePlugin->motorTest(motor, percent);
     }
 }
 void Vehicle::setHomeLocation(float lat, float lon){
     if(m_firmwarePlugin != nullptr){
         if(m_planController->m_missionItems.size() > 0)
-            m_firmwarePlugin->setHomeHere(this, lat, lon, _homeAltitude);
+            m_firmwarePlugin->setHomeHere(lat, lon, _altitudeAMSL - _altitudeAGL);
     }
 }
 void Vehicle::setAltitudeRTL(float alt){
     if(m_firmwarePlugin != nullptr){
         if (m_paramsController != nullptr) {
-            if(static_cast<int>(alt) != static_cast<int>(_homeAltitude))
-                m_paramsController->_writeParameterRaw(m_firmwarePlugin->rtlAltParamName(),QVariant::fromValue(alt*100));
+            m_paramsController->_writeParameterRaw(m_firmwarePlugin->rtlAltParamName(),QVariant::fromValue(alt*100));
         }
     }
 }
@@ -341,6 +351,28 @@ void Vehicle::sendHomePosition(QGeoCoordinate location){
         m_com->getInterface()->writeBytesSafe((char*)buffer,len);
     }
 }
+
+void Vehicle::setTotalWPDistance(int value)
+{
+    _setPropertyValue("TotalWPDistance",QString::fromStdString(std::to_string(value)),"m");
+}
+
+///control gimbal with mavlink
+void Vehicle::setGimbalRate(float pan, float tilt)
+{
+    if(m_firmwarePlugin != nullptr){
+        m_firmwarePlugin->setGimbalRate(pan,tilt);
+    }
+}
+
+void Vehicle::setGimbalAngle(float pan, float tilt)
+{
+    if(m_firmwarePlugin != nullptr){
+        m_firmwarePlugin->setGimbalAngle(pan,tilt);
+    }
+}
+///end control gimbal
+
 void Vehicle::activeProperty(QString name,bool active){
     int propertiesShowCount = 0;
     for(int i=0; i< _propertiesModel.size(); i++){
@@ -384,7 +416,7 @@ void Vehicle::_setPropertyValue(QString name,QString value,QString unit){
     bool paramExist = false;
     int propertiesShowCount = 0;
     for(int i=0; i< _propertiesModel.size(); i++){
-        if(_propertiesModel[i]->name() == name){
+        if(_propertiesModel[i]->name().toUpper() == name.toUpper()){
             paramExist = true;
             _propertiesModel[i]->setValue(value);
             _propertiesModel[i]->setUnit(unit);
@@ -451,6 +483,51 @@ void Vehicle::_sendMessageOnLink(IOFlightController *link, mavlink_message_t mes
     QByteArray b(reinterpret_cast<const char*>(buf), len);
     LogController::writeBinaryLog(_logFile,b);
 }
+
+
+
+void Vehicle::_mavlinkGimbalMessageReceived(mavlink_message_t message)
+{
+    switch (message.msgid) {
+    case MAVLINK_MSG_ID_HEARTBEAT:
+        break;
+
+    case MAVLINK_MSG_ID_COMMAND_ACK:
+        _handleCommandAck(message);
+        break;
+    default:
+        break;
+    }
+    Q_EMIT mavlinkGimbalMessageReceived(message);
+}
+
+void Vehicle::handleMavCommandResult(int vehicleId, int component, int command, int result, bool noReponseFromVehicle)
+{
+    if(component == MAV_COMP_ID_GIMBAL)
+    {
+        switch (command) {
+        case MAV_CMD_DO_MOUNT_CONFIGURE:
+            if(result == MAV_RESULT_ACCEPTED)
+            {
+                if(m_firmwarePlugin != nullptr)
+                {
+                    //m_gimbalCurrentMode = m_gimbalSetMode;
+                    m_firmwarePlugin->changeGimbalCurrentMode();
+                    printf("Send mode to Gimbal: OK!\r\n");
+                    Q_EMIT gimbalModeChanged(m_firmwarePlugin->getGimbalCurrentMode());
+                }
+            }
+            else if(result == MAV_RESULT_FAILED)
+            {
+                Q_EMIT gimbalModeSetFail();
+            }
+            break;
+        default:
+            break;
+        }
+    }
+}
+
 
 void Vehicle::_mavlinkMessageReceived(mavlink_message_t message)
 {
@@ -698,7 +775,7 @@ void Vehicle::_sendGCSHeartbeat(void)
     _countHeartBeat ++;
     if(_countHeartBeat >=8 ){
         if (m_firmwarePlugin != nullptr)
-            m_firmwarePlugin->initializeVehicle(this);
+            m_firmwarePlugin->initializeVehicle();
         _countHeartBeat = 0;
     }
 }
@@ -814,54 +891,60 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
 {
     mavlink_heartbeat_t heartbeat;
     mavlink_msg_heartbeat_decode(&message, &heartbeat);
-//        printf("=============================\r\n");
-//        printf("heartbeat.base_mode=%d\r\n",heartbeat.base_mode);
-//        printf("heartbeat.custom_mode=%d\r\n",heartbeat.custom_mode);
-//        printf("heartbeat.type=%d\r\n",heartbeat.type);
-//        printf("heartbeat.system_status=%d\r\n",heartbeat.system_status);
-//        printf("heartbeat.autopilot=%d\r\n",heartbeat.autopilot);
-//        printf("heartbeat.mavlink_version=%d\r\n",heartbeat.mavlink_version);
-
-    if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID
-        && (heartbeat.base_mode != _base_mode || heartbeat.custom_mode != _custom_mode)
-            ) {
-        bool newArmed = heartbeat.base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY;
-        _updateArmed(newArmed);
-        _base_mode = heartbeat.base_mode;
-        _custom_mode = heartbeat.custom_mode;
-        flightModeChanged(flightMode());
-    }
-
-    if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID) {
-        //        printf("_handleHeartbeat\r\n");
-
-//        if(_landed != ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY))
-        {
-            _landed = ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY);
-            _setPropertyValue("Landed",((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY)?"True":"False","");
-            Q_EMIT landedChanged();
+//    printf("=============================\r\n");
+//    printf("message.compid=%d\r\n",message.compid);
+//    printf("heartbeat.base_mode=%d\r\n",heartbeat.base_mode);
+//    printf("heartbeat.custom_mode=%d\r\n",heartbeat.custom_mode);
+//    printf("heartbeat.type=%d\r\n",heartbeat.type);
+//    printf("heartbeat.system_status=%d\r\n",heartbeat.system_status);
+//    printf("heartbeat.autopilot=%d\r\n",heartbeat.autopilot);
+//    printf("heartbeat.mavlink_version=%d\r\n",heartbeat.mavlink_version);
+//    if(message.compid!=154)
+    {
+        if(m_com->m_componentId != message.compid){
+            m_com->m_componentId = message.compid;
+        }
+        if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID
+            && (heartbeat.base_mode != _base_mode || heartbeat.custom_mode != _custom_mode)
+                ) {
+            bool newArmed = heartbeat.base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY;
+            _updateArmed(newArmed);
+            _base_mode = heartbeat.base_mode;
+            _custom_mode = heartbeat.custom_mode;
+            flightModeChanged(flightMode());
         }
 
-        if (_firmwareType != static_cast<MAV_AUTOPILOT>(heartbeat.autopilot)) {
-            _firmwareType = static_cast<MAV_AUTOPILOT>(heartbeat.autopilot);
-        }
-        _linkHeartbeatRecv ++;
-        if (_vehicleType != static_cast<VEHICLE_MAV_TYPE>(heartbeat.type)) {
-            setVehicleType(static_cast<VEHICLE_MAV_TYPE>(heartbeat.type));
-            printf("Change firmware plugin to _vehicleType=%d\r\n", _vehicleType);
-            FirmwarePlugin *newFimware =
-                        m_firmwarePluginManager->firmwarePluginForAutopilot(
-                        this,_firmwareType, static_cast<MAV_TYPE>(heartbeat.type));
-            if (newFimware != nullptr) {
-                if (m_firmwarePlugin != nullptr)
-                    delete m_firmwarePlugin;
+        if (heartbeat.type != MAV_TYPE_GCS && heartbeat.type != MAV_AUTOPILOT_INVALID) {
+            //        printf("_handleHeartbeat\r\n");
 
-                m_firmwarePlugin = newFimware;
-                m_firmwarePlugin->initializeVehicle(this);
-                m_paramsController->refreshAllParameters();
-                Q_EMIT flightModesChanged();
-                Q_EMIT flightModesOnAirChanged();
-                flightModeChanged(flightMode());
+            if(_landed != ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY))
+            {
+                _landed = ((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY);
+                _setPropertyValue("Landed",((MAV_STATE)(heartbeat.system_status) == MAV_STATE::MAV_STATE_STANDBY)?"True":"False","");
+                Q_EMIT landedChanged();
+            }
+
+            if (_firmwareType != static_cast<MAV_AUTOPILOT>(heartbeat.autopilot)) {
+                _firmwareType = static_cast<MAV_AUTOPILOT>(heartbeat.autopilot);
+            }
+            _linkHeartbeatRecv ++;
+            if (_vehicleType != static_cast<VEHICLE_MAV_TYPE>(heartbeat.type)) {
+                setVehicleType(static_cast<VEHICLE_MAV_TYPE>(heartbeat.type));
+                printf("Change firmware plugin to _vehicleType=%d\r\n", _vehicleType);
+                FirmwarePlugin *newFimware =
+                            m_firmwarePluginManager->firmwarePluginForAutopilot(
+                            this,_firmwareType, static_cast<MAV_TYPE>(heartbeat.type));
+                if (newFimware != nullptr) {
+                    if (m_firmwarePlugin != nullptr)
+                        delete m_firmwarePlugin;
+                    m_firmwarePlugin = newFimware;
+                    m_firmwarePlugin->initializeVehicle();
+                    m_paramsController->refreshAllParameters();
+    //                _loadDefaultParamsShow();
+                    Q_EMIT flightModesChanged();
+                    Q_EMIT flightModesOnAirChanged();
+                    flightModeChanged(flightMode());
+                }
             }
         }
     }
@@ -979,6 +1062,14 @@ void Vehicle::_handleRCIn(mavlink_message_t& message)
     _setPropertyValue("RCIN_chan16",QString::fromStdString(std::to_string(rcIn.chan16_raw)),"us");
     _setPropertyValue("RCIN_chan17",QString::fromStdString(std::to_string(rcIn.chan17_raw)),"us");
     _setPropertyValue("RCIN_chan18",QString::fromStdString(std::to_string(rcIn.chan18_raw)),"us");
+    _rcinChan1 = rcIn.chan1_raw;
+    Q_EMIT rcinChan1Changed();
+    _rcinChan2 = rcIn.chan2_raw;
+    Q_EMIT rcinChan2Changed();
+    _rcinChan3 = rcIn.chan3_raw;
+    Q_EMIT rcinChan3Changed();
+    _rcinChan4 = rcIn.chan4_raw;
+    Q_EMIT rcinChan4Changed();
 }
 
 void Vehicle::_handleServoOut(mavlink_message_t& message)
@@ -1218,9 +1309,22 @@ void Vehicle::_handleGlobalPositionInt(mavlink_message_t &message)
             _setPropertyValue("Longitude",
                                      QString::fromStdString(std::to_string(_coordinate.longitude())),
                                      "deg");
+
+            if(_lastCount % 5 == 0) //5hz:
+            {
+                if(_lastCoord != QGeoCoordinate(0,0,0))
+                    _distanceTraveled += _lastCoord.distanceTo(newPosition);
+                _lastCoord = newPosition;
+            }
+            _lastCount++;
+
+            _setPropertyValue("DistanceTraveled",
+                                     QString::fromStdString(std::to_string(_distanceTraveled)),
+                                     "m");
         }
 
        Q_EMIT coordinateChanged(_coordinate);
+
        float _tmpHeadingToHome = static_cast<float>(coordinate().azimuthTo(homePosition()));
        if(_tmpHeadingToHome - _headingToHome > 0 ||
                _tmpHeadingToHome - _headingToHome < 0){
@@ -1240,8 +1344,8 @@ void Vehicle::_handleGlobalPositionInt(mavlink_message_t &message)
         _globalPositionIntMessageAvailable = true;
     }
 
-    _altitudeRelative = static_cast<float>(globalPositionInt.relative_alt) / 1000.0f;
-    _setPropertyValue("AltitudeAGL",QString::fromStdString(std::to_string(_altitudeRelative)),"m");
+    _altitudeAGL = static_cast<float>(globalPositionInt.relative_alt) / 1000.0f;
+    _setPropertyValue("AltitudeAGL",QString::fromStdString(std::to_string(_altitudeAGL)),"m");
     Q_EMIT altitudeRelativeChanged();
     if (!_gpsRawIntMessageAvailable) {
         _gpsRawIntMessageAvailable = true;
@@ -1267,7 +1371,7 @@ void Vehicle::_handleAltitude(mavlink_message_t &message)
 //    printf("altitude.altitude_relative = %f\r\n",altitude.altitude_relative);
     // If data from GPS is available it takes precedence over ALTITUDE message
     if (!_globalPositionIntMessageAvailable) {
-        _altitudeRelative = (altitude.altitude_relative);
+        _altitudeAGL = (altitude.altitude_relative);
         Q_EMIT altitudeRelativeChanged();
 
         if (!_gpsRawIntMessageAvailable) {
@@ -1689,6 +1793,13 @@ QStringList Vehicle::flightModes(void)
     } else
         return QStringList();
 }
+QStringList Vehicle::flightModesOnGround(void)
+{
+    if (m_firmwarePlugin != nullptr) {
+        return m_firmwarePlugin->flightModesOnGround();
+    } else
+        return QStringList();
+}
 QStringList Vehicle::flightModesOnAir(void)
 {
     if (m_firmwarePlugin != nullptr) {
@@ -1743,7 +1854,19 @@ QStringList Vehicle::unhealthySensors(void) const
 
     return sensorList;
 }
-
+bool Vehicle::useJoystick(void){
+    return _useJoystick;
+}
+void Vehicle::setUseJoystick(bool enable){
+    if(_useJoystick != enable){
+        _useJoystick = enable;
+        printf("%s [%s]\r\n",__func__, enable?"true":"false");
+        Q_EMIT useJoystickChanged(enable);
+    }
+}
+bool Vehicle::pic(void){
+    return _pic;
+}
 QString Vehicle::flightMode(void)
 {
     //    return _firmwarePlugin->flightMode(_base_mode, _custom_mode);
@@ -1951,11 +2074,12 @@ void Vehicle::_sendMavCommandAgain(void)
         cmd.param5 =            queuedCommand.rgParam[4];
         cmd.param6 =            queuedCommand.rgParam[5];
         cmd.param7 =            queuedCommand.rgParam[6];
-        mavlink_msg_command_long_encode_chan(m_com->systemId(),
-                                             m_com->componentId(),
+        mavlink_msg_command_long_encode_chan(cmd.target_system ,
+                                             cmd.target_component,
                                              m_com->mavlinkChannel(),
                                              &msg,
                                              &cmd);
+//        printf("Send command long\r\n");
     }
 
     sendMessageOnLink(m_com, msg);
@@ -1972,7 +2096,7 @@ void Vehicle::_handleCommandAck(mavlink_message_t &message)
     bool showError = false;
     mavlink_command_ack_t ack;
     mavlink_msg_command_ack_decode(&message, &ack);
-    printf("%s ack.command[%d]\r\n", __func__, ack.command);
+//    printf("%s ack.command[%d]\r\n", __func__, ack.command);
     if (ack.command == MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES && ack.result != MAV_RESULT_ACCEPTED) {
         // We aren't going to get a response back for capabilities, so stop waiting for it before we ask for mission items
         //        qCDebug(VehicleLog) << QStringLiteral("Vehicle responded to MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES with error(%1). Setting no capabilities. Starting Plan request.").arg(ack.result);
@@ -1999,7 +2123,7 @@ void Vehicle::_handleCommandAck(mavlink_message_t &message)
         _mavCommandQueue.removeFirst();
     }
 
-    mavCommandResult(_id, message.compid, ack.command, ack.result, false /* noResponsefromVehicle */);
+    Q_EMIT mavCommandResult(_id, message.compid, ack.command, ack.result, false /* noResponsefromVehicle */);
     //    if (showError) {
     //        QString commandName = _toolbox->missionCommandTree()->friendlyName((MAV_CMD)ack.command);
     //        switch (ack.result) {

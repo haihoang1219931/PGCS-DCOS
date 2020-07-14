@@ -20,7 +20,7 @@ void ClickTrack::setOCR(OCR* _OCR)
     m_recognizor = _OCR;
 }
 
-int ClickTrack::updateNewImage_I420(image_t input, cv::Mat h_gray, cv::Rect objectPosition)
+int ClickTrack::updateNewImage_I420(image_t input, cv::Mat h_gray, cv::Rect objectPosition, cv::Mat bgr_img)
 {
 //    printf("1***********************************************************************************\n");
     ///////////////////////////////
@@ -28,19 +28,48 @@ int ClickTrack::updateNewImage_I420(image_t input, cv::Mat h_gray, cv::Rect obje
     ///////////////////////////////
 
     bbox_t objTrack;
-//    printf("Object Positions : %d, %d, %d, %d\n", objectPosition.x, objectPosition.y, objectPosition.width, objectPosition.height);
     bool isResultValid = m_plateDetector->detect_I420(input, objectPosition, objTrack);
     if (!isResultValid)
     {
 //        printf("No Plate\n");
-//        std::cout << "\n\n PLATE_FAIL" << std::endl;
         return PLATE_FAIL;
     }
-
     // bien so is objTrack
-//    std::cout << "=================Plate w = " << objTrack.w << " h = " << objTrack.h << std::endl;
-
 //    return PLATE_DETECTED;
+
+    // Check type of plate: White or blue?
+    cv::Rect p_rect(objTrack.x >= 0 ? objTrack.x : 0,
+                    objTrack.y >= 0 ? objTrack.y : 0,
+                    objTrack.x + objTrack.w > h_gray.cols ? h_gray.cols - objTrack.x : objTrack.w,
+                    objTrack.y + objTrack.h > h_gray.rows ? h_gray.rows - objTrack.y : objTrack.h);
+    cv::Mat bgr_plate = bgr_img(p_rect).clone();
+    double minVal, maxVal;
+    cv::Mat float_plate;
+    int blue = 0;
+    int white = 0;
+    int black = 0;
+    cv::minMaxLoc(bgr_plate, &minVal, &maxVal);
+    bgr_plate.convertTo(float_plate, CV_32FC3);
+
+    for(uint r = 0; r < float_plate.rows; r++)
+        for(uint c = 0; c  < float_plate.cols; c++)
+        {
+            for(int d = 0; d < 3; d++)
+                float_plate.at<float>(r, 3 * c + d) = std::floor(255 * (float_plate.at<float>(r, 3 * c + d) - minVal) / (maxVal - minVal));
+            if(std::abs(float_plate.at<float>(r, 3 * c) - float_plate.at<float>(r, 3 * c + 1)) >= 50.f || std::abs(float_plate.at<float>(r, 3 * c) - float_plate.at<float>(r, 3 * c + 2)) >= 50.f)
+                blue++;
+            else
+            {
+                if(float_plate.at<float>(r, 3 * c) < 50.f && float_plate.at<float>(r, 3 * c + 1) < 50.f && float_plate.at<float>(r, 3 * c + 2) < 50.f)
+                    black++;
+                else
+                    white++;
+            }
+        }
+
+    float blue_rate = (float)blue / (float)(bgr_plate.rows * bgr_plate.cols - black);
+//    float white_rate = (float)white / (float)(bgr_plate.rows * bgr_plate.cols - black);
+//    cv::imwrite("/home/pgcs-01/Desktop/giap0.png", bgr_plate, {CV_IMWRITE_PNG_COMPRESSION, 0});
 
     ///////////////////////////////
     /// \brief extract host gray plate image
@@ -54,13 +83,16 @@ int ClickTrack::updateNewImage_I420(image_t input, cv::Mat h_gray, cv::Rect obje
                        objTrack.y >= dh ? objTrack.y - dh : 0,
                        objTrack.x + objTrack.w + dw > h_gray.cols ? h_gray.cols - objTrack.x + dw : objTrack.w + 2 * dw,
                        objTrack.y + objTrack.h + dh > h_gray.rows ? h_gray.rows - objTrack.y + dh : objTrack.h + 2 * dh);
-//    printf("Start getting plate\n");
     cv::Mat plateImage = h_gray(plateArea).clone();
 //    cv::imwrite("img/plateImage" + std::to_string(rand()) + ".png", plateImage);
 //    printf("Get plate successfully\n");
 
     if(!plateImage.empty())
     {
+        if(blue_rate >= 0.1f)
+        {
+            plateImage = ~plateImage;
+        }
         int plateType = objTrack.obj_id;
         int sign = -1;
 //        std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxx" << plateImage.size() << std::endl;

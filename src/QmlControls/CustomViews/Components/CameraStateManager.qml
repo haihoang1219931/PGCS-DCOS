@@ -6,6 +6,7 @@ Item {
     property bool isJoystickConnected: false
     property bool isConnected: true
     property bool isPingOk: true
+    property bool objectLocalization: false
     property string camIP: ""
     property string joyID: ""
     property int defaultWidth: 1366
@@ -20,13 +21,7 @@ Item {
     property color subFunctionColor: "#4d4d4d"
     property color themeColor: "#222F3E" //"#222F3E","#1A1A1A"
     property bool ctrlPress: false
-    property bool autoConnect: false
-    property string fd_icon: "EN"
-    property var language:
-    {
-        "EN":0,
-        "VI":1
-    }
+    property bool autoConnect: false    
     property real zoomState: 0
     property int irZoom: 1
     property string sensorID: sensorIDEO
@@ -34,15 +29,10 @@ Item {
     property string sensorIDIR: "IR"
     property string lockMode: "FREE" // "VISUAL","GEO","TRACK"
     property string presetMode: "OFF" // "RIGHT_WING","NADIR","OFF"
-    property string colorModeEO: "AUTO"
-    property string colorModeIR: "WHITE_HOT"
-//    property string colorMode: "AUTO"
     property var colorMode: {
-                            "EO":"AUTO",// "COLOR","DAWN"
+                            "EO":"NORMAL",// "COLOR","DAWN"
                             "IR":"WHITE_HOT" // "BLACK_HOT","REDDISH","COLOR"
                             }
-    property string defogModeEO: "OFF"
-    property string defogModeIR: "OFF"
     property var defogMode: {
                             "EO":"OFF",//"AUTO","LOW","MEDIUM","HIGH"
                             "IR":"OFF" //"AUTO","LOW","MEDIUM","HIGH"
@@ -54,8 +44,9 @@ Item {
     property real alphaSpeed: 3
     property real hfov: 63
     property real vfov: 27
-    property int invertPan: 1
-    property int invertTilt: 1
+    property bool invertPan: false
+    property bool invertTilt: false
+    property bool invertZoom: false
     property real latitude: 21.120457
     property real longitude: 105.120457
     property real altitude: 400.12
@@ -67,8 +58,14 @@ Item {
                               (longitude > -180 && longitude < 180)
     property bool digitalStab: true
     property bool gimbalStab: false
+    property bool gcsSearch: false
+    property bool gcsTargetLocalization: false
     property bool gcsStab: true
     property bool gcsRecord: true
+    property bool record: true
+    property bool gcsOD: false
+    property bool gcsPD: false
+    property bool gcsExportVideo: false
     property bool gcsShare: true
     property bool objDetect: false
     // hud of gcs
@@ -104,8 +101,8 @@ Item {
     property bool hudCameraEnable: true
     signal lanChanged()
     function changeLanguage(newLanguage){
-        if(fd_icon !== newLanguage){
-            fd_icon = newLanguage
+        if(languageID !== newLanguage){
+            languageID = newLanguage
             lanChanged()
         }
     }
@@ -181,9 +178,6 @@ Item {
     function changeGimbalMode(gimbalMode){
         root.gimbalMode = gimbalMode
 
-    }
-    function changeRecordMode(recordMode){
-        root.recordMode = recordMode
     }
     function changeGimbalStab(enable){
         gimbalStab = enable;

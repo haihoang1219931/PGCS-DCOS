@@ -97,7 +97,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 5
+            anchors.bottomMargin: 0
             color: isEnable ? UIConstants.textFooterColor : UIConstants.cDisableColor
         }
     }
@@ -117,7 +117,7 @@ Rectangle {
         font{ pixelSize: iconSize / 2;
             weight: Font.Bold;
             family: ExternalFontLoader.solidFont}
-        color: rootItem.isOn?"green":"gray"
+        color: rootItem.isOn?UIConstants.greenColor:UIConstants.grayColor
         rotation: 0
     }
     //--- Button background
@@ -173,8 +173,3 @@ Rectangle {
         textBtn.color = UIConstants.cDisableColor
     }
 }
-
-/*##^## Designer {
-    D{i:13;anchors_y:0}
-}
- ##^##*/

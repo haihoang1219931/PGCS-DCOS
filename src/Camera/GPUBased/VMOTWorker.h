@@ -2,7 +2,7 @@
 #define VMOTWORKER_H
 
 #include "../Cache/Cache.h"
-#include "../../Zbar/ZbarLibs.h"
+#include "../Zbar/ZbarLibs.h"
 #include <QObject>
 #include <QThread>
 #include <chrono>
@@ -33,8 +33,8 @@ class VMOTWorker : public QThread
         RollBuffer_<ProcessImageCacheItem> *m_matImageBuff;
         RollBuffer_<DetectedObjectsCacheItem> *m_rbDetectedObjs;
         RollBuffer_<DetectedObjectsCacheItem> *m_rbMOTObjs;
-        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
-        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
+//        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
+//        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
         bool m_running = true;
         std::mutex m_mtx;
 		std::condition_variable m_cvEnMOT;

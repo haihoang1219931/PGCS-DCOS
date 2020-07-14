@@ -11,11 +11,13 @@
 #include "src/Maplib/Elevation.h"
 #include "src/Maplib/Marker/MarkerList.h"
 #include "src/Machine/computer.hpp"
-//----Model
+#include "src/Camera/VideoDisplay/ImageItem.h"
+//----Model nhatdn1
+#include "src/Maplib/Model/symbol.h"
+#include "src/Maplib/Model/symbolmodel.h"
 #include "src/Maplib/profilepath.h"
 #ifdef CAMERA_CONTROL
-    #include "src/Camera/ControllerLib/samplegimbal.h"
-    #include "src/Camera/Cache/Cache.h"
+    #include "src/Camera/CameraController.h"
 #endif
 //--- UC
 #ifdef UC_API
@@ -25,10 +27,12 @@
 #endif
 //--- Payload controller
 #ifdef USE_VIDEO_CPU
+    #include "src/Camera/VideoDisplay/ImageItem.h"
     #include "src/Camera/CPUBased/stream/CVVideoCaptureThread.h"
 #endif
 //--- GPU Process
 #ifdef USE_VIDEO_GPU
+    #include "src/Camera/VideoDisplay/ImageItem.h"
     #include "src/Camera/GPUBased/VDisplay.h"
 #endif
 //--- Joystick
@@ -40,61 +44,22 @@
 #include "src/Setting/pcs.h"
 int main(int argc, char *argv[])
 {
+
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QGuiApplication app(argc, argv);
     app.setOrganizationName("qdt");
     app.setOrganizationDomain("qdt");
-    QtWebEngine::initialize();
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");
-    //--- Flight controller
-    qmlRegisterType<MissionItem>("io.qdt.dev", 1, 0,    "MissionItem");
-    qmlRegisterType<ParamsController>("io.qdt.dev", 1, 0, "ParamsController");
-    qmlRegisterType<IOFlightController>("io.qdt.dev",1,0,"IOFlightController");
-    qmlRegisterType<Fact>("io.qdt.dev",1,0,"Fact");
-    qmlRegisterType<Vehicle>("io.qdt.dev",1,0,"Vehicle");
-    qmlRegisterType<UAS>("io.qdt.dev",1,0,"UAS");
-    qmlRegisterType<UASMessage>("io.qdt.dev",1,0,"UASMessage");
-    qmlRegisterType<PlanController>("io.qdt.dev",1,0,"PlanController");
-    qmlRegisterType<MissionController>("io.qdt.dev",1,0,"MissionController");
-    qmlRegisterType<Elevation>("io.qdt.dev",1,0,"Elevation");
-    qmlRegisterType<Marker>("io.qdt.dev",1,0,"Marker");
-    qmlRegisterType<MarkerList>("io.qdt.dev",1,0,"MarkerList");
-    qmlRegisterType<COMPUTER_INFO>("io.qdt.dev", 1, 0, "Computer");
-    //----Model-----------
-    qmlRegisterType<ProfilePath>("io.qdt.dev", 1, 0,    "ProfilePath");
-//    qmlRegisterType<MAV_TYPE>("io.qdt.dev", 1, 0, "MAV_TYPE", "MAV_TYPE");
-    FCSConfig fcsConfig;
-    fcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/fcs.conf");
-    engine.rootContext()->setContextProperty("FCSConfig", &fcsConfig);
-    FCSConfig trkConfig;
-    trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
-    engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);    
-#ifdef USE_VIDEO_CPU
-    //--- Camera controller
-    qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
-    qmlRegisterType<CVVideoCaptureThread>("io.qdt.dev", 1, 0, "Player");
-    engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(false));
+
+    //set antialiasing nhatdn1
+        QSurfaceFormat format;
+        format.setSamples(8);
+        QSurfaceFormat::setDefaultFormat(format);
+
+#ifdef UC_API
+    QtWebEngine::initialize();
 #endif
-#ifdef USE_VIDEO_GPU
-    qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
-    qmlRegisterType<VDisplay>("io.qdt.dev", 1, 0, "Player");
-    engine.rootContext()->setContextProperty("USE_VIDEO_GPU", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("USE_VIDEO_GPU", QVariant(false));
-#endif
-#ifdef CAMERA_CONTROL
-    PCSConfig pcsConfig;
-    pcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/pcs.conf");
-    engine.rootContext()->setContextProperty("PCSConfig", &pcsConfig);
-    qmlRegisterType<SampleGimbal>("io.qdt.dev", 1, 0, "GimbalNetwork");
-    engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(true));
-#else
-    qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "GimbalNetwork");
-    engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(false));
-#endif
-    qmlRegisterType<PlateLog>("io.qdt.dev", 1, 0, "PlateLog");
 #ifdef UC_API
     //--- UC Socket API
     UCConfig ucConfig;
@@ -123,12 +88,67 @@ int main(int argc, char *argv[])
 #else
     engine.rootContext()->setContextProperty("UC_API", QVariant(false));
 #endif
+
+    //--- Flight controller
+    qmlRegisterType<MissionItem>("io.qdt.dev", 1, 0,    "MissionItem");
+    qmlRegisterType<ParamsController>("io.qdt.dev", 1, 0, "ParamsController");
+    qmlRegisterType<IOFlightController>("io.qdt.dev",1,0,"IOFlightController");
+    qmlRegisterType<Fact>("io.qdt.dev",1,0,"Fact");
+    qmlRegisterType<Vehicle>("io.qdt.dev",1,0,"Vehicle");
+    qmlRegisterType<UAS>("io.qdt.dev",1,0,"UAS");
+    qmlRegisterType<UASMessage>("io.qdt.dev",1,0,"UASMessage");
+    qmlRegisterType<PlanController>("io.qdt.dev",1,0,"PlanController");
+    qmlRegisterType<MissionController>("io.qdt.dev",1,0,"MissionController");
+    qmlRegisterType<Elevation>("io.qdt.dev",1,0,"Elevation");
+    qmlRegisterType<Marker>("io.qdt.dev",1,0,"Marker");
+    qmlRegisterType<MarkerList>("io.qdt.dev",1,0,"MarkerList");
+    qmlRegisterType<COMPUTER_INFO>("io.qdt.dev", 1, 0, "Computer");
+    //----Model nhatdn1-----------
+    qmlRegisterType<ProfilePath>("io.qdt.dev", 1, 0,    "ProfilePath");
+    qmlRegisterType<SymbolModel>("io.qdt.dev", 1, 0,    "SymbolModel");
+
+//    qmlRegisterType<MAV_TYPE>("io.qdt.dev", 1, 0, "MAV_TYPE", "MAV_TYPE");
+    FCSConfig fcsConfig;
+    fcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/fcs.conf");
+    engine.rootContext()->setContextProperty("FCSConfig", &fcsConfig);
+    FCSConfig trkConfig;
+    trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
+    engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);
+#ifdef USE_VIDEO_CPU
+    //--- Camera controller
+    qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
+    qmlRegisterType<CVVideoCaptureThread>("io.qdt.dev", 1, 0, "Player");
+    engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(false));
+#endif
+#ifdef USE_VIDEO_GPU
+
+    qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
+    qmlRegisterType<VDisplay>("io.qdt.dev", 1, 0, "Player");
+    engine.rootContext()->setContextProperty("USE_VIDEO_GPU", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("USE_VIDEO_GPU", QVariant(false));
+#endif
+#ifdef CAMERA_CONTROL
+    PCSConfig pcsConfig;
+    pcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/pcs.conf");
+    engine.rootContext()->setContextProperty("PCSConfig", &pcsConfig);
+    qmlRegisterType<CameraController>("io.qdt.dev", 1, 0, "CameraController");
+    qmlRegisterType<VideoRender>("io.qdt.dev", 1, 0, "VideoRender");
+    engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(true));
+#else
+    qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "VideoRender");
+    qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "CameraController");
+    engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(false));
+#endif
+    qmlRegisterType<PlateLog>("io.qdt.dev", 1, 0, "PlateLog");
     //--- Joystick
     JoystickThreaded::expose();
     //--- Other things
     engine.rootContext()->setContextProperty("applicationDirPath", QGuiApplication::applicationDirPath());
+    engine.addImportPath("qrc:/");
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-
     if (engine.rootObjects().isEmpty())
         return -1;
 
@@ -151,4 +171,6 @@ int main(int argc, char *argv[])
 * echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 * sudo sysctl fs.inotify.max_user_watches=582222 && sudo sysctl -p
 * convert -background none -resize 40x40 VTOLPlane.svg VTOLPlane.png
+======= install nodejs
+sudo apt install build-essential apt-transport-https lsb-release ca-certificates curl
 */
