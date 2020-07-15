@@ -32,10 +32,15 @@ QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
     m_mapFlightMode.insert(QRTL,           "QuadPlane RTL");
 
     m_mapFlightModeOnGround.insert(MANUAL,         "Manual");
+    m_mapFlightModeOnGround.insert(GUIDED,         "Guided");
+    m_mapFlightModeOnGround.insert(LOITER,         "Loiter");
+    m_mapFlightModeOnGround.insert(STABILIZE,      "Stabilize");
 
-//    m_mapFlightModeOnAir.insert(MANUAL,         "Manual");
-//    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
-//    m_mapFlightModeOnAir.insert(QHOVER,         "QuadPlane Hover");
+    m_mapFlightModeOnAir.insert(MANUAL,         "Manual");
+    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
+    m_mapFlightModeOnAir.insert(QHOVER,         "QuadPlane Hover");
+    m_mapFlightModeOnAir.insert(LOITER,         "Loiter");
+    m_mapFlightModeOnAir.insert(STABILIZE,      "Stabilize");
 
     connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
     connect(&m_joystickClearRCTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendClearRC);

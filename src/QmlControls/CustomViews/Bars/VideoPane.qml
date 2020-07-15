@@ -48,7 +48,6 @@ Item{
     }
     VideoRender{
         id: videoOutput
-        anchors.fill: parent
     }
 
     MouseArea{
@@ -136,6 +135,7 @@ Item{
         if(USE_VIDEO_GPU || USE_VIDEO_CPU){
             rootItem.player = cameraController.videoEngine;
             rootItem.player.plateLog = listPlateLog.plateLog;
+            videoOutput.anchors.fill = rootItem;
             cameraController.videoEngine.addVideoRender(videoOutput);
         }
     }

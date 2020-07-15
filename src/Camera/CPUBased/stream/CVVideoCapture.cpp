@@ -314,7 +314,6 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
         return FALSE;
     }
 
-
     gst_app_sink_set_drop(m_appsink, true);
     g_object_set(m_appsink, "emit-signals", TRUE, NULL);
     //    gst_pipeline_use_clock(pipeline, nullptr);
