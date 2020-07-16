@@ -237,6 +237,7 @@ QtObject {
     readonly property string iAddWaypoint:          "\uf055"
     readonly property string iPowerOff:             "\uf011"
     readonly property string iClose:                "\uf00d"
+    readonly property string iGamepad:              "\uf11b"
     //------- Marker
     readonly property string iMouse:                "\uf00d"
     readonly property string iAddMarker:            "\uf0fe"
@@ -616,12 +617,15 @@ QtObject {
                 "GO_LOCATION_NOT_GUIDED":["Vehicle is not in Guided mode\nDo you want to change and go?",
                     "Máy bay không ở chế độ Guided\nBạn có muốn chuyển chế độ và tới vị trí đã chọn"],
                 "GO_LOCATION_GUIDED":["Are you sure to go to \n selected location",
-                    "Bạn có muốn tới vị trí đã chọn"
-                ],
+                    "Bạn có muốn tới vị trí đã chọn"],
+                "JOYSTICK_ACTIVE":["Do you want to flight with Joystick?",
+                    "Bạn có muốn lái máy bay bằng tay cầm"],
+                "JOYSTICK_DEACTIVE":["Do you want to flight in auto mode?",
+                    "Bạn có muốn để máy bay lái tự động"],
             }
         },
         "MESSAGE":{
-            "SNAPSHOT":["Snapshot has been taken","Anh da duoc chup"]
+            "SNAPSHOT":["Snapshot has been taken","Ảnh đã được chụp"]
         }
     }
     function changeTheme(themeType){

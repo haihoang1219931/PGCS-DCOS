@@ -652,6 +652,32 @@ ApplicationWindow {
                 });
             }
         }
+        onDoShowJoystickConfirm: {
+            if(!footerBar.isShowConfirm){
+                footerBar.isShowConfirm = true;
+                footerBar.compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
+                footerBar.confirmDialogObj = footerBar.compo.createObject(parent,{
+                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["JOYSTICK_"+(!vehicle.useJoystick?"ACTIVE":"DEACTIVE")]
+                                [UIConstants.language[UIConstants.languageID]],
+                              "type": "CONFIRM",
+                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                              "z":200});
+                footerBar.confirmDialogObj.clicked.connect(function (type,func){
+                    if(func === "DIALOG_OK"){
+                        vehicle.useJoystick = !vehicle.useJoystick;
+                    }else if(func === "DIALOG_CANCEL"){
+
+                    }
+                    footerBar.isShowConfirm = false;
+                    dialogShow = "";
+                    mapPane.setFocus(true);
+                    footerBar.confirmDialogObj.setFocus(false);
+                    footerBar.confirmDialogObj.destroy();
+                    footerBar.compo.destroy();
+                });
+            }
+        }
     }
 
     //------------ Body

@@ -7,7 +7,7 @@ JoystickThreaded::JoystickThreaded(QObject* parent) :
     m_workerThread = new QThread(NULL);
     m_task->moveToThread(m_workerThread);
 
-    connect(m_task,SIGNAL(joystickConnected(bool)),this,SIGNAL(joystickConnected(bool)));
+    connect(m_task,SIGNAL(joystickConnected(bool)),this,SLOT(setConnected(bool)));
     connect(m_task,SIGNAL(joystickConnected(bool)),this,SLOT(updateButtonAxis(bool)));
     connect(m_task,SIGNAL(btnClicked(int,bool)),this,SLOT(changeButtonState(int,bool)));
     connect(m_task,SIGNAL(axisStateChanged(int,float)),this,SLOT(changeAxisValue(int,float)));

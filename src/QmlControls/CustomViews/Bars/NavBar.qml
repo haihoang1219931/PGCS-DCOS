@@ -51,6 +51,7 @@ Item {
     signal doSwitchPlaneMode(var previousMode, var currentMode)
     signal toggleWarning()
     signal doShowParamsSelect(var show)
+    signal doShowJoystickConfirm(var show)
     property alias  _isPayloadActive:  btnPayloadControl.isPressed
     //----- Element attributes
 
@@ -256,7 +257,7 @@ Item {
         }
         GPSIndicator{
             id: btnSignal
-            anchors.right: btnParams.left
+            anchors.right: btnJoystick.left
             anchors.rightMargin: UIConstants.sRect * 3 / 2
             anchors.top: parent.top
             anchors.topMargin: 5
@@ -270,6 +271,28 @@ Item {
                     dialogShow = "DIALOG_SIGNAL";
                 }else{
                     dialogShow = "";
+                }
+            }
+        }
+        FlatButtonIcon{
+            id: btnJoystick
+            anchors.right: btnParams.left
+            anchors.rightMargin: 2
+            anchors.top: parent.top
+            height: parent.height
+            width: parent.height
+            isSolid: true
+            z: navbarWrapper.z + 1
+            icon: UIConstants.iGamepad
+            iconSize: UIConstants.sRect*3/2 - 5
+            isAutoReturn: true
+            iconColor: isEnable ? (!vehicle.useJoystick ? UIConstants.textColor:UIConstants.greenColor) : UIConstants.grayColor
+            isEnable: joystick.connected
+            property bool showIndicator: dialogShow === "DIALOG_JOYSTICK"
+            onClicked: {
+                if(dialogShow !== "DIALOG_JOYSTICK"){
+                    dialogShow = "DIALOG_JOYSTICK";
+                    rootItem.doShowJoystickConfirm(showIndicator);
                 }
             }
         }

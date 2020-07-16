@@ -5,6 +5,7 @@
 QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
 {
     m_vehicle = vehicle;
+    m_vehicle->setUseJoystick(false);
     connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&QuadPlaneFirmware::handleJSButton);
     connect(m_vehicle,&Vehicle::useJoystickChanged,this,&QuadPlaneFirmware::handleUseJoystick);
     loadFromFile("conf/Properties.conf");
@@ -35,19 +36,20 @@ QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
     m_mapFlightModeOnGround.insert(GUIDED,         "Guided");
     m_mapFlightModeOnGround.insert(LOITER,         "Loiter");
     m_mapFlightModeOnGround.insert(STABILIZE,      "Stabilize");
+    m_mapFlightModeOnGround.insert(FLY_BY_WIRE_A,  "FBW A");
+    m_mapFlightModeOnGround.insert(FLY_BY_WIRE_B,  "FBW B");
 
     m_mapFlightModeOnAir.insert(MANUAL,         "Manual");
-    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
-    m_mapFlightModeOnAir.insert(QHOVER,         "QuadPlane Hover");
+    m_mapFlightModeOnAir.insert(GUIDED,         "Guided");
     m_mapFlightModeOnAir.insert(LOITER,         "Loiter");
     m_mapFlightModeOnAir.insert(STABILIZE,      "Stabilize");
+    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
+    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_B,  "FBW B");
 
     connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
     connect(&m_joystickClearRCTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendClearRC);
     m_joystickTimer.start();
-    if(m_vehicle->joystick()!=nullptr){
-        m_vehicle->setFlightMode(m_vehicle->pic()?"Loiter":"Guided");
-    }
+    m_vehicle->joystick()->setPIC(false);
 }
 QString QuadPlaneFirmware::flightMode(int flightModeId){
     if(m_mapFlightMode.contains(flightModeId)) {
@@ -258,12 +260,8 @@ void QuadPlaneFirmware::setGimbalMode(QString mode)
 void QuadPlaneFirmware::sendJoystickData(){
     if (m_vehicle == nullptr)
         return;
-    if(m_vehicle->pic()){
-
-    }else{
-        if(m_vehicle->flightMode() == "Loiter"){
-            m_vehicle->setFlightMode("Guided");
-        }
+    if(m_vehicle->useJoystick()){
+        return;
     }
     if(m_vehicle->joystick()== nullptr){
         return;
@@ -288,10 +286,10 @@ void QuadPlaneFirmware::sendJoystickData(){
                 &msg,
                 m_vehicle->id(),
                 m_vehicle->_compID,
-                static_cast<uint16_t>(convertRC(m_vehicle->pic()?roll:0,1)),
-                static_cast<uint16_t>(convertRC(m_vehicle->pic()?pitch:0,2)),
-                static_cast<uint16_t>(convertRC(m_vehicle->pic()?throttle:0,3)),
-                static_cast<uint16_t>(convertRC(m_vehicle->pic()?yaw:0,4)),
+                static_cast<uint16_t>(convertRC(roll,1)),
+                static_cast<uint16_t>(convertRC(pitch,2)),
+                static_cast<uint16_t>(convertRC(throttle,3)),
+                static_cast<uint16_t>(convertRC(yaw,4)),
                 0,//static_cast<uint16_t>(convertRC(0,5)),
                 0,//static_cast<uint16_t>(convertRC(0,6)),
                 0,//static_cast<uint16_t>(convertRC(0,7)),
@@ -346,29 +344,15 @@ void QuadPlaneFirmware::sendClearRC(){
     m_sendClearRCCount++;
 }
 void QuadPlaneFirmware::handleJSButton(int id, bool clicked){
-    if(m_vehicle != nullptr && m_vehicle->joystick() != nullptr){
-        if(id>=0 && id < m_vehicle->joystick()->buttonCount()){
 
-            JSButton* button = m_vehicle->joystick()->button(id);
-            printf("%s[%id] %s\r\n",__func__,id,clicked?"true":"false");
-            if(m_mapFlightMode.values().contains(button->mapFunc())){
-                if(m_vehicle->pic()){
-                    if(button->mapFunc() == "RTL")
-                        m_vehicle->setFlightMode(button->mapFunc());
-                }else{
-                    m_vehicle->setFlightMode(button->mapFunc());
-                }
-            }else if(button->mapFunc() == "PIC/CIC" || button->mapFunc() == "CIC/PIC"){
-                m_vehicle->setFlightMode((clicked)?"Loiter":"Guided");
-            }
-        }
-    }
 }
 void QuadPlaneFirmware::handleUseJoystick(bool enable) {
     if(enable){
+        m_vehicle->setFlightMode("FBW B");
         connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
         m_joystickTimer.start();
     }else{
+        m_vehicle->setFlightMode("Auto");
         disconnect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
         m_joystickTimer.stop();
         m_sendClearRCCount = 0;

@@ -95,6 +95,7 @@ class JoystickThreaded: public QObject
     Q_OBJECT
     Q_PROPERTY(QString mapFile READ mapFile WRITE setMapFile)
     Q_PROPERTY(JoystickTask* task READ task)
+    Q_PROPERTY(bool connected READ connected WRITE setConnected NOTIFY joystickConnected)
     Q_PROPERTY(QQmlListProperty<JSAxis> axes READ axes NOTIFY axesChanged)
     Q_PROPERTY(QQmlListProperty<JSButton> buttons READ buttons NOTIFY buttonsChanged)
     Q_PROPERTY(QQmlListProperty<JSAxis> axesConfig READ axesConfig NOTIFY axesConfigChanged)
@@ -197,6 +198,8 @@ public:
         qmlRegisterType<JSButton>();
         qmlRegisterType<JoystickThreaded>("io.qdt.dev", 1, 0, "Joystick");
     }
+    bool connected(){ return m_connected; }
+
     bool pic(){return m_pic;}
     void setPIC(bool pic){
         m_pic = pic;
@@ -218,6 +221,11 @@ public Q_SLOTS:
     void updateButtonAxis(bool connected);
     void changeButtonState(int btnID,bool clicked);
     void changeAxisValue(int axisID, float value);
+    void setConnected(bool connected){
+        printf("Joystick connected = %s\r\n",connected?"true":"false");
+        m_connected = connected;
+        Q_EMIT joystickConnected(m_connected);
+    }
 Q_SIGNALS:
     void useJoystickChanged(bool useJoystick);
     void picChanged();
@@ -241,6 +249,7 @@ private:
     QList<JSButton*> m_buttons;
     QList<JSButton*> m_buttonsTemp;
     QString m_mapFile;
+    bool m_connected = false;
     int m_axisRoll = 0;
     int m_axisPitch = 1;
     int m_axisYaw = 3;

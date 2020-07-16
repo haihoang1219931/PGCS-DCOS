@@ -401,14 +401,17 @@ void CVVideoProcess::doWork()
             cv::Mat imgY(static_cast<int>(height), static_cast<int>(width), CV_8UC1, m_imgI420.data);
             cv::Mat imgU(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420.data + size_t(height * width));
             cv::Mat imgV(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420.data + size_t(height * width * 5 / 4));
-
-            cv::warpAffine(imgY,imgYWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgY.cols,imgY.rows),cv::INTER_LINEAR);
+            cv::BorderTypes borderType = cv::BorderTypes::BORDER_CONSTANT;
+            cv::Scalar color(100,100,100);
+            double y,u,v;
+            VideoEngine::convertRGB2YUV((double)color.val[0],(double)color.val[1],(double)color.val[2],y,u,v);
+            cv::warpAffine(imgY,imgYWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgY.cols,imgY.rows),cv::INTER_LINEAR,borderType,cv::Scalar(y));
 
             warpMatrix.at<float>(0,2) = static_cast<float>(m_ptzMatrix.at<double>(0,2))/2;
             warpMatrix.at<float>(1,2) = static_cast<float>(m_ptzMatrix.at<double>(1,2))/2;
 
-            cv::warpAffine(imgU,imgUWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgU.cols,imgU.rows),cv::INTER_LINEAR);
-            cv::warpAffine(imgV,imgVWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgV.cols,imgV.rows),cv::INTER_LINEAR);
+            cv::warpAffine(imgU,imgUWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgU.cols,imgU.rows),cv::INTER_LINEAR,borderType,cv::Scalar(u));
+            cv::warpAffine(imgV,imgVWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgV.cols,imgV.rows),cv::INTER_LINEAR,borderType,cv::Scalar(v));
             // draw track
             warpMatrix.at<float>(0,2) = static_cast<float>(m_ptzMatrix.at<double>(0,2));
             warpMatrix.at<float>(1,2) = static_cast<float>(m_ptzMatrix.at<double>(1,2));
