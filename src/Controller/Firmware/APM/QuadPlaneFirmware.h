@@ -126,6 +126,7 @@ public Q_SLOTS:
     void sendClearRC();
     void handleJSButton(int id, bool clicked) override;
     void handleUseJoystick(bool enable) override;
+    void handleJoystickConnected(bool connected);
 private:
     float convertRC(float input, int channel);
 };

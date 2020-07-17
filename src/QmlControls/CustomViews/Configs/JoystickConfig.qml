@@ -187,7 +187,7 @@ Item {
                     height: parent.height
                     radius: 3
                     Rectangle{
-                        visible: vehicle.useJoystick
+                        visible: joystick.useJoystick
                         color: "#555"
                         border.color: "#333"
                         radius: 1
@@ -197,7 +197,7 @@ Item {
                     MouseArea{
                         anchors.fill: parent
                         onClicked: {
-                            joystick.setUseJoystick(!vehicle.useJoystick);
+                            joystick.useJoystick = !joystick.useJoystick;
                         }
                     }
                 }

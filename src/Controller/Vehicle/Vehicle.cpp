@@ -44,27 +44,13 @@ JoystickThreaded* Vehicle::joystick(){
 }
 void Vehicle::setJoystick(JoystickThreaded* joystick){
     m_joystick = joystick;
-    _pic = m_joystick->pic();
-    Q_EMIT picChanged();
-    _useJoystick = m_joystick->useJoystick();
-    Q_EMIT useJoystickChanged(_useJoystick);
-    connect(m_joystick,&JoystickThreaded::picChanged,this,&Vehicle::handlePIC);
-    connect(m_joystick,&JoystickThreaded::useJoystickChanged,this,&Vehicle::handleUseJoystick);
-}
-void Vehicle::handlePIC(){    
-    _pic = m_joystick->pic();
-    Q_EMIT picChanged();
-    printf("%s = %s\r\n",__func__,_pic?"true":"false");
-}
-void Vehicle::handleUseJoystick(bool useJoystick){
-    _useJoystick = useJoystick;
-    Q_EMIT useJoystickChanged(_useJoystick);
 }
 
 ParamsController *Vehicle::paramsController()
 {
     return m_paramsController;
 }
+
 void Vehicle::setParamsController(ParamsController *paramsController)
 {
     m_paramsController = paramsController;
@@ -1853,23 +1839,6 @@ QStringList Vehicle::unhealthySensors(void) const
     }
 
     return sensorList;
-}
-bool Vehicle::useJoystick(void){
-    return _useJoystick;
-}
-void Vehicle::setUseJoystick(bool enable){
-    if(_useJoystick != enable){
-        _useJoystick = enable;
-        printf("%s [%s]\r\n",__func__, enable?"true":"false");
-        Q_EMIT useJoystickChanged(enable);
-    }
-}
-bool Vehicle::pic(void){
-    return _pic;
-}
-void Vehicle::setPic(bool pic){
-    _pic = pic;
-    picChanged();
 }
 QString Vehicle::flightMode(void)
 {

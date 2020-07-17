@@ -286,7 +286,7 @@ Item {
             icon: UIConstants.iGamepad
             iconSize: UIConstants.sRect*3/2 - 5
             isAutoReturn: true
-            iconColor: isEnable ? (!vehicle.useJoystick ? UIConstants.textColor:UIConstants.greenColor) : UIConstants.grayColor
+            iconColor: isEnable ? (!joystick.useJoystick ? UIConstants.textColor:UIConstants.greenColor) : UIConstants.grayColor
             isEnable: joystick.connected
             property bool showIndicator: dialogShow === "DIALOG_JOYSTICK"
             onClicked: {
@@ -527,11 +527,11 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.pic?UIConstants.blueColor:UIConstants.greenColor
+                color: joystick.pic?UIConstants.blueColor:UIConstants.greenColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor
-                    text: vehicle.pic?"PIC":"CIC"
+                    text: joystick.pic?"PIC":"CIC"
                     font.family: UIConstants.appFont
                     anchors.fill: parent
                     verticalAlignment: Text.AlignVCenter

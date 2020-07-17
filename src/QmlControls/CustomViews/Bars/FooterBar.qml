@@ -514,9 +514,9 @@ Item {
                                     itemListName["MISSION"]["GO_LOCATION"][UIConstants.language[UIConstants.languageID]]
                         isEnable: vehicle.link
                                   &&
-                                  ((vehicle.vehicleType === 2 && !vehicle.pic)
+                                  ((vehicle.vehicleType === 2 && !joystick.pic)
                                    ||
-                                   (vehicle.vehicleType === 14 && !vehicle.pic)
+                                   (vehicle.vehicleType === 14 && !joystick.pic)
                                    ||
                                    (vehicle.vehicleType === 1 && mapPane.selectedWP !== undefined ) )
                         onClicked: {
@@ -578,7 +578,7 @@ Item {
                         Layout.alignment: Qt.AlignTop
                         icon: UIConstants.iAuto
                         btnText: itemListName["MISSION"]["AUTO"][UIConstants.language[UIConstants.languageID]]
-                        isEnable: vehicle.link && !vehicle.pic
+                        isEnable: vehicle.link && !joystick.pic
                         onClicked: {
                             rootItem.doFlyAction(1);
                         }
@@ -609,7 +609,7 @@ Item {
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iDeparture
                         btnText: itemListName["MISSION"]["TAKE_OFF"][UIConstants.language[UIConstants.languageID]]
-                        isEnable: vehicle.link && !vehicle.pic && vehicle.armed && vehicle.landed
+                        isEnable: vehicle.link && !joystick.pic && vehicle.armed && vehicle.landed
                         onClicked: {
                             rootItem.doFlyAction(3);
                         }

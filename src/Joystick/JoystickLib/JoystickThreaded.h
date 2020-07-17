@@ -96,6 +96,8 @@ class JoystickThreaded: public QObject
     Q_PROPERTY(QString mapFile READ mapFile WRITE setMapFile)
     Q_PROPERTY(JoystickTask* task READ task)
     Q_PROPERTY(bool connected READ connected WRITE setConnected NOTIFY joystickConnected)
+    Q_PROPERTY(bool                 useJoystick                 READ useJoystick        WRITE setUseJoystick        NOTIFY useJoystickChanged)
+    Q_PROPERTY(bool                 pic                         READ pic                WRITE setPIC                NOTIFY picChanged)
     Q_PROPERTY(QQmlListProperty<JSAxis> axes READ axes NOTIFY axesChanged)
     Q_PROPERTY(QQmlListProperty<JSButton> buttons READ buttons NOTIFY buttonsChanged)
     Q_PROPERTY(QQmlListProperty<JSAxis> axesConfig READ axesConfig NOTIFY axesConfigChanged)
@@ -207,7 +209,7 @@ public:
         Q_EMIT picChanged();
     }
     bool useJoystick(){return m_useJoystick;}
-    Q_INVOKABLE void setUseJoystick(bool enable){
+    void setUseJoystick(bool enable){
         m_useJoystick = enable;
         Q_EMIT useJoystickChanged(m_useJoystick);
     }
@@ -262,7 +264,7 @@ private:
     float m_invertZoom = 1;
     int m_butonPICCIC = 0;
     bool m_pic = false;
-    bool m_useJoystick = true;
+    bool m_useJoystick = false;
 };
 
 #endif // JOYSTICKTHREAD_H

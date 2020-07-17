@@ -1753,8 +1753,9 @@ Flickable {
         if(gotohereSymbol === null){
             gotohereSymbol = createGotoherePoint(position)
         }
-        else
+        else{
             gotohereSymbol.coordinate = position
+        }
         if(mainWindow.seqTab === 2 && vehicle.link && visible === true ){
             position.altitude = plane.coordinate.altitude;
             uav_profilePath.setUavProfilePathMode(1)

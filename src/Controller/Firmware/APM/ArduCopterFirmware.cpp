@@ -3,7 +3,7 @@ ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
 {
     m_vehicle = vehicle;
     connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&ArduCopterFirmware::handleJSButton);
-    connect(m_vehicle,&Vehicle::useJoystickChanged,this,&ArduCopterFirmware::handleUseJoystick);
+    connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&ArduCopterFirmware::handleUseJoystick);
 
     //connect(m_vehicle,&Vehicle::mavCommandResult,this,&ArduCopterFirmware::handleMavCommandResult);
 
@@ -42,7 +42,7 @@ ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
     connect(&m_joystickClearRCTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendClearRC);
     m_joystickTimer.start();
     if(m_vehicle->joystick()!=nullptr){
-        m_vehicle->setFlightMode(m_vehicle->pic()?"Loiter":"Guided");
+        m_vehicle->setFlightMode(m_vehicle->joystick()->pic()?"Loiter":"Guided");
     }
 
     m_gimbalHearbeatTimer.setInterval(1000);
@@ -460,18 +460,16 @@ QString ArduCopterFirmware::getGimbalCurrentMode()
 void ArduCopterFirmware::sendJoystickData(){
     if (m_vehicle == nullptr)
         return;
-    if(m_vehicle->pic()){
-//        printf("m_vehicle->pic()=%s\r\n",m_vehicle->pic()?"true":"false");
-//        if(m_vehicle->flightMode()!= "Loiter" && m_vehicle->flightMode()!= "RTL"){
-//            m_vehicle->setFlightMode("Loiter");
-//        }
+
+    if(m_vehicle->joystick()== nullptr){
+        return;
+    }
+    if(m_vehicle->joystick()->pic()){
+
     }else{
         if(m_vehicle->flightMode() == "Loiter"){
             m_vehicle->setFlightMode("Guided");
         }
-    }
-    if(m_vehicle->joystick()== nullptr){
-        return;
     }
     if(m_vehicle->joystick()->axisCount() < 4 || !m_vehicle->joystick()->useJoystick()){
         return;
@@ -493,10 +491,10 @@ void ArduCopterFirmware::sendJoystickData(){
                 &msg,
                 m_vehicle->id(),
                 m_vehicle->_compID,
-                static_cast<uint16_t>(convertRC(m_vehicle->pic()?roll:0,1)),
-                static_cast<uint16_t>(convertRC(m_vehicle->pic()?pitch:0,2)),
-                static_cast<uint16_t>(convertRC(m_vehicle->pic()?throttle:0,3)),
-                static_cast<uint16_t>(convertRC(m_vehicle->pic()?yaw:0,4)),
+                static_cast<uint16_t>(convertRC(m_vehicle->joystick()->pic()?roll:0,1)),
+                static_cast<uint16_t>(convertRC(m_vehicle->joystick()->pic()?pitch:0,2)),
+                static_cast<uint16_t>(convertRC(m_vehicle->joystick()->pic()?throttle:0,3)),
+                static_cast<uint16_t>(convertRC(m_vehicle->joystick()->pic()?yaw:0,4)),
                 0,//static_cast<uint16_t>(convertRC(0,5)),
                 0,//static_cast<uint16_t>(convertRC(0,6)),
                 0,//static_cast<uint16_t>(convertRC(0,7)),
@@ -557,7 +555,7 @@ void ArduCopterFirmware::handleJSButton(int id, bool clicked){
             JSButton* button = m_vehicle->joystick()->button(id);
             printf("%s[%id] %s\r\n",__func__,id,clicked?"true":"false");
             if(m_mapFlightMode.values().contains(button->mapFunc())){
-                if(m_vehicle->pic()){
+                if(m_vehicle->joystick()->pic()){
                     if(button->mapFunc() == "RTL")
                         m_vehicle->setFlightMode(button->mapFunc());
                 }else{

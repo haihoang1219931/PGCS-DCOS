@@ -62,7 +62,7 @@ Rectangle{
             anchors.horizontalCenter: parent.horizontalCenter
             enabled: false
             horizontalAlignment: TextInput.AlignHCenter
-            text: vehicle.pic ? "PIC":"CIC"
+            text: joystick.pic ? "PIC":"CIC"
         }
         QLabel {
             id: lblModeTiltle

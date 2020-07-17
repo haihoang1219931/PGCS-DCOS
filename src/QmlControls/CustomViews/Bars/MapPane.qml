@@ -563,7 +563,6 @@ Item {
     Computer{
         id: cInfo
     }
-
     Elevation{
         id: elevationFinder
         path: "Elevation"
@@ -597,6 +596,10 @@ Item {
             folderPath: cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder
         }
     }
+    function showWPScroll(value){
+
+    }
+
     function getTotalDistanceWP(){
         return 0;
     }
