@@ -26,7 +26,7 @@ Rectangle {
     id: rootItem
 
     //-------------- properties
-    property int currentItem: 0
+    property alias currentIndex: sidebarElements.currentIndex
     property alias model: sidebarElements.model
     property var itemListName:
         UIConstants.itemTextMultilanguages["PRECHECK"]
@@ -47,100 +47,46 @@ Rectangle {
     }
 
     //--------------- Sidebar list / Sidebar content
-    Column {
-        anchors { top: sidebarTitle.bottom; left: parent.left; right: parent.right; bottom: parent.bottom }
-        //--- Sidebar Elements
-        Repeater {
-            id: sidebarElements
-            anchors.fill: parent            
-            delegate: CheckListEle {
-                width: parent.width
-                height: 60
-                stateE: state_
-                textSide: text_
-                eleId: index
-                onActiveSide: {
-                    currentItem = eleId_;
-                    rootItem.displayActiveConfigBoard( eleId_);
-                    for( var i = 0; i < sidebarElements.model.count; i++ )
-                    {
-                        if( i === eleId_)
-                        {
-                            sidebarElements.itemAt(i).setActive();
-                        }
-                        else
-                        {
-                            sidebarElements.itemAt(i).setDeactive();
-                        }
-                    }
-                }
-                //--- Set default active
-                Component.onCompleted: {
-                    sidebarElements.itemAt(0).setActive();
-                }
-            }
+    ListView {
+        id: sidebarElements
+        anchors { top: sidebarTitle.bottom; left: parent.left; right: parent.right; bottom: parent.bottom }        
+        currentIndex: 0
+        delegate: CheckListEle {
+            width: parent.width
+            height: visible?60:0
+            stateE: state_
+            textSide: text_
+            visible: showed_
+            actived: sidebarElements.currentIndex === index
         }
-    }
-
-    //--------------- Mouse Area
-    MouseArea {
-        id: sidebarMouseArea
-        anchors.fill: parent
-        enabled: false
-        hoverEnabled: false
-        preventStealing: false
-
     }
 
     //---------------- Js supported functions
     function next()
     {
-        if( currentItem + 1 > sidebarElements.model.count ){
-            return;
-        }else
-            currentItem += 1;
-        rootItem.displayActiveConfigBoard(currentItem);
-        for( var i = 0; i < sidebarElements.model.count; i++ )
-        {
-            if( i === currentItem)
-            {
-                sidebarElements.itemAt(i).setActive();
-            }
-            else
-            {
-                sidebarElements.itemAt(i).setDeactive();
+        for(var i=currentIndex+1; i < sidebarElements.model.count ; i++){
+            if(sidebarElements.model.get(i).showed_){
+                sidebarElements.currentIndex = i;
+                break;
             }
         }
-
     }
 
     function prev()
     {
-        if( currentItem -1 < 0 ){
-            return;
-        }else
-            currentItem -= 1;
-        rootItem.displayActiveConfigBoard( currentItem);
-        for( var i = 0; i < sidebarElements.model.count; i++ )
-        {
-            if( i === currentItem)
-            {
-                sidebarElements.itemAt(i).setActive();
-            }
-            else
-            {
-                sidebarElements.itemAt(i).setDeactive();
+        for(var i=currentIndex-1; i >= 0 ; i--){
+            if(sidebarElements.model.get(i).showed_){
+                sidebarElements.currentIndex = i;
+                break;
             }
         }
     }
 
     function doCheck()
     {
-        if(currentItem < sidebarElements.model.count){
-            sidebarElements.itemAt(currentItem).doCheck();
-            sidebarMouseArea.hoverEnabled = true;
-            sidebarMouseArea.preventStealing = true;
-            sidebarMouseArea.enabled = !sidebarMouseArea.enabled
+        if(sidebarElements.currentIndex >= 0 &&
+            sidebarElements.currentIndex < sidebarElements.model.count){
+            sidebarElements.model.get(currentIndex).state_ = "passed";
         }
     }
 }

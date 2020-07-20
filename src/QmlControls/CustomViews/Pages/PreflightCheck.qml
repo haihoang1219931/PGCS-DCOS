@@ -32,6 +32,27 @@ Rectangle {
     border.width: 1
     property var itemListName:
         UIConstants.itemTextMultilanguages["PRECHECK"]
+    property int vehicleType: 0
+    function changeVehicleType(vehicleType){
+        rootItem.vehicleType = vehicleType;
+        if(vehicleType === 2 ||
+                vehicleType === 14){
+            sidebarGeneralConfigs.model.setProperty(2,"showed_",false);
+            sidebarGeneralConfigs.model.setProperty(3,"showed_",false);
+            sidebarGeneralConfigs.model.setProperty(7,"showed_",false);
+        }else{
+            sidebarGeneralConfigs.model.setProperty(2,"showed_",true);
+            sidebarGeneralConfigs.model.setProperty(3,"showed_",true);
+            sidebarGeneralConfigs.model.setProperty(7,"showed_",true);
+        }
+    }
+    function reload(){
+        for(var i=0; i< sidebarGeneralConfigs.model.count; i++){
+            sidebarGeneralConfigs.model.setProperty(i,"state_","uncheck");
+        }
+        sidebarGeneralConfigs.currentIndex = 0;
+    }
+
     RowLayout {
         anchors.fill: parent
         //---------- Sidebar
@@ -39,70 +60,74 @@ Rectangle {
             id: sidebarGeneralConfigs
             Layout.preferredWidth: UIConstants.sRect * 9
             Layout.preferredHeight: parent.height
-            onDisplayActiveConfigBoard: {
-                checkingContentStack.currentIndex = boardId_;
-            }
             RectBorder {
                 type: "right"
             }
             model: ListModel {
                 Component.onCompleted: {
-                    append({state_: "uncheck",
+                    append({state_: "uncheck",showed_: true,
                                text_: itemListName["MODECHECK"]["MENU_TITTLE"]
                                [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",
+                    append({state_: "uncheck",showed_: true,
                                text_: itemListName["PROPELLERS"]["MENU_TITTLE"]
                                [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",
+                    append({state_: "uncheck",showed_: true,
                                text_: itemListName["STEERING"]["MENU_TITTLE"]
                                [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",
+                    append({state_: "uncheck",showed_: true,
                                text_: itemListName["PITOT"]["MENU_TITTLE"]
                                [UIConstants.language[UIConstants.languageID]]});
-                    append({state_: "uncheck",
+                    append({state_: "uncheck",showed_: true,
                                text_: itemListName["LASER"]["MENU_TITTLE"]
                                [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",
+                    append({state_: "uncheck",showed_: true,
                                text_: itemListName["GPS"]["MENU_TITTLE"]
                                [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",
+                    append({state_: "uncheck",showed_: true,
                                text_: itemListName["JOYSTICK"]["MENU_TITTLE"]
                                [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",
+                    append({state_: "uncheck",showed_: true,
                                text_: itemListName["RPM"]["MENU_TITTLE"]
+                               [UIConstants.language[UIConstants.languageID]]});
+                    append({state_: "uncheck",showed_: true,
+                               text_: itemListName["RESULT"]["MENU_TITTLE"]
                                [UIConstants.language[UIConstants.languageID]]});
                 }
             }
         }
+
         Connections{
             target: UIConstants
             onLanguageIDChanged:{
-                checkingContentStack.currentIndex = 0;
                 sidebarGeneralConfigs.model.clear();
-                sidebarGeneralConfigs.model.append({state_: "uncheck",
+                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
                            text_: itemListName["MODECHECK"]["MENU_TITTLE"]
                            [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",
+                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
                            text_: itemListName["PROPELLERS"]["MENU_TITTLE"]
                            [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",
+                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
                            text_: itemListName["STEERING"]["MENU_TITTLE"]
                            [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",
+                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
                            text_: itemListName["PITOT"]["MENU_TITTLE"]
                            [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",
+                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
                            text_: itemListName["LASER"]["MENU_TITTLE"]
                            [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",
+                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
                            text_: itemListName["GPS"]["MENU_TITTLE"]
                            [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",
+                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
                            text_: itemListName["JOYSTICK"]["MENU_TITTLE"]
                            [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",
+                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
                            text_: itemListName["RPM"]["MENU_TITTLE"]
                            [UIConstants.language[UIConstants.languageID]] });
+                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+                           text_: itemListName["RESULT"]["MENU_TITTLE"]
+                           [UIConstants.language[UIConstants.languageID]] });
+                changeVehicleType(rootItem.vehicleType);
             }
         }
 
@@ -111,16 +136,8 @@ Rectangle {
             Layout.preferredWidth: parent.width - sidebarGeneralConfigs.width
             Layout.preferredHeight: parent.height
             Layout.leftMargin: -5
-            currentIndex: 0
+            currentIndex: sidebarGeneralConfigs.currentIndex
             ColumnLayout {
-//                SidebarTitle {
-//                    Layout.alignment: Qt.AlignTop
-//                    Layout.preferredWidth: parent.width
-//                    Layout.preferredHeight: UIConstants.sRect * 2
-//                    title: "Flight Mode check"
-//                    iconType: "\uf197"
-//                    xPosition: 20
-//                }
                 ModeCheck{
                     Layout.alignment: Qt.AlignBottom
                     Layout.preferredWidth: checkingContentStack.width
@@ -130,15 +147,6 @@ Rectangle {
             }
 
             ColumnLayout {
-//                SidebarTitle {
-//                    Layout.alignment: Qt.AlignTop
-//                    Layout.preferredWidth: parent.width
-//                    Layout.preferredHeight: UIConstants.sRect * 2
-//                    visible: true
-//                    title: "Propeller check"
-//                    iconType: "\uf197"
-//                    xPosition: 20
-//                }
                 Propellers{
                     Layout.alignment: Qt.AlignBottom
                     Layout.preferredWidth: checkingContentStack.width
@@ -148,15 +156,6 @@ Rectangle {
             }
 
             ColumnLayout {
-//                SidebarTitle {
-//                    Layout.alignment: Qt.AlignTop
-//                    Layout.preferredWidth: parent.width
-//                    Layout.preferredHeight: UIConstants.sRect * 2
-//                    visible: true
-//                    title: "Steering check"
-//                    iconType: "\uf197"
-//                    xPosition: 20
-//                }
                 Steering{
                     Layout.alignment: Qt.AlignBottom
                     Layout.preferredWidth: checkingContentStack.width
@@ -166,14 +165,6 @@ Rectangle {
             }
 
             ColumnLayout {
-//                SidebarTitle {
-//                    Layout.alignment: Qt.AlignTop
-//                    Layout.preferredWidth: parent.width
-//                    Layout.preferredHeight: UIConstants.sRect * 2
-//                    title: "Pitot check"
-//                    iconType: "\uf197"
-//                    xPosition: 20
-//                }
                 Pitot{
                     Layout.alignment: Qt.AlignBottom
                     Layout.preferredWidth: checkingContentStack.width
@@ -183,14 +174,6 @@ Rectangle {
             }
 
             ColumnLayout {
-//                SidebarTitle {
-//                    Layout.alignment: Qt.AlignTop
-//                    Layout.preferredWidth: parent.width
-//                    Layout.preferredHeight: UIConstants.sRect * 2
-//                    title: "Altitude measurement Laser check"
-//                    iconType: "\uf197"
-//                    xPosition: 20
-//                }
                 Laser{
                     Layout.alignment: Qt.AlignBottom
                     Layout.preferredWidth: checkingContentStack.width
@@ -200,15 +183,6 @@ Rectangle {
             }
 
             ColumnLayout {
-//                SidebarTitle {
-//                    Layout.alignment: Qt.AlignTop
-//                    Layout.preferredWidth: parent.width
-//                    Layout.preferredHeight: UIConstants.sRect * 2
-//                    visible: true
-//                    title: "UAV GPS Location checking"
-//                    iconType: "\uf197"
-//                    xPosition: 20
-//                }
                 GPS{
                     Layout.alignment: Qt.AlignBottom
                     Layout.preferredWidth: checkingContentStack.width
@@ -216,16 +190,8 @@ Rectangle {
                     Layout.fillHeight: true
                 }
             }
+
             ColumnLayout {
-//                SidebarTitle {
-//                    Layout.alignment: Qt.AlignTop
-//                    Layout.preferredWidth: parent.width
-//                    Layout.preferredHeight: UIConstants.sRect * 2
-//                    visible: true
-//                    title: "Joystick action"
-//                    iconType: "\uf197"
-//                    xPosition: 20
-//                }
                 JoystickCheck{
                     Layout.alignment: Qt.AlignBottom
                     Layout.preferredWidth: checkingContentStack.width
@@ -233,15 +199,8 @@ Rectangle {
                     Layout.fillHeight: true
                 }
             }
+
             ColumnLayout {
-//                SidebarTitle {
-//                    Layout.alignment: Qt.AlignTop
-//                    Layout.preferredWidth: parent.width
-//                    Layout.preferredHeight: UIConstants.sRect * 2
-//                    title: "UAV Propulsion engine check"
-//                    iconType: "\uf197"
-//                    xPosition: 20
-//                }
                 RPM{
                     Layout.alignment: Qt.AlignBottom
                     Layout.preferredWidth: checkingContentStack.width
@@ -251,20 +210,17 @@ Rectangle {
             }
 
             ColumnLayout {
-                SidebarTitle {
-                    Layout.alignment: Qt.AlignTop
-                    Layout.preferredWidth: parent.width
-                    Layout.preferredHeight: UIConstants.sRect * 2
-                    title: itemListName["TITTLE"]
-                           [UIConstants.language[UIConstants.languageID]]
-                    iconType: "\uf197"
-                    xPosition: 20
-                }
                 Success{
+                    id: precheckResult
                     Layout.alignment: Qt.AlignBottom
                     Layout.preferredWidth: checkingContentStack.width
                     Layout.preferredHeight: UIConstants.sRect * 2 * 9
                     Layout.fillHeight: true
+                }
+            }
+            onCurrentIndexChanged: {
+                if(currentIndex === sidebarGeneralConfigs.model.count - 1){
+                    precheckResult.showResult(sidebarGeneralConfigs.model);
                 }
             }
         }
@@ -294,6 +250,11 @@ Rectangle {
     //------------------Js supported func
     function next()
     {
+        if(sidebarGeneralConfigs.model.get(sidebarGeneralConfigs.currentIndex).state_ === "uncheck"
+                && sidebarGeneralConfigs.currentIndex>=0
+                && sidebarGeneralConfigs.currentIndex < sidebarGeneralConfigs.model.count - 1){
+            sidebarGeneralConfigs.model.get(sidebarGeneralConfigs.currentIndex).state_ = "failed";
+        }
         sidebarGeneralConfigs.next();
     }
 
@@ -304,9 +265,11 @@ Rectangle {
 
     function doCheck()
     {
-//        processingOverlay.opacity = 1;
-//        processingOverlay.textOverlay = "Checking. Please wait !"
-        sidebarGeneralConfigs.doCheck();
-        next();
+        if(sidebarGeneralConfigs.currentIndex !==
+                sidebarGeneralConfigs.model.count - 1){
+            sidebarGeneralConfigs.doCheck();
+            sidebarGeneralConfigs.next();
+        }
+
     }
 }

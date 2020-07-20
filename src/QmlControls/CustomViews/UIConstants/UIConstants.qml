@@ -86,6 +86,7 @@ QtObject {
     readonly property string iDevice:               "\uf7d9"
     readonly property string iCaretDown:            "\uf0d7"
     readonly property string iCaretLeft:            "\uf0d9"
+    readonly property string iClear:                "\uf12d"
     readonly property string iLeftHand:             "\uf0a5"
     readonly property string iRightHand:            "\uf0a4"
     readonly property string iSearch:               "\uf00e"
@@ -197,7 +198,7 @@ QtObject {
     readonly property string iDeparture:            "\uf5b0"
     readonly property string iLeftOff:              "\uf5af"
     readonly property string iRtl:                  "\uf14d"
-    readonly property string iCircle:               "\uf111" //"\uf1ce"
+    readonly property string iCircle:               "\uf111"
     readonly property string iCircleClockWise:      "\uf2f9"
     readonly property string iCircleCounterClock:   "\uf2ea"
     readonly property string iWaypoint:             "\uf08d"
@@ -388,6 +389,7 @@ QtObject {
                 "CHECK":["Check","Xác\nnhận"],
                 "NEXT":["Next","Tiếp\ntheo"],
                 "PREVIOUS":["Previous","Quay\nlại"],
+                "CLEAR":["Clear\nlogs","Xóa\nnhật kí"],
             }
         },
         "RIGHTBAR":{
@@ -483,9 +485,13 @@ QtObject {
                 "QUESTION":["Pilot check steering at Manual mode and FBWA mode",
                             "Phi công kiểm tra cánh liệng ở chế độ Manual và FBWA"],
             },
-            "SUCCESS":{
-                "MENU_TITTLE":["Preflight check success. Ready to take off.",
-                                "Kiểm tra trước bay thành công. Sẵn sàng cất cánh"]
+            "RESULT":{
+                "MENU_TITTLE":["Result","Kết quả"],
+                "TITTLE":["Preflight check finish",
+                                "Kiểm tra trước bay kết thúc"],
+                "PASSED":["Passed","Tốt"],
+                "FAILED":["Failed","Xấu"]
+
             },
         },
         "PARAMS":{

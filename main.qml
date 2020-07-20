@@ -145,6 +145,7 @@ ApplicationWindow {
 
         onVehicleTypeChanged: {
             mapPane.changeVehicleType(vehicle.vehicleType);
+            preflightCheck.changeVehicleType(vehicle.vehicleType);
         }
 
         onHomePositionChanged:{
@@ -1413,6 +1414,9 @@ ApplicationWindow {
         onPreflightCheckPrev: {
             preflightCheck.prev();
         }
+        onPreflightCheckClear:{
+            preflightCheck.reload();
+        }
 
         onDoPreflightItemCheck: {
             preflightCheck.doCheck();
@@ -1984,6 +1988,8 @@ ApplicationWindow {
             comTracker.connectLink();
             tracker.communication = comTracker;
             tracker.uav = vehicle;
+            joystick.mapFile = "conf/joystick.conf"
+            joystick.start();
             console.log("CAMERA_CONTROL = "+CAMERA_CONTROL)
             // --- Payload
             if(CAMERA_CONTROL){

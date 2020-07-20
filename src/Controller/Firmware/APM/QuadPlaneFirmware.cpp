@@ -63,11 +63,7 @@ bool QuadPlaneFirmware::flightModeID(QString flightMode,int* base_mode,int* cust
     for(int i=0; i< m_mapFlightMode.keys().length();i++){
         int tmpKey = m_mapFlightMode.keys().at(i);
         QString tmpMode = m_mapFlightMode.value(tmpKey);
-        printf("%s vs %s\r\n",
-               tmpMode.toStdString().c_str(),
-               flightMode.toStdString().c_str());
         if(tmpMode == flightMode){
-            printf("Key = %d\r\n",tmpKey);
             *custom_mode = tmpKey;
             *base_mode = 81;
             containFlightMode = true;

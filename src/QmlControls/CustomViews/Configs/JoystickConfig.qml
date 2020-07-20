@@ -462,7 +462,5 @@ Item {
 
     Component.onCompleted: {
         cbxListJoystick.model = joystick.task.getListJoystick();
-        joystick.mapFile = "conf/joystick.conf"
-        joystick.start();
     }
 } // SetupPage

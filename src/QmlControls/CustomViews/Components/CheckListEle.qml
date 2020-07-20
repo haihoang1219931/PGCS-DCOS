@@ -31,15 +31,15 @@ Item {
     property int eleId
     property string stateE: "uncheck"
     property alias icon: iconSide.text
-
+    property bool actived: false
     //--------- Signals
-    signal activeSide(real eleId_)
 
     //--------- Element children
     Rectangle {
         id: sideEleWrapper
         anchors.fill: parent
-        color: UIConstants.transparentColor
+        color: rootItem.actived ?
+                   UIConstants.sidebarActiveBg:UIConstants.transparentColor
         RowLayout {
             opacity: 0.8
             anchors.fill: parent
@@ -57,9 +57,11 @@ Item {
                 Text {
                     id: iconSide
                     visible: true
-                    text: (stateE === "uncheck") ? UIConstants.iInfo : ( (stateE === "pass") ? UIConstants.iChecked : UIConstants.iX )
+                    text: (stateE === "uncheck") ? UIConstants.iInfo : (
+                            (stateE === "passed") ? UIConstants.iChecked : UIConstants.iClose )
                     font { pixelSize: UIConstants.fontSize; bold: true;family: ExternalFontLoader.solidFont }
-                    color: textSide.color
+                    color: (stateE === "uncheck") ? UIConstants.textColor : (
+                            (stateE === "passed") ? UIConstants.greenColor : UIConstants.redColor )
                     anchors.centerIn: parent
                     RotationAnimation on rotation {
                         id: iconLoadingRotate
@@ -86,7 +88,8 @@ Item {
                     text: "Lưu trữ"
                     font {pixelSize: UIConstants.fontSize}
                     font.family: UIConstants.appFont
-                    color: UIConstants.textFooterColor
+                    color: rootItem.actived?
+                               UIConstants.textColor:UIConstants.textFooterColor
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -96,26 +99,5 @@ Item {
             thick: 1
             type: "bottom"
         }
-    }
-
-    //---- Js supported functions
-    function setActive()
-    {
-        sideEleWrapper.color = UIConstants.sidebarActiveBg;
-        textSide.color = UIConstants.textColor;
-    }
-
-    function setDeactive()
-    {
-        sideEleWrapper.color = UIConstants.transparentColor;
-        textSide.color = UIConstants.textFooterColor;
-    }
-
-    function doCheck()
-    {
-        stateE = "pass";
-//        iconSide.text = UIConstants.iSuccess
-//        iconSide.text = UIConstants.iLoading
-//        iconLoadingRotate.start();
     }
 }

@@ -41,6 +41,7 @@ Item {
     //-------------------- Signals
     signal preflightCheckNext()
     signal preflightCheckPrev()
+    signal preflightCheckClear()
     signal doPreflightItemCheck()
     signal doFlyAction(real actionIndex) //1: Auto, 2: Guided, 3: takeoff, 4: altitudeChange, 5: speedChange, 6: loiter radius
     signal doFlyExecuteAction(real actionIndex)
@@ -368,6 +369,16 @@ Item {
                         btnText: itemListName["PRECHECK"]["PREVIOUS"][UIConstants.language[UIConstants.languageID]]
                         onClicked: {
                             rootItem.preflightCheckPrev();
+                        }
+                    }
+                    FooterButton {
+                        id: btnClearLog
+                        Layout.preferredWidth: parent.height
+                        Layout.preferredHeight: parent.height
+                        icon: UIConstants.iClear
+                        btnText: itemListName["PRECHECK"]["CLEAR"][UIConstants.language[UIConstants.languageID]]
+                        onClicked: {
+                            rootItem.preflightCheckClear();
                         }
                     }
                 }
