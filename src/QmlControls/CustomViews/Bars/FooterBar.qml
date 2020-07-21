@@ -189,9 +189,7 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         btnText: itemListName["MISSION"]["DELETE_WP"][UIConstants.language[UIConstants.languageID]]
-                        isEnable: mapPane.selectedWP !== undefined
-//                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
-                                  && (mapPane.selectedWP.wpId>0)
+                        isEnable: mapPane.selectedIndex > 0
                                   && (UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint)
                         isSolid: false
                         icon: UIConstants.iDeleteWP
@@ -529,9 +527,9 @@ Item {
                                    ||
                                    (vehicle.vehicleType === 14 && !joystick.pic)
                                    ||
-                                   (vehicle.vehicleType === 1 && mapPane.selectedWP !== undefined ) )
+                                   (vehicle.vehicleType === 1 && mapPane.selectedIndex >= 0 ) )
                         onClicked: {
-                            if(mapPane.selectedWP !== undefined){
+                            if(mapPane.selectedIndex >= 0){
                                 rootItem.doGoWP();
                             }else{
                                 if(vehicle.vehicleType === 2 || vehicle.vehicleType === 14)
@@ -559,9 +557,7 @@ Item {
                         Layout.alignment: Qt.AlignTop
                         icon: UIConstants.iDeleteWP
                         btnText: itemListName["MISSION"]["DELETE_WP"][UIConstants.language[UIConstants.languageID]]
-                        isEnable: mapPane.selectedWP !== undefined
-//                                  && (mapPane.selectedWP.attributes.attributeValue("id") > 0)
-                                  && (mapPane.selectedWP.wpId>0)
+                        isEnable: mapPane.selectedIndex > 0
                                   && (UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint)
                         onClicked: {
                             rootItem.deleteWP();
@@ -620,7 +616,8 @@ Item {
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iDeparture
                         btnText: itemListName["MISSION"]["TAKE_OFF"][UIConstants.language[UIConstants.languageID]]
-                        isEnable: vehicle.link && !joystick.pic && vehicle.armed && vehicle.landed
+                        isEnable: vehicle.link && vehicle.armed &&
+                                  (joystick.useJoystick? !joystick.pic: true)
                         onClicked: {
                             rootItem.doFlyAction(3);
                         }

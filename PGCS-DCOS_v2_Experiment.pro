@@ -25,9 +25,9 @@ CONFIG += use_ucapi
 
 CONFIG += use_camera_control
 
-CONFIG += use_video_gpu
+#CONFIG += use_video_gpu
 
-#CONFIG += use_video_cpu
+CONFIG += use_video_cpu
 
 #CONFIG += use_line_detector
 
@@ -70,10 +70,7 @@ SOURCES += \
     src/Joystick/JoystickLib/JoystickTask.cpp \
     src/Joystick/JoystickLib/JoystickThreaded.cpp \
     src/Controller/Params/ParamsController.cpp \
-    src/Setting/pcs.cpp \
     src/Setting/tinyxml2.cpp \
-    src/Setting/fcs.cpp \
-    src/Setting/uc.cpp \
     src/Setting/config.cpp \
     src/Maplib/Marker/Marker.cpp \
     src/Maplib/Marker/MarkerList.cpp \
@@ -116,10 +113,7 @@ HEADERS += \
     src/Joystick/JoystickLib/JoystickTask.h \
     src/Joystick/JoystickLib/JoystickThreaded.h \
     src/Controller/Params/ParamsController.h \
-    src/Setting/pcs.h \
     src/Setting/tinyxml2.h \
-    src/Setting/fcs.h \
-    src/Setting/uc.h \
     src/Setting/config.h \
     src/Maplib/Marker/Marker.h \
     src/Maplib/Marker/MarkerList.h \

@@ -206,7 +206,7 @@
         <file alias="assets/images/land.png">src/QmlControls/CustomViews/assets/images/land.png</file>
         <file alias="assets/images/takeoff.png">src/QmlControls/CustomViews/assets/images/takeoff.png</file>
         <file alias="CustomViews/Components/ScrollWaypoint.qml">src/QmlControls/CustomViews/Components/ScrollWaypoint.qml</file>
-        <file alias="CustomViews/Components/Uav_ProfilePath.qml">src/QmlControls/CustomViews/Components/Uav_ProfilePath.qml</file>
+        <file alias="CustomViews/Components/UavProfilePath.qml">src/QmlControls/CustomViews/Components/UavProfilePath.qml</file>
     </qresource>
     <qresource prefix="/qmlimages">
         <file alias="markers/AntiClockwiseCircle.png">src/QmlControls/CustomViews/assets/images/markers/AntiClockwiseCircle.png</file>
@@ -252,8 +252,8 @@
         <file alias="uavIcons/MotorComponentIcon.svg">src/QmlControls/CustomViews/assets/uavIcons/MotorComponentIcon.svg</file>
         <file alias="uavIcons/OctoRotorPlus.svg">src/QmlControls/CustomViews/assets/uavIcons/OctoRotorPlus.svg</file>
         <file alias="uavIcons/OctoRotorPlusCoaxial.svg">src/QmlControls/CustomViews/assets/uavIcons/OctoRotorPlusCoaxial.svg</file>
-        <file alias="uavIcons/OctoRotorXCoaxial.svg">src/QmlControls/CustomViews/assets/uavIcons/OctoRotorX.svg</file>
-        <file alias="uavIcons/AirframeComponentIcon.svg">src/QmlControls/CustomViews/assets/uavIcons/OctoRotorXCoaxial.svg</file>
+        <file alias="uavIcons/OctoRotorXCoaxial.svg">src/QmlControls/CustomViews/assets/uavIcons/OctoRotorXCoaxial.svg</file>
+        <file alias="uavIcons/OctoRotorXCoaxial.png">src/QmlControls/CustomViews/assets/uavIcons/OctoRotorXCoaxial.png</file>
         <file alias="uavIcons/Plane.svg">src/QmlControls/CustomViews/assets/uavIcons/Plane.svg</file>
         <file alias="uavIcons/PlaneATail.svg">src/QmlControls/CustomViews/assets/uavIcons/PlaneATail.svg</file>
         <file alias="uavIcons/PlaneVTail.svg">src/QmlControls/CustomViews/assets/uavIcons/PlaneVTail.svg</file>

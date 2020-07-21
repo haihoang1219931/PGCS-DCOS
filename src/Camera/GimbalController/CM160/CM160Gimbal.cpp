@@ -43,10 +43,10 @@ void CM160Gimbal::connectToGimbal(Config* config){
         m_context->m_zoom[0] = 1;
     }
     if(config != nullptr){
-        _sendSocket->connectToHost(config->mapData["GIMBAL_CONTROL_IP"].toString(),
-                static_cast<quint16>(config->mapData["GIMBAL_CONTROL_IN"].toInt()));
+        _sendSocket->connectToHost(m_config->value("Settings:GimbalIP:Value:data").toString(),
+                static_cast<quint16>(m_config->value("Settings:GimbalPortIn:Value:data").toInt()));
         _receiveSocket->bind(QHostAddress::AnyIPv4,
-                             static_cast<quint16>(config->mapData["GIMBAL_CONTROL_REPLY"].toInt()));
+                static_cast<quint16>(m_config->value("Settings:GimbalPortOut:Value:data").toInt()));
     }else{
         _sendSocket->connectToHost("192.168.0.113",18001);
         _receiveSocket->bind(QHostAddress::AnyIPv4,18002);

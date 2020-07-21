@@ -581,6 +581,17 @@ QtObject {
             "COUNT":["Count","Số lượng"],
         },
         "DIALOG":{
+            "PROFILE_PATH":{
+                "TITTLE":["Profile Path", "Lát cắt độ cao"],
+                "DISTANCE":["Distance (m)", "Khoàng cách (m)"],
+                "ALTITUDE":["Altitude (m)", "Độ cao (m)"],
+            },
+            "UAV_PROFILE_PATH":{
+                "TITTLE":["UAV Profile Path", "Độ cao máy bay"],
+                "DISTANCE":["Distance (m)", "Khoàng cách (m)"],
+                "ALTITUDE":["Altitude (m)", "Độ cao (m)"],
+            },
+
             "WAYPOINT_EDITOR":{
                 "TITTLE":["Waypoint editor","Chỉnh sửa điểm"],
                 "LATITUDE":["Latitude","Vĩ độ"],

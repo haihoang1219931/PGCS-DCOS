@@ -43,6 +43,7 @@ Item {
     property int lineID: 0
     property int selectedIndex: -1
     property var selectedWP
+    property bool isGotoWP: true
     property var clickedLocation: QtPositioning.coordinate(0,0,0)
     property string vehicleType: "MAV_TYPE_GENERIC"
     property var lstWaypointCommand:{
@@ -550,7 +551,7 @@ Item {
     }
     property var vehicleSymbolLink: {
         "MAV_TYPE_QUADROTOR":"qrc:/qmlimages/uavIcons/QuadRotorX.png",
-        "MAV_TYPE_OCTOROTOR":"qrc:/qmlimages/uavIcons/QuadRotorX.png",
+        "MAV_TYPE_OCTOROTOR":"qrc:/qmlimages/uavIcons/OctoRotorXCoaxial.png",
         "MAV_TYPE_VTOL_QUADROTOR":"qrc:/qmlimages/uavIcons/VTOLPlane.png",
         "MAV_TYPE_FIXED_WING":"qrc:/qmlimages/uavIcons/Plane.png",
         "MAV_TYPE_GENERIC":"qrc:/qmlimages/uavIcons/Unknown.png"
@@ -558,6 +559,7 @@ Item {
     signal clicked(real lat,real lon,real alt)
     signal mapClicked(bool isMap)
     signal mapMoved()
+    signal totalWPsDistanceChanged(var val)
     signal homePositionChanged(real lat, real lon, real alt)
     signal showAdvancedConfigChanged()
     Computer{
@@ -573,29 +575,7 @@ Item {
     MarkerList{
         id: lstMarkersSave
     }
-    Rectangle{
-        id: rectProfilePath
-        z:200
-        width: UIConstants.sRect * 22
-        height: UIConstants.sRect * 9
-        anchors.centerIn: parent
-        visible: false
-        color: UIConstants.transparentBlue
-        radius: UIConstants.rectRadius
-        border.width: 1
-        border.color: UIConstants.grayColor
-        ProfilePath{
-            id: profilePath
-            title: "Profile Path"
-            xName: "Distance (m)"
-            yName: "Altitude (m)"
-            fontSize: UIConstants.fontSize
-            fontFamily: UIConstants.appFont
-            anchors.fill: parent
-            anchors.margins: 4
-            folderPath: cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder
-        }
-    }
+
     function showWPScroll(value){
 
     }
@@ -1677,6 +1657,19 @@ Item {
                         updateWPDoJump();
                     }else{
                         console.log("Line 1020");
+                        if(command === lstWaypointCommand[vehicleType]["LOITER"]["COMMAND"]){
+                            selectedWP.attributes.replaceAttribute("command_prev",
+                                                                    command);
+                            selectedWP.attributes.replaceAttribute("param3_prev",
+                                                                    param3);
+                            selectedWP.attributes.replaceAttribute("param1_prev",3600);
+                            selectedWP.attributes.replaceAttribute("param1",3600);
+                        }else if(command === lstWaypointCommand[vehicleType]["WAYPOINT"]["COMMAND"]){
+                            selectedWP.attributes.replaceAttribute("command_prev",
+                                                                    command);
+                            selectedWP.attributes.replaceAttribute("param1_prev",0);
+                            selectedWP.attributes.replaceAttribute("param1",0);
+                        }
                     }
                 }else{
                     console.log("Line 1023");
@@ -1698,6 +1691,19 @@ Item {
                                                  command,
                                                  param1,param2,param3,param4);
                 selectedWP.symbol = newWPSymbol;
+                if(command === lstWaypointCommand[vehicleType]["LOITER"]["COMMAND"]){
+                    selectedWP.attributes.replaceAttribute("command_prev",
+                                                            command);
+                    selectedWP.attributes.replaceAttribute("param3_prev",
+                                                            param3);
+                    selectedWP.attributes.replaceAttribute("param1_prev",3600);
+                    selectedWP.attributes.replaceAttribute("param1",3600);
+                }else if(command === lstWaypointCommand[vehicleType]["WAYPOINT"]["COMMAND"]){
+                    selectedWP.attributes.replaceAttribute("command_prev",
+                                                            command);
+                    selectedWP.attributes.replaceAttribute("param1_prev",0);
+                    selectedWP.attributes.replaceAttribute("param1",0);
+                }
             }
 
             selectedWP.symbol.symbols.get(0).color = lstColor["selected"];
@@ -1708,7 +1714,6 @@ Item {
             selectedWP.attributes.replaceAttribute("param2",param2);
             selectedWP.attributes.replaceAttribute("param3",param3);
             selectedWP.attributes.replaceAttribute("param4",param4);
-
         }
     }
     function changeClickedPosition(position,visible){
@@ -1910,10 +1915,6 @@ Item {
                               });
         var pointOnScreen = mapView.locationToScreen(point);
         return pointOnScreen;
-    }
-    function hideProfilePath()
-    {
-        rectProfilePath.visible = false;
     }
     function updateMouseOnMap(){
 

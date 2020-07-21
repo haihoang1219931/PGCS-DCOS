@@ -13,12 +13,12 @@ void MarkerList::insertMarker(QString lat,QString lon, QString type, QString des
     _marker->m_Longtitude = lon.toStdString();
     _marker->m_Description = description.toStdString();
     _marker->m_MarkerType = type.toStdString();
-    /*
+
     qDebug("insert (%s,%s):%s\r\n",
            lat.toStdString().c_str(),
            lat.toStdString().c_str(),
            type.toStdString().c_str());
-    */
+
     m_listmarker.push_back(_marker);
 }
 

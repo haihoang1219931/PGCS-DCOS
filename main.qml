@@ -13,6 +13,7 @@ import CustomViews.Pages        1.0
 import CustomViews.Configs      1.0
 import CustomViews.Advanced     1.0
 import CustomViews.Dialogs      1.0
+import CustomViews.SubComponents 1.0
 // Flight Controller & Payload Controller
 import io.qdt.dev               1.0
 import UC 1.0
@@ -236,7 +237,7 @@ ApplicationWindow {
         id: missionController
         vehicle: vehicle
         onCurrentIndexChanged: {
-            //            console.log("changeCurrentWP to "+sequence);
+            console.log("changeCurrentWP to "+sequence);
             mapPane.changeCurrentWP(sequence);
         }
     }
@@ -594,13 +595,10 @@ ApplicationWindow {
                 if(seq === 0){
                     UIConstants.monitorMode = UIConstants.monitorModeMission;
                     stkMainRect.currentIndex = 1;
-
-//                    mapPane.showUAVProfilePath(false);
                     mapPane.showWPScroll(true)
                 }else if(seq === 2){
                     UIConstants.monitorMode = UIConstants.monitorModeFlight;
                     stkMainRect.currentIndex = 1;
-//                    mapPane.showUAVProfilePath(true);
                     mapPane.showWPScroll(false)
                 }else {
                     stkMainRect.currentIndex = 0;
@@ -841,7 +839,8 @@ ApplicationWindow {
                 }
             }
 
-            MapPane{
+            MapPane_UAV
+            {
                 id: mapPane
                 width: rectMap.width
                 height: rectMap.height
@@ -864,16 +863,15 @@ ApplicationWindow {
                     }
                 }
                 function updateObjectsOnMap(){
-                    if(cameraController.videoEngine !== undefined){
-                        for (var id = 0; id < cameraController.videoEngine.listTrackObjectInfos.length; id++){
-                            var object = cameraController.videoEngine.listTrackObjectInfos[id];
+                    if(videoPane.player !== undefined){
+                        for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
+                            var object = videoPane.player.listTrackObjectInfos[id];
                             var pointMapOnScreen =
                                     mapPane.convertLocationToScreen(object.latitude,object.longitude);
                             objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
                         }
                     }
                 }
-
                 onMapClicked: {
                     footerBar.flightView = !isMap?"WP":"MAP";
                     if(!isMap)
@@ -901,13 +899,18 @@ ApplicationWindow {
                     updateUsersOnMap()
                     updateObjectsOnMap();
                 }
+
                 onHomePositionChanged: {
                     console.log("Home change to "+lat+","+lon);
                     vehicle.setHomeLocation(lat,lon);
-                    vehicle.setAltitudeRTL(alt);
                 }
                 onShowAdvancedConfigChanged: {
                     pageConfig.showAdvancedConfig(true);
+                }
+                onTotalWPsDistanceChanged: {
+                    if(vehicle){
+                        vehicle.setTotalWPDistance(val);
+                    }
                 }
 
                 Connections{
@@ -918,6 +921,7 @@ ApplicationWindow {
                         }
                     }
                 }
+
                 UserOnMap {
                     id: userOnMap
                     anchors.fill: parent
@@ -925,111 +929,10 @@ ApplicationWindow {
                 ObjectsOnMap{
                     id: objectsOnMap
                     anchors.fill: parent
-                    visible: camState.objectLocalization
-                    player: cameraController.videoEngine
+                    player: videoPane.player
+                    visible: camState.gcsTargetLocalization
                 }
             }
-
-//            MapPane_UAV
-//            {
-//                id: mapPane
-//                width: rectMap.width
-//                height: rectMap.height
-//                x: rectMap.x
-//                y: rectMap.y
-//                z: 1
-//                //                onSymbolMoving: {
-//                //                    waypointEditor.latitude = position.latitude
-//                //                    waypointEditor.longitude = position.longitude
-//                //                }
-//                //nhatdn1 comment
-//                function updateUsersOnMap(){
-//                    if(UC_API){
-//                        for (var id = 0; id < UCDataModel.listUsers.length; id++){
-//                            var user = UCDataModel.listUsers[id];
-//                            var pointMapOnScreen =
-//                                    mapPane.convertLocationToScreen(user.latitude,user.longitude);
-//                            console.log("updateUserOnMap["+id+"] from ["+user.latitude+","+user.longitude+"] to ["
-//                                        +pointMapOnScreen.x+","+pointMapOnScreen.y+"]" );
-//                            userOnMap.updateUCClientPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
-//                        }
-//                        userOnMap.updatePcdVideo(userOnMap.currentPcdId);
-//                    }else{
-//                        return;
-//                    }
-//                }
-//                function updateObjectsOnMap(){
-//                    if(videoPane.player !== undefined){
-//                        for (var id = 0; id < videoPane.player.listTrackObjectInfos.length; id++){
-//                            var object = videoPane.player.listTrackObjectInfos[id];
-//                            var pointMapOnScreen =
-//                                    mapPane.convertLocationToScreen(object.latitude,object.longitude);
-//                            objectsOnMap.updateObjectPosition(id,pointMapOnScreen.x,pointMapOnScreen.y);
-//                        }
-//                    }
-//                }
-//                onMapClicked: {
-//                    footerBar.flightView = !isMap?"WP":"MAP";
-//                    if(!isMap)
-//                    {
-//                        var listWaypoint = mapPane.getCurrentListWaypoint();
-//                        for(var i=0; i< listWaypoint.length; i++){
-//                            var missionItem = listWaypoint[i];
-//                            if( missionItem.sequence === selectedIndex){
-//                                footerBar.loiterSelected = (missionItem.command === 19);
-//                                break;
-//                            }else{
-
-//                            }
-//                        }
-//                    }else{
-//                        if(footerBar.addWPSelected){
-//                            mapPane.addWP(mapPane.lastWPIndex()+1);
-//                            // update mission items
-//                            var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
-//                            planController.writeMissionItems = listCurrentWaypoint;
-//                        }
-//                    }
-//                }
-//                //                onMapMoved: {
-//                //                    updateUsersOnMap()
-//                //                    updateObjectsOnMap();
-//                //                }
-
-//                onHomePositionChanged: {
-//                    console.log("Home change to "+lat+","+lon);
-//                    vehicle.setHomeLocation(lat,lon);
-//                    //vehicle.setAltitudeRTL(alt);
-//                }
-//                onShowAdvancedConfigChanged: {
-//                    pageConfig.showAdvancedConfig(true);
-//                }
-//                onTotalWPsDistanceChanged:{
-//                    if(vehicle){
-//                        vehicle.setTotalWPDistance(val);
-//                    }
-//                }
-
-//                Connections{
-//                    target: vehicle
-//                    onFlightModeChanged:{
-//                        if(vehicle.flightMode !== "Guided"){
-//                            mapPane.changeClickedPosition(mapPane.clickedLocation,false);
-//                        }
-//                    }
-//                }
-
-//                UserOnMap {
-//                    id: userOnMap
-//                    anchors.fill: parent
-//                }
-//                ObjectsOnMap{
-//                    id: objectsOnMap
-//                    anchors.fill: parent
-//                    player: videoPane.player
-//                    visible: camState.gcsTargetLocalization
-//                }
-//            }
 
             Rectangle{
                 id: rectMap
@@ -1193,6 +1096,43 @@ ApplicationWindow {
                     checked = !checked;
                 }
             }
+            Rectangle{
+                id: rectProfilePath
+                z: 10
+                width: UIConstants.sRect * 22
+                height: UIConstants.sRect * 9
+                anchors.centerIn: parent
+                visible: false
+                color: UIConstants.transparentBlue
+                radius: UIConstants.rectRadius
+                border.width: 1
+                border.color: UIConstants.grayColor
+                ProfilePath{
+                    id: profilePath
+                    title: mainWindow.itemListName["DIALOG"]["PROFILE_PATH"]["TITTLE"]
+                           [UIConstants.language[UIConstants.languageID]]
+                    xName: mainWindow.itemListName["DIALOG"]["PROFILE_PATH"]["DISTANCE"]
+                           [UIConstants.language[UIConstants.languageID]]
+                    yName: mainWindow.itemListName["DIALOG"]["PROFILE_PATH"]["ALTITUDE"]
+                           [UIConstants.language[UIConstants.languageID]]
+                    fontSize: UIConstants.fontSize
+                    fontFamily: UIConstants.appFont
+                    anchors.fill: parent
+                    anchors.margins: 4
+                    folderPath: computer.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapPane.mapHeightFolder
+                }
+            }
+            UavProfilePath{
+                id: uavProfilePath
+                z: 11
+                width: UIConstants.sRect * 12
+                height: UIConstants.sRect * 7.5
+                mapHeightFolder: mapPane.mapHeightFolder
+                anchors.top: parent.top
+                anchors.left: mapControl.right
+                anchors.leftMargin: 8
+                anchors.topMargin: UIConstants.sRect + 8
+            }
         }
         Item {
             id: rectSystem
@@ -1308,11 +1248,13 @@ ApplicationWindow {
                                                        });
                 fileDialogObj.fileSelected.connect(function (file){
                     mapPane.setMap(file);
+                    FCSConfig.changeData("MapDefault",file);
                 });
 
                 fileDialogObj.modeSelected.connect(function (mode){
                     if(mode === "ONLINE"){
                         mapPane.setMapOnline();
+                        FCSConfig.changeData("MapDefault","");
                     }
                 });
                 fileDialogObj.clicked.connect(function (type,func){
@@ -1508,11 +1450,7 @@ ApplicationWindow {
                                   "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
-                            //                            if(!vehicle.armed)
-                            //                                vehicle.setArmed(true);
-                            //                            vehicle.commandTakeoff(100);
                             vehicle.startMission();
-                            //                            navbar.startFlightTimer();
                         }else if(func === "DIALOG_CANCEL"){
 
                         }
@@ -1793,12 +1731,7 @@ ApplicationWindow {
             if(mapPane.selectedIndex >= 0){
                 mapPane.changeWPCommand(mapPane.lstWaypointCommand[mapPane.vehicleType]["LOITER"]["COMMAND"],
                                         3600,0,closeWise > 0 ? "1":"-1",0);
-                mapPane.selectedWP.attributes.replaceAttribute("command_prev",
-                                                               mapPane.selectedWP.attributes.attributeValue("command"));
-                mapPane.selectedWP.attributes.replaceAttribute("param3_prev",
-                                                               mapPane.selectedWP.attributes.attributeValue("param3"));
-                mapPane.selectedWP.attributes.replaceAttribute("param1_prev",3600);
-                mapPane.selectedWP.attributes.replaceAttribute("param1",3600);
+
                 // update mission items
                 var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
                 planController.writeMissionItems = listCurrentWaypoint;
@@ -1809,10 +1742,6 @@ ApplicationWindow {
             if(mapPane.selectedIndex >= 0){
                 mapPane.changeWPCommand(mapPane.lstWaypointCommand[mapPane.vehicleType]["WAYPOINT"]["COMMAND"],
                                         0,0,0,0);
-                mapPane.selectedWP.attributes.replaceAttribute("command_prev",
-                                                               mapPane.selectedWP.attributes.attributeValue("command"));
-                mapPane.selectedWP.attributes.replaceAttribute("param1_prev",0);
-                mapPane.selectedWP.attributes.replaceAttribute("param1",0);
                 // update mission items
                 var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
                 planController.writeMissionItems = listCurrentWaypoint;
@@ -1869,6 +1798,7 @@ ApplicationWindow {
         }
         onDoAddMarker:{
             mapPane.addMarker();
+
         }
         onDoDeleteMarker: {
             mapPane.removeMarker();
@@ -1978,6 +1908,9 @@ ApplicationWindow {
         repeat: false
         interval: 2000
         onTriggered: {
+            // --- Joystick
+            joystick.mapFile = "conf/joystick.conf"
+            joystick.start();
             // --- Flight
             comVehicle.loadConfig(FCSConfig);
             comVehicle.connectLink();
@@ -1988,8 +1921,7 @@ ApplicationWindow {
             comTracker.connectLink();
             tracker.communication = comTracker;
             tracker.uav = vehicle;
-            joystick.mapFile = "conf/joystick.conf"
-            joystick.start();
+
             console.log("CAMERA_CONTROL = "+CAMERA_CONTROL)
             // --- Payload
             if(CAMERA_CONTROL){

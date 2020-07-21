@@ -4,11 +4,12 @@
 #include "../../../Joystick/JoystickLib/JoystickThreaded.h"
 QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
 {
+    m_connectedSequence = 0;
     m_vehicle = vehicle;
     m_vehicle->joystick()->setUseJoystick(false);
     connect(m_vehicle->joystick(),&JoystickThreaded::joystickConnected,this,&QuadPlaneFirmware::handleJoystickConnected);
     connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&QuadPlaneFirmware::handleJSButton);
-    connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&QuadPlaneFirmware::handleUseJoystick);
+
     loadFromFile("conf/Properties.conf");
     m_rtlAltParamName = "ALT_HOLD_RTL";
     m_airSpeedParamName = "TRIM_ARSPD_CM";
@@ -181,7 +182,8 @@ void QuadPlaneFirmware::abortLanding(double climbOutAltitude){
 void QuadPlaneFirmware::startMission(){
     if (m_vehicle == nullptr)
         return;
-    m_vehicle->sendMavCommand(m_vehicle->defaultComponentId(), MAV_CMD_MISSION_START, true /*show error */);
+    commandTakeoff(0);
+//    m_vehicle->sendMavCommand(m_vehicle->defaultComponentId(), MAV_CMD_MISSION_START, true /*show error */);
 }
 
 void QuadPlaneFirmware::startEngine()
@@ -347,6 +349,7 @@ void QuadPlaneFirmware::handleJSButton(int id, bool clicked){
 
 }
 void QuadPlaneFirmware::handleUseJoystick(bool enable) {
+    printf("%s enable=%s\r\n",__func__,enable?"true":"false");
     if(enable){
         m_vehicle->setFlightMode("FBW B");
         connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
@@ -368,12 +371,19 @@ void QuadPlaneFirmware::handleJoystickConnected(bool connected){
         m_sendClearRCCount = 0;
         m_joystickClearRCTimer.start();
     }else{
+        if(m_connectedSequence == 0){
+            m_vehicle->joystick()->setUseJoystick(false);
+            connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&QuadPlaneFirmware::handleUseJoystick);
+        }
+        printf("current useJoystick %s\r\n",m_vehicle->joystick()->useJoystick()?"true":"false");
         if(m_vehicle->joystick()->useJoystick()){
             m_vehicle->setFlightMode("FBW B");
             connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
             m_joystickTimer.start();
         }
+        m_connectedSequence ++;
     }
+
 }
 float QuadPlaneFirmware::convertRC(float input, int channel){
     float result = 0;

@@ -39,9 +39,7 @@
 #include "src/Joystick/JoystickLib/JoystickThreaded.h"
 
 //--- Config
-#include "src/Setting/fcs.h"
-#include "src/Setting/uc.h"
-#include "src/Setting/pcs.h"
+#include "src/Setting/config.h"
 int main(int argc, char *argv[])
 {
 
@@ -62,7 +60,7 @@ int main(int argc, char *argv[])
 #endif
 #ifdef UC_API
     //--- UC Socket API
-    UCConfig ucConfig;
+    Config ucConfig;
     ucConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/uc.conf");
     AppSocketApi *appSocketApi = AppSocketApi::connectToServer(
                                      ucConfig.value("Settings:UCServerAddress:Value:data").toString(),
@@ -108,10 +106,10 @@ int main(int argc, char *argv[])
     qmlRegisterType<SymbolModel>("io.qdt.dev", 1, 0,    "SymbolModel");
 
 //    qmlRegisterType<MAV_TYPE>("io.qdt.dev", 1, 0, "MAV_TYPE", "MAV_TYPE");
-    FCSConfig fcsConfig;
+    Config fcsConfig;
     fcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/fcs.conf");
     engine.rootContext()->setContextProperty("FCSConfig", &fcsConfig);
-    FCSConfig trkConfig;
+    Config trkConfig;
     trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
     engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);
 #ifdef USE_VIDEO_CPU
@@ -131,7 +129,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("USE_VIDEO_GPU", QVariant(false));
 #endif
 #ifdef CAMERA_CONTROL
-    PCSConfig pcsConfig;
+    Config pcsConfig;
     pcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/pcs.conf");
     engine.rootContext()->setContextProperty("PCSConfig", &pcsConfig);
     qmlRegisterType<CameraController>("io.qdt.dev", 1, 0, "CameraController");

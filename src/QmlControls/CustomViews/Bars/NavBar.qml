@@ -334,7 +334,7 @@ Item {
                 else if(UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint)
                     UIConstants.mouseOnMapMode = UIConstants.mouseOnMapModeMeasure;
                 mapPane.updateMouseOnMap();
-                mapPane.hideProfilePath();
+                rectProfilePath.visible = false;
             }
         }
 

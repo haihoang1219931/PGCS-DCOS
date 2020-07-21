@@ -4,36 +4,15 @@ import QtPositioning 5.5
 import QtQuick.Window 2.0
 
 MapQuickItem {
-    id: gcs_Plane
-
-
-    readonly property int  widthPlane: 75
-    readonly property int  heighPlane: 75
-
-    readonly property string planeSource: "qrc:/assets/images/icons/drone.png"
-    property double heading: 0
-
-    anchorPoint.x: _rec_plane.width/2
-    anchorPoint.y: _rec_plane.height/2
-
-//    coordinate: position
-    sourceItem: Rectangle {
-        id: _rec_plane
-        width: widthPlane
-        height: heighPlane
-        radius: width/2
-
-        color: "transparent"
-
-        Image
-        {
-            id:_imagePlane
-            source: planeSource
-            width: widthPlane
-            height: heighPlane
-            transformOrigin: Item.Center
-            rotation: heading
-        }
+    id: gcsPlane
+    property string planeSource: "qrc:/qmlimages/uavIcons/Unknown.png"
+    rotation: 0
+    anchorPoint.x: imagePlane.width / 2
+    anchorPoint.y: imagePlane.height / 2
+    sourceItem: Image
+    {
+        id:imagePlane
+        source: planeSource
     }
 
 }

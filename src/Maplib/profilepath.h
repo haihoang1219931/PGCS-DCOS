@@ -35,24 +35,29 @@ public:
     void setColor(QColor value){
         if(_color != value){
             _color = value;
+            this->update();
             Q_EMIT colorChanged();
         }
     }
     void setTitle(QString value){
         if(_title != value){
             _title = value;
+            this->update();
             Q_EMIT titleChanged();
+
         }
     }
     void setXName(QString value){
         if(_xName != value){
             _xName = value;
+            this->update();
             Q_EMIT xNameChanged();
         }
     }
     void setYName(QString value){
         if(_yName != value){
             _yName = value;
+            this->update();
             Q_EMIT yNameChanged();
         }
     }
@@ -61,12 +66,14 @@ public:
             _fontSize = value;
             mAxisXoffset = _fontSize * 3;
             mAxisYoffset = _fontSize * 3;
+            this->update();
             Q_EMIT fontSizeChanged();
         }
     }
     void setFontFamily(QString value){
         if(_fontFamily != value){
             _fontFamily = value;
+            this->update();
             Q_EMIT fontFamilyChanged();
         }
     }

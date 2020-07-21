@@ -12,12 +12,10 @@ Item
 
     signal pinClicked()
 
-    //anchors.fill: rectProfilePath
     Rectangle{
         id: rectProfilePath
         z:200
-        width: UIConstants.sRect * 12
-        height: UIConstants.sRect * 5.5
+        anchors.fill: parent
         color: UIConstants.transparentBlue
         radius: UIConstants.rectRadius
         border.width: 1
@@ -69,7 +67,7 @@ Item
             title: ""
             xName: "(m)"
             yName: "(m)"
-            fontSize: UIConstants.miniFontSize
+            fontSize: UIConstants.fontSize
             fontFamily: UIConstants.appFont
             anchors.fill: parent
             anchors{leftMargin: -8;rightMargin: -15;topMargin: -42;bottomMargin: -15;}
@@ -169,7 +167,6 @@ Item
 
     //waypoint
     function setWpLineOfSight(coord1,coord2){ //absolute
-
         setLocation(coord1,coord2)
         console.log("setLocaaiton light of sight")
         //var altHome = vehicle.link ? (vehicle.altitudeAMSL - vehicle.altitudeRelative) : mapPane.virtualHomeAMSL

@@ -23,8 +23,8 @@ MapQuickItem {
     property int markerType: 0
     property string textMarker: "default"
 
-    readonly property int  widthsymbol: 50
-    readonly property int  heighsymbol: 50
+    property int wpBoundSize: UIConstants.sRect*2
+    property int wpFontSize: wpBoundSize / 2
 
     readonly property color waypoint_Color: "#02e6ed"
     readonly property color guidedpoint_Color: "#b87a33"
@@ -60,8 +60,8 @@ MapQuickItem {
     sourceItem: Rectangle {
         id: _rec_symbol
         opacity: 0.85
-        width: widthsymbol
-        height: heighsymbol
+        width: wpBoundSize
+        height: wpBoundSize
         radius: width/2
 
         color: "transparent"
@@ -197,10 +197,8 @@ MapQuickItem {
             text: qsTr(wpId.toString())
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment:  Text.AlignVCenter
-            font.family: "Arial"
-            font.weight: Font.Bold
-            font.bold: true
-            font.pointSize: 18
+            font.family: UIConstants.appFont
+            font.pixelSize: wpFontSize
             color: "white"
             visible: false
         }
@@ -209,7 +207,7 @@ MapQuickItem {
             id: _waypoint_text
             color: "transparent"
             anchors.horizontalCenter: _rec_symbol.horizontalCenter
-            y:52
+            y:wpBoundSize / 2 + wpFontSize
             width: childrenRect.width + 4
             height: childrenRect.height + 2
             visible: true
@@ -220,9 +218,8 @@ MapQuickItem {
                 text: isMarker? textMarker : (missionItemType === UIConstants.dojumpType? qsTr("→"+param1): qsTr(waypointAlt.toString() + "m"))
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment:  Text.AlignVCenter
-                font.weight: Font.Medium
-                font.family: "Arial"
-                font.pointSize: 13
+                font.family: UIConstants.appFont
+                font.pixelSize: wpFontSize
                 color: isMarker? "black" : "white"
             }
         }
@@ -230,8 +227,8 @@ MapQuickItem {
         Image
         {
             id:_imageTakeOfforLandorHome
-            width: widthsymbol
-            height: heighsymbol
+            width: wpBoundSize
+            height: wpBoundSize
             anchors.horizontalCenter: _rec_symbol.horizontalCenter
             anchors.verticalCenter: _rec_symbol.verticalCenter
             visible: false
@@ -248,8 +245,8 @@ MapQuickItem {
             x:-20
             y:-20
             color: "transparent"
-            width: widthsymbol+40
-            height: heighsymbol+40
+            width: wpBoundSize*3/2
+            height: wpBoundSize*3/2
             radius: width/2
 //            border.color: symbol_Selected_Color
             //opacity: 0.75

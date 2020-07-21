@@ -129,6 +129,8 @@ public Q_SLOTS:
     void handleJoystickConnected(bool connected);
 private:
     float convertRC(float input, int channel);
+private:
+    int m_connectedSequence = 0;
 };
 
 #endif // QUADPLANEFIRMWARE_H
