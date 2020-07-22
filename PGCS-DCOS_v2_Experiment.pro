@@ -27,7 +27,7 @@ CONFIG += use_camera_control
 
 CONFIG += use_video_gpu
 
-CONFIG += use_video_cpu
+#CONFIG += use_video_cpu
 
 #CONFIG += use_line_detector
 
