@@ -11,3 +11,7 @@
     ## Added klv metadata
     ## Added multilanguages
     ## Added profilepath drone
+# v1.0.3
+    ## Added configuration
+    ## Fixed error map uav on 6H
+
