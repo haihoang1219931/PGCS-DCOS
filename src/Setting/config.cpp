@@ -32,6 +32,7 @@ void Config::print(){
 int Config::readConfig(QString file){
     m_fileConfig = file;
     m_mapData.clear();
+    m_paramsModel.clear();
     if(m_doc.LoadFile(file.toStdString().c_str()) != tinyxml2::XML_SUCCESS){
         createFile(file);
         m_doc.LoadFile(file.toStdString().c_str());
@@ -53,13 +54,18 @@ int Config::readConfig(QString file){
             settingMap.insert("Attributes",attributesMap);
             settingMap.insert("Value",valueMap);
             settingsMap.insert(QString::fromUtf8(child->Attribute("Name")),settingMap);
+            m_paramsModel.append(new ConfigElement(
+                                    QString::fromUtf8(child->Attribute("Name")),
+                                    QString::fromUtf8(child->FirstChildElement("Value")->GetText())
+                                     )
+                                 );
         }
         m_mapData.insert("Settings",settingsMap);
     }else{
         printf("Failed to find element\r\n");
     }
     m_data = QVariant(m_mapData);
-    print();
+    Q_EMIT paramsModelChanged();
     return 0;
 }
 QVariant Config::getData(){
@@ -261,5 +267,29 @@ void Config::createFile(QString fileName){
                       "\t</Settings>\r\n"
                     "</SettingsFile>\r\n";
         FileController::addLine(fileName.toStdString(),text);
+    }else if(fileName.toLower().contains("app.conf")){
+        std::string text =
+                    "<?xml version='1.0' encoding='utf-8'?>\r\n"
+                    "<SettingsFile>\r\n"
+                      "\t<Settings>\r\n"
+                        "\t\t<Setting Name=\"Language\" Type=\"System.String\" Scope=\"User\">\r\n"
+                          "\t\t\t<Value Profile=\"(Default)\">EN</Value>\r\n"
+                        "\t\t</Setting>\r\n"
+                      "\t</Settings>\r\n"
+                    "</SettingsFile>\r\n";
+        FileController::addLine(fileName.toStdString(),text);
+    }
+}
+
+void Config::setPropertyValue(QString name,QString value){
+    if(name == ""){
+        return;
+    }
+    for(int i=0; i< m_paramsModel.size(); i++){
+        if(m_paramsModel[i]->name().toUpper() == name.toUpper()){
+            m_paramsModel[i]->setValue(value);
+            changeData(name,value);
+            break;
+        }
     }
 }

@@ -32,7 +32,7 @@ Rectangle {
     property bool active: true
     property int idx
     property int iconSize: UIConstants.fontSize * 3 / 2
-
+    property bool autoReturn: false
     //---------- Signals
     signal clicked(real idx)
 
@@ -124,10 +124,20 @@ Rectangle {
          anchors.fill: parent
          hoverEnabled: true
          enabled: true
-         onPressed: { flatBtn.state = "down"; active = true; flatBtn.clicked(idx); }
-         onReleased: { flatBtn.state = "normal"; }
-         onEntered: { if( !active ) { setActive() }; }
-         onExited: { if( !active ) { setInactive(); } }
+         onPressed: {
+             flatBtn.state = "down";
+             active = true;
+         }
+         onReleased: {
+             flatBtn.state = "normal";
+             flatBtn.clicked(idx);
+         }
+         onEntered: {
+             if( !active ) { setActive() };
+         }
+         onExited: {
+             if( !active ) { setInactive(); }
+         }
      }
 
     //----------- Js supported funcs

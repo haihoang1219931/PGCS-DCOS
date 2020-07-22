@@ -239,6 +239,10 @@ void JoystickThreaded::mapAxis(int axisID, QString mapFunc, bool inverted){
         if(m_axes.at(i)->id() == axisID){
             m_axes.at(i)->setMapFunc(mapFunc);
             m_axes.at(i)->setInverted(inverted);
+        }else{
+            if(mapFunc == m_axes.at(i)->mapFunc()){
+                m_axes.at(i)->setMapFunc("Unused");
+            }
         }
     }
 }
@@ -246,6 +250,11 @@ void JoystickThreaded::mapButton(int buttonID, QString mapFunc){
     for(int i=0;i<m_buttons.size(); i++){
         if(m_buttons.at(i)->id() == buttonID){
             m_buttons.at(i)->setMapFunc(mapFunc);
+        }else{
+            if(mapFunc.contains("PIC")&&
+                    m_buttons.at(i)->mapFunc().contains("PIC")){
+                m_buttons.at(i)->setMapFunc("Unused");
+            }
         }
     }
 }
@@ -254,7 +263,10 @@ void JoystickThreaded::mapAxisConfig(int axisID, QString mapFunc, bool inverted)
         if(m_axesTemp.at(i)->id() == axisID){
             m_axesTemp.at(i)->setMapFunc(mapFunc);
             m_axesTemp.at(i)->setInverted(inverted);
-            break;
+        }else{
+            if(mapFunc == m_axesTemp.at(i)->mapFunc()){
+                m_axesTemp.at(i)->setMapFunc("Unused");
+            }
         }
     }
 }
@@ -264,8 +276,12 @@ void JoystickThreaded::mapButtonConfig(int buttonID, QString mapFunc){
 //        printf("Button[%d] = %s\r\n",i,
 //               m_buttonsTemp.at(i)->mapFunc().toStdString().c_str());
         if(m_buttonsTemp.at(i)->id() == buttonID){
-            m_buttonsTemp.at(i)->setMapFunc(mapFunc);
-            break;
+            m_buttonsTemp.at(i)->setMapFunc(mapFunc);            
+        }else{
+            if(mapFunc.contains("PIC")&&
+                    m_buttonsTemp.at(i)->mapFunc().contains("PIC")){
+                m_buttonsTemp.at(i)->setMapFunc("Unused");
+            }
         }
     }
 }

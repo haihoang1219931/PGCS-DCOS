@@ -1952,6 +1952,8 @@ ApplicationWindow {
         UIConstants.changeTheme(UIConstants.themeNormal);
         if(FCSConfig.value("Settings:MapDefault:Value:data") !== "")
             mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));
+        if(ApplicationConfig.value("Settings:Language:Value:data") !== "")
+            UIConstants.languageID = ApplicationConfig.value("Settings:Language:Value:data");
         timerStart.start();
 
     }

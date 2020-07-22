@@ -154,7 +154,7 @@ Item {
                 Layout.preferredWidth: width
                 z: navbarWrapper.z + 1
                 iconVisible: true
-                icon: "\uf1de"
+                icon: UIConstants.iMission
                 color: active ? UIConstants.sidebarActiveBg : UIConstants.transparentColor
                 radius: 5
                 active: false
@@ -173,7 +173,7 @@ Item {
                 Layout.preferredWidth: width
                 z: navbarWrapper.z + 1
                 iconVisible: true
-                icon: "\uf274"
+                icon: UIConstants.iPrecheck
                 color: active ? UIConstants.sidebarActiveBg : UIConstants.transparentColor
                 radius: 5
                 active: false
@@ -192,7 +192,7 @@ Item {
                 Layout.preferredWidth: width
                 z: navbarWrapper.z + 1
                 iconVisible: true
-                icon: "\uf1d8"
+                icon: UIConstants.iFlight
                 color: active ? UIConstants.sidebarActiveBg : UIConstants.transparentColor
                 radius: 5
                 active: false

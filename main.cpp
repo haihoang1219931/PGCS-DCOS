@@ -51,17 +51,23 @@ int main(int argc, char *argv[])
     engine.addImportPath("qrc:/");
 
     //set antialiasing nhatdn1
-        QSurfaceFormat format;
-        format.setSamples(8);
-        QSurfaceFormat::setDefaultFormat(format);
+    QSurfaceFormat format;
+    format.setSamples(8);
+    QSurfaceFormat::setDefaultFormat(format);
 
 #ifdef UC_API
     QtWebEngine::initialize();
 #endif
 #ifdef UC_API
+
+    //--- Load app config    
+    qmlRegisterType<ConfigElement>("io.qdt.dev", 1, 0,"ConfigElement");
+    Config appConfig;
+    appConfig.readConfig("conf/app.conf");
+    engine.rootContext()->setContextProperty("ApplicationConfig", &appConfig);
     //--- UC Socket API
     Config ucConfig;
-    ucConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/uc.conf");
+    ucConfig.readConfig("conf/uc.conf");
     AppSocketApi *appSocketApi = AppSocketApi::connectToServer(
                                      ucConfig.value("Settings:UCServerAddress:Value:data").toString(),
                                      ucConfig.value("Settings:UCServerPort:Value:data").toInt(),
@@ -107,10 +113,10 @@ int main(int argc, char *argv[])
 
 //    qmlRegisterType<MAV_TYPE>("io.qdt.dev", 1, 0, "MAV_TYPE", "MAV_TYPE");
     Config fcsConfig;
-    fcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/fcs.conf");
+    fcsConfig.readConfig("conf/fcs.conf");
     engine.rootContext()->setContextProperty("FCSConfig", &fcsConfig);
     Config trkConfig;
-    trkConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/trk.conf");
+    trkConfig.readConfig("conf/trk.conf");
     engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);
 #ifdef USE_VIDEO_CPU
     //--- Camera controller
@@ -130,7 +136,7 @@ int main(int argc, char *argv[])
 #endif
 #ifdef CAMERA_CONTROL
     Config pcsConfig;
-    pcsConfig.readConfig(QGuiApplication::applicationDirPath() + "/conf/pcs.conf");
+    pcsConfig.readConfig("conf/pcs.conf");
     engine.rootContext()->setContextProperty("PCSConfig", &pcsConfig);
     qmlRegisterType<CameraController>("io.qdt.dev", 1, 0, "CameraController");
     qmlRegisterType<VideoRender>("io.qdt.dev", 1, 0, "VideoRender");

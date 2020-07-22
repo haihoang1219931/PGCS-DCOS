@@ -16,6 +16,11 @@ COMPUTER_INFO::COMPUTER_INFO(QObject *parent)
     connect(m_timer,&QTimer::timeout, this, &COMPUTER_INFO::checkSystemMem);
     m_timer->start();
     m_usbWatcher = new QFileSystemWatcher(this);
+
+    m_timerCommand = new QTimer();
+    m_timerCommand->setInterval(100);
+    m_timerCommand->setSingleShot(true);
+    connect(m_timerCommand,&QTimer::timeout,this,&COMPUTER_INFO::openNautilus);
     std::string path;
 #ifdef __linux__
     //linux code goes here
@@ -97,15 +102,14 @@ QString COMPUTER_INFO::homeFolder(){
 }
 
 void COMPUTER_INFO::calibrateJoystick(){
-    QString cmd = "jstest-gtk";
-    QProcess process;
-    process.startDetached(cmd);
+    m_command = "jstest-gtk";
+    m_timerCommand->start();
 }
 
 void COMPUTER_INFO::setSystemTime(){
-    QString cmd = "time-admin";
+    m_command = "time-admin";
     QProcess process;
-    process.startDetached(cmd);
+    m_timerCommand->start();
 }
 
 void COMPUTER_INFO::restartApplication(){
@@ -128,9 +132,14 @@ void COMPUTER_INFO::shutdownComputer(){
     system("echo 1 | sudo -S shutdown -P now");
 }
 void COMPUTER_INFO::openFolder(QString folder){
-    QString cmd = QString("nautilus ") + folder;
+    printf("%s\r\n",__func__);
+    m_command = QString("nautilus ") + folder;
+    m_timerCommand->start();
+}
+void COMPUTER_INFO::openNautilus(){
+    printf("%s\r\n",__func__);
     QProcess process;
-    process.startDetached(cmd);
+    process.startDetached(m_command);
 }
 void COMPUTER_INFO::handleUsbDetected(QString mediaFolder){
     printf("Detect new USB at : %s\r\n",mediaFolder.toStdString().c_str());

@@ -6,7 +6,11 @@ QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
 {
     m_connectedSequence = 0;
     m_vehicle = vehicle;
-    m_vehicle->joystick()->setUseJoystick(false);
+    if(m_vehicle->joystick()->connected()){
+        m_vehicle->joystick()->setUseJoystick(false);
+        connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&QuadPlaneFirmware::handleUseJoystick);
+        m_connectedSequence = 1;
+    }
     connect(m_vehicle->joystick(),&JoystickThreaded::joystickConnected,this,&QuadPlaneFirmware::handleJoystickConnected);
     connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&QuadPlaneFirmware::handleJSButton);
 
@@ -364,6 +368,7 @@ void QuadPlaneFirmware::handleUseJoystick(bool enable) {
 }
 
 void QuadPlaneFirmware::handleJoystickConnected(bool connected){
+    printf("%s %s\r\n",__func__,connected?"true":"false");
     if(!connected){
         m_vehicle->setFlightMode("Auto");
         disconnect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);

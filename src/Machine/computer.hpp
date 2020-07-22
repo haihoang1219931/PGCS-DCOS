@@ -53,10 +53,13 @@ Q_SIGNALS:
 public Q_SLOTS:
     void handleUsbDetected(QString mediaFolder);
     void checkSystemMem();
+    void openNautilus();
 public:
+    QString m_command;
     QFileSystemWatcher* m_usbWatcher;
     QStringList m_listUSB;
     QTimer* m_timer;
+    QTimer* m_timerCommand;
     int m_ramTotal = -1;
     int m_ramUsed = -1;
 };

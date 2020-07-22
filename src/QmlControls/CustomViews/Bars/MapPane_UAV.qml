@@ -89,6 +89,8 @@ Flickable {
 
     property string vehicleType: "MAV_TYPE_GENERIC"
 
+    property bool mousePressed: false
+
     property var lstWaypointCommand:{
         "MAV_TYPE_GENERIC":{
             "WAYPOINT":{
@@ -831,6 +833,8 @@ Flickable {
 
                 anchors.fill: parent
                 onPressed:{
+                    if(!rootItem.mousePressed)
+                        rootItem.mousePressed = true;
                     var precoordinate = map.toCoordinate(Qt.point(mouse.x,mouse.y))
                     mouse_position_changed = false
                     old_point_x = mouse.x

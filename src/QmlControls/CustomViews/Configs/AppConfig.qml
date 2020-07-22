@@ -78,7 +78,50 @@ Rectangle {
                     }else if(cbxListLanguage.currentIndex === 1){
                         UIConstants.languageID = "VI";
                     }
+                    ApplicationConfig.changeData("Language",UIConstants.languageID);
                 }
+            }
+        }
+        FlatButton {
+            id: btnMissionFolder
+            btnText: itemListName["MISSION_FOLDER"][UIConstants.language[UIConstants.languageID]]
+            btnTextColor: UIConstants.textFooterColor
+            height: UIConstants.sRect * 2
+            width: UIConstants.sRect * 5
+            iconVisible: true
+            icon: UIConstants.iOpenFolder
+            color: UIConstants.sidebarActiveBg
+            radius: UIConstants.rectRadius
+            onClicked: {
+                computer.openFolder("missions")
+            }
+        }
+        FlatButton {
+            id: btnLogFolder
+            btnText: itemListName["LOGS_FOLDER"][UIConstants.language[UIConstants.languageID]]
+            btnTextColor: UIConstants.textFooterColor
+            height: UIConstants.sRect * 2
+            width: UIConstants.sRect * 5
+            iconVisible: true
+            icon: UIConstants.iOpenFolder
+            color: UIConstants.sidebarActiveBg
+            radius: UIConstants.rectRadius
+            onClicked: {
+                computer.openFolder("logs")
+            }
+        }
+        FlatButton {
+            id: btnVideoFolder
+            btnText: itemListName["VIDEO_FOLDER"][UIConstants.language[UIConstants.languageID]]
+            btnTextColor: UIConstants.textFooterColor
+            height: UIConstants.sRect * 2
+            width: UIConstants.sRect * 5
+            iconVisible: true
+            icon: UIConstants.iOpenFolder
+            color: UIConstants.sidebarActiveBg
+            radius: UIConstants.rectRadius
+            onClicked: {
+                computer.openFolder("flights")
             }
         }
     }

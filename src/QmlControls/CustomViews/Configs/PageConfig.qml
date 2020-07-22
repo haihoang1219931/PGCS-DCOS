@@ -28,13 +28,10 @@ Rectangle {
         UIConstants.itemTextMultilanguages["CONFIGURATION"]
     signal clicked(string type, string func)
     function showAdvancedConfig(enable){
-//        console.log("modelConfig.get(2).visible_ = "+modelConfig.get(2).visible_);
-//        console.log("modelConfig.get(3).visible_ = "+modelConfig.get(3).visible_);
-        modelConfig.get(2).visible_ = enable;
-        modelConfig.get(3).visible_ = enable;
+        for(var i= 2; i< modelConfig.count ; i++){
+            modelConfig.get(i).visible_ = enable;
+        }
 
-//        modelConfig.setData(2,"visible_",enable);
-//        modelConfig.setData(3,"visible_",enable);
         if(!enable && lstItem.currentIndex > 1){
             lstItem.currentIndex = 0;
         }
@@ -75,6 +72,8 @@ Rectangle {
                            [UIConstants.language[UIConstants.languageID]], icon_: "\uf03c", visible_: false});
                 modelConfig.append({btnText_: itemListName["JOYSTICK"]["SIDEBAR"]
                            [UIConstants.language[UIConstants.languageID]], icon_: "\uf11b", visible_: false});
+                modelConfig.append({btnText_: itemListName["CONNECTION"]["SIDEBAR"]
+                           [UIConstants.language[UIConstants.languageID]], icon_: "\uf0c1", visible_: false});
             }
         }
 
@@ -82,16 +81,6 @@ Rectangle {
             id: listConfig
             model: ListModel{
                 id: modelConfig
-                Component.onCompleted: {
-                    append({btnText_: itemListName["APPLICATION"]["SIDEBAR"]
-                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf109", visible_: true});
-                    append({btnText_: itemListName["SCREEN"]["SIDEBAR"]
-                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf2d2", visible_: true});
-                    append({btnText_: itemListName["PARAMETERS"]["SIDEBAR"]
-                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf03c", visible_: false});
-                    append({btnText_: itemListName["JOYSTICK"]["SIDEBAR"]
-                               [UIConstants.language[UIConstants.languageID]], icon_: "\uf11b", visible_: false});
-                }
             }
             delegate: Item {
                 width: lstItem.width
@@ -228,6 +217,25 @@ Rectangle {
                 anchors.bottom: parent.bottom
             }
         }
+        Item{
+            CustomViews.SidebarTitle {
+                id: sdbConnection
+                height: UIConstants.sRect * 2
+                anchors.left: parent.left
+                anchors.right: parent.right
+                title: itemListName["CONNECTION"]["TITTLE"]
+                       [UIConstants.language[UIConstants.languageID]]
+                iconType: "\uf197"
+                xPosition: 20
+            }
+            ConnectionConfig{
+                id: cfgConnection
+                anchors.top: sdbConnection.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+            }
+        }
 
     }
     Rectangle{
@@ -245,6 +253,19 @@ Rectangle {
         color: UIConstants.transparentColor
         border.width: 1
         border.color: UIConstants.grayColor
+    }
+    Component.onCompleted: {
+        modelConfig.clear();
+        modelConfig.append({btnText_: itemListName["APPLICATION"]["SIDEBAR"]
+                   [UIConstants.language[UIConstants.languageID]], icon_: "\uf109", visible_: true});
+        modelConfig.append({btnText_: itemListName["SCREEN"]["SIDEBAR"]
+                   [UIConstants.language[UIConstants.languageID]], icon_: "\uf2d2", visible_: true});
+        modelConfig.append({btnText_: itemListName["PARAMETERS"]["SIDEBAR"]
+                   [UIConstants.language[UIConstants.languageID]], icon_: "\uf03c", visible_: false});
+        modelConfig.append({btnText_: itemListName["JOYSTICK"]["SIDEBAR"]
+                   [UIConstants.language[UIConstants.languageID]], icon_: "\uf11b", visible_: false});
+        modelConfig.append({btnText_: itemListName["CONNECTION"]["SIDEBAR"]
+                   [UIConstants.language[UIConstants.languageID]], icon_: "\uf0c1", visible_: false});
     }
 } // ConfigPage
 

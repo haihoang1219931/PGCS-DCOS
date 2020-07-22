@@ -209,8 +209,9 @@ public:
         Q_EMIT picChanged();
     }
     bool useJoystick(){return m_useJoystick;}
-    void setUseJoystick(bool enable){
+    void setUseJoystick(bool enable){        
         m_useJoystick = enable;
+        printf("%s = %s\r\n",__func__,m_useJoystick?"true":"false");
         Q_EMIT useJoystickChanged(m_useJoystick);
     }
     int axisPan(){ return m_axisPan; }

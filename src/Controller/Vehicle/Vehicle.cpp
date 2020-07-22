@@ -415,6 +415,7 @@ void Vehicle::_setPropertyValue(QString name,QString value,QString unit){
         fact->setSelected(false);
         fact->setName(name);
         fact->setUnit(unit);
+        fact->setValue(value);
         _propertiesModel.append(fact);
         Q_EMIT propertiesModelChanged();
     }else{

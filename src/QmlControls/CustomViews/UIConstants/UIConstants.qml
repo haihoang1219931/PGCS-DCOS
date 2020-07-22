@@ -72,6 +72,9 @@ QtObject {
     readonly property string iError:                "\uf06a"
 
     //------------------- Nav / Categrory Icons --------------------
+    readonly property string iMission:              "\uf5a0"
+    readonly property string iPrecheck:             "\uf274"
+    readonly property string iFlight:               "\uf1d8"
     readonly property string iHomepage:             "\uf015"
     readonly property string iLiveView:             "\uf03d"
     readonly property string iPlayback:             "\uf144"
@@ -517,7 +520,10 @@ QtObject {
                 "QUIT_APP":["Quit application","Thoát ứng dụng"],
                 "SHUTDOWN_COM":["Shutdown computer","Tắt thiết bị"],
                 "LANGUAGE":["Language selection","Lựa chọn ngôn ngữ"],
-                "SELECT":["Select","Lựa chọn"]
+                "SELECT":["Select","Lựa chọn"],
+                "MISSION_FOLDER":["Mission","Nhiệm vụ"],
+                "LOGS_FOLDER":["Logs","Nhật kí"],
+                "VIDEO_FOLDER":["Video","Hình ảnh"],
             },
             "SCREEN":{
                 "TITTLE":["Screen Monitor Information","Thông tin màn hình"],
@@ -544,6 +550,11 @@ QtObject {
                 "AXES_MONITOR":["Axes monitor","Giám sát cần trục"],
                 "BUTTONS_MONITOR":["Buttons monitor","Giám sát nút bấm"],
                 "INVERT":["Invert","Đảo ngược"],
+            },
+            "CONNECTION":{
+                "TITTLE":["Connection List","Danh sách tham số kết nối"],
+                "SIDEBAR":["Connection","Kết nối"],
+                "SELECT":["Select","Lựa chọn"],
             },
         },
         "VIDEO":{
