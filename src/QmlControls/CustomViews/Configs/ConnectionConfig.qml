@@ -120,7 +120,6 @@ Rectangle {
                 anchors.topMargin: 2
                 anchors.rightMargin: 2
                 anchors.left: lblName.right
-//                anchors.right: lblUnit.left
                 width: UIConstants.sRect*7
                 anchors.bottom: parent.bottom
                 anchors.top: parent.top
@@ -136,6 +135,7 @@ Rectangle {
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
+                    clip: true
                 }
             }
 
