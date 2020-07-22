@@ -49,7 +49,11 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("qdt");
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");
-
+    //--- Load app config
+    qmlRegisterType<ConfigElement>("io.qdt.dev", 1, 0,"ConfigElement");
+    Config appConfig;
+    appConfig.readConfig("conf/app.conf");
+    engine.rootContext()->setContextProperty("ApplicationConfig", &appConfig);
     //set antialiasing nhatdn1
     QSurfaceFormat format;
     format.setSamples(8);
@@ -60,11 +64,6 @@ int main(int argc, char *argv[])
 #endif
 #ifdef UC_API
 
-    //--- Load app config    
-    qmlRegisterType<ConfigElement>("io.qdt.dev", 1, 0,"ConfigElement");
-    Config appConfig;
-    appConfig.readConfig("conf/app.conf");
-    engine.rootContext()->setContextProperty("ApplicationConfig", &appConfig);
     //--- UC Socket API
     Config ucConfig;
     ucConfig.readConfig("conf/uc.conf");

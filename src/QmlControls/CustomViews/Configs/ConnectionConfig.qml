@@ -171,10 +171,14 @@ Rectangle {
     }
     Component.onCompleted: {
         if(CAMERA_CONTROL){
-            cbxListConfig.model = ["Flight","Tracker","Camera"];
-        }else{
             if(UC_API){
                 cbxListConfig.model = ["Flight","Tracker","Camera","UC"];
+            }else{
+                cbxListConfig.model = ["Flight","Tracker","Camera"];
+            }
+        }else{
+            if(UC_API){
+                cbxListConfig.model = ["Flight","Tracker","UC"];
             }else{
                 cbxListConfig.model = ["Flight","Tracker"];
             }
