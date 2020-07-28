@@ -46,7 +46,6 @@ public:
     Q_INVOKABLE int fileSize(QString fileName);
     Q_INVOKABLE void fileCopy(QString fileSrc,QString fileDst);
     Q_INVOKABLE void fileDelete(QString fileName);
-
 Q_SIGNALS:
     void usbAdded(QStringList mediaFolder);
     void usbRemoved(QStringList mediaFolder);

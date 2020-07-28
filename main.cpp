@@ -40,6 +40,9 @@
 
 //--- Config
 #include "src/Setting/config.h"
+
+// --- Network
+#include "Network/NetworkManager.h"
 int main(int argc, char *argv[])
 {
 
@@ -148,7 +151,10 @@ int main(int argc, char *argv[])
     qmlRegisterType<PlateLog>("io.qdt.dev", 1, 0, "PlateLog");
     //--- Joystick
     JoystickThreaded::expose();
+    //--- Network
+    NetworkManager::expose();
     //--- Other things
+
     engine.rootContext()->setContextProperty("applicationDirPath", QGuiApplication::applicationDirPath());
     engine.addImportPath("qrc:/");
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

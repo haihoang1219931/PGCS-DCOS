@@ -5,5 +5,6 @@ PageConfig                      1.0 PageConfig.qml
 JoystickConfig                  1.0 JoystickConfig.qml
 ThemeConfig                     1.0 ThemeConfig.qml
 ParamsConfig                    1.0 ParamsConfig.qml
-AppConfig			            1.0 AppConfig.qml
+AppConfig                       1.0 AppConfig.qml
 ConnectionConfig                1.0 ConnectionConfig.qml
+NetworkConfig                   1.0 NetworkConfig.qml

@@ -492,7 +492,7 @@ void Tracker::AffineTransform(const cv::Mat &input_image, const cv::Mat &input_i
     output_pts[2] = cv::Point2f(cols*pts2_c, rows*pts2_r);
 
     affine_tr = getAffineTransform(input_pts, output_pts);        //Get transformation matrix
-
+    std::cout << "affine_tr: " << affine_tr << std::endl;
     warpAffine(input_image, aff_img, affine_tr, aff_img.size());  //Apply transformation matrix
     warpAffine(input_image2, aff_img2, affine_tr, aff_img2.size());
 }

@@ -242,6 +242,7 @@ QtObject {
     readonly property string iPowerOff:             "\uf011"
     readonly property string iClose:                "\uf00d"
     readonly property string iGamepad:              "\uf11b"
+    readonly property string iRefresh:              "\uf2f1"
     //------- Marker
     readonly property string iMouse:                "\uf00d"
     readonly property string iAddMarker:            "\uf0fe"
@@ -555,6 +556,13 @@ QtObject {
                 "TITTLE":["Connection List","Danh sách tham số kết nối"],
                 "SIDEBAR":["Connection","Kết nối"],
                 "SELECT":["Select","Lựa chọn"],
+            },
+            "NETWORK":{
+                "TITTLE":["Network Connection","Thông số kết nối mạng"],
+                "SIDEBAR":["Network","Mạng"],
+                "REFRESH":["Refresh","Tải lại"],
+                "INTERFACES":["Interface","Thiết bị"],
+                "CONNECTIONS":["Connections","Các kết nối"],
             },
         },
         "VIDEO":{

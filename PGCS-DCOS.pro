@@ -1,5 +1,6 @@
 QT += qml quick multimedia network positioning sensors core gui serialport charts widgets
 QT += webengine
+QT += dbus
 CONFIG += c++11 no_keywords console
 
 RESOURCES += qml.qrc
@@ -36,7 +37,9 @@ QML_IMPORT_PATH += \
     $$PWD/src/QmlControls \
     $$PWD/src/Controller
 SOURCES += \
-    main.cpp
+    main.cpp \
+    src/Network/NetworkInfo.cpp \
+    src/Network/NetworkManager.cpp
 INCLUDEPATH += $$PWD/src
 # Flight controller
 use_flight_control{
@@ -808,4 +811,8 @@ SOURCES += \
 HEADERS += \
     src/Controller/Telemetry/TelemetryController.h
 }
+
+HEADERS += \
+    src/Network/NetworkInfo.h \
+    src/Network/NetworkManager.h
 

@@ -73,6 +73,8 @@ Rectangle {
                 modelConfig.append({btnText_: itemListName["JOYSTICK"]["SIDEBAR"]
                            [UIConstants.language[UIConstants.languageID]], icon_: "\uf11b", visible_: false});
                 modelConfig.append({btnText_: itemListName["CONNECTION"]["SIDEBAR"]
+                           [UIConstants.language[UIConstants.languageID]], icon_: "\uf0ad", visible_: false});
+                modelConfig.append({btnText_: itemListName["NETWORK"]["SIDEBAR"]
                            [UIConstants.language[UIConstants.languageID]], icon_: "\uf0c1", visible_: false});
             }
         }
@@ -236,6 +238,25 @@ Rectangle {
                 anchors.bottom: parent.bottom
             }
         }
+        Item{
+            CustomViews.SidebarTitle {
+                id: sdbNetwork
+                height: UIConstants.sRect * 2
+                anchors.left: parent.left
+                anchors.right: parent.right
+                title: itemListName["NETWORK"]["TITTLE"]
+                       [UIConstants.language[UIConstants.languageID]]
+                iconType: "\uf197"
+                xPosition: 20
+            }
+            NetworkConfig{
+                id: cfgNetwork
+                anchors.top: sdbNetwork.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+            }
+        }
 
     }
     Rectangle{
@@ -265,6 +286,8 @@ Rectangle {
         modelConfig.append({btnText_: itemListName["JOYSTICK"]["SIDEBAR"]
                    [UIConstants.language[UIConstants.languageID]], icon_: "\uf11b", visible_: false});
         modelConfig.append({btnText_: itemListName["CONNECTION"]["SIDEBAR"]
+                   [UIConstants.language[UIConstants.languageID]], icon_: "\uf0ad", visible_: false});
+        modelConfig.append({btnText_: itemListName["NETWORK"]["SIDEBAR"]
                    [UIConstants.language[UIConstants.languageID]], icon_: "\uf0c1", visible_: false});
     }
 } // ConfigPage
