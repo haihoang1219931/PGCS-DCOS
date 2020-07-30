@@ -15,34 +15,54 @@
 #include <QtDBus/QDBusReply>
 #include <QtCore/QDebug>
 #include "NetworkInfo.h"
-class NetworkManager : public QObject
-{
+class NetworkInterface: public NetworkInfo{
     Q_OBJECT
-    Q_PROPERTY(QQmlListProperty<NetworkInfo> listNetwork READ listNetwork NOTIFY listNetworkChanged)
-    Q_PROPERTY(QQmlListProperty<NetworkInfo> listInterface READ listInterface NOTIFY listInterfaceChanged)
+    Q_PROPERTY(QQmlListProperty<NetworkInfo> listNetwork READ listNetwork NOTIFY listNetworkChanged)    
 public:
-    explicit NetworkManager(QObject *parent = nullptr);
+    explicit NetworkInterface(QObject *parent = nullptr){}
     QQmlListProperty<NetworkInfo> listNetwork()
     {
         return QQmlListProperty<NetworkInfo>(this, m_listNetwork);
     }
-    QQmlListProperty<NetworkInfo> listInterface()
+    QList<NetworkInfo *> getListNetwork(){
+        return m_listNetwork;
+    }
+    void append(NetworkInfo* net){
+        m_listNetwork.append(net);
+        Q_EMIT listNetworkChanged();
+    }
+
+Q_SIGNALS:
+    void listNetworkChanged();    
+private:
+    QList<NetworkInfo *> m_listNetwork;
+};
+
+class NetworkManager : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(QQmlListProperty<NetworkInterface> listInterface READ listInterface NOTIFY listInterfaceChanged)
+public:
+    explicit NetworkManager(QObject *parent = nullptr);
+    QQmlListProperty<NetworkInterface> listInterface()
     {
-        return QQmlListProperty<NetworkInfo>(this, m_listInterface);
+        return QQmlListProperty<NetworkInterface>(this, m_listInterface);
     }
     Q_INVOKABLE void reload();
     static void expose();
+    void setPass(QString pass){
+        m_pass = pass;
+    }
 public:
     Q_INVOKABLE void connectNetwork(QString name,bool connect);
 Q_SIGNALS:
-    void listNetworkChanged();
     void listInterfaceChanged();
 public Q_SLOTS:
 private:
     QNetworkConfigurationManager m_mgr;
     QNetworkSession* m_session = nullptr;
-    QList<NetworkInfo *> m_listNetwork;
-    QList<NetworkInfo *> m_listInterface;
+    QList<NetworkInterface *> m_listInterface;
+    QString m_pass = "1";
 };
 
 #endif // NETWORKMANAGER_H

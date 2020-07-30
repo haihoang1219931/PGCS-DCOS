@@ -216,6 +216,7 @@ Item {
             width: parent.height
             iconSize: UIConstants.sRect*3/2
             z: navbarWrapper.z + 1
+            visible: vehicle.vehicleType === 1
             showIndicator: dialogShow === "DIALOG_ENGINE"
             onClicked: {
                 if(dialogShow !== "DIALOG_ENGINE"){

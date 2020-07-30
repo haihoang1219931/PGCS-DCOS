@@ -37,91 +37,103 @@ Rectangle {
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 8
         spacing: 5
         Row{
+            id: rowRefresh
+            spacing: 5
             FlatButtonIcon{
                 icon: UIConstants.iRefresh
-                width: UIConstants.sRect * 2
-                height: UIConstants.sRect * 2
+                width: UIConstants.sRect * 1.5
+                height: UIConstants.sRect * 1.5
                 isAutoReturn: true
                 isSolid: true
                 onClicked: {
                     networkManager.reload();
                 }
             }
-        }
-        QLabel{
-            width: UIConstants.sRect * 5
-            height: UIConstants.sRect * 1.5
-            text: itemListName["INTERFACES"]
-                  [UIConstants.language[UIConstants.languageID]]
+            QLabel{
+                id: lblInterface
+                width: UIConstants.sRect * 5
+                height: UIConstants.sRect * 1.5
+                text: itemListName["INTERFACES"]
+                      [UIConstants.language[UIConstants.languageID]]
+            }
         }
 
         ListView{
             id: lstInterfaceIP
             anchors.left: parent.left
             anchors.leftMargin: 10
-            width: UIConstants.sRect * 13
-            height: model.length * (UIConstants.sRect + spacing)
+            width: UIConstants.sRect * 15 + 4 * 5
+            height: parent.height-rowRefresh.height - 5
             spacing: 5
             model: networkManager.listInterface
             clip: true
-            delegate: Row{
-                height: UIConstants.sRect
+            delegate: Column{
+                height: rowInterface.height + lstConnections.height
                 spacing: 5
-                QLabel{
-                    width: UIConstants.sRect * 5
-                    height: parent.height
-                    text: name
-                }
-                Label{
-                    width: 5
-                    height: parent.height
-                    text:":"
-                    color: UIConstants.textColor
-                }
-                QLabel{
-                    width: UIConstants.sRect * 7
-                    height: parent.height
-                    text: address
-                }
-            }
-        }
-        QLabel{
-            width: UIConstants.sRect * 5
-            height: UIConstants.sRect * 1.5
-            text: itemListName["CONNECTIONS"]
-                  [UIConstants.language[UIConstants.languageID]]
-        }
+                Row{
+                    id: rowInterface
+                    height: UIConstants.sRect
+                    spacing: 5
+                    FlatIcon{
+                        width: UIConstants.sRect
+                        height: parent.height
+                        iconSize: UIConstants.fontSize * 1.5
+                        icon: bearerTypeName === "Ethernet"?UIConstants.iEthernet:
+                                (bearerTypeName === "WLAN"?UIConstants.iWireless: UIConstants.iUnknown)
 
-        ListView{
-            id: lstConnections
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            width: UIConstants.sRect * 13
-            height: model.length * (UIConstants.sRect + spacing)
-            model: networkManager.listNetwork
-            spacing: 5
-            clip: true
-            delegate: Row{
-                height: UIConstants.sRect
-                spacing: 5
-                QLabel{
-                    width: UIConstants.sRect * 5
-                    height: parent.height
-                    text: bearerTypeName
-                    color: activated?UIConstants.greenColor:UIConstants.grayColor
+                        isSolid: true
+                        color: UIConstants.greenColor
+                    }
+
+                    QLabel{
+                        width: UIConstants.sRect * 7
+                        height: parent.height
+                        text: name
+                    }
+                    Label{
+                        width: 5
+                        height: parent.height
+                        text:":"
+                        color: UIConstants.textColor
+                    }
+                    QLabel{
+                        width: UIConstants.sRect * 7
+                        height: parent.height
+                        text: address
+                    }
                 }
-                Label{
-                    width: 5
-                    height: parent.height
-                    text:":"
-                    color: UIConstants.textColor
-                }
-                QLabel{
-                    width: UIConstants.sRect * 7
-                    height: parent.height
-                    text: name
+                ListView{
+                    id: lstConnections
+                    anchors.left: parent.left
+                    anchors.leftMargin: UIConstants.sRect + rowInterface.spacing
+                    width: UIConstants.sRect * 13
+                    height: model.length * (UIConstants.sRect + spacing)
+                    model: listNetwork
+                    spacing: 5
+                    clip: true
+                    delegate: Row{
+                        height: UIConstants.sRect
+                        spacing: 5
+                        FlatButtonText{
+                            isAutoReturn: true
+                            width: UIConstants.sRect * 7
+                            height: parent.height
+                            text: name
+                            color: activated ?
+                            UIConstants.greenColor: UIConstants.grayColor
+                            onClicked: {
+                                networkManager.connectNetwork(name,!activated);
+                            }
+                        }
+                        QTextInput{
+                            width: UIConstants.sRect * 7
+                            text: setting
+                        }
+                    }
                 }
             }
         }
