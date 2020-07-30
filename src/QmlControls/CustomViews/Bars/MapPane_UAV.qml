@@ -702,6 +702,11 @@ Flickable {
                     rootItem.showAdvancedConfigChanged();
                     console.log("showAdvancedConfigChanged");
                     rootItem.ctrlPress = false;
+                }else if(rootItem.ctrlPress && event.key === Qt.Key_A){
+                    if(vehicle.vehicleType === 1){
+                        ahrsHUD.visible = !ahrsHUD.visible;
+                    }
+                    rootItem.ctrlPress = false;
                 }
 
                 if(event.key === Qt.Key_C)

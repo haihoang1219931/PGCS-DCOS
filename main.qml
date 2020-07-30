@@ -11,6 +11,7 @@ import CustomViews.Bars         1.0
 import CustomViews.UIConstants  1.0
 import CustomViews.Pages        1.0
 import CustomViews.Configs      1.0
+import CustomViews.HUD          1.0
 import CustomViews.Advanced     1.0
 import CustomViews.Dialogs      1.0
 import CustomViews.SubComponents 1.0
@@ -949,7 +950,20 @@ ApplicationWindow {
                 id: hud
                 anchors {right: rightBar.left; top: parent.top;topMargin: UIConstants.sRect + 8; rightMargin: 8 }
                 z: 5
-                visible: UIConstants.monitorMode === UIConstants.monitorModeFlight
+                visible: UIConstants.monitorMode === UIConstants.monitorModeFlight &&
+                         (vehicle.vehicleType === 2 || vehicle.vehicleType === 3)
+            }
+            AhrsHUD{
+                id:ahrsHUD
+                visible: UIConstants.monitorMode === UIConstants.monitorModeFlight &&
+                         (vehicle.vehicleType === 1)
+                anchors{
+                    bottom: mapPane.bottom
+                    bottomMargin: 8
+                    left: mapPane.left
+                    leftMargin: 8
+                }
+                z: 5
             }
             StackLayout{
                 id: popUpInfo

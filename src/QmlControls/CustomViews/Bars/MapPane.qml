@@ -2257,6 +2257,9 @@ Item {
                 rootItem.setFocus(true);
             }else if(event.key === Qt.Key_C){
                 clearFlightPath();
+            }else if(rootItem.ctrlPress && event.key === Qt.Key_A){
+                ahrsHUD.visible = !ahrsHUD.visible;
+                rootItem.ctrlPress = false;
             }else if(rootItem.ctrlPress && event.key === Qt.Key_F6){
                 rootItem.showAdvancedConfigChanged();
                 console.log("showAdvancedConfigChanged");
