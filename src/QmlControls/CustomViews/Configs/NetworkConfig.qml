@@ -126,7 +126,7 @@ Rectangle {
                             color: activated ?
                             UIConstants.greenColor: UIConstants.grayColor
                             onClicked: {
-                                networkManager.connectNetwork(name,!activated);
+                                networkManager.connectNetwork(bearerTypeName,name,!activated);
                             }
                         }
                         QLabel{

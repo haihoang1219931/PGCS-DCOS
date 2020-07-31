@@ -113,48 +113,61 @@ void NetworkManager::expose(){
     qmlRegisterType<NetworkInfo>("io.qdt.dev",1,0,"NetworkInfo");
     qmlRegisterType<NetworkManager>("io.qdt.dev",1,0,"NetworkManager");
 }
-void NetworkManager::connectNetwork(QString name,bool connect){
+void NetworkManager::connectNetwork(QString bearerTypeName, QString name,bool connect){
     for(int ifaceID=0; ifaceID < m_listInterface.size(); ifaceID++){
-        for(int iSettingID = 0;
-            iSettingID < m_listInterface[ifaceID]->getListNetwork().size();
-            iSettingID ++){
-            NetworkInfo* net = m_listInterface[ifaceID]->getListNetwork().at(iSettingID);
-            if(net->name() == name){
-                if(!connect){
-                    QDBusInterface interface(
-                        "org.freedesktop.NetworkManager",
-                        net->device(),
-                        "org.freedesktop.NetworkManager.Device",
-                        QDBusConnection::systemBus());
-                    QDBusReply<void> result = interface.call("Disconnect");
-                    if (!result.isValid()) {
-                        qDebug() << QString("Error adding connection: %1 %2").arg(result.error().name()).arg(result.error().message());
-                    }else{
-                        net->setActivated(connect);
-                        qDebug() << QString("Disconnected");
+        if(bearerTypeName == m_listInterface[ifaceID]->bearerTypeName()){
+            for(int iSettingID = 0;
+                iSettingID < m_listInterface[ifaceID]->getListNetwork().size();
+                iSettingID ++){
+                NetworkInfo* net = m_listInterface[ifaceID]->getListNetwork().at(iSettingID);
+                if(net->name() == name){
+                    if(bearerTypeName == "Ethernet"){
+                        connectSetting(net,connect);
+                    }else if(bearerTypeName == "WLAN"){
+                        connectAcessPoint(net,connect);
                     }
-
+                    net->setActivated(connect);
                 }else{
-                    QDBusInterface interface(
-                        "org.freedesktop.NetworkManager",
-                        "/org/freedesktop/NetworkManager",
-                        "org.freedesktop.NetworkManager",
-                        QDBusConnection::systemBus());
-                    QDBusReply<QDBusObjectPath> result = interface.call("ActivateConnection",
-                        QVariant::fromValue(QDBusObjectPath(net->setting())),
-                        QVariant::fromValue(QDBusObjectPath(net->device())),
-                        QVariant::fromValue(QDBusObjectPath("/")));
-                    if (!result.isValid()) {
-                        qDebug() << QString("Error adding connection: %1 %2").arg(result.error().name()).arg(result.error().message());
-                    }else{
-                        net->setActivated(connect);
-                        qDebug() << QString("Connected: %1").arg(result.value().path());
-                    }
-
+                     net->setActivated(false);
                 }
             }
+            break;
         }
     }
+}
+void NetworkManager::connectSetting(NetworkInfo* setting,bool connect){
+    if(!connect){
+        QDBusInterface interface(
+            "org.freedesktop.NetworkManager",
+            setting->device(),
+            "org.freedesktop.NetworkManager.Device",
+            QDBusConnection::systemBus());
+        QDBusReply<void> result = interface.call("Disconnect");
+        if (!result.isValid()) {
+            qDebug() << QString("Error adding connection: %1 %2").arg(result.error().name()).arg(result.error().message());
+        }else{
+            qDebug() << QString("Disconnected");
+        }
+
+    }else{
+        QDBusInterface interface(
+            "org.freedesktop.NetworkManager",
+            "/org/freedesktop/NetworkManager",
+            "org.freedesktop.NetworkManager",
+            QDBusConnection::systemBus());
+        QDBusReply<QDBusObjectPath> result = interface.call("ActivateConnection",
+            QVariant::fromValue(QDBusObjectPath(setting->setting())),
+            QVariant::fromValue(QDBusObjectPath(setting->device())),
+            QVariant::fromValue(QDBusObjectPath("/")));
+        if (!result.isValid()) {
+            qDebug() << QString("Error adding connection: %1 %2").arg(result.error().name()).arg(result.error().message());
+        }else{
+            qDebug() << QString("Connected: %1").arg(result.value().path());
+        }
+    }
+}
+void NetworkManager::connectAcessPoint(NetworkInfo* accessPoint,bool connect){
+
 }
 void NetworkManager::getConnectionSetting(QString settingPath, NetworkInfo *setting){
     Connection settings;
@@ -181,40 +194,111 @@ void NetworkManager::getListSettings(NetworkInterface *interfaceName){
             interfaceName->device(),
             "org.freedesktop.DBus.Properties",
             QDBusConnection::systemBus());
-        QDBusReply<QDBusVariant> result = interface.call("Get",
-            QVariant::fromValue(QString("org.freedesktop.NetworkManager.Device")),
-            QVariant::fromValue(QString("AvailableConnections")));
-        const QDBusArgument & dbusArgs = result.value().variant().value<QDBusArgument>();
-        QDBusObjectPath path;
-        dbusArgs.beginArray();
-        while (!dbusArgs.atEnd())
+        // Get active connection
+        QString activeConnectionID;
         {
-            dbusArgs >> path;
-            NetworkInfo *setting = new NetworkInfo();
-            setting->setBearerTypeName(interfaceName->bearerTypeName());
-            setting->setDevice(interfaceName->device());
-            setting->setSetting(path.path());
-            getConnectionSetting(path.path(),setting);
-            interfaceName->append(setting);
+            QDBusReply<QDBusVariant> result = interface.call("Get",
+                QVariant::fromValue(QString("org.freedesktop.NetworkManager.Device")),
+                QVariant::fromValue(QString("ActiveConnection")));
+            QString activeConnectionPath = result.value().variant().value<QDBusObjectPath>().path();
+            {
+                QDBusInterface interface(
+                    "org.freedesktop.NetworkManager",
+                    activeConnectionPath,
+                    "org.freedesktop.DBus.Properties",
+                    QDBusConnection::systemBus());
+                QDBusReply<QDBusVariant> result = interface.call("Get",
+                    QVariant::fromValue(QString("org.freedesktop.NetworkManager.Connection.Active")),
+                    QVariant::fromValue(QString("Id")));
+                if (!result.isValid()) {
+                    qDebug() << QString("Error adding connection: %1 %2").arg(result.error().name()).arg(result.error().message());
+                }else{
+                    qDebug() << activeConnectionPath << ":" << result.value().variant().toString();
+                }
+                activeConnectionID = result.value().variant().toString();
+            }
         }
-        dbusArgs.endArray();
+        // Get list setting
+        {
+            QDBusReply<QDBusVariant> result = interface.call("Get",
+                QVariant::fromValue(QString("org.freedesktop.NetworkManager.Device")),
+                QVariant::fromValue(QString("AvailableConnections")));
+            const QDBusArgument & dbusArgs = result.value().variant().value<QDBusArgument>();
+            QDBusObjectPath path;
+            dbusArgs.beginArray();
+            while (!dbusArgs.atEnd())
+            {
+                dbusArgs >> path;
+                NetworkInfo *setting = new NetworkInfo();
+                setting->setBearerTypeName(interfaceName->bearerTypeName());
+                setting->setDevice(interfaceName->device());
+                setting->setSetting(path.path());
+                getConnectionSetting(path.path(),setting);
+                if(activeConnectionID == setting->name()){
+                    setting->setActivated(true);
+                }
+                interfaceName->append(setting);
+            }
+            dbusArgs.endArray();
+        }
     }else if(interfaceName->bearerTypeName() == "WLAN"){
-        QDBusInterface interface(
-            "org.freedesktop.NetworkManager",
-            interfaceName->device(),
-            "org.freedesktop.NetworkManager.Device.Wireless",
-            QDBusConnection::systemBus());
-        QDBusReply<QList<QDBusObjectPath>> result = interface.call("GetAllAccessPoints");
-        if (!result.isValid()) {
-            qDebug() << QString("Error adding connection: %1 %2").arg(result.error().name()).arg(result.error().message());
-        }else{
-            Q_FOREACH (const QDBusObjectPath& connection, result.value()) {
-                    qDebug() << "AccessPoint: " << connection.path();
-                    NetworkInfo *accessPoint = new NetworkInfo();
-                    accessPoint->setBearerTypeName(interfaceName->bearerTypeName());
-                    accessPoint->setAccessPoint(connection.path());
-                    getAccessPointInfo(accessPoint);
-                    interfaceName->append(accessPoint);
+
+        // Get active connection
+        QString activeConnectionID;
+        {
+            QDBusInterface interface(
+                "org.freedesktop.NetworkManager",
+                interfaceName->device(),
+                "org.freedesktop.DBus.Properties",
+                QDBusConnection::systemBus());
+            QDBusReply<QDBusVariant> result = interface.call("Get",
+                QVariant::fromValue(QString("org.freedesktop.NetworkManager.Device")),
+                QVariant::fromValue(QString("ActiveConnection")));
+            QString activeConnectionPath = result.value().variant().value<QDBusObjectPath>().path();
+            if (!result.isValid()) {
+                qDebug() << QString("Error adding connection: %1 %2").arg(result.error().name()).arg(result.error().message());
+            }else{
+                qDebug() << interfaceName->device() << ":" << activeConnectionPath;
+            }
+            {
+                QDBusInterface interface(
+                    "org.freedesktop.NetworkManager",
+                    activeConnectionPath,
+                    "org.freedesktop.DBus.Properties",
+                    QDBusConnection::systemBus());
+                QDBusReply<QDBusVariant> result = interface.call("Get",
+                    QVariant::fromValue(QString("org.freedesktop.NetworkManager.Connection.Active")),
+                    QVariant::fromValue(QString("Id")));
+                if (!result.isValid()) {
+                    qDebug() << QString("Error adding connection: %1 %2").arg(result.error().name()).arg(result.error().message());
+                }else{
+                    qDebug() << activeConnectionPath << ":" << result.value().variant().toString();
+                }
+                activeConnectionID = result.value().variant().toString();
+            }
+        }
+        // Get list setting
+        {
+            QDBusInterface interface(
+                "org.freedesktop.NetworkManager",
+                interfaceName->device(),
+                "org.freedesktop.NetworkManager.Device.Wireless",
+                QDBusConnection::systemBus());
+            QDBusReply<QList<QDBusObjectPath>> result = interface.call("GetAllAccessPoints");
+            if (!result.isValid()) {
+                qDebug() << QString("Error adding connection: %1 %2").arg(result.error().name()).arg(result.error().message());
+            }else{
+                Q_FOREACH (const QDBusObjectPath& connection, result.value()) {
+                        qDebug() << "AccessPoint: " << connection.path();
+                        NetworkInfo *accessPoint = new NetworkInfo();
+                        accessPoint->setBearerTypeName(interfaceName->bearerTypeName());
+                        accessPoint->setAccessPoint(connection.path());
+                        getAccessPointInfo(accessPoint);
+                        if(activeConnectionID == accessPoint->name()){
+                            accessPoint->setActivated(true);
+                        }
+                        interfaceName->append(accessPoint);
+                }
             }
         }
     }

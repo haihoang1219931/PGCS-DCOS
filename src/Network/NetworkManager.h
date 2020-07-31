@@ -60,8 +60,10 @@ public:
     void getAccessPointInfo(NetworkInfo* accessPoint);
     void getListSettings(NetworkInterface *interfaceName);
     void getConnectionSetting(QString settingPath, NetworkInfo *connection);
+    void connectSetting(NetworkInfo* setting, bool connect);
+    void connectAcessPoint(NetworkInfo* accessPoint, bool connect);
 public:
-    Q_INVOKABLE void connectNetwork(QString name,bool connect);
+    Q_INVOKABLE void connectNetwork(QString bearerTypeName, QString name,bool connect);
 Q_SIGNALS:
     void listInterfaceChanged();
 public Q_SLOTS:
