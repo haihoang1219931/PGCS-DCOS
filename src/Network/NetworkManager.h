@@ -52,7 +52,7 @@ public:
     {
         return QQmlListProperty<NetworkInterface>(this, m_listInterface);
     }
-    Q_INVOKABLE void reload();
+
     static void expose();
     void setPass(QString pass){
         m_pass = pass;
@@ -60,14 +60,18 @@ public:
     void getAccessPointInfo(NetworkInfo* accessPoint);
     void getListSettings(NetworkInterface *interfaceName);
     void getConnectionSetting(QString settingPath, NetworkInfo *connection);
-    void connectSetting(NetworkInfo* setting, bool connect);
-    void connectAcessPoint(NetworkInfo* accessPoint, bool connect);
+    bool connectSetting(NetworkInfo* setting, bool connect);
+    bool connectAcessPoint(NetworkInfo* accessPoint, bool connect);
 public:
+    Q_INVOKABLE void reload();
     Q_INVOKABLE void connectNetwork(QString bearerTypeName, QString name,bool connect);
+    Q_INVOKABLE void insertWLANPass(QString pass);
 Q_SIGNALS:
     void listInterfaceChanged();
+    void needWLANPass();
 public Q_SLOTS:
 private:
+    NetworkInfo* m_currentAccessPoint = nullptr;
     QNetworkConfigurationManager m_mgr;
     QNetworkSession* m_session = nullptr;
     QList<NetworkInterface *> m_listInterface;

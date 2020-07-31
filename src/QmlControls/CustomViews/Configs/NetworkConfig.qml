@@ -30,6 +30,9 @@ Rectangle {
     signal clicked(string type, string action)
     NetworkManager{
         id: networkManager
+        onNeedWLANPass: {
+            rectWLANPass.visible = true;
+        }
     }
 
     Column{
@@ -149,6 +152,37 @@ Rectangle {
                             color: UIConstants.textColor
                         }
                     }
+                }
+            }
+        }
+    }
+    FlatRectangle{
+        id: rectWLANPass
+        visible: false
+        anchors.centerIn: parent
+        width: UIConstants.sRect * 10
+        height: UIConstants.sRect * 4
+        Row{
+            anchors.centerIn: parent
+            spacing: 5
+            QLabel{
+                width: UIConstants.sRect*3
+                height: UIConstants.sRect
+                text: "Password"
+            }
+            QTextInput{
+                id: txtPassWord
+                width: UIConstants.sRect*4
+                height: UIConstants.sRect
+                text: ""
+            }
+            FlatButtonText{
+                width: UIConstants.sRect*2
+                height: UIConstants.sRect
+                text: "Set"
+                onClicked: {
+                    networkManager.insertWLANPass(txtPassWord.text);
+                    rectWLANPass.visible = false;
                 }
             }
         }
