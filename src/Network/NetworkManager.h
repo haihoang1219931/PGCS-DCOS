@@ -15,7 +15,7 @@
 #include <QtDBus/QDBusReply>
 #include <QtCore/QDebug>
 #include "NetworkInfo.h"
-typedef QMap<QString, QMap<QString, QVariant> > Connection;
+typedef QMap<QString, QMap<QString, QVariant>> Connection;
 Q_DECLARE_METATYPE(Connection)
 Q_DECLARE_METATYPE(QList<uint>);
 Q_DECLARE_METATYPE(QList<QList<uint> >);
@@ -57,7 +57,9 @@ public:
     void setPass(QString pass){
         m_pass = pass;
     }
-    QString getConnection(QString settingPath, Connection *found_connection);
+    void getAccessPointInfo(NetworkInfo* accessPoint);
+    void getListSettings(NetworkInterface *interfaceName);
+    void getConnectionSetting(QString settingPath, NetworkInfo *connection);
 public:
     Q_INVOKABLE void connectNetwork(QString name,bool connect);
 Q_SIGNALS:

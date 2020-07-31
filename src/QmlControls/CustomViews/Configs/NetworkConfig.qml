@@ -110,7 +110,7 @@ Rectangle {
                     id: lstConnections
                     anchors.left: parent.left
                     anchors.leftMargin: UIConstants.sRect + rowInterface.spacing
-                    width: UIConstants.sRect * 13
+                    width: UIConstants.sRect * 15
                     height: model.length * (UIConstants.sRect + spacing)
                     model: listNetwork
                     spacing: 5
@@ -129,9 +129,24 @@ Rectangle {
                                 networkManager.connectNetwork(name,!activated);
                             }
                         }
-                        QTextInput{
-                            width: UIConstants.sRect * 7
-                            text: setting
+                        QLabel{
+                            visible: bearerTypeName === "WLAN"
+                            width: UIConstants.sRect*3
+                            text: frequency+"MHz"
+                        }
+                        QLabel{
+                            visible: bearerTypeName === "WLAN"
+                            width: UIConstants.sRect*3
+                            text: strength + "/100"
+                        }
+                        FlatIcon{
+                            visible: bearerTypeName === "WLAN" && hasPass
+                            width: UIConstants.sRect
+                            height: parent.height
+                            iconSize: UIConstants.fontSize * 1.5
+                            icon: UIConstants.iLock
+                            isSolid: true
+                            color: UIConstants.textColor
                         }
                     }
                 }

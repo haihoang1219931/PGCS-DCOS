@@ -6,16 +6,20 @@
 class NetworkInfo : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString bearerTypeName READ bearerTypeName WRITE setBearerTypeName NOTIFY bearerTypeNameChanged)
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(bool activated READ activated WRITE setActivated NOTIFY activatedChanged)
-    Q_PROPERTY(QString mode READ mode WRITE setMode NOTIFY modeChanged)
-    Q_PROPERTY(QString address READ address WRITE setAddress NOTIFY addressChanged)
-    Q_PROPERTY(QString subnet READ subnet WRITE setSubnet NOTIFY subnetChanged)
-    Q_PROPERTY(QString gateway READ gateway WRITE setGateway NOTIFY gatewayChanged)
-    Q_PROPERTY(QString broadcast READ broadcast WRITE setBroadcast NOTIFY broadcastChanged)
-    Q_PROPERTY(QString setting READ setting WRITE setSetting NOTIFY settingChanged)
-    Q_PROPERTY(QString device READ device WRITE setDevice NOTIFY deviceChanged)
+    Q_PROPERTY(QString  bearerTypeName READ bearerTypeName WRITE setBearerTypeName NOTIFY bearerTypeNameChanged)
+    Q_PROPERTY(QString  name READ name WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(bool     activated READ activated WRITE setActivated NOTIFY activatedChanged)
+    Q_PROPERTY(QString  mode READ mode WRITE setMode NOTIFY modeChanged)
+    Q_PROPERTY(QString  address READ address WRITE setAddress NOTIFY addressChanged)
+    Q_PROPERTY(QString  subnet READ subnet WRITE setSubnet NOTIFY subnetChanged)
+    Q_PROPERTY(QString  gateway READ gateway WRITE setGateway NOTIFY gatewayChanged)
+    Q_PROPERTY(QString  broadcast READ broadcast WRITE setBroadcast NOTIFY broadcastChanged)
+    Q_PROPERTY(QString  setting READ setting WRITE setSetting NOTIFY settingChanged)
+    Q_PROPERTY(QString  device READ device WRITE setDevice NOTIFY deviceChanged)
+    Q_PROPERTY(QString  accessPoint READ accessPoint WRITE setAccessPoint NOTIFY accessPointChanged)
+    Q_PROPERTY(int      frequency READ frequency WRITE setFrequency NOTIFY frequencyChanged)
+    Q_PROPERTY(int      strength READ strength WRITE setStrength NOTIFY strengthChanged)
+    Q_PROPERTY(bool     hasPass READ hasPass WRITE setHasPass NOTIFY hasPassChanged)
 public:
     explicit NetworkInfo(QObject *parent = nullptr);
     QString bearerTypeName(){ return m_bearerTypeName; }
@@ -76,6 +80,40 @@ public:
         m_device = device;
         Q_EMIT deviceChanged();
     }
+    QString accessPoint(){
+        return m_accessPoint;
+    }
+    void setAccessPoint(QString accessPoint){
+        m_accessPoint = accessPoint;
+        Q_EMIT accessPointChanged();
+    }
+    int frequency(){
+        return m_frequency;
+    }
+    void setFrequency(int frequency){
+        if(m_frequency != frequency){
+            m_frequency = frequency;
+            Q_EMIT frequencyChanged();
+        }
+    }
+    int strength(){
+        return m_strength;
+    }
+    void setStrength(int strength){
+        if(m_strength != strength){
+            m_strength = strength;
+            Q_EMIT strengthChanged();
+        }
+    }
+    bool hasPass(){
+        return m_hasPass;
+    }
+    void setHasPass(bool hasPass){
+        if(m_hasPass != hasPass){
+            m_hasPass = hasPass;
+            Q_EMIT hasPassChanged();
+        }
+    }
     QNetworkConfiguration config(){return m_config;}
     void setConfig(QNetworkConfiguration config){
 //        printf("Network[%02d] [%s] [%s] [%s] [%s]\r\n",0,
@@ -101,6 +139,10 @@ Q_SIGNALS:
     void broadcastChanged();
     void settingChanged();
     void deviceChanged();
+    void accessPointChanged();
+    void frequencyChanged();
+    void strengthChanged();
+    void hasPassChanged();
 public Q_SLOTS:
 
 private:
@@ -115,6 +157,10 @@ private:
     QString m_broadcast;
     QString m_setting;
     QString m_device;
+    QString m_accessPoint;
+    int m_frequency = 0;
+    int m_strength = 0;
+    bool m_hasPass = false;
 };
 
 #endif // NETWORKINFO_H
