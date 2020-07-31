@@ -22,7 +22,9 @@ import UC 1.0
 ApplicationWindow {
     id: mainWindow
     visible: true
-    visibility: ApplicationWindow.FullScreen
+//    visibility: ApplicationWindow.FullScreen
+    width: 1920
+    height: 1080
     title: qsTr("DCOS - PGCSv0.1")
     flags: Qt.WindowMinMaxButtonsHint
     property int seqTab: 2
