@@ -31,8 +31,18 @@ Rectangle {
     NetworkManager{
         id: networkManager
         onNeedWLANPass: {
-            rectWLANPass.visible = true;
+            openPassEditor();
         }
+    }
+    function openPassEditor(){
+        rectWLANPass.visible = true;
+        txtPassWord.text = "";
+        txtPassWord.focus = true;
+    }
+    function closePassEditor(){
+        rectWLANPass.visible = false;
+        txtPassWord.text = "";
+        txtPassWord.focus = false;
     }
 
     Column{
@@ -137,11 +147,6 @@ Rectangle {
                             width: UIConstants.sRect*3
                             text: frequency+"MHz"
                         }
-                        QLabel{
-                            visible: bearerTypeName === "WLAN"
-                            width: UIConstants.sRect*3
-                            text: strength + "/100"
-                        }
                         FlatIcon{
                             visible: bearerTypeName === "WLAN" && hasPass
                             width: UIConstants.sRect
@@ -150,6 +155,44 @@ Rectangle {
                             icon: UIConstants.iLock
                             isSolid: true
                             color: UIConstants.textColor
+                        }
+                        Row{
+                            visible: bearerTypeName === "WLAN"
+                            width: UIConstants.sRect*2+3*spacing
+                            height: parent.height
+                            spacing: 2
+                            Rectangle{
+                                anchors.bottom: parent.bottom
+                                width: parent.width / 4
+                                height: parent.height / 4
+                                color: strength > 0? UIConstants.textColor: UIConstants.transparentColor
+                                border.color: UIConstants.grayColor
+                                border.width: 1
+                            }
+                            Rectangle{
+                                anchors.bottom: parent.bottom
+                                width: parent.width / 4
+                                height: parent.height / 4 * 2
+                                color: strength > 25? UIConstants.textColor: UIConstants.transparentColor
+                                border.color: UIConstants.grayColor
+                                border.width: 1
+                            }
+                            Rectangle{
+                                anchors.bottom: parent.bottom
+                                width: parent.width / 4
+                                height: parent.height / 4 * 3
+                                color: strength > 50? UIConstants.textColor: UIConstants.transparentColor
+                                border.color: UIConstants.grayColor
+                                border.width: 1
+                            }
+                            Rectangle{
+                                anchors.bottom: parent.bottom
+                                width: parent.width / 4
+                                height: parent.height / 4 * 4
+                                color: strength > 75? UIConstants.textColor: UIConstants.transparentColor
+                                border.color: UIConstants.grayColor
+                                border.width: 1
+                            }
                         }
                     }
                 }
@@ -160,32 +203,58 @@ Rectangle {
         id: rectWLANPass
         visible: false
         anchors.centerIn: parent
-        width: UIConstants.sRect * 10
-        height: UIConstants.sRect * 4
-        Row{
-            anchors.centerIn: parent
+        width: UIConstants.sRect * 11
+        height: UIConstants.sRect * 6
+        Column{
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
             spacing: 5
-            QLabel{
-                width: UIConstants.sRect*3
-                height: UIConstants.sRect
-                text: "Password"
+            Row{
+                spacing: 5
+                QLabel{
+                    width: UIConstants.sRect*4
+                    height: UIConstants.sRect*2
+                    text: "Password"
+                }
+                QTextInput{
+                    id: txtPassWord
+                    width: UIConstants.sRect*6
+                    height: UIConstants.sRect*2
+                    text: ""
+                }
             }
-            QTextInput{
-                id: txtPassWord
-                width: UIConstants.sRect*4
-                height: UIConstants.sRect
-                text: ""
-            }
-            FlatButtonText{
-                width: UIConstants.sRect*2
-                height: UIConstants.sRect
-                text: "Set"
-                onClicked: {
-                    networkManager.insertWLANPass(txtPassWord.text);
-                    rectWLANPass.visible = false;
+            Row{
+                id: row
+                spacing: UIConstants.sRect*2
+                FlatButtonIcon{
+                    width: UIConstants.sRect*4
+                    height: UIConstants.sRect*2
+                    isSolid: true
+                    isShowRect: false
+                    isAutoReturn: true
+                    color: UIConstants.redColor
+                    icon: UIConstants.iClose
+                    onClicked: {
+                        closePassEditor();
+                    }
+                }
+                FlatButtonIcon{
+                    width: UIConstants.sRect*4
+                    height: UIConstants.sRect*2
+                    isSolid: true
+                    isShowRect: false
+                    isAutoReturn: true
+                    color: UIConstants.greenColor
+                    icon: UIConstants.iChecked
+                    onClicked: {
+                        networkManager.insertWLANPass(txtPassWord.text);
+                        closePassEditor();
+                    }
                 }
             }
         }
+
+
     }
 } // ConfigPage
 

@@ -244,6 +244,7 @@ void NetworkManager::insertWLANPass(QString pass){
         QVariant::fromValue(QDBusObjectPath(m_currentAccessPoint->accessPoint())));
     if (!result.isValid()) {
         qDebug() << QString("Error adding connection: %1 %2").arg(result.error().name()).arg(result.error().message());
+        Q_EMIT needWLANPass();
     }else{
         qDebug() << QString("Connected: %1").arg(result.value().path());
         m_currentAccessPoint->setActivated(true);
