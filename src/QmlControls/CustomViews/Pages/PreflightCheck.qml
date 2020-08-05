@@ -65,6 +65,7 @@ Rectangle {
             }
             model: ListModel {
                 Component.onCompleted: {
+                    sidebarGeneralConfigs.model.clear();
                     append({state_: "uncheck",showed_: true,
                                text_: itemListName["MODECHECK"]["MENU_TITTLE"]
                                [UIConstants.language[UIConstants.languageID]] });

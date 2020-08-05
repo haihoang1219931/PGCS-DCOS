@@ -1140,12 +1140,88 @@ ApplicationWindow {
                 id: uavProfilePath
                 z: 11
                 width: UIConstants.sRect * 12
-                height: UIConstants.sRect * 7.5
+                height: mapControl.height + chkLog.height + 8
                 mapHeightFolder: mapPane.mapHeightFolder
                 anchors.top: parent.top
                 anchors.left: mapControl.right
                 anchors.leftMargin: 8
                 anchors.topMargin: UIConstants.sRect + 8
+                property bool show: true
+            }
+            PropertyAnimation{
+                id: animPopupUAVProfilePath
+                target: uavProfilePath
+                properties: "anchors.topMargin"
+                to: uavProfilePath.show ? UIConstants.sRect + 8:
+                                          UIConstants.sRect - uavProfilePath.height
+
+
+                duration: 800
+                easing.type: Easing.InOutBack
+                running: false
+                onStopped: {
+                    if(!uavProfilePath.show)
+                        uavProfilePath.visible = uavProfilePath.show;
+                }
+                onStarted: {
+                    if(uavProfilePath.show){
+                        uavProfilePath.visible = uavProfilePath.show;
+                    }
+                }
+            }
+            PropertyAnimation{
+                id: animBtnShowUpUAVProfilePath
+                target: btnShowPopupUAVProfilePath
+                properties: "iconRotate"
+                to: uavProfilePath.show ? 0 : 180
+                duration: 800
+                easing.type: Easing.InExpo
+                running: false
+                onStopped: {
+                    animPopupUAVProfilePath.start()
+                }
+            }
+            Canvas{
+                y: 70
+                width: UIConstants.sRect * 3
+                height: UIConstants.sRect
+                z: 5
+                visible: UIConstants.monitorMode === UIConstants.monitorModeFlight
+                anchors.horizontalCenter: uavProfilePath.horizontalCenter
+                anchors.top: uavProfilePath.bottom
+                anchors.topMargin: 0
+                onPaint: {
+                    var ctx = getContext("2d");
+                    var drawColor = UIConstants.bgAppColor;
+                    ctx.strokeStyle = drawColor;
+                    ctx.fillStyle = drawColor;
+                    ctx.beginPath();
+                    ctx.moveTo(0,0);
+                    ctx.lineTo(width*1/6,height);
+                    ctx.lineTo(width*5/6,height);
+                    ctx.lineTo(width,0);
+                    ctx.closePath();
+                    ctx.fill()
+                }
+                FlatButtonIcon{
+                    id: btnShowPopupUAVProfilePath
+                    width: UIConstants.sRect * 3
+                    height: UIConstants.sRect
+                    z: 5
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    iconSize: UIConstants.fontSize * 2
+                    icon: UIConstants.iChevronDown
+                    rotation: 180
+                    isAutoReturn: true
+                    isShowRect: false
+                    isSolid: true
+
+                    onClicked: {
+                        uavProfilePath.show = !uavProfilePath.show;
+                        animBtnShowUpUAVProfilePath.start();
+                    }
+                }
             }
         }
         Item {

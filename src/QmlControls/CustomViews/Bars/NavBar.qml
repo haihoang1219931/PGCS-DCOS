@@ -206,25 +206,7 @@ Item {
         }
 
         //----------- Division
-        EngineIndicator{
-            id: btnEngine
-            anchors.right: btnLinkStatus.left
-            anchors.rightMargin: UIConstants.sRect * 3 / 2
-            anchors.top: parent.top
-            anchors.topMargin: 5
-            height: parent.height
-            width: parent.height
-            iconSize: UIConstants.sRect*3/2
-            z: navbarWrapper.z + 1
-            showIndicator: dialogShow === "DIALOG_ENGINE"
-            onClicked: {
-                if(dialogShow !== "DIALOG_ENGINE"){
-                    dialogShow = "DIALOG_ENGINE";
-                }else{
-                    dialogShow = "";
-                }
-            }
-        }
+
         SignalIndicator{
             id: btnLinkStatus
             anchors.right: btnMessage.left
@@ -257,7 +239,7 @@ Item {
         }
         GPSIndicator{
             id: btnSignal
-            anchors.right: btnJoystick.left
+            anchors.right: btnEngine.left
             anchors.rightMargin: UIConstants.sRect * 3 / 2
             anchors.top: parent.top
             anchors.topMargin: 5
@@ -269,6 +251,26 @@ Item {
             onClicked: {
                 if(dialogShow !== "DIALOG_SIGNAL"){
                     dialogShow = "DIALOG_SIGNAL";
+                }else{
+                    dialogShow = "";
+                }
+            }
+        }
+        EngineIndicator{
+            id: btnEngine
+            anchors.right: btnJoystick.left
+            anchors.rightMargin: visible?UIConstants.sRect * 3 / 2:0
+            anchors.top: parent.top
+            anchors.topMargin: 5
+            height: parent.height
+            width: visible?parent.height:0
+            iconSize: UIConstants.sRect*3/2
+            z: navbarWrapper.z + 1
+            visible: vehicle.vehicleType === 1
+            showIndicator: dialogShow === "DIALOG_ENGINE"
+            onClicked: {
+                if(dialogShow !== "DIALOG_ENGINE"){
+                    dialogShow = "DIALOG_ENGINE";
                 }else{
                     dialogShow = "";
                 }

@@ -607,7 +607,7 @@ QtObject {
             },
             "UAV_PROFILE_PATH":{
                 "TITTLE":["UAV Profile Path", "Độ cao máy bay"],
-                "DISTANCE":["Distance (m)", "Khoàng cách (m)"],
+                "DISTANCE":["Distance (m)", "Khoảng cách (m)"],
                 "ALTITUDE":["Altitude (m)", "Độ cao (m)"],
             },
 

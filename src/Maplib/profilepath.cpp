@@ -48,14 +48,16 @@ void ProfilePath::drawPlot(QPainter *painter)
     font.setBold(false);
     font.setItalic(false);
     painter->setFont(font);
-    painter->drawText(QRectF(0, 10, qRound(itemSize.width()),40),Qt::AlignCenter,_title);
+    painter->drawText(QRectF(0, 4, qRound(itemSize.width()),_fontSize),Qt::AlignCenter,_title);
 
     //draw axisX,axisY line
-    QPointF O_point = QPointF(mAxisYoffset,itemSize.height()-mAxisXoffset);
-    QPointF X_point = QPointF(itemSize.width()-20,itemSize.height()-mAxisXoffset);
-    QPointF Y_point = QPointF(mAxisYoffset,50);
-    max_altitude_point_Y=Y_point.ry()-O_point.ry() + 20;
-    max_distance_point_X = X_point.rx()-O_point.rx() - 20;
+    mAxisXoffset = _fontSize*3;
+    mAxisYoffset = _fontSize*3;
+    QPointF O_point = QPointF(mAxisYoffset,itemSize.height()-mAxisYoffset);
+    QPointF X_point = QPointF(itemSize.width(),itemSize.height()-mAxisYoffset);
+    QPointF Y_point = QPointF(mAxisXoffset,mAxisYoffset+4);
+    max_altitude_point_Y = Y_point.ry()-O_point.ry() + _fontSize;
+    max_distance_point_X = X_point.rx()-O_point.rx() - _fontSize;
 
     painter->drawLine(O_point,X_point);
     painter->drawLine(O_point,Y_point);
@@ -64,19 +66,21 @@ void ProfilePath::drawPlot(QPainter *painter)
     font.setBold(false);
     font.setItalic(false);
     painter->setFont(font);
-    painter->drawText(qRound(Y_point.rx()-25),qRound(Y_point.ry()-10),_yName);//"Do cao(m)"
-    painter->drawText(QRectF(O_point.rx(), O_point.ry() + _fontSize * 1.5 , max_distance_point_X,20),Qt::AlignCenter,_xName);//"Khoang cach(m)"
+    painter->drawText(qRound(Y_point.rx()-_fontSize),qRound(Y_point.ry() - _fontSize + 4),_yName);//"Do cao(m)"
+    painter->drawText(QRectF(O_point.rx(), O_point.ry() + _fontSize,
+                    max_distance_point_X,_fontSize*2),Qt::AlignCenter,_xName);//"Khoang cach(m)"
 
     //draw arrow
+
     const QPointF arrowpointX[3] = {
-            QPointF(mAxisYoffset-4,57),
-            QPointF(mAxisYoffset,50),
-            QPointF(mAxisYoffset+4,57),
+            QPointF(X_point.x()-7,X_point.y() + 4),
+            QPointF(X_point.x(),X_point.y()),
+            QPointF(X_point.x()-7,X_point.y() - 4),
         };
     const QPointF arrowpointY[3] = {
-            QPointF(itemSize.width()-27,itemSize.height()-mAxisXoffset+4),
-            QPointF(itemSize.width()-20,itemSize.height()-mAxisXoffset),
-            QPointF(itemSize.width()-27,itemSize.height()-mAxisXoffset-4),
+            QPointF(mAxisYoffset-4,mAxisYoffset+8),
+            QPointF(mAxisYoffset,mAxisYoffset+8-7),
+            QPointF(mAxisYoffset+4,mAxisYoffset+8),
         };
     painter->setBrush(QBrush(Qt::white));
     painter->drawConvexPolygon(arrowpointX, 3);

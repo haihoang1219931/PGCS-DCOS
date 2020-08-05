@@ -9,9 +9,8 @@ Item
     property string mapHeightFolder: null
     property variant coord1: undefined
     property variant coord2: undefined
-
-    signal pinClicked()
-
+    property var itemListName:
+        UIConstants.itemTextMultilanguages
     Rectangle{
         id: rectProfilePath
         z:200
@@ -20,59 +19,22 @@ Item
         radius: UIConstants.rectRadius
         border.width: 1
         border.color: UIConstants.grayColor
-        Drag.active: mouseArea.drag.active
         clip:true
-
-        states: State {
-            when: mouseArea.drag.active
-            ParentChange { target: rectProfilePath; parent: rootItem }
-            AnchorChanges { target: rectProfilePath; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
-        }
-        MouseArea {
-            id: mouseArea
-
-            anchors.fill: !btnPin.isPressed ? rectProfilePath : undefined
-            enabled: !btnPin.isPressed
-            drag.target: !btnPin.isPressed ? rectProfilePath : undefined
-
-            //onReleased: parent = rectProfilePath.Drag.target !== null ? rectProfilePath.Drag.target : rootItem
-        }
-
-        FlatButtonIcon{
-            id: btnPin
-            width: 24
-            height: 24
-            anchors.top: parent.top
-            anchors.right: parent.right
-            icon: UIConstants.iPin
-            iconSize: 23
-            isSolid: true
-            isShowRect: true
-            isPressed: true
-            visible: true
-            isAutoReturn : false
-            anchors{topMargin: 1;rightMargin: 1;}
-
-            onClicked: {
-                pinClicked();
-            }
-        }
-
-        Computer{
-            id: cInfo
-        }
 
         ProfilePath{
             id: profilePath
-            title: ""
-            xName: "(m)"
-            yName: "(m)"
+            title: rootItem.itemListName["DIALOG"]["PROFILE_PATH"]["TITTLE"]
+                   [UIConstants.language[UIConstants.languageID]] + " UAV"
+            xName: rootItem.itemListName["DIALOG"]["PROFILE_PATH"]["DISTANCE"]
+                   [UIConstants.language[UIConstants.languageID]]
+            yName: rootItem.itemListName["DIALOG"]["PROFILE_PATH"]["ALTITUDE"]
+                   [UIConstants.language[UIConstants.languageID]]
             fontSize: UIConstants.fontSize
             fontFamily: UIConstants.appFont
             anchors.fill: parent
-            anchors{leftMargin: -8;rightMargin: -15;topMargin: -42;bottomMargin: -15;}
+            anchors.margins: 4
             isShowLineOfSight: true
-            folderPath: cInfo.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder
+            folderPath: computer.homeFolder()+"/ArcGIS/Runtime/Data/elevation/"+mapHeightFolder
 
         }
 
