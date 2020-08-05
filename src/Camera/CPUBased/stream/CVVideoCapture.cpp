@@ -333,7 +333,7 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
     if (m_klvAppSrc == nullptr) {
         g_print("Fail to get klvsrc \n");
     }else{
-        gst_app_src_set_latency(m_klvAppSrc,m_metaPerSecond,30);
+//        gst_app_src_set_latency(m_klvAppSrc,m_metaPerSecond,30);
         g_signal_connect (m_klvAppSrc, "need-data", G_CALLBACK (wrapStartFeedKlv), (void *)this);
         /* set the caps on the source */
         GstCaps *caps = gst_caps_new_simple ("meta/x-klv",

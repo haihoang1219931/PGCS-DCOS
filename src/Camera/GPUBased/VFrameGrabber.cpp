@@ -113,26 +113,27 @@ gboolean VFrameGrabber::needKlv(void* userPointer)
 {
     VFrameGrabber *itseft = (VFrameGrabber *)userPointer;
     GstAppSrc* appsrc = itseft->m_klvAppSrc;
-    std::vector<uint8_t> klvData = VideoEngine::encodeMeta(itseft->m_gimbal);
+    std::vector<uint8_t> klvData = VideoEngine::encodeMeta(m_gimbal);
     printf("%s [%d]\r\n",__func__,itseft->m_metaID);
     GstBuffer *buffer = gst_buffer_new_allocate(nullptr, klvData.size(), nullptr);
     GstMapInfo map;
-    GstClock *clock;
-    GstClockTime abs_time, base_time;
 
     gst_buffer_map (buffer, &map, GST_MAP_WRITE);
     memcpy(map.data, klvData.data(), klvData.size());
     gst_buffer_unmap (buffer, &map);
     GstClockTime gstDuration = GST_SECOND / m_metaPerSecond;
-    GST_BUFFER_PTS (buffer) = (itseft->m_metaID + 1) * gstDuration;
+    GST_BUFFER_PTS (buffer) = (itseft->m_metaID) * gstDuration;
+    GST_BUFFER_DTS (buffer) = (itseft->m_metaID) * gstDuration;
     GST_BUFFER_DURATION (buffer) = gstDuration;
     GST_BUFFER_OFFSET(buffer) = itseft->m_metaID + 1;
     gst_app_src_push_buffer(GST_APP_SRC(appsrc), buffer);
-
-    int ms = 1000 / m_metaPerSecond;
-    struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
-    nanosleep(&ts, NULL);
-    itseft->m_metaID +=1;
+//    if(QString::fromStdString(m_ip).contains("filesrc"))
+    {
+        int ms = 1000 / m_metaPerSecond;
+        struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+        nanosleep(&ts, NULL);
+    }
+    itseft->m_metaID ++;
     return true;
 }
 GstFlowReturn VFrameGrabber::onNewSample(GstAppSink *_vsink, gpointer _uData)
@@ -323,7 +324,7 @@ bool VFrameGrabber::initPipeline()
     if (m_klvAppSrc == nullptr) {
         g_print("Fail to get klvsrc \n");
     }else{
-        gst_app_src_set_latency(m_klvAppSrc,m_metaPerSecond,30);
+//        gst_app_src_set_latency(m_klvAppSrc,m_metaPerSecond,30);
         g_signal_connect (m_klvAppSrc, "need-data", G_CALLBACK (wrapStartFeedKlv), (void *)this);
         /* set the caps on the source */
         GstCaps *caps = gst_caps_new_simple ("meta/x-klv",
