@@ -30,6 +30,19 @@ Rectangle {
     signal clicked(string type, string action)
     NetworkManager{
         id: networkManager
+        onNeedWLANPass: {
+            openPassEditor();
+        }
+    }
+    function openPassEditor(){
+        rectWLANPass.visible = true;
+        txtPassWord.text = "";
+        txtPassWord.focus = true;
+    }
+    function closePassEditor(){
+        rectWLANPass.visible = false;
+        txtPassWord.text = "";
+        txtPassWord.focus = false;
     }
 
     Column{
@@ -110,7 +123,7 @@ Rectangle {
                     id: lstConnections
                     anchors.left: parent.left
                     anchors.leftMargin: UIConstants.sRect + rowInterface.spacing
-                    width: UIConstants.sRect * 13
+                    width: UIConstants.sRect * 15
                     height: model.length * (UIConstants.sRect + spacing)
                     model: listNetwork
                     spacing: 5
@@ -126,17 +139,122 @@ Rectangle {
                             color: activated ?
                             UIConstants.greenColor: UIConstants.grayColor
                             onClicked: {
-                                networkManager.connectNetwork(name,!activated);
+                                networkManager.connectNetwork(bearerTypeName,name,!activated);
                             }
                         }
-                        QTextInput{
-                            width: UIConstants.sRect * 7
-                            text: setting
+                        QLabel{
+                            visible: bearerTypeName === "WLAN"
+                            width: UIConstants.sRect*3
+                            text: frequency+"MHz"
+                        }
+                        FlatIcon{
+                            visible: bearerTypeName === "WLAN" && hasPass
+                            width: UIConstants.sRect
+                            height: parent.height
+                            iconSize: UIConstants.fontSize * 1.5
+                            icon: UIConstants.iLock
+                            isSolid: true
+                            color: UIConstants.textColor
+                        }
+                        Row{
+                            visible: bearerTypeName === "WLAN"
+                            width: UIConstants.sRect*2+3*spacing
+                            height: parent.height
+                            spacing: 2
+                            Rectangle{
+                                anchors.bottom: parent.bottom
+                                width: parent.width / 4
+                                height: parent.height / 4
+                                color: strength > 0? UIConstants.textColor: UIConstants.transparentColor
+                                border.color: UIConstants.grayColor
+                                border.width: 1
+                            }
+                            Rectangle{
+                                anchors.bottom: parent.bottom
+                                width: parent.width / 4
+                                height: parent.height / 4 * 2
+                                color: strength > 25? UIConstants.textColor: UIConstants.transparentColor
+                                border.color: UIConstants.grayColor
+                                border.width: 1
+                            }
+                            Rectangle{
+                                anchors.bottom: parent.bottom
+                                width: parent.width / 4
+                                height: parent.height / 4 * 3
+                                color: strength > 50? UIConstants.textColor: UIConstants.transparentColor
+                                border.color: UIConstants.grayColor
+                                border.width: 1
+                            }
+                            Rectangle{
+                                anchors.bottom: parent.bottom
+                                width: parent.width / 4
+                                height: parent.height / 4 * 4
+                                color: strength > 75? UIConstants.textColor: UIConstants.transparentColor
+                                border.color: UIConstants.grayColor
+                                border.width: 1
+                            }
                         }
                     }
                 }
             }
         }
+    }
+    FlatRectangle{
+        id: rectWLANPass
+        visible: false
+        anchors.centerIn: parent
+        width: UIConstants.sRect * 11
+        height: UIConstants.sRect * 6
+        Column{
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 5
+            Row{
+                spacing: 5
+                QLabel{
+                    width: UIConstants.sRect*4
+                    height: UIConstants.sRect*2
+                    text: "Password"
+                }
+                QTextInput{
+                    id: txtPassWord
+                    width: UIConstants.sRect*6
+                    height: UIConstants.sRect*2
+                    text: ""
+                }
+            }
+            Row{
+                id: row
+                spacing: UIConstants.sRect*2
+                FlatButtonIcon{
+                    width: UIConstants.sRect*4
+                    height: UIConstants.sRect*2
+                    isSolid: true
+                    isShowRect: false
+                    isAutoReturn: true
+                    color: UIConstants.redColor
+                    icon: UIConstants.iClose
+                    onClicked: {
+                        closePassEditor();
+                    }
+                }
+                FlatButtonIcon{
+                    width: UIConstants.sRect*4
+                    height: UIConstants.sRect*2
+                    isSolid: true
+                    isShowRect: false
+                    isAutoReturn: true
+                    color: UIConstants.greenColor
+                    icon: UIConstants.iChecked
+                    onClicked: {
+                        networkManager.insertWLANPass(txtPassWord.text);
+                        closePassEditor();
+                    }
+                }
+            }
+        }
+
+
     }
 } // ConfigPage
 

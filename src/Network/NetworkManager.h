@@ -15,7 +15,7 @@
 #include <QtDBus/QDBusReply>
 #include <QtCore/QDebug>
 #include "NetworkInfo.h"
-typedef QMap<QString, QMap<QString, QVariant> > Connection;
+typedef QMap<QString, QMap<QString, QVariant>> Connection;
 Q_DECLARE_METATYPE(Connection)
 Q_DECLARE_METATYPE(QList<uint>);
 Q_DECLARE_METATYPE(QList<QList<uint> >);
@@ -52,18 +52,26 @@ public:
     {
         return QQmlListProperty<NetworkInterface>(this, m_listInterface);
     }
-    Q_INVOKABLE void reload();
+
     static void expose();
     void setPass(QString pass){
         m_pass = pass;
     }
-    QString getConnection(QString settingPath, Connection *found_connection);
+    void getAccessPointInfo(NetworkInfo* accessPoint);
+    void getListSettings(NetworkInterface *interfaceName);
+    void getConnectionSetting(QString settingPath, NetworkInfo *connection);
+    bool connectSetting(NetworkInfo* setting, bool connect);
+    bool connectAcessPoint(NetworkInfo* accessPoint, bool connect);
 public:
-    Q_INVOKABLE void connectNetwork(QString name,bool connect);
+    Q_INVOKABLE void reload();
+    Q_INVOKABLE void connectNetwork(QString bearerTypeName, QString name,bool connect);
+    Q_INVOKABLE void insertWLANPass(QString pass);
 Q_SIGNALS:
     void listInterfaceChanged();
+    void needWLANPass();
 public Q_SLOTS:
 private:
+    NetworkInfo* m_currentAccessPoint = nullptr;
     QNetworkConfigurationManager m_mgr;
     QNetworkSession* m_session = nullptr;
     QList<NetworkInterface *> m_listInterface;
