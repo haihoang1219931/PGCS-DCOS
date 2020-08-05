@@ -68,12 +68,6 @@ Rectangle {
         anchors.left: parent.left
         anchors.leftMargin: 8
         model: vehicle.paramsModel
-//            model: ListModel {
-//                ListElement {selected: false;name: "Param A"; unit:"m/s"; value:"12"}
-//                ListElement {selected: true;name: "Param B"; unit:"m/s"; value:"12"}
-//                ListElement {selected: true;name: "Param C"; unit:"m/s"; value:"12"}
-//                ListElement {selected: false;name: "Param D"; unit:"m/s"; value:"12"}
-//            }
         delegate: Rectangle {
             id: rectItem
             height: visible?UIConstants.sRect:0

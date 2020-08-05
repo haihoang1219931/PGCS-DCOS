@@ -206,7 +206,6 @@ Item {
         }
 
         //----------- Division
-
         SignalIndicator{
             id: btnLinkStatus
             anchors.right: btnMessage.left

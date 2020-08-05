@@ -243,6 +243,10 @@ QtObject {
     readonly property string iClose:                "\uf00d"
     readonly property string iGamepad:              "\uf11b"
     readonly property string iRefresh:              "\uf2f1"
+    readonly property string iEthernet:             "\uf796"
+    readonly property string iWireless:             "\uf1eb"
+    readonly property string iUnknown:              "\uf05a"
+    readonly property string iLock:                 "\uf023"
     //------- Marker
     readonly property string iMouse:                "\uf00d"
     readonly property string iAddMarker:            "\uf0fe"

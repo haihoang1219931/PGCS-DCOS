@@ -639,7 +639,9 @@ Item {
                     }
                     FooterButton {
                         id: btnStartEngine
-                        Layout.preferredWidth: parent.height
+                        visible: vehicle.vehicleType === 1
+                        Layout.preferredWidth: vehicle.vehicleType === 1 ?
+                                                   parent.height:0
                         Layout.preferredHeight: parent.height
 //                        icon:
                         btnText: "Start\nEngine"

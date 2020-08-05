@@ -210,11 +210,13 @@ void JoystickTask::doWork()
                 ioctl(_fd, JSIOCGAXES, &axes);
                 ioctl(_fd, JSIOCGBUTTONS, &buttons);
                 close(_fd);
-                foundValidJs = true;
-                m_joyID = jsFile;
-                m_joystick.openPath(m_joyID.toStdString());
-                Q_EMIT joystickConnected(true);
-                break;
+                if(axes >= 3){
+                    foundValidJs = true;
+                    m_joyID = jsFile;
+                    m_joystick.openPath(m_joyID.toStdString());
+                    Q_EMIT joystickConnected(true);
+                    break;
+                }
             }
         }
         sleep(1);

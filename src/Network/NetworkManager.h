@@ -15,34 +15,67 @@
 #include <QtDBus/QDBusReply>
 #include <QtCore/QDebug>
 #include "NetworkInfo.h"
-class NetworkManager : public QObject
-{
+typedef QMap<QString, QMap<QString, QVariant>> Connection;
+Q_DECLARE_METATYPE(Connection)
+Q_DECLARE_METATYPE(QList<uint>);
+Q_DECLARE_METATYPE(QList<QList<uint> >);
+class NetworkInterface: public NetworkInfo{
     Q_OBJECT
-    Q_PROPERTY(QQmlListProperty<NetworkInfo> listNetwork READ listNetwork NOTIFY listNetworkChanged)
-    Q_PROPERTY(QQmlListProperty<NetworkInfo> listInterface READ listInterface NOTIFY listInterfaceChanged)
+    Q_PROPERTY(QQmlListProperty<NetworkInfo> listNetwork READ listNetwork NOTIFY listNetworkChanged)    
 public:
-    explicit NetworkManager(QObject *parent = nullptr);
+    explicit NetworkInterface(QObject *parent = nullptr){}
     QQmlListProperty<NetworkInfo> listNetwork()
     {
         return QQmlListProperty<NetworkInfo>(this, m_listNetwork);
     }
-    QQmlListProperty<NetworkInfo> listInterface()
-    {
-        return QQmlListProperty<NetworkInfo>(this, m_listInterface);
+    QList<NetworkInfo *> getListNetwork(){
+        return m_listNetwork;
     }
-    Q_INVOKABLE void reload();
-    static void expose();
-public:
-    Q_INVOKABLE void connectNetwork(QString name,bool connect);
+    void append(NetworkInfo* net){
+        m_listNetwork.append(net);
+        Q_EMIT listNetworkChanged();
+    }
+
 Q_SIGNALS:
-    void listNetworkChanged();
+    void listNetworkChanged();    
+private:
+    QList<NetworkInfo *> m_listNetwork;
+};
+
+class NetworkManager : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(QQmlListProperty<NetworkInterface> listInterface READ listInterface NOTIFY listInterfaceChanged)
+public:
+    explicit NetworkManager(QObject *parent = nullptr);
+    QQmlListProperty<NetworkInterface> listInterface()
+    {
+        return QQmlListProperty<NetworkInterface>(this, m_listInterface);
+    }
+
+    static void expose();
+    void setPass(QString pass){
+        m_pass = pass;
+    }
+    void getAccessPointInfo(NetworkInfo* accessPoint);
+    void getListSettings(NetworkInterface *interfaceName);
+    void getConnectionSetting(QString settingPath, NetworkInfo *connection);
+    bool connectSetting(NetworkInfo* setting, bool connect);
+    bool connectAcessPoint(NetworkInfo* accessPoint, bool connect);
+public:
+    Q_INVOKABLE void reload();
+    Q_INVOKABLE void connectNetwork(QString bearerTypeName, QString name,bool connect);
+    Q_INVOKABLE void insertWLANPass(QString pass);
+Q_SIGNALS:
     void listInterfaceChanged();
+    void needWLANPass();
 public Q_SLOTS:
 private:
+    NetworkInfo* m_currentAccessPoint = nullptr;
     QNetworkConfigurationManager m_mgr;
     QNetworkSession* m_session = nullptr;
-    QList<NetworkInfo *> m_listNetwork;
-    QList<NetworkInfo *> m_listInterface;
+    QList<NetworkInterface *> m_listInterface;
+    QString m_pass = "1";
 };
 
 #endif // NETWORKMANAGER_H
