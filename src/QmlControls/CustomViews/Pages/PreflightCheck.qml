@@ -53,6 +53,37 @@ Rectangle {
         sidebarGeneralConfigs.currentIndex = 0;
     }
 
+    function loadCheckList(){
+        sidebarGeneralConfigs.model.clear();
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+                   text_: itemListName["MODECHECK"]["MENU_TITTLE"]
+                   [UIConstants.language[UIConstants.languageID]] });
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+                   text_: itemListName["PROPELLERS"]["MENU_TITTLE"]
+                   [UIConstants.language[UIConstants.languageID]] });
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+                   text_: itemListName["STEERING"]["MENU_TITTLE"]
+                   [UIConstants.language[UIConstants.languageID]] });
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+                   text_: itemListName["PITOT"]["MENU_TITTLE"]
+                   [UIConstants.language[UIConstants.languageID]] });
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+                   text_: itemListName["LASER"]["MENU_TITTLE"]
+                   [UIConstants.language[UIConstants.languageID]] });
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+                   text_: itemListName["GPS"]["MENU_TITTLE"]
+                   [UIConstants.language[UIConstants.languageID]] });
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+                   text_: itemListName["JOYSTICK"]["MENU_TITTLE"]
+                   [UIConstants.language[UIConstants.languageID]] });
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+                   text_: itemListName["RPM"]["MENU_TITTLE"]
+                   [UIConstants.language[UIConstants.languageID]] });
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+                   text_: itemListName["RESULT"]["MENU_TITTLE"]
+                   [UIConstants.language[UIConstants.languageID]] });
+    }
+
     RowLayout {
         anchors.fill: parent
         //---------- Sidebar
@@ -63,71 +94,14 @@ Rectangle {
             RectBorder {
                 type: "right"
             }
-            model: ListModel {
-                Component.onCompleted: {
-                    sidebarGeneralConfigs.model.clear();
-                    append({state_: "uncheck",showed_: true,
-                               text_: itemListName["MODECHECK"]["MENU_TITTLE"]
-                               [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",showed_: true,
-                               text_: itemListName["PROPELLERS"]["MENU_TITTLE"]
-                               [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",showed_: true,
-                               text_: itemListName["STEERING"]["MENU_TITTLE"]
-                               [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",showed_: true,
-                               text_: itemListName["PITOT"]["MENU_TITTLE"]
-                               [UIConstants.language[UIConstants.languageID]]});
-                    append({state_: "uncheck",showed_: true,
-                               text_: itemListName["LASER"]["MENU_TITTLE"]
-                               [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",showed_: true,
-                               text_: itemListName["GPS"]["MENU_TITTLE"]
-                               [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",showed_: true,
-                               text_: itemListName["JOYSTICK"]["MENU_TITTLE"]
-                               [UIConstants.language[UIConstants.languageID]] });
-                    append({state_: "uncheck",showed_: true,
-                               text_: itemListName["RPM"]["MENU_TITTLE"]
-                               [UIConstants.language[UIConstants.languageID]]});
-                    append({state_: "uncheck",showed_: true,
-                               text_: itemListName["RESULT"]["MENU_TITTLE"]
-                               [UIConstants.language[UIConstants.languageID]]});
-                }
+            model: ListModel {                
             }
         }
 
         Connections{
             target: UIConstants
             onLanguageIDChanged:{
-                sidebarGeneralConfigs.model.clear();
-                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
-                           text_: itemListName["MODECHECK"]["MENU_TITTLE"]
-                           [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
-                           text_: itemListName["PROPELLERS"]["MENU_TITTLE"]
-                           [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
-                           text_: itemListName["STEERING"]["MENU_TITTLE"]
-                           [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
-                           text_: itemListName["PITOT"]["MENU_TITTLE"]
-                           [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
-                           text_: itemListName["LASER"]["MENU_TITTLE"]
-                           [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
-                           text_: itemListName["GPS"]["MENU_TITTLE"]
-                           [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
-                           text_: itemListName["JOYSTICK"]["MENU_TITTLE"]
-                           [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
-                           text_: itemListName["RPM"]["MENU_TITTLE"]
-                           [UIConstants.language[UIConstants.languageID]] });
-                sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
-                           text_: itemListName["RESULT"]["MENU_TITTLE"]
-                           [UIConstants.language[UIConstants.languageID]] });
+                loadCheckList()
                 changeVehicleType(rootItem.vehicleType);
             }
         }
@@ -272,5 +246,8 @@ Rectangle {
             sidebarGeneralConfigs.next();
         }
 
+    }
+    Component.onCompleted: {
+        loadCheckList();
     }
 }
