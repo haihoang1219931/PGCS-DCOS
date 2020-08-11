@@ -205,7 +205,7 @@ void Config::createFile(QString fileName){
                     "<SettingsFile>\r\n"
                         "\t<Settings>\r\n"
                             "\t\t<Setting Name=\"UCServerAddress\" Type=\"System.String\" Scope=\"User\">\r\n"
-                              "\t\t\t<Value Profile=\"(Default)\">192.168.43.173</Value>\r\n"
+                              "\t\t\t<Value Profile=\"(Default)\">192.168.1.4</Value>\r\n"
                             "\t\t</Setting>\r\n"
                             "\t\t<Setting Name=\"UCServerPort\" Type=\"System.Int32\" Scope=\"User\">\r\n"
                               "\t\t\t<Value Profile=\"(Default)\">3000</Value>\r\n"
@@ -220,7 +220,7 @@ void Config::createFile(QString fileName){
                               "\t\t\t<Value Profile=\"(Default)\">rtsp://127.0.0.1:8554/stream</Value>\r\n"
                             "\t\t</Setting>\r\n"
                             "\t\t<Setting Name=\"UCPCDVideoSource\" Type=\"System.String\" Scope=\"User\">\r\n"
-                              "\t\t\t<Value Profile=\"(Default)\">https://192.168.43.173:3000?fcs=true</Value>\r\n"
+                              "\t\t\t<Value Profile=\"(Default)\">https://192.168.1.4:3000?fcs=true</Value>\r\n"
                             "\t\t</Setting>\r\n"
                         "\t</Settings>\r\n"
                     "</SettingsFile>\r\n";
