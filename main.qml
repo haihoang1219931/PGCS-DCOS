@@ -449,6 +449,9 @@ ApplicationWindow {
                 toast.toastContent = dataObject.participant.name + " đã rời phòng. !";
                 toast.show();
                 UCDataModel.userLeftRoom(UcApi.getRoomName());
+                // hide PCDVIDEO
+                if(userOnMap.pcdVideoView.visible)
+                    userOnMap.pcdVideoView.visible = false;
             }
 
             console.log("--------------------------------------> Done handle update room signal\n");
@@ -1147,7 +1150,7 @@ ApplicationWindow {
                 anchors.top: parent.top
                 anchors.left: mapControl.right
                 anchors.leftMargin: 8
-                anchors.topMargin: UIConstants.sRect + 8
+                anchors.topMargin: UIConstants.sRect + 8                
                 property bool show: true
             }
             PropertyAnimation{
@@ -1188,7 +1191,7 @@ ApplicationWindow {
                 width: UIConstants.sRect * 3
                 height: UIConstants.sRect
                 z: 5
-                visible: UIConstants.monitorMode === UIConstants.monitorModeFlight
+//                visible   : UIConstants.monitorMode === UIConstants.monitorModeFlight
                 anchors.horizontalCenter: uavProfilePath.horizontalCenter
                 anchors.top: uavProfilePath.bottom
                 anchors.topMargin: 0
@@ -1999,7 +2002,8 @@ ApplicationWindow {
         id: timerStart
         repeat: false
         interval: 2000
-        onTriggered: {
+        onTriggered: {            
+            // --- Map
             // --- Joystick
             joystick.mapFile = "conf/joystick.conf"
             joystick.start();
@@ -2042,11 +2046,13 @@ ApplicationWindow {
     }
     Component.onCompleted: {
         UIConstants.changeTheme(UIConstants.themeNormal);
-        if(FCSConfig.value("Settings:MapDefault:Value:data") !== "")
+        // --- Map
+        if(FCSConfig.value("Settings:MapDefault:Value:data") !== ""){
             mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));
+            mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));
+        }
         if(ApplicationConfig.value("Settings:Language:Value:data") !== "")
             UIConstants.languageID = ApplicationConfig.value("Settings:Language:Value:data");
         timerStart.start();
-
     }
 }

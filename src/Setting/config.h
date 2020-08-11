@@ -19,22 +19,21 @@ class ConfigElement : public QObject
 public:
     explicit ConfigElement(QObject *parent = nullptr){}
     ConfigElement(QString  name, QString  value){
-        sprintf(_name,"%s",name.toStdString().c_str());
-        sprintf(_value,"%s",value.toStdString().c_str());
+        setName(name);
+        setValue(value);
     }
-    ~ConfigElement(){}
 public:
-    QString name(){ return QString(_name);}
-    QString value(){ return QString(_value);}
+    QString name(){ return m_name;}
+    QString value(){ return m_value;}
     void setName(QString value){
-        if(_name!=value){
-            sprintf(_name,"%s",value.toStdString().c_str());
+        if(m_name!=value){
+            m_name = value;
             Q_EMIT nameChanged();
         }
     }
     void setValue(QString value){
-        if(_value!=value){
-            sprintf(_value,"%s",value.replace(",",".").toStdString().c_str());
+        if(m_value!=value){
+            m_value = value;
             Q_EMIT valueChanged();
         }
     }
@@ -42,17 +41,17 @@ Q_SIGNALS:
     void nameChanged();
     void valueChanged();
 private:
-    char _name[256];
-    char _value[256];
+    QString m_name;
+    QString m_value;
 };
 
 
 class Config: public QObject
 {
     Q_OBJECT
+    Q_PROPERTY( QQmlListProperty<ConfigElement> paramsModel  READ paramsModel NOTIFY paramsModelChanged)
 public:
     explicit Config(QObject *parent = nullptr);
-    Q_PROPERTY( QQmlListProperty<ConfigElement> paramsModel  READ paramsModel NOTIFY paramsModelChanged)
 public:
     QQmlListProperty<ConfigElement> paramsModel()
     {

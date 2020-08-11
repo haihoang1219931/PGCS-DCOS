@@ -6,10 +6,10 @@ Config::Config(QObject *parent) : QObject(parent)
 }
 
 int Config::changeData(QString data,QString value){
-//    printf("%s[%s]=%s\r\n",
-//           __func__,
-//           data.toStdString().c_str(),
-//           value.toStdString().c_str());
+    printf("%s[%s]=%s\r\n",
+           __func__,
+           data.toStdString().c_str(),
+           value.toStdString().c_str());
     if(m_settings != nullptr){
         QVariantMap settingsMap;
         for(tinyxml2::XMLElement* child = m_settings->FirstChildElement();
@@ -29,7 +29,7 @@ int Config::changeData(QString data,QString value){
 
 void Config::print(){
 }
-int Config::readConfig(QString file){
+int Config::readConfig(QString file){    
     m_fileConfig = file;
     m_mapData.clear();
     m_paramsModel.clear();
@@ -44,21 +44,23 @@ int Config::readConfig(QString file){
             child != nullptr; child = child->NextSiblingElement()){
             QVariantMap settingMap;
             QVariantMap attributesMap;
-            attributesMap.insert("Name",QString::fromUtf8(child->Attribute("Name")));
-            attributesMap.insert("Type",QString::fromUtf8(child->Attribute("Type")));
-            attributesMap.insert("Scope",QString::fromUtf8(child->Attribute("Scope")));
-            QVariantMap valueMap;
-            valueMap.insert("data",QString::fromUtf8(child->FirstChildElement("Value")->GetText()));
-            valueMap.insert("profile",QString::fromUtf8(child->Attribute("Profile")));
-            attributesMap.insert("Name",QString::fromUtf8(child->Attribute("Name")));
-            settingMap.insert("Attributes",attributesMap);
-            settingMap.insert("Value",valueMap);
-            settingsMap.insert(QString::fromUtf8(child->Attribute("Name")),settingMap);
-            m_paramsModel.append(new ConfigElement(
-                                    QString::fromUtf8(child->Attribute("Name")),
-                                    QString::fromUtf8(child->FirstChildElement("Value")->GetText())
-                                     )
-                                 );
+            if(child->Attribute("Name")!=nullptr){
+                attributesMap.insert("Name",QString::fromUtf8(child->Attribute("Name")));
+                attributesMap.insert("Type",QString::fromUtf8(child->Attribute("Type")));
+                attributesMap.insert("Scope",QString::fromUtf8(child->Attribute("Scope")));
+                QVariantMap valueMap;
+                if(child->FirstChildElement("Value")!= nullptr){
+                    valueMap.insert("data",QString::fromUtf8(child->FirstChildElement("Value")->GetText()));
+                    valueMap.insert("profile",QString::fromUtf8(child->Attribute("Profile")));
+                    attributesMap.insert("Name",QString::fromUtf8(child->Attribute("Name")));
+                    settingMap.insert("Attributes",attributesMap);
+                    settingMap.insert("Value",valueMap);
+                    settingsMap.insert(QString::fromUtf8(child->Attribute("Name")),settingMap);
+                    ConfigElement *configElement = new ConfigElement(attributesMap["Name"].toString(),
+                                        valueMap["data"].toString());
+                    m_paramsModel.append(configElement);
+                }
+            }
         }
         m_mapData.insert("Settings",settingsMap);
     }else{
@@ -114,7 +116,7 @@ void Config::createFile(QString fileName){
                                 "\t\t\t<Value Profile=\"(Default)\">/dev/ttyACM0</Value>\r\n"
                             "\t\t</Setting>\r\n"
                             "\t\t<Setting Name=\"PilotIP\" Type=\"System.String\" Scope=\"User\">\r\n"
-                                "\t\t\t<Value Profile=\"(Default)\">127.0.0.1</Value>\r\n"
+                                "\t\t\t<Value Profile=\"(Default)\">192.168.0.220</Value>\r\n"
                             "\t\t</Setting>\r\n"
                             "\t\t<Setting Name=\"PilotPortIn\" Type=\"System.Int32\" Scope=\"User\">\r\n"
                                 "\t\t\t<Value Profile=\"(Default)\">20002</Value>\r\n"
@@ -253,10 +255,10 @@ void Config::createFile(QString fileName){
                           "\t\t\t<Value Profile=\"(Default)\">11999</Value>\r\n"
                         "\t\t</Setting>\r\n"
                         "\t\t<Setting Name=\"StreamEO\" Type=\"System.String\" Scope=\"User\">\r\n"
-                          "\t\t\t<Value Profile=\"(Default)\">udpsrc port=8600 ! application/x-rtp,encoding-name=H264,payload=96 ! rtph264depay ! h264parse ! tee name=t t. ! queue ! avdec_h264 </Value>\r\n"
+                          "\t\t\t<Value Profile=\"(Default)\">udpsrc port=8600 ! tsdemux ! tee name=t t. ! queue ! h265parse ! nvh265dec ! videoconvert ! video/x-raw,format=I420 </Value>\r\n"
                         "\t\t</Setting>\r\n"
                         "\t\t<Setting Name=\"StreamIR\" Type=\"System.String\" Scope=\"User\">\r\n"
-                          "\t\t\t<Value Profile=\"(Default)\">filesrc location=/Data/Video/IR/IR2.mp4 ! qtdemux ! h264parse ! tee name=t t. ! queue ! avdec_h264 </Value>\r\n"
+                          "\t\t\t<Value Profile=\"(Default)\">filesrc location=rtspsrc location=rtsp://192.168.0.103/z3-2.sdp latency=100 do-retransmission=true drop-on-latency=true ! rtph265depay ! tee name=t t. ! queue ! h265parse ! nvh265dec ! videoconvert ! video/x-raw,format=I420 ! videoscale ! video/x-raw,width=1920,height=1080 </Value>\r\n"
                         "\t\t</Setting>\r\n"
                         "\t\t<Setting Name=\"MapDefault\" Type=\"System.String\" Scope=\"User\">\r\n"
                           "\t\t\t<Value Profile=\"(Default)\">Layers.tpk</Value>\r\n"

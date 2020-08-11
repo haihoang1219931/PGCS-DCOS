@@ -23,7 +23,7 @@ class NetworkInterface: public NetworkInfo{
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<NetworkInfo> listNetwork READ listNetwork NOTIFY listNetworkChanged)    
 public:
-    explicit NetworkInterface(QObject *parent = nullptr){}
+    explicit NetworkInterface(NetworkInfo *parent = nullptr){}
     QQmlListProperty<NetworkInfo> listNetwork()
     {
         return QQmlListProperty<NetworkInfo>(this, m_listNetwork);

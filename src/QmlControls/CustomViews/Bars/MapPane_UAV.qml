@@ -2260,6 +2260,7 @@ Flickable {
 
     function setMap(mapData){
         urlMaps = mapFolderPath  + mapData
+        console.log("urlMaps = "+urlMaps);
         createMap()
         //        //map.refresh()
         //        map.plugin = createPluginMap("esri",Helper.convertUrltoPath(urlMaps))
@@ -2296,7 +2297,7 @@ Flickable {
             map.tilt = tilt
             map.bearing = bearing
             map.fieldOfView = fov
-            map.zoomLevel = zoomLevel
+            map.zoomLevel = 14;
             map.center = center
             //map.slidersExpanded = panelExpanded
         } else {
@@ -2387,4 +2388,3 @@ Flickable {
             scrollWP.hideScrollWP()
     }
 }
-

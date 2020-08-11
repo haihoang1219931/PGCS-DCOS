@@ -77,15 +77,16 @@ Rectangle{
     Rectangle {
         id: rectangle
         x: 120
-        y: 280
         width: 520
-        height: 49
+        height: UIConstants.sRect*2
         color: "#00000000"
+        anchors.topMargin: UIConstants.sRect*5/2
+        anchors.top: rectPassed.bottom
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         Label {
             id: label
-            height: UIConstants.sRect * 2
+            height: 68
             text: itemListName["TITTLE"]
                   [UIConstants.language[UIConstants.languageID]]
             font.pixelSize: UIConstants.fontSize
@@ -103,6 +104,7 @@ Rectangle{
     }
 
     Rectangle {
+        id: rectPassed
         width: UIConstants.sRect * 4
         height: width
         color: "#00000000"
@@ -136,6 +138,7 @@ Rectangle{
     }
 
     Rectangle {
+        id: rectFailed
         width: UIConstants.sRect * 4
         height: width
         color: "#00000000"
@@ -171,3 +174,8 @@ Rectangle{
 
     }
 }
+
+/*##^## Designer {
+    D{i:2;anchors_height:68}D{i:1;anchors_y:280}
+}
+ ##^##*/
