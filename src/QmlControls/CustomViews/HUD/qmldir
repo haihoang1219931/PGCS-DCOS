@@ -1,0 +1,17 @@
+Module CustomViews.HUD
+
+# Widgets
+#CenterMapDropButton     1.0 CenterMapDropButton.qml
+#CenterMapDropPanel      1.0 CenterMapDropPanel.qml
+#CompassRing             1.0 CompassRing.qml
+#InstrumentSwipeView     1.0 InstrumentSwipeView.qml
+#MapFitFunctions         1.0 MapFitFunctions.qml
+#MapScale                1.0 MapScale.qml
+QGCArtificialHorizon    1.0 QGCArtificialHorizon.qml
+QGCAttitudeHUD          1.0 QGCAttitudeHUD.qml
+QGCAttitudeWidget       1.0 QGCAttitudeWidget.qml
+QGCCompassWidget        1.0 QGCCompassWidget.qml
+QGCPitchIndicator       1.0 QGCPitchIndicator.qml
+
+AhrsHUD                 1.0 AhrsHUD.qml
+

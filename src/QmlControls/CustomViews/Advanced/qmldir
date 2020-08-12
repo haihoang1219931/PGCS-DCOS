@@ -1,0 +1,14 @@
+Module CustomViews.Advanced
+
+AdvancedConfig			1.0 AdvancedConfig.qml
+ConfigOverlay			1.0 ConfigOverlay.qml
+ConfigSearch			1.0 ConfigSearch.qml
+ConfigEO			1.0 ConfigEO.qml
+ConfigSearchClass		1.0 ConfigSearchClass.qml
+DragItem			1.0 DragItem.qml
+ConfigIR			1.0 ConfigIR.qml
+ConfigSearchImage		1.0 ConfigSearchImage.qml
+ImageItem			1.0 ImageItem.qml
+ConfigMotionCParams		1.0 ConfigMotionCParams.qml
+ConfigSearchPlate		1.0 ConfigSearchPlate.qml
+PlateIDItem			1.0 PlateIDItem.qml

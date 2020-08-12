@@ -1,0 +1,6 @@
+Module CustomViews.MapComponents
+
+CC          1.0 CC.qml
+Drone       1.0 Drone.qml
+PM          1.0 PM.qml
+Marker      1.0 Marker.qml

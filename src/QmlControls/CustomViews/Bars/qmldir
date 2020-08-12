@@ -1,0 +1,14 @@
+Module CustomViews.MainHeader
+
+NavBar          1.0 NavBar.qml
+FooterBar       1.0 FooterBar.qml
+RightBar        1.0 RightBar.qml
+ChatBox         1.0 ChatBox.qml
+HUD             1.0 HUD.qml
+MapPane         1.0 MapPane.qml
+PopupInfo       1.0 PopupInfo.qml
+VideoPane       1.0 VideoPane.qml
+PaneControl     1.0 PaneControl.qml
+WarningPane     1.0 WarningPane.qml
+MapControl      1.0 MapControl.qml
+ListPlatesLog   1.0 ListPlatesLog.qml
