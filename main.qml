@@ -1260,6 +1260,27 @@ ApplicationWindow {
                                     footerBar.isShowConfirm = false;
                                 }
                             });
+                        }if(func === "RESTART_APP"){
+                            var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
+                            var confirmDialogObj = compo.createObject(parent,{
+                                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["RESTART_APP"]
+                                                        [UIConstants.language[UIConstants.languageID]],
+                                              "type": "CONFIRM",
+                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                              "z":200});
+                            confirmDialogObj.clicked.connect(function (type,func){
+                                if(func === "DIALOG_OK"){
+                                    confirmDialogObj.destroy();
+                                    compo.destroy();
+                                    footerBar.isShowConfirm = false;
+                                    computer.restartApplication();
+                                }else if(func === "DIALOG_CANCEL"){
+                                    confirmDialogObj.destroy();
+                                    compo.destroy();
+                                    footerBar.isShowConfirm = false;
+                                }
+                            });
                         }else if(func === "QUIT_COM"){
                             var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                             var confirmDialogObj = compo.createObject(parent,{

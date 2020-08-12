@@ -17,7 +17,6 @@ import QtQuick.Controls 2.1
 //---------------- Include custom libs ----------------------------------------
 import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
-
 Label {
     id: rootItem
     property bool isSolid: true

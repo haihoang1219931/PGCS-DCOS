@@ -33,3 +33,6 @@ FlatButtonText                  1.0 FlatButtonText.qml
 QComboBox                       1.0 QComboBox.qml
 ScrollWaypoint                  1.0 ScrollWaypoint.qml
 UavProfilePath                  1.0 UavProfilePath.qml
+QTabBar				1.0 QTabBar.qml
+QTabButton			1.0 QTabButton.qml
+QCheckBox			1.0 QCheckBox.qml

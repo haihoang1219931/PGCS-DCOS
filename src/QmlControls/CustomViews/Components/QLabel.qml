@@ -18,6 +18,7 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
 import QtQuick 2.0
 //---------------- Include custom libs ----------------------------------------
+
 import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
 
@@ -31,6 +32,8 @@ Rectangle {
     border.width: 1
     radius: UIConstants.rectRadius
     property alias text: label.text
+    property alias horizontalAlignment: label.horizontalAlignment
+    property alias verticalAlignment: label.verticalAlignment
     Label{
         id: label
         horizontalAlignment: Text.AlignHCenter
@@ -38,8 +41,7 @@ Rectangle {
         color: UIConstants.textColor
         font.pixelSize:UIConstants.fontSize
         font.family: UIConstants.appFont
-        text: "L"
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        text: "Label"
+        anchors.fill: parent
     }
 }

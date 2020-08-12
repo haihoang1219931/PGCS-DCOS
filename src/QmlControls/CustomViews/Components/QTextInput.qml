@@ -14,9 +14,9 @@
 //------------------ Include QT libs ------------------------------------------
 import QtQuick 2.6
 //---------------- Include custom libs ----------------------------------------
+
 import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
-
 TextInput {
     id: root
     width: UIConstants.sRect * 4
@@ -28,12 +28,9 @@ TextInput {
     rightPadding: 4
     font.pixelSize:UIConstants.fontSize
     font.family: UIConstants.appFont
-    text: "Text input"
+    text: ""
     font.bold: false
     clip: true
-//    onFocusChanged: {
-//        txtInput.focus = focus;
-//    }
     Rectangle{
         id: txtInput
         color: UIConstants.transparentColor
@@ -41,9 +38,5 @@ TextInput {
         border.width: 1
         radius: UIConstants.rectRadius
         anchors.fill: parent
-//        onFocusChanged: {
-//            root.focus = focus;
-//            console.log("Focus changed to "+focus);
-//        }
     }
 }

@@ -247,6 +247,8 @@ QtObject {
     readonly property string iWireless:             "\uf1eb"
     readonly property string iUnknown:              "\uf05a"
     readonly property string iLock:                 "\uf023"
+    readonly property string iMinusText:            "\uf068"
+    readonly property string iPlusText:             "\uf067"
     //------- Marker
     readonly property string iMouse:                "\uf00d"
     readonly property string iAddMarker:            "\uf0fe"
@@ -340,7 +342,7 @@ QtObject {
     readonly property string themeLight:            "light"
     //------- UC
     readonly property string iUserMinus:            "\uf503"
-    readonly property string iMinus:                "\uf068"
+    readonly property string iMinus:                "\uf068"    
     readonly property string iAddUser:              "\uf055"
     readonly property string iShareVideo:           "\uf064"
     readonly property string iRemoveUser:           "\uf056"
@@ -523,6 +525,7 @@ QtObject {
                 "WINDOWS_NORMAL":["Minize windows","Thu nhỏ"],
                 "WINDOWS_FULL":["Full screen","Toàn màn hình"],
                 "QUIT_APP":["Quit application","Thoát ứng dụng"],
+                "RESTART_APP":["Restart application","Chạy lại ứng dụng"],
                 "SHUTDOWN_COM":["Shutdown computer","Tắt thiết bị"],
                 "LANGUAGE":["Language selection","Lựa chọn ngôn ngữ"],
                 "SELECT":["Select","Lựa chọn"],
@@ -565,8 +568,8 @@ QtObject {
                 "TITTLE":["Network Connection","Thông số kết nối mạng"],
                 "SIDEBAR":["Network","Mạng"],
                 "REFRESH":["Refresh","Tải lại"],
-                "INTERFACES":["Interface","Thiết bị"],
-                "CONNECTIONS":["Connections","Các kết nối"],
+                "ACCESS_LIST":["Access List","Thiết bị"],
+                "CONNECTIONS":["Network Connections","Các kết nối"],
             },
         },
         "VIDEO":{
@@ -611,7 +614,7 @@ QtObject {
             },
             "UAV_PROFILE_PATH":{
                 "TITTLE":["UAV Profile Path", "Độ cao máy bay"],
-                "DISTANCE":["Distance (m)", "Khoảng cách (m)"],
+                "DISTANCE":["Distance (m)", "Khoàng cách (m)"],
                 "ALTITUDE":["Altitude (m)", "Độ cao (m)"],
             },
 
@@ -648,6 +651,8 @@ QtObject {
                     "Bạn có muốn chuyển chế độ bay sang"],
                 "QUIT_APP":["Are you sure to want to \n close application",
                     "Bạn có muốn tắt ứng dụng"],
+                "RESTART_APP":["Are you sure to want to \n restart application",
+                    "Bạn có muốn chạy lại ứng dụng"],
                 "SHUTDOWN_COM":["Are you sure to want to \n turn off computer",
                     "Bạn có muốn tắt thiết bị"],
                 "ARM":["ARM","MỞ KHÓA ĐỘNG CƠ"],
