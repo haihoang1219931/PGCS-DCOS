@@ -2,163 +2,145 @@
 
 Tracker::Tracker()
 {
-    //Var initialization
-    this->tag = "";
-    this->state_ = TRACK_INVISION;
-    this->PSR_mask = 11;
-    this->PSR_ratio[0] = 2;
-    this->PSR_ratio[1] = 11;
+    m_initTrack = false;
+    m_state = TRACK_INVISION;
+    m_PSRMask = 11;
+    m_PSRRatio[0] = 2;
+    m_PSRRatio[1] = 5;
 
-    this->_learning = 0.125;
+    m_learningRate = 0.125;
 
-    this->_im_size.width = 0;
-    this->_im_size.height = 0;
-
-    this->_init = false;
-    this->_eps = true;
-
+    m_imgSize.width = 0;
+    m_imgSize.height = 0;
+    m_haveEps = true;
 }
 
-Tracker::~Tracker()
-{
-
-
-}
-
-string Tracker::getTag(){
-    return this->tag;
-}
-
-void Tracker::setTag(string tag){
-    this->tag = tag;
-}
-
-void Tracker::initTrack(const cv::Mat &input_image, cv::Point topLeft, cv::Point bottomRight)
-{//Init tracker from user selection
-
-    this->initTrack(input_image,
-                    cv::Rect(topLeft.x, topLeft.y,
-                             bottomRight.x - topLeft.x,
-                             bottomRight.y - topLeft.y));
-
-}
+Tracker::~Tracker() {}
 
 void Tracker::initTrack(const cv::Mat &input_image, cv::Rect input_rect)
-{//Init tracker from user selection
-
-    if (this->_init) return;
-
-    if (input_image.empty())
+{
+    if(this->m_initTrack)
+        return;
+    if(input_image.empty())
     {
-        cout << "Error while selecting target !" << endl;
+        std::runtime_error("Error in getting tracked object.\r\n");
         return;
     }
+    this->m_imgSize.width = input_image.cols;
+    this->m_imgSize.height = input_image.rows;
 
-    this->_im_size.width = input_image.cols;
-    this->_im_size.height = input_image.rows;
+    m_trackSize = std::max(input_rect.width, input_rect.height);
 
-    input_image(input_rect).copyTo(prev_img.real_image);  //Store frame as previous frame
+    if(m_trackSize < 101)
+        m_stdSize = m_trackSize;
+    else if(m_trackSize < 201)
+    {
+        m_stdSize = m_trackSize / 2;
+    }
+    else
+    {
+        m_stdSize = m_trackSize / 4;
+    }
 
-    this->prev_img.cols = this->prev_img.real_image.cols;
-    this->prev_img.rows = this->prev_img.real_image.rows;
+    cv::Mat temp = input_image(input_rect).clone();
+    cv::resize(temp, temp, cv::Size(m_stdSize, m_stdSize));
+    temp.copyTo(m_prevImg.real_image);
+//    input_image(input_rect).copyTo(m_prevImg.real_image);
+    m_prevImg.cols = m_prevImg.real_image.cols;
+    m_prevImg.rows = m_prevImg.real_image.rows;
+    std::cout << "=====================================\r\n";
 
-    ComputeDFT(this->prev_img, true); //Compute Direct Fourier Transform
-    SetRoi(input_rect);               //User selection is object current pos
+    // Extract HoG
+//    m_prevImg.hog_feature = extractFeatures(m_prevImg);
+//    std::cout << m_prevImg.hog_feature.size() << std::endl;
 
-    InitFilter();                     //Init filter from ROI (ROI + affine transf)
+//    m_featureMapSize[0] = int(std::sqrt(m_prevImg.hog_feature.cols));
+//    m_featureMapSize[1] = m_featureMapSize[0];
+//    m_featureMapSize[2] = m_prevImg.hog_feature.rows;
 
-    this->_init = true;
-}
+//    createHannWindow(m_hanWin, m_featureMapSize);
+//    std::cout<< m_hanWin.size() << std::endl;
+//    m_prevImg.hog_feature = m_hanWin.mul(m_prevImg.hog_feature);
 
-void Tracker::SetRoi(cv::Rect input_ROI)
-{//Init ROI position and center
-    //printf("Begin %s\r\n",__func__);
-    this->current_ROI.ROI = input_ROI;
-    this->current_ROI.ROI_center.x = round(input_ROI.width / 2);
-    this->current_ROI.ROI_center.y = round(input_ROI.height / 2);
-    //printf("End %s\r\n",__func__);
+    ComputeDFT(m_prevImg, true);
+    setROI(input_rect);
+    initFilter();
+    this->m_initTrack = true;
 }
 
 void Tracker::performTrack(const cv::Mat &input_image)
 {
-    //Perform tracking over current frame
-    //cv::imshow("input_image Tracker", input_image);
-    if (!this->_init) return;
-
-    if (this->_filter.empty())
+    if(!this->m_initTrack)
+        return;
+    if(this->m_filter.empty())
     {
-        cout << "Error, must initialize tracker first ! " << endl;
+        std::cerr << "Must initialize filter in first!\r\n";
         return;
     }
 
-    cv::Point new_loc;
-    input_image(this->current_ROI.ROI).copyTo(this->current_img.real_image);    //Crop new search area
-    ComputeDFT(this->current_img, true);                                        //Compute Direct Fourier Transform
-    new_loc = PerformTrack();                                                   //Perform tracking
+    cv::Point newLoc;
+    cv::Mat temp = input_image(this->m_currRoi.ROI).clone();
+    cv::resize(temp, temp, cv::Size(m_stdSize, m_stdSize));
+    temp.copyTo(m_currImg.real_image);
+//    input_image(this->m_currRoi.ROI).copyTo(this->m_currImg.real_image);
+    ComputeDFT(m_currImg, true);
 
-    if (new_loc.x >= 0 && new_loc.y >= 0)                                            //If PSR > ratio then update
+    newLoc = PerformTrack();                                                   //Perform tracking
+    newLoc *= (m_trackSize / m_stdSize);
+//    std::cout << "New Location: " << newLoc << std::endl;
+
+    if (newLoc.x >= 0 && newLoc.y >= 0)                                            //If PSR > ratio then update
     {
-        this->state_ = TRACK_INVISION;
-        //printf("Found at[%dx%d]\r\n", new_loc.x, new_loc.y);
-        Update(new_loc);                                                        //Update Tracker
+        this->m_state = TRACK_INVISION;
+        update(newLoc);                                                        //Update Tracker
     }
-    else this->state_ = TRACK_OCCLUDED;
-}
-int Tracker::Get_State(){
-    return this->state_;
+    else this->m_state = TRACK_OCCLUDED;
 }
 
+void Tracker::resetTrack()
+{
+    this->m_initTrack = false;
+}
+
+cv::Rect Tracker::getPosition() const       //Get ROI position
+{
+    return m_currRoi.ROI;
+}
+
+int Tracker::getState()
+{
+    return m_state;
+}
+bool Tracker::isInitialized(){
+    return m_initTrack;
+}
 void Tracker::ComputeDFT(image_track &input_image, bool preprocess)
-{//Compute Direct Fourier Transform on input image, with or without a pre-processing
-
+{
     cv::Mat res = this->ComputeDFT(input_image.real_image, preprocess);
-
     input_image.image_spectrum = res;
     input_image.opti_dft_comp_rows = res.rows;
     input_image.opti_dft_comp_cols = res.cols;
 }
 
 cv::Mat Tracker::ComputeDFT(const cv::Mat &input_image, bool preprocess)
-{//Compute Direct Fourier Transform on input image, with or without a pre-processing
-
+{
     cv::Mat gray_padded, complexI;
 
-    int x = input_image.rows;
-    int y = input_image.cols;
+    int w = input_image.rows;
+    int h = input_image.cols;
 
     //Get optimal dft image size
-    int i = cv::getOptimalDFTSize(x);
-    int j = cv::getOptimalDFTSize(y);
-
-    //Get optimal dct image size
-    //int i = 2*getOptimalDFTSize((x+1)/2);
-    //int j = 2*getOptimalDFTSize((y+1)/2);
+    int i = cv::getOptimalDFTSize(w);
+    int j = cv::getOptimalDFTSize(h);
 
     //Zero pad input image up to optimal dft size
-    cv::copyMakeBorder(input_image, gray_padded, 0, i - x, 0, j - y, cv::BORDER_CONSTANT, cv::Scalar::all(0));
-
+    cv::copyMakeBorder(input_image, gray_padded, 0, i - w, 0, j - h, cv::BORDER_CONSTANT, cv::Scalar::all(0));
     input_image.copyTo(gray_padded);
 
-    //If input image is RGB, convert to gray scale
-    if (gray_padded.channels() > 1) cvtColor(gray_padded, gray_padded, CV_RGB2GRAY);
     gray_padded.convertTo(gray_padded, CV_32F);
 
-    if (preprocess)     //Apply pre-processing to input image
+    if(preprocess)
     {
-
-        // DCT Stuff
-        //        cv::dct(gray_padded, gray_padded, CV_DXT_FORWARD);
-        //        for (int i=0; i<gray_padded.rows; i+=1)
-        //        {
-        //            for (int j=0; j<gray_padded.cols; j+=1)
-        //            {
-        //                gray_padded.at<float>(i,j) *= (1 / (1 + (exp(-(i * gray_padded.cols + j)))));
-        //            }
-        //        }
-        //        gray_padded.at<float>(0,0) = 0;
-        //        cv::dct(gray_padded, gray_padded, CV_DXT_INVERSE);
-
-
         cv::normalize(gray_padded, gray_padded, 0.0, 1.0, cv::NORM_MINMAX);
 
         gray_padded += cv::Scalar::all(1);
@@ -174,21 +156,18 @@ cv::Mat Tracker::ComputeDFT(const cv::Mat &input_image, bool preprocess)
         gray_padded /= sum_.val[0];
 
         //Apply Hanning window to reduce image boundaries effect
-        if (this->_HanningWin.empty() || gray_padded.size() != this->_HanningWin.size())
+        if (this->m_hanningWindow.empty() || gray_padded.size() != this->m_hanningWindow.size())
         {
             cv::Mat hanningWin_;
             cv::createHanningWindow(hanningWin_, gray_padded.size(), CV_32F);
-            hanningWin_.copyTo(this->_HanningWin);
+            hanningWin_.copyTo(this->m_hanningWindow);
         }
-
-        cv::multiply(gray_padded, this->_HanningWin, gray_padded);
-
+        cv::multiply(gray_padded, this->m_hanningWindow, gray_padded);
     }
 
     dft(gray_padded, complexI, cv::DFT_COMPLEX_OUTPUT);    //Compute Direct Fourier Transform
 
     //Crop the spectrum, if it has an odd number of rows or columns
-//    printf("Begin %s Crop the spectrum,\r\n",__func__);
     cv::Rect cropRect = cv::Rect(0, 0, complexI.cols & -2, complexI.rows & -2);
     if(cropRect.width > complexI.cols){
         cropRect.width = complexI.cols;
@@ -197,193 +176,24 @@ cv::Mat Tracker::ComputeDFT(const cv::Mat &input_image, bool preprocess)
         cropRect.height = complexI.rows;
     }
     complexI = complexI(cropRect);
-//    printf("End %s Crop the spectrum,\r\n",__func__);
     return complexI;
 }
 
-cv::Point Tracker::PerformTrack()
+bool Tracker::getInitStatus()
 {
-    cv::Mat mat_correlation, idft_correlation;
-    float PSR_val;
-    cv::Point maxLoc;
-
-    //Element-wise matrice multiplication, second arg is complex conjugate H*
-    mulSpectrums(this->current_img.image_spectrum, this->_filter, mat_correlation, 0, false);
-
-    //Inverse DFT real output
-    dft(mat_correlation, idft_correlation, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT);
-
-
-    // ***************************************************************************************************
-    /* ---------------------------------------------------- */
-    // Showing the images in the GUI
-
-    // Correlation image
-    cv::Mat corrImg;
-    normalize(idft_correlation, idft_correlation, 0.0, 255.0, cv::NORM_MINMAX);
-    //corrImg = idft_correlation.clone();
-    //resize(idft_correlation, corrImg, cv::Size(136, 79)); // not taking into account a resized window!
-
-    // Filter image
-    cv::Mat filtImg;
-    //imshow("thisfilter", this->_filter);
-    dft(this->_filter, filtImg, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT);
-    //imshow("filter", filtImg);
-    // Shifting the image!!
-    int cx = filtImg.cols / 2;
-    int cy = filtImg.rows / 2;
-    cv::Mat q0(filtImg, cv::Rect(0, 0, cx, cy));   // Top-Left - Create a ROI per quadrant
-    cv::Mat q1(filtImg, cv::Rect(cx, 0, cx, cy));  // Top-Right
-    cv::Mat q2(filtImg, cv::Rect(0, cy, cx, cy));  // Bottom-Left
-    cv::Mat q3(filtImg, cv::Rect(cx, cy, cx, cy)); // Bottom-Right
-
-
-
-    cv::Mat tmp;                           // swap quadrants (Top-Left with Bottom-Right)
-    q0.copyTo(tmp);
-    q3.copyTo(q0);
-    tmp.copyTo(q3);
-    q1.copyTo(tmp);                    // swap quadrant (Top-Right with Bottom-Left)
-    q2.copyTo(q1);
-    tmp.copyTo(q2);
-
-    normalize(filtImg, filtImg, 0.0, 255.0, cv::NORM_MINMAX);
-    //resize(filtImg, filtImg, cv::Size(136, 79)); // not taking into account a resized window!
-    flip(filtImg, filtImg, 0);
-
-    // ***************************************************************************************************
-
-
-    PSR_val = ComputePSR(idft_correlation);  //Compute PSR
-
-    //cout << "PSR = " << PSR_val << endl;
-
-
-    if (PSR_val >= PSR_ratio[1])    //Get new pos if object detected
-    {
-
-        minMaxLoc(idft_correlation, NULL, NULL, NULL, &maxLoc);
-        //imshow("idft_correlation", idft_correlation);
-        // ******* Trying to keep a nice and clean filter output image ***********************
-        cv::Mat new_output = cv::Mat::zeros(mat_correlation.size(), CV_32F);
-
-        MaskDesiredG(new_output, maxLoc.x, maxLoc.y);
-
-        new_output = ComputeDFT(new_output, false);
-        // ***********************************************************************************
-
-        new_output.copyTo(this->current_img.filter_output);
-        //imshow("new_output",new_output);
-
-    }
-    else if (PSR_val > PSR_ratio[0]){ //Return -1 coordinates if object occluded
-        maxLoc.x = -2;
-        maxLoc.y = -2;
-    }
-    else{                           //Return -2 coordinates if object lost
-        maxLoc.x = -10;
-        maxLoc.y = -10;
-    }
-
-    cv::Mat output;
-    //cvtColor(this->current_img.filter_output, output, CV_BGR2GRAY);
-    //imshow("output", output);
-    return maxLoc;
+    return m_initTrack;
 }
 
-float Tracker::ComputePSR(const cv::Mat &correlation_mat)
-{//Compute Peak-to-Sidelobe Ratio
-
-    double max_val = 0;
-    cv::Point max_loc;
-    cv::Mat PSR_mask = cv::Mat::ones(correlation_mat.rows, correlation_mat.cols, CV_8U);
-    cv::Scalar mean, stddev;
-
-    minMaxLoc(correlation_mat, NULL, &max_val, NULL, &max_loc);     //Get location of max arg
-
-    //Define PSR mask
-    int win_size = floor(this->PSR_mask / 2);
-    cv::Rect mini_roi = cv::Rect(std::max(max_loc.x - win_size, 0), std::max(max_loc.y - win_size, 0), this->PSR_mask, this->PSR_mask);
-
-    //Handle image boundaries
-    if ((mini_roi.x + mini_roi.width) > PSR_mask.cols)
-    {
-        mini_roi.width = PSR_mask.cols - mini_roi.x;
-    }
-    if ((mini_roi.y + mini_roi.height) > PSR_mask.rows)
-    {
-        mini_roi.height = PSR_mask.rows - mini_roi.y;
-    }
-
-    cv::Mat temp = PSR_mask(mini_roi);
-    temp *= 0;
-    meanStdDev(correlation_mat, mean, stddev, PSR_mask);   //Compute matrix mean and std
-
-    return (max_val - mean.val[0]) / stddev.val[0];     //Compute PSR
+void Tracker::setROI(cv::Rect input_roi)
+{
+    //Init ROI position and center
+    this->m_currRoi.ROI = input_roi;
+    this->m_currRoi.ROI_center.x = round(input_roi.width / 2);
+    this->m_currRoi.ROI_center.y = round(input_roi.height / 2);
 }
 
-void Tracker::UpdateRoi(cv::Point new_center, bool scale_rot)
-{//Update ROI position
-
-    int diff_x, diff_y;
-
-    //Current ROI pos is previous ROI pos
-    this->prev_ROI = this->current_ROI;
-
-    //    if (scale_rot)
-    //    {
-    //        //ComputeOrientationScale();
-    //    }
-
-    //Define new ROI position
-    this->current_ROI.ROI_center = new_center;
-
-    new_center.x += this->prev_ROI.ROI.x;
-    new_center.y += this->prev_ROI.ROI.y;
-
-    //Handle image boundarie
-    diff_x = new_center.x - round(this->current_ROI.ROI.width / 2);
-    diff_y = new_center.y - round(this->current_ROI.ROI.height / 2);
-
-    if (diff_x < 0)
-    {
-        this->current_ROI.ROI.x = 0;
-    }
-    else if ((diff_x + this->current_ROI.ROI.width) >= this->_im_size.width)
-    {
-        this->current_ROI.ROI.x = this->_im_size.width - this->current_ROI.ROI.width - 1;
-    }
-    else{
-        this->current_ROI.ROI.x = diff_x;
-    }
-
-    if (diff_y < 0)
-    {
-        this->current_ROI.ROI.y = 0;
-    }
-    else if ((diff_y + this->current_ROI.ROI.height) >= this->_im_size.height)
-    {
-        this->current_ROI.ROI.y = this->_im_size.height - this->current_ROI.ROI.height - 1;
-    }
-    else{
-        this->current_ROI.ROI.y = diff_y;
-    }
-
-    this->current_ROI.ROI.width = this->prev_ROI.ROI.width;
-    this->current_ROI.ROI.height = this->prev_ROI.ROI.height;
-}
-
-void Tracker::Update(cv::Point new_location)
-{//Update Tracker
-
-    UpdateFilter();                         //Update filter
-    this->prev_img = this->current_img;     //Update frame
-    UpdateRoi(new_location, false);          //Update ROI position
-}
-
-void Tracker::InitFilter()
-{//Init filter from user selection
-
+void Tracker::initFilter()
+{
     cv::Mat affine_G, affine_image, temp_image_dft, temp_desi_G, filter;
     cv::Mat temp_FG, temp_FF, num, dem, eps;
 
@@ -391,18 +201,17 @@ void Tracker::InitFilter()
     int N = 8;
 
     //Create the the desired output - 2D Gaussian
-    cv::Mat Mask_gauss = cv::Mat::zeros(this->prev_img.real_image.size(), CV_32F);
-    MaskDesiredG(Mask_gauss, round(this->current_ROI.ROI.width / 2),
-                 round(this->current_ROI.ROI.height / 2));
+    cv::Mat Mask_gauss = cv::Mat::zeros(this->m_prevImg.real_image.size(), CV_32F);
+//    maskDesiredG(Mask_gauss, round(this->m_currRoi.ROI.width / 2),
+//                 round(this->m_currRoi.ROI.height / 2));
+    maskDesiredG(Mask_gauss, round(m_stdSize / 2), round(m_stdSize / 2));
+    temp_FG = cv::Mat::zeros(this->m_prevImg.opti_dft_comp_rows, this->m_prevImg.opti_dft_comp_cols, this->m_prevImg.image_spectrum.type());
+    temp_FF = cv::Mat::zeros(this->m_prevImg.opti_dft_comp_rows, this->m_prevImg.opti_dft_comp_cols, this->m_prevImg.image_spectrum.type());
 
-
-    temp_FG = cv::Mat::zeros(this->prev_img.opti_dft_comp_rows, this->prev_img.opti_dft_comp_cols, this->prev_img.image_spectrum.type());
-    temp_FF = cv::Mat::zeros(this->prev_img.opti_dft_comp_rows, this->prev_img.opti_dft_comp_cols, this->prev_img.image_spectrum.type());
-
-    temp_image_dft = this->prev_img.image_spectrum;
+    temp_image_dft = this->m_prevImg.image_spectrum;
     temp_desi_G = ComputeDFT(Mask_gauss, false);
 
-    temp_desi_G.copyTo(this->prev_img.filter_output);
+    temp_desi_G.copyTo(this->m_prevImg.filter_output);
 
     mulSpectrums(temp_desi_G, temp_image_dft, num, 0, true);       //Element-wise spectrums multiplication G o F*
     temp_FG += num;
@@ -410,7 +219,7 @@ void Tracker::InitFilter()
     mulSpectrums(temp_image_dft, temp_image_dft, dem, 0, true);     //Element-wise spectrums multiplication F o F*
     temp_FF += dem;
 
-    if (_eps)
+    if (m_haveEps)
     {
         //Regularization parameter
         eps = createEps(dem);
@@ -423,8 +232,7 @@ void Tracker::InitFilter()
     for (int i = 0; i<(N - 1); i++)
     {//Create image dataset with input image affine transforms
 
-        AffineTransform(Mask_gauss, this->prev_img.real_image, affine_G, affine_image);    //Input image and desired output affine transform
-
+        affineTransform(Mask_gauss, this->m_prevImg.real_image, affine_G, affine_image);    //Input image and desired output affine transform
         temp_image_dft = ComputeDFT(affine_image, true);        //Affine image DFT
         temp_desi_G = ComputeDFT(affine_G, false);              //Affine output DFT
 
@@ -433,7 +241,7 @@ void Tracker::InitFilter()
 
         mulSpectrums(temp_image_dft, temp_image_dft, dem, 0, true); //Element-wise spectrums multiplication F o F*
 
-        if (_eps)
+        if (m_haveEps)
         {
             eps = createEps(dem);
             dem += eps;
@@ -444,18 +252,66 @@ void Tracker::InitFilter()
 
     dftDiv(temp_FG, temp_FF, filter);       //Element-wise spectrum Division
 
-    filter.copyTo(this->_filter);           //Filter
-
-    //filter = conj(this->_filter);
-    //inverseAndSave(filter, "filter_inv_shift.jpg", true);
+    filter.copyTo(this->m_filter);           //Filter
 }
 
-void Tracker::AffineTransform(const cv::Mat &input_image, const cv::Mat &input_image2, cv::Mat &aff_img, cv::Mat &aff_img2)
+void Tracker::maskDesiredG(cv::Mat &output, int u_x, int u_y, double sigma, bool norm_energy)
+{
+    sigma *= sigma;
+
+    //Fill input matrix as 2D Gaussian
+    for (int i = 0; i < output.rows; i++)
+    {
+        for (int j = 0; j < output.cols; j++)
+        {
+            output.at<float>(i, j) = 255 * exp((-(i - u_y)*(i - u_y) / (2 * sigma)) +
+                                               (-(j - u_x)*(j - u_x) / (2 * sigma)));
+        }
+    }
+
+    if (norm_energy)    //If true, norm image energy so that it sum up to 1
+    {
+        cv::Scalar sum_;
+        sum_ = sum(output);
+        output /= sum_.val[0];
+    }
+}
+
+cv::Mat Tracker::createEps(const cv::Mat &input_, double std)
+{//Compute regularization parameter for a given input matrix
+
+    //Compute input matrix mean and std
+    cv::Scalar mean, stddev;
+    cv::meanStdDev(input_, mean, stddev);
+
+    cv::Mat eps = cv::Mat::zeros(input_.size(), input_.type());
+
+    //Fill output matrix so that white noise zero mean and std a fraction of input matrix mean value
+    cv::randn(eps, 0, std*(mean.val[0]));
+
+    //Set imaginary part of noise to all zeros
+    for (int x = 0; x<eps.rows; x++)
+    {
+        for (int y = 0; y<eps.cols; y++)
+        {
+            eps.at<cv::Vec2f>(x, y)[1] = 0;
+        }
+    }
+
+    eps.at<cv::Vec2f>(0, 0)[0] = 0;
+    eps.at<cv::Vec2f>(input_.rows - 1, 0)[0] = 0;
+    eps.at<cv::Vec2f>(0, input_.cols - 1)[0] = 0;
+    eps.at<cv::Vec2f>(input_.rows - 1, input_.cols - 1)[0] = 0;
+
+    return eps;
+}
+
+void Tracker::affineTransform(const cv::Mat &input_image, const cv::Mat &input_image2, cv::Mat &aff_img, cv::Mat &aff_img2)
 {//Apply same randomly defined affine transform to both input matrice
 
     if (input_image.size() != input_image2.size())
     {
-        cout << "Error while computing affine transform !" << endl;
+        std::cout << "Error while computing affine transform !" << std::endl;
         return;
     }
 
@@ -491,120 +347,14 @@ void Tracker::AffineTransform(const cv::Mat &input_image, const cv::Mat &input_i
     output_pts[1] = cv::Point2f(cols*pts1_c, rows*pts1_r);
     output_pts[2] = cv::Point2f(cols*pts2_c, rows*pts2_r);
 
-    affine_tr = getAffineTransform(input_pts, output_pts);        //Get transformation matrix
-    std::cout << "affine_tr: " << affine_tr << std::endl;
-    warpAffine(input_image, aff_img, affine_tr, aff_img.size());  //Apply transformation matrix
-    warpAffine(input_image2, aff_img2, affine_tr, aff_img2.size());
-}
-
-void Tracker::MaskDesiredG(cv::Mat &output, int u_x, int u_y, double sigma, bool norm_energy)
-{//Create 2D Gaussian
-
-    sigma *= sigma;
-
-    //Fill input matrix as 2D Gaussian
-    for (int i = 0; i<output.rows; i++)
-    {
-        for (int j = 0; j<output.cols; j++)
-        {
-            output.at<float>(i, j) = 255 * exp((-(i - u_y)*(i - u_y) / (2 * sigma)) +
-                                               (-(j - u_x)*(j - u_x) / (2 * sigma)));
-        }
+    affine_tr = cv::getAffineTransform(input_pts, output_pts);        //Get transformation matrix
+    if(affine_tr.cols < 3 || affine_tr.rows < 2){
+        affine_tr = cv::Mat(2,3,CV_32FC1,cv::Scalar::all(0));
+        affine_tr.at<float>(0,0) = 1;
+        affine_tr.at<float>(1,1) = 1;
     }
-
-    if (norm_energy)    //If true, norm image energy so that it sum up to 1
-    {
-        cv::Scalar sum_;
-        sum_ = sum(output);
-        output /= sum_.val[0];
-    }
-
-}
-
-void Tracker::UpdateFilter()
-{//Update filter
-    cv::Mat Ai, Bi, Ai_1, Bi_1, A, B, filter, eps, eps_1;
-
-    cv::mulSpectrums(this->current_img.filter_output, this->current_img.image_spectrum, Ai, 0, true);      //Element-wise spectrums multiplication G o F*
-    cv::mulSpectrums(this->prev_img.filter_output, this->prev_img.image_spectrum, Ai_1, 0, true);          //Element-wise spectrums multiplication G-1 o F-1*
-
-    cv::mulSpectrums(this->current_img.image_spectrum, this->current_img.image_spectrum, Bi, 0, true);     //Element-wise spectrums multiplication F o F*
-    cv::mulSpectrums(this->prev_img.image_spectrum, this->prev_img.image_spectrum, Bi_1, 0, true);         //Element-wise spectrums multiplication F-1 o F-1*
-
-    if (_eps)
-    {
-        //Regularization parameter
-        eps = createEps(Bi);
-        Bi += eps;
-
-        eps_1 = createEps(Bi_1);
-        Bi_1 += eps;
-    }
-
-
-    // MOSSE update
-
-    A = (((1.0 - _learning)*Ai) + ((_learning)*Ai_1));
-    B = (((1.0 - _learning)*Bi) + ((_learning)*Bi_1));
-    dftDiv(A, B, filter);
-    filter.copyTo(this->_filter);
-
-
-    // ASEF update
-
-    //    dftDiv(Ai, Bi, A);
-    //    filter = (A * (1.0 - _learning)) - (this->_filter * _learning);
-    //    filter.copyTo(this->_filter);
-
-}
-
-void Tracker::inverseAndSave(const cv::Mat &img, const std::string &filename, const bool &shift)
-{//Inverse DFT and save image
-
-    cv::Mat img_i;
-
-    cv::dft(img, img_i, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT);
-
-    if (shift)      //If true swap quadrants
-    {
-        int cx = img_i.cols / 2;
-        int cy = img_i.rows / 2;
-        cv::Mat q0(img_i, cv::Rect(0, 0, cx, cy));   // Top-Left - Create a ROI per quadrant
-        cv::Mat q1(img_i, cv::Rect(cx, 0, cx, cy));  // Top-Right
-        cv::Mat q2(img_i, cv::Rect(0, cy, cx, cy));  // Bottom-Left
-        cv::Mat q3(img_i, cv::Rect(cx, cy, cx, cy)); // Bottom-Right
-        cv::Mat tmp;                             // swap quadrants (Top-Left with Bottom-Right)
-        q0.copyTo(tmp);
-        q3.copyTo(q0);
-        tmp.copyTo(q3);
-        q1.copyTo(tmp);                      // swap quadrant (Top-Right with Bottom-Left)
-        q2.copyTo(q1);
-        tmp.copyTo(q2);
-    }
-
-    cv::normalize(img_i, img_i, 0.0, 255.0, cv::NORM_MINMAX);
-    cv::imwrite(filename, img_i);
-}
-
-cv::Mat Tracker::conj(const cv::Mat &input_dft)
-{//Compute complex conjugate
-
-    assert(input_dft.channels() == 2);
-
-    cv::Mat conj_dft;
-
-    input_dft.copyTo(conj_dft);
-
-    //Invert imaginary part sign
-    for (int x = 0; x<input_dft.rows; x++)
-    {
-        for (int y = 0; y<input_dft.cols; y++)
-        {
-            conj_dft.at<cv::Vec2f>(x, y)[1] *= -1.0;
-        }
-    }
-
-    return conj_dft;
+    cv::warpAffine(input_image, aff_img, affine_tr, aff_img.size());  //Apply transformation matrix
+    cv::warpAffine(input_image2, aff_img2, affine_tr, aff_img2.size());
 }
 
 void Tracker::dftDiv(const cv::Mat &dft_a, const cv::Mat &dft_b, cv::Mat &output_dft)
@@ -634,100 +384,245 @@ void Tracker::dftDiv(const cv::Mat &dft_a, const cv::Mat &dft_b, cv::Mat &output
     out_temp.copyTo(output_dft);
 }
 
-cv::Mat Tracker::createEps(const cv::Mat &input_, double std)
-{//Compute regularization parameter for a given input matrix
+cv::Point Tracker::PerformTrack()
+{
+    cv::Mat mat_correlation, idft_correlation;
+    float PSR_val;
+    cv::Point maxLoc;
 
-    //Compute input matrix mean and std
-    cv::Scalar mean, stddev;
-    cv::meanStdDev(input_, mean, stddev);
+    //Element-wise matrice multiplication, second arg is complex conjugate H*
+    cv::mulSpectrums(m_currImg.image_spectrum, m_filter, mat_correlation, 0, false);
 
-    cv::Mat eps = cv::Mat::zeros(input_.size(), input_.type());
+    //Inverse DFT real output
+    dft(mat_correlation, idft_correlation, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT);
 
-    //Fill output matrix so that white noise zero mean and std a fraction of input matrix mean value
-    cv::randn(eps, 0, std*(mean.val[0]));
+    // Correlation image
+    cv::Mat corrImg;
+    normalize(idft_correlation, idft_correlation, 0.0, 255.0, cv::NORM_MINMAX);
 
-    //Set imaginary part of noise to all zeros
-    for (int x = 0; x<eps.rows; x++)
+    // Filter image
+    cv::Mat filtImg;
+    dft(m_filter, filtImg, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT);
+
+    // Shifting the image!!
+    int cx = filtImg.cols / 2;
+    int cy = filtImg.rows / 2;
+    cv::Mat q0(filtImg, cv::Rect(0, 0, cx, cy));   // Top-Left - Create a ROI per quadrant
+    cv::Mat q1(filtImg, cv::Rect(cx, 0, cx, cy));  // Top-Right
+    cv::Mat q2(filtImg, cv::Rect(0, cy, cx, cy));  // Bottom-Left
+    cv::Mat q3(filtImg, cv::Rect(cx, cy, cx, cy)); // Bottom-Right
+
+    cv::Mat tmp;                           // swap quadrants (Top-Left with Bottom-Right)
+    q0.copyTo(tmp);
+    q3.copyTo(q0);
+    tmp.copyTo(q3);
+    q1.copyTo(tmp);                    // swap quadrant (Top-Right with Bottom-Left)
+    q2.copyTo(q1);
+    tmp.copyTo(q2);
+
+    normalize(filtImg, filtImg, 0.0, 255.0, cv::NORM_MINMAX);
+    flip(filtImg, filtImg, 0);
+
+    PSR_val = computePSR(idft_correlation);  //Compute PSR
+
+    if (PSR_val >= m_PSRRatio[1])    //Get new pos if object detected
     {
-        for (int y = 0; y<eps.cols; y++)
-        {
-            eps.at<cv::Vec2f>(x, y)[1] = 0;
-        }
+        minMaxLoc(idft_correlation, NULL, NULL, NULL, &maxLoc);
+//        std::cout << "Max Location: " << maxLoc << std::endl;
+        // ******* Trying to keep a nice and clean filter output image ***********************
+        cv::Mat new_output = cv::Mat::zeros(mat_correlation.size(), CV_32F);
+
+        maskDesiredG(new_output, maxLoc.x, maxLoc.y);
+
+        new_output = ComputeDFT(new_output, false);
+        // ***********************************************************************************
+
+        new_output.copyTo(this->m_currImg.filter_output);
+    }
+    else if (PSR_val > m_PSRRatio[0])
+    { //Return -1 coordinates if object occluded
+        maxLoc.x = -2;
+        maxLoc.y = -2;
+    }
+    else
+    { //Return -2 coordinates if object lost
+        maxLoc.x = -10;
+        maxLoc.y = -10;
+    }
+    return maxLoc;
+}
+
+float Tracker::computePSR(const cv::Mat &correlation_mat)
+{//Compute Peak-to-Sidelobe Ratio
+//    printf("Start calculating PSR...\r\n");
+    double max_val = 0;
+    cv::Point max_loc;
+    cv::Mat PSR_mask = cv::Mat::ones(correlation_mat.rows, correlation_mat.cols, CV_8U);
+    cv::Scalar mean, stddev;
+
+    minMaxLoc(correlation_mat, NULL, &max_val, NULL, &max_loc);     //Get location of max arg
+
+    //Define PSR mask
+    int win_size = floor(this->m_PSRMask / 2);
+    cv::Rect mini_roi = cv::Rect(std::max(max_loc.x - win_size, 0), std::max(max_loc.y - win_size, 0), this->m_PSRMask, this->m_PSRMask);
+
+    //Handle image boundaries
+    if ((mini_roi.x + mini_roi.width) > PSR_mask.cols)
+    {
+        mini_roi.width = PSR_mask.cols - mini_roi.x;
+    }
+    if ((mini_roi.y + mini_roi.height) > PSR_mask.rows)
+    {
+        mini_roi.height = PSR_mask.rows - mini_roi.y;
     }
 
-    eps.at<cv::Vec2f>(0, 0)[0] = 0;
-    eps.at<cv::Vec2f>(input_.rows - 1, 0)[0] = 0;
-    eps.at<cv::Vec2f>(0, input_.cols - 1)[0] = 0;
-    eps.at<cv::Vec2f>(input_.rows - 1, input_.cols - 1)[0] = 0;
+    cv::Mat temp = PSR_mask(mini_roi);
+    temp *= 0;
+    meanStdDev(correlation_mat, mean, stddev, PSR_mask);   //Compute matrix mean and std
 
-    return eps;
+    return (max_val - mean.val[0]) / stddev.val[0];     //Compute PSR
 }
 
-/* ------------------------------------ */
-
-bool Tracker::isRunning(){
-    return false;
+void Tracker::update(cv::Point new_location)
+{//Update Tracker
+    updateFilter();                         //Update filter
+    this->m_prevImg = this->m_currImg;     //Update frame
+    updateRoi(new_location, false);          //Update ROI position
 }
-cv::Rect Tracker::getPosition() const       //Get ROI position
+
+void Tracker::updateFilter()
 {
-    return current_ROI.ROI;
+    cv::Mat Ai_curr, Bi_curr, Ai_prev, Bi_prev, A, B, filter, eps_curr, eps_prev;
+    cv::mulSpectrums(this->m_currImg.filter_output, this->m_currImg.image_spectrum, Ai_curr, 0, true);      //Element-wise spectrums multiplication G o F*
+    cv::mulSpectrums(this->m_prevImg.filter_output, this->m_prevImg.image_spectrum, Ai_prev, 0, true);          //Element-wise spectrums multiplication G-1 o F-1*
+
+    cv::mulSpectrums(this->m_currImg.image_spectrum, this->m_currImg.image_spectrum, Bi_curr, 0, true);     //Element-wise spectrums multiplication F o F*
+    cv::mulSpectrums(this->m_prevImg.image_spectrum, this->m_prevImg.image_spectrum, Bi_prev, 0, true);         //Element-wise spectrums multiplication F-1 o F-1*
+
+    if (m_haveEps)
+    {
+        //Regularization parameter
+        eps_curr = createEps(Bi_curr);
+        Bi_curr += eps_curr;
+
+        eps_prev = createEps(Bi_prev);
+        Bi_prev += eps_curr;
+    }
+
+    // MOSSE update
+    A = (((1.0 - m_learningRate) * Ai_curr) + ((m_learningRate) * Ai_prev));
+    B = (((1.0 - m_learningRate) * Bi_curr) + ((m_learningRate) * Bi_prev));
+    dftDiv(A, B, filter);
+    filter.copyTo(this->m_filter);
 }
 
-int Tracker::trackStatus() const
+void Tracker::updateRoi(cv::Point new_center, bool scale_rot)
 {
-    return state_;
+    int diff_x, diff_y;
+    //Current ROI pos is previous ROI pos
+    this->m_prevRoi = this->m_currRoi;
+    this->m_currRoi.ROI_center = new_center;
+    new_center.x += this->m_prevRoi.ROI.x;
+    new_center.y += this->m_prevRoi.ROI.y;
+
+    //Handle image boundarie
+    diff_x = new_center.x - round(this->m_currRoi.ROI.width / 2);
+    diff_y = new_center.y - round(this->m_currRoi.ROI.height / 2);
+
+    if (diff_x < 0)
+    {
+        this->m_currRoi.ROI.x = 0;
+    }
+    else if ((diff_x + this->m_currRoi.ROI.width) >= this->m_imgSize.width)
+    {
+        this->m_currRoi.ROI.x = this->m_imgSize.width - this->m_currRoi.ROI.width - 1;
+    }
+    else{
+        this->m_currRoi.ROI.x = diff_x;
+    }
+
+    if (diff_y < 0)
+    {
+        this->m_currRoi.ROI.y = 0;
+    }
+    else if ((diff_y + this->m_currRoi.ROI.height) >= this->m_imgSize.height)
+    {
+        this->m_currRoi.ROI.y = this->m_imgSize.height - this->m_currRoi.ROI.height - 1;
+    }
+    else{
+        this->m_currRoi.ROI.y = diff_y;
+    }
+
+    this->m_currRoi.ROI.width = this->m_prevRoi.ROI.width;
+    this->m_currRoi.ROI.height = this->m_prevRoi.ROI.height;
 }
 
-bool Tracker::isInitialized() const     //Verify tracker is init
+cv::Mat Tracker::extractFeatures( cv::Mat &patch )
 {
-    return _init;
-}
-void Tracker::resetTrack(){
-    _init = false;
+    cv::Mat featureMap;
+
+//    IplImage iplPatch = patch;
+//    CvLSVMFeatureMapCaskade *map;
+//    getFeatureMaps( &iplPatch, CELL_SIZE, &map );
+//    normalizeAndTruncate( map, 0.2f );
+//    PCAFeatureMaps( map );          // each reduced feature vector has 31 components
+
+//    featureMap = cv::Mat( cv::Size(map->numFeatures, map->sizeX*map->sizeY), CV_32F, map->map );
+//    featureMap = featureMap.t();
+//    if( m_initTrack )
+//    {
+//        featureMap = m_hanWin.mul( featureMap );
+//    }
+//    freeFeatureMapObject( &map );
+
+    return featureMap;
 }
 
-void Tracker::SetPSR_mask(int input)        //Set PSR var
+cv::Mat Tracker::extractFeatures(image_track &input_image)
 {
-    this->PSR_mask = input;
+    cv::Mat featureMap;
+
+//    IplImage ipl_patch = input_image.real_image;
+//    CvLSVMFeatureMapCaskade *map;
+//    getFeatureMaps(&ipl_patch, CELL_SIZE, &map);
+//    normalizeAndTruncate(map, 0.2f);
+//    PCAFeatureMaps(map);
+
+//    featureMap = cv::Mat(cv::Size(map->numFeatures, map->sizeX * map->sizeY), CV_32F, map->map);
+//    featureMap = featureMap.t();
+//    if(m_initTrack)
+//    {
+//        featureMap = m_hanWin.mul(featureMap);
+//    }
+//    freeFeatureMapObject(&map);
+
+    return featureMap;
 }
 
-void Tracker::SetPSR_ratio_low(int input)
+void Tracker::createHannWindow( cv::Mat &_hann, int *size_path)
 {
-    this->PSR_ratio[0] = input;
-}
+    cv::Mat hannX = cv::Mat::zeros( 1, size_path[1], CV_32FC1 );
+    cv::Mat hannY = cv::Mat::zeros( size_path[0], 1, CV_32FC1 );
 
-void Tracker::SetPSR_ratio_high(int input)
-{
-    this->PSR_ratio[1] = input;
-}
+    for( int i = 0; i < hannX.cols; i++ )
+    {
+        hannX.at<float>(i) = 0.5 * (1 - cos(2 * PI * i / (hannX.cols - 1)));
+    }
 
-int Tracker::GetPSR_mask() const        //Get PSR var
-{
-    return this->PSR_mask;
-}
+    for( int i = 0; i < hannY.rows; i++ )
+    {
+        hannY.at<float>(i) = 0.5 * (1 - cos(2 * PI * i / (hannY.rows - 1)));
+    }
 
-int Tracker::GetPSR_ratio_low() const
-{
-    return this->PSR_ratio[0];
-}
+    cv::Mat hann2d = hannY * hannX;
 
-int Tracker::GetPSR_ratio_high() const
-{
-    return this->PSR_ratio[1];
+    cv::Mat hann1d = hann2d.reshape(1, 1);
+    _hann = cv::Mat(cv::Size(size_path[0] * size_path[1], size_path[2]), CV_32FC1, cv::Scalar(0));
+    for( int i = 0; i < size_path[2]; i++ )
+    {
+        for( int j = 0; j < (size_path[0] * size_path[1]); j++ )
+        {
+            _hann.at<float>(i, j) = hann1d.at<float>(0, j);
+        }
+    }
 }
-
-cv::Mat Tracker::GetFilter() const      //Get filter
-{
-    return this->_filter;
-}
-
-float Tracker::Get_Learning() const     //Get/Set learning ratio
-{
-    return this->_learning;
-}
-
-void Tracker::Set_Learning(float val)
-{
-    this->_learning = val;
-}
-/* ------------------------------------ */

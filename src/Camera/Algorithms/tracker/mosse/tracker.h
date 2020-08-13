@@ -1,13 +1,11 @@
 #ifndef TRACKER_H
 #define TRACKER_H
 
-#include <cmath>
+#include <iostream>
 #include <opencv2/opencv.hpp>
-#include <opencv/cv.h>
-#include <stdio.h>
-#include <vector>
-#include <time.h>
-
+#include <math.h>
+//#define STD_SIZE    100
+#define CELL_SIZE   4
 #ifndef TRACK_LOST
     #define TRACK_LOST -2
 #endif
@@ -17,13 +15,15 @@
 #ifndef TRACK_OCCLUDED
     #define TRACK_OCCLUDED -1
 #endif
-using namespace std;
-
+#ifndef PI
+#define PI    CV_PI
+#endif
 //Struct that contains image frame and its relatives
 struct image_track{
     cv::Mat real_image;
     cv::Mat image_spectrum;
     cv::Mat filter_output;
+    cv::Mat hog_feature;
 
     int cols;
     int rows;
@@ -38,104 +38,60 @@ struct ROI_track{
     cv::Point ROI_center;
 };
 
-
-//Tracker class
 class Tracker
 {
-
 public:
     Tracker();
     ~Tracker();
 
-    image_track prev_img;                               //Previous frame
-    image_track current_img;                            //Current frame
-
-    ROI_track prev_ROI;                                 //Object location within previous frame
-    ROI_track current_ROI;                              //Object location within current frame
-
-    void initTrack(const cv::Mat &, cv::Point, cv::Point);     //Init tracker from user selection
-    void initTrack(const cv::Mat &, cv::Rect);
-
-    void performTrack(const cv::Mat&);                             //Perform tracking over current frame
+    void initTrack(const cv::Mat &input_image, cv::Rect input_rect);
+    void performTrack(const cv::Mat &input_image);
     void resetTrack();
-    bool isInitialized() const;
-    bool isRunning();
-    cv::Rect getPosition() const;                           //Get ROI position
+    cv::Rect getPosition() const;
+    int getState();
+    bool isInitialized();
+    bool getInitStatus();
+    void ComputeDFT(image_track &input_image, bool preprocess);
+    cv::Mat ComputeDFT(const cv::Mat &input_image, bool preprocess);
+    void setROI(cv::Rect input_roi);
+    void initFilter();
+    void maskDesiredG(cv::Mat &output, int u_x, int u_y, double sigma=2, bool norm_energy=true);
+    cv::Mat createEps(const cv::Mat &input_, double std=0.00001);
+    void affineTransform(const cv::Mat &input_image, const cv::Mat &input_image2, cv::Mat &aff_img, cv::Mat &aff_img2);
+    void dftDiv(const cv::Mat &dft_a, const cv::Mat &dft_b, cv::Mat &output_dft);
 
-    int trackStatus() const;                               //Get the state { FOUND, OCCLUDED, LOST }
-
-    cv::Mat GetFilter() const;                              //Get filter
-
-    void SetPSR_mask(int);                              //Set PSR var
-    void SetPSR_ratio_low(int);
-    void SetPSR_ratio_high(int);
-
-    int GetPSR_mask() const;                            //Get PSR var
-    int GetPSR_ratio_low() const;
-    int GetPSR_ratio_high() const;
-
-    float Get_Learning() const;                         //Get/Set learning ratio
-    void Set_Learning(float);
-    int Get_State();
-
-    string getTag();
-    void setTag(string tag);
-private:
-    std::string tag;
-
-    cv::Mat _filter;                                        //Tracker filter
-    cv::Mat _HanningWin;                                    //Pre-processing Hanning-window
-    bool _eps;
-    bool _init;
-    int PSR_mask;                                       //PSR var
-    double PSR_ratio[2];
-    double _learning;                                   //Learning ratio
-    int state_;
-    cv::Size _im_size;                                      //Full frame size
-
-    void InitFilter(const cv::Mat&);                        //Init filter from user selection
-    void InitFilter();
-
-    //Apply same randomly defined affine transform to both input matrice
-    void AffineTransform(const cv::Mat&, const cv::Mat&, cv::Mat&, cv::Mat&);
-
-    //Compute Direct Fourier Transform on input image, with or without a pre-processing
-    void ComputeDFT(image_track&, bool preprocess = false);
-    cv::Mat ComputeDFT(const cv::Mat&, bool preprocess = false);
-
-    //Init ROI position and center
-    void SetRoi(cv::Rect);
-
-    //Update ROI position
-    void UpdateRoi(cv::Point, bool);
-
-    //Perform tracking over current frame
     cv::Point PerformTrack();
+    float computePSR(const cv::Mat &correlation_mat);
+    void update(cv::Point new_location);
+    void updateFilter();
+    void updateRoi(cv::Point new_center, bool scale_rot);
 
-    //Compute Peak-to-Sidelobe Ratio
-    float ComputePSR(const cv::Mat &);
+    cv::Mat extractFeatures(cv::Mat &patch);
+    cv::Mat extractFeatures(image_track &input_image);
+    void createHannWindow( cv::Mat &_hann, int *size_path);
 
-    //Update Tracker
-    void Update(cv::Point);
+private:
+    image_track m_prevImg;
+    image_track m_currImg;
+    ROI_track m_prevRoi;
+    ROI_track m_currRoi;
 
-    //Update filter
-    void UpdateFilter();
+    bool m_initTrack;
+    cv::Size m_imgSize;
+    int m_trackSize;
+    int m_stdSize;
 
-    //Create 2D Gaussian
-    void MaskDesiredG(cv::Mat &, int u_x, int u_y, double sigma = 2, bool norm_energy = true);
+    int m_state;
+    double m_PSRRatio[2];
+    double m_learningRate;
+    int m_PSRMask;
+    bool m_haveEps;
 
-    //Inverse DFT and save image
-    void inverseAndSave(const cv::Mat &, const std::string &, const bool &shift = false);
+    cv::Mat m_filter;
+    cv::Mat m_hanningWindow;
 
-    //Compute complex conjugate
-    cv::Mat conj(const cv::Mat&);
-
-    //Compute complex divison
-    void dftDiv(const cv::Mat&, const cv::Mat&, cv::Mat&);
-
-    //Compute regularization parameter
-    cv::Mat createEps(const cv::Mat&, double std = 0.00001);
-
+    cv::Mat m_hanWin;
+    int m_featureMapSize[3];
 };
 
 #endif // TRACKER_H

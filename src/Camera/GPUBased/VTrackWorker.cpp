@@ -34,7 +34,7 @@ void VTrackWorker::init()
 
 void VTrackWorker::changeTrackSize(float _trackSize)
 {
-    m_trackSize = (int)_trackSize;
+    m_trackSize = static_cast<int>(_trackSize/8)*8;
     m_trackSizePrev = m_trackSize;
 }
 void VTrackWorker::setClick(float x, float y,float width,float height){
@@ -519,7 +519,7 @@ void VTrackWorker::run()
                     m_trackRect.width = m_trackSize;
                     m_trackRect.height = m_trackSize;
                 }
-                if(m_tracker->Get_State() == TRACK_INVISION || m_tracker->Get_State() == TRACK_OCCLUDED){
+                if(m_tracker->getState() == TRACK_INVISION || m_tracker->getState() == TRACK_OCCLUDED){
                     if(m_gimbal->context()->m_lockMode == "TRACK"){
 #ifdef _test_ORBSearcher_
                         if(m_objectSearch){
@@ -673,7 +673,7 @@ void VTrackWorker::run()
         processImgItem.setDeviceGMEMatrix(d_gmeMat);
         processImgItem.setLockMode(m_gimbal->context()->m_lockMode);
         processImgItem.setTrackRect(m_trackRect);
-        processImgItem.setTrackStatus(m_tracker->Get_State());
+        processImgItem.setTrackStatus(m_tracker->getState());
         processImgItem.setZoom(m_gimbal->context()->m_zoom[m_gimbal->context()->m_sensorID]);
 #ifdef USE_LINE_DETECTOR
         processImgItem.setPowerlineDetectEnable(m_powerLineDetectEnable);

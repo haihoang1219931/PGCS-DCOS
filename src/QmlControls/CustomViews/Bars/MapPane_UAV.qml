@@ -84,8 +84,8 @@ Flickable {
 
     // === hainh added
 
-    property int wpBoundSize: UIConstants.sRect
-    property int wpFontSize: wpBoundSize / 2
+    property int wpBoundSize: UIConstants.sRect * 2/3
+    property int wpFontSize: wpBoundSize / 2 * 2/3
 
     property string vehicleType: "MAV_TYPE_GENERIC"
 

@@ -258,7 +258,7 @@ void Config::createFile(QString fileName){
                           "\t\t\t<Value Profile=\"(Default)\">udpsrc port=8600 ! tsdemux ! tee name=t t. ! queue ! h265parse ! nvh265dec ! videoconvert ! video/x-raw,format=I420 </Value>\r\n"
                         "\t\t</Setting>\r\n"
                         "\t\t<Setting Name=\"StreamIR\" Type=\"System.String\" Scope=\"User\">\r\n"
-                          "\t\t\t<Value Profile=\"(Default)\">filesrc location=rtspsrc location=rtsp://192.168.0.103/z3-2.sdp latency=100 do-retransmission=true drop-on-latency=true ! rtph265depay ! tee name=t t. ! queue ! h265parse ! nvh265dec ! videoconvert ! video/x-raw,format=I420 ! videoscale ! video/x-raw,width=1920,height=1080 </Value>\r\n"
+                          "\t\t\t<Value Profile=\"(Default)\">rtspsrc location=rtsp://192.168.0.103/z3-2.sdp latency=100 do-retransmission=true drop-on-latency=true ! rtph265depay ! tee name=t t. ! queue ! h265parse ! nvh265dec ! videoconvert ! video/x-raw,format=I420 ! videoscale ! video/x-raw,width=1920,height=1080 </Value>\r\n"
                         "\t\t</Setting>\r\n"
                         "\t\t<Setting Name=\"MapDefault\" Type=\"System.String\" Scope=\"User\">\r\n"
                           "\t\t\t<Value Profile=\"(Default)\">Layers.tpk</Value>\r\n"

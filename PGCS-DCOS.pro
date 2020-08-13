@@ -187,6 +187,7 @@ unix:!macx: LIBS += -L/usr/local/lib/  \
     -lopencv_imgcodecs \
     -lopencv_imgproc \
     -lopencv_videoio
+Tracker::
 # GStreamer
 unix:!macx: DEPENDPATH += /usr/local/include
 unix:!macx: INCLUDEPATH += /usr/include/gstreamer-1.0
@@ -578,7 +579,7 @@ HEADERS += \
     src/Camera/Algorithms/tracker/dando/LME/lme.hpp \
     src/Camera/Algorithms/tracker/dando/ITrack.hpp \
     src/Camera/Algorithms/tracker/dando/Utilities.hpp \
-    src/Camera/Algorithms/tracker/mosse/tracker.
+    src/Camera/Algorithms/tracker/mosse/tracker.h
 SOURCES += \
     src/Camera/Algorithms/stabilizer/dando_02/stab_gcs_kiir.cpp \
     src/Camera/Algorithms/tracker/dando/HTrack/ffttools.cpp \

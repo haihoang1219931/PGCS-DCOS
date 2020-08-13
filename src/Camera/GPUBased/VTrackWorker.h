@@ -34,7 +34,7 @@
 #include "../Algorithms/search/ipsearch_orbSearcher.h"
 //#define _dbg_show_level_1_
 #endif
-#define TRACK_DANDO
+//#define TRACK_DANDO
 //#define DEBUG_TIMER
 class ClickTrack;
 class GimbalInterface;
