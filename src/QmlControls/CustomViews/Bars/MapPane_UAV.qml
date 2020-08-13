@@ -84,8 +84,8 @@ Flickable {
 
     // === hainh added
 
-    property int wpBoundSize: UIConstants.sRect * 2/3
-    property int wpFontSize: wpBoundSize / 2 * 2/3
+    property int wpBoundSize: UIConstants.sRect * 5 / 3
+    property int wpFontSize: wpBoundSize / 2
 
     property string vehicleType: "MAV_TYPE_GENERIC"
 
@@ -963,6 +963,7 @@ Flickable {
             z:UIConstants.z_waypoint
             id: _waypoint
             visible: true
+            wpBoundSize: rootItem.wpBoundSize
             Component.onCompleted: {
 
                 var wp_Id     = Id_Role;
@@ -1122,6 +1123,7 @@ Flickable {
             id: _marker
             visible: true
             isMarker: true
+            wpBoundSize: rootItem.wpBoundSize
             Component.onCompleted: {
                 var _id_marker  = Id_Role
                 var _type       = Type_Role

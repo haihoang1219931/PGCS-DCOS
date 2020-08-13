@@ -21,6 +21,9 @@ void Tracker::initTrack(const cv::Mat &input_image, cv::Rect input_rect)
 {
     if(this->m_initTrack)
         return;
+    if(input_rect.width < 5 || input_rect.height < 5){
+        return;
+    }
     if(input_image.empty())
     {
         std::runtime_error("Error in getting tracked object.\r\n");
@@ -77,9 +80,21 @@ void Tracker::performTrack(const cv::Mat &input_image)
         std::cerr << "Must initialize filter in first!\r\n";
         return;
     }
-
+    if(input_image.cols < 5 || input_image.rows < 5){
+        std::cerr << "Image too small\r\n";
+        return;
+    }
+    if(this->m_currRoi.ROI.x + this->m_currRoi.ROI.width >= input_image.cols ||
+            this->m_currRoi.ROI.y + this->m_currRoi.ROI.height >= input_image.rows){
+        std::cerr << "Current ROI out of input\r\n";
+        return;
+    }
+    if(m_stdSize < 5 ){
+        std::cerr << "Standard size too small\r\n";
+        return;
+    }
     cv::Point newLoc;
-    cv::Mat temp = input_image(this->m_currRoi.ROI).clone();
+    cv::Mat temp = input_image(this->m_currRoi.ROI).clone();    
     cv::resize(temp, temp, cv::Size(m_stdSize, m_stdSize));
     temp.copyTo(m_currImg.real_image);
 //    input_image(this->m_currRoi.ROI).copyTo(this->m_currImg.real_image);
