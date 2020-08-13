@@ -105,8 +105,8 @@ public:
     bool m_setTrack = false;
     std::string m_logFolder;
     std::string m_logFile;
-    RollBuffer_<GstFrameCacheItem> *m_gstRTSPBuff;
-    RollBuffer_<GstFrameCacheItem> *m_buffVideoSaving;
+    RollBuffer<GstFrameCacheItem> *m_gstRTSPBuff;
+    RollBuffer<GstFrameCacheItem> *m_buffVideoSaving;
 
     int m_streamWidth = -1;
     int m_streamHeight = - 1;

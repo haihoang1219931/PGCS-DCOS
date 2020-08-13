@@ -1,159 +1,89 @@
-#ifndef ROLL_BUFFER_H
-#define ROLL_BUFFER_H
+#ifndef RollBufferH
+#define RollBufferH
 
-#include "../Packet/Common_type.h"
-#include <condition_variable>
+#include <cstdio>
+#include <memory>
 #include <mutex>
+#include <vector>
+#define MAX_BUFFER 150
+typedef int index_type ;
+template <class T> class RollBuffer {
+public:
+    explicit RollBuffer() {}
+    explicit RollBuffer(size_t _size) : m_maxSize(_size) {
 
-using namespace Eye;
+    }
+    ~RollBuffer() {}
 
-template <class T> class RollBuffer
-{
-    public:
-        RollBuffer() {}
-        RollBuffer(const index_type _size)
-        {
-            m_size = _size;
+    void reset() {
+        std::unique_lock<std::mutex> locker(m_mtx);
+        m_size = 0;
+        m_lastID = -1;
+    }
+    bool empty() const { return m_size == 0; }
+    bool full() const { return m_size == m_maxSize; }
+
+    size_t capacity() const { return m_maxSize; }
+    size_t size() const { return m_size; }
+
+    T at(const index_type _pos) const {
+        T res;
+        if(_pos >= 0 && _pos < m_maxSize){
+            res = this->m_buff[_pos].second;
         }
+        return res;
+    }
 
-        ~RollBuffer() {}
-        void setSize(const index_type _size)
-        {
-            m_size = _size;
+    void add(const T _item) {
+        m_lastID++;
+        if (m_size < m_maxSize) {
+            this->m_buff[this->m_size] = std::make_pair(this->m_size,_item);
+            this->m_size++;
         }
-        void add(T _item)
-        {
-            std::unique_lock<std::mutex> locker(m_mtx);
-
-            if (m_buff.size() < m_size)
-            {
-                m_buff.push_back(_item);
-            }
-            else if (m_buff.size() == m_size)
-            {
-                m_buff.erase(m_buff.begin());
-                m_buff.push_back(_item);
-            }
-            else if (m_buff.size() > m_size)
-            {
-                printf("ERROR: Add function failed!");
-            }
-        }
-
-        T first()
-        {
-            T res;
-
-            if (m_buff.size() > 0)
-            {
-                res = m_buff.front();
-            }
-
-            return res;
-        }
-
-        T last()
-        {
-            std::unique_lock<std::mutex> locker(m_mtx);
-            T res;
-
-            if (m_buff.size() > 0)
-            {
-                res = m_buff.back();
-            }
-
-            return res;
-        }
-        /*  get element by position
-         * position range [0, m_size - 1]
-         * */
-        T at(const index_type _pos) const
-        {
-            T res;
-
-            if ((_pos >= 0) && (_pos < m_size))
-            {
-                res = m_buff[_pos];
-            }
-
-            return res;
-        }
-
-        /* get a subvector from a specificed pos to the end */
-        std::vector<T> retrieve(index_type _begin)
-        {
-            std::vector<T> res;
-
-            if (m_buff.size() > (_begin + 1))
-            {
-                res = std::vector<T>(m_buff.begin() + _begin, m_buff.end());
-            }
-
-            return res;
-        }
-
-        length_type size()
-        {
-            return m_buff.size();
-        }
-        // pos range [0..m_size-1]
-        std::vector<T> retrieveData(index_type _id)
-        {
-            std::unique_lock<std::mutex> locker(m_mtx);
-            std::vector<T> res;
-            index_type size = m_buff.size();
-            index_type pos = size - 1;
-            index_type currentID;
-
-            for (pos; pos >= 0; pos--)
-            {
-                currentID = m_buff.at(pos).getIndex();
-
-                if (currentID < _id)
-                {
-                    // TODO: retrieve view motion from this pos to the end of roll buffer
-                    res = std::vector<T>(m_buff.begin() + pos + 1, m_buff.end());
+        else if (m_size == m_maxSize){
+            for(int i=0; i< m_size; i++){
+                if(this->m_buff[i].first == m_lastID-1){
+                    if(i == m_size-1){
+                        m_buff[0].first = m_lastID;
+                        m_buff[0].second = _item;
+                    }else{
+                        m_buff[i+1].first = m_lastID;
+                        m_buff[i+1].second = _item;
+                    }
                     break;
                 }
             }
-
-            return res;
         }
 
-        T getElementById(index_type _id)
-        {
-            std::unique_lock<std::mutex> locker(m_mtx);
-            T res;
-            index_type size = m_buff.size();
-
-            if (size == 0)
-            {
-                return res;
+    }
+    T last() {
+        std::unique_lock<std::mutex> locker(m_mtx);
+        T res;
+        for(int i=0; i< m_size; i++){
+            if(m_buff[i].first == m_lastID){
+                res = m_buff[i].second;
             }
-
-            for (int i = m_buff.size() - 1; i >= 0; i--)
-            {
-                if (m_buff.at(i).getIndex() == _id)
-                {
-                    res = m_buff.at(i);
-                    break;
-                }
-                else if ((m_buff.at(i).getIndex() < _id) &&
-                         (m_buff.at(i).getIndex() != 0))
-                {
-                    break;
-                }
-            }
-
-            return res;
         }
+        return res;
+    }
 
-    protected:
-        std::vector<T> m_buff;
-        length_type m_size;
-        std::mutex m_mtx;
-        std::condition_variable m_cv;
-        bool m_flag;
+    T getElementById(const index_type &_id) {
+        T res;
+        for(int i=0; i< m_size; i++){
+            if(m_buff[i].first == _id){
+                res = m_buff[i].second;
+                break;
+            }
+        }
+        return res;
+    }
+
+public:
+    std::mutex m_mtx;
+    std::pair<int,T> m_buff[MAX_BUFFER];
+    int m_maxSize;
+    int m_size = 0;
+    int m_lastID = -1;
 };
 
-#endif // ROLL_BUFFER_H
+#endif // RollBufferH

@@ -29,7 +29,6 @@
 #include <QList>
 #include <QRect>
 #include "Camera/Buffer/RollBuffer.h"
-#include "Camera/Buffer/RollBuffer_.h"
 #include "../Cache/TrackObject.h"
 #include "../Cache/GstFrameCacheItem.h"
 #include "../../../Files/PlateLog.h"

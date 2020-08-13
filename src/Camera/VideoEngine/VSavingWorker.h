@@ -55,7 +55,7 @@ class VSavingWorker : public QThread
 
     public:
         QString m_sensorMode;                        /**< Mode of image sensing (EO/IR) */
-        RollBuffer_<rva::GstFrameCacheItem> *m_buffVideoSaving;
+        RollBuffer<rva::GstFrameCacheItem> *m_buffVideoSaving;
         GMainLoop *m_loop = nullptr;
         GstPipeline *m_pipeline = nullptr;
         std::string m_pipeline_str;

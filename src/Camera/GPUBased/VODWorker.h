@@ -34,8 +34,8 @@ class VODWorker : public QThread
 
     private:
         index_type m_currID;
-        RollBuffer_<ProcessImageCacheItem> *m_matImageBuff;
-        RollBuffer_<DetectedObjectsCacheItem> *m_rbDetectedObjs;
+        RollBuffer<ProcessImageCacheItem> *m_matImageBuff;
+        RollBuffer<DetectedObjectsCacheItem> *m_rbDetectedObjs;
 //        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
 //        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
         bool m_running = true;

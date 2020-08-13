@@ -89,8 +89,8 @@ Q_SIGNALS:
 private:
     bool m_running = true;
     index_type m_currID;
-    RollBuffer_<ProcessImageCacheItem> *m_matImageBuff = nullptr;
-    RollBuffer_<ProcessImageCacheItem> *m_matTrackBuff = nullptr;
+    RollBuffer<ProcessImageCacheItem> *m_matImageBuff = nullptr;
+    RollBuffer<ProcessImageCacheItem> *m_matTrackBuff = nullptr;
     //        RollBuffer<Eye::TrackResponse> *m_rbTrackResIR = nullptr;
     //        RollBuffer<Eye::TrackResponse> *m_rbTrackResEO = nullptr;
     //        RollBuffer<Eye::SystemStatus> *m_rbSystem = nullptr;
