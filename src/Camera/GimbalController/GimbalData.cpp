@@ -10,4 +10,7 @@ GimbalData::GimbalData(QObject *parent) : QObject(parent)
     m_hfov[1] = 17.7f;
     m_zoom[0] = 1;
     setCorners(0,0,0,0,0,0,0,0,0,0);
+    m_mapLockMode["FREE"] = 0;
+    m_mapLockMode["TRACK"] = 1;
+    m_mapLockMode["VISUAL"] = 2;
 }

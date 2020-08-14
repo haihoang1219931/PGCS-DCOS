@@ -21,7 +21,7 @@ void VODWorker::run()
     m_rbDetectedObjs = Cache::instance()->getDetectedObjectsCache();    /**< */
 //    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();             /**< */
 //    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();             /**< */
-    ProcessImageCacheItem processImgItem;
+
     cv::Mat proccImg;
     cv::Size imgSize;
     unsigned char *d_imageData;
@@ -35,7 +35,7 @@ void VODWorker::run()
         }
         //For the OD mode is enable
         start = std::chrono::high_resolution_clock::now();
-        processImgItem = m_matImageBuff->last();
+        ProcessImageCacheItem& processImgItem = m_matImageBuff->last();
 
         // Check if buffer is empty or there have no new image goto buffer, the thread sleep for 10ms and then go to the next loop
         if ((processImgItem.getIndex() == -1) ||

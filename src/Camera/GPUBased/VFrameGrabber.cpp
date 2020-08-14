@@ -150,7 +150,7 @@ GstFlowReturn VFrameGrabber::onNewSample(GstAppSink *_vsink, gpointer _uData)
     gstFrame.setIndex(m_currID);
     gstFrame.setGstBuffer(gst_buffer_copy(gstItem));
     m_gstFrameBuff->add(gstFrame);
-//    printf("ReadFrame %d - %d\r\n", m_currID, gst_buffer_get_size(gst_sample_get_buffer(sample)));
+    printf("ReadFrame %d - %d\r\n", m_currID, gst_buffer_get_size(gst_sample_get_buffer(sample)));
     gst_sample_unref(sample);
     return GST_FLOW_OK;
 }

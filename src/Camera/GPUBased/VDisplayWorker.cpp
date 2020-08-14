@@ -31,7 +31,7 @@ void VDisplayWorker::process()
     m_gstEOSavingBuff = Cache::instance()->getGstEOSavingCache();
     m_gstIRSavingBuff = Cache::instance()->getGstIRSavingCache();
     m_gstRTSPBuff = Cache::instance()->getGstRTSPCache();
-    ProcessImageCacheItem processImgItem;
+
     QVideoFrame frame;
     std::chrono::high_resolution_clock::time_point start, stop;
     long sleepTime = 0;
@@ -70,7 +70,7 @@ void VDisplayWorker::process()
             continue;
         }
 //        printf("process[%d/%d]\r\n",index,m_matImageBuff->size());
-        processImgItem = m_matImageBuff->at(index);
+        ProcessImageCacheItem& processImgItem = m_matImageBuff->at(index);
         if ((processImgItem.getIndex() == -1) ||
                 (processImgItem.getIndex() == m_currID)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -116,10 +116,10 @@ void VDisplayWorker::process()
 //                    cv::FONT_HERSHEY_COMPLEX, 1.2, cv::Scalar(0, 0, 0,255), 2);
 
 
-        if(processImgItem.sensorID() == "IR"){
-            if(processImgItem.colorMode() == "WHITE_HOT"){
+        if(processImgItem.sensorID() == 1){
+            if(processImgItem.colorMode() == 0){
 
-            }else if(processImgItem.colorMode() == "COLOR"){
+            }else if(processImgItem.colorMode() == 0){
                 cv::applyColorMap(m_imgGray,m_imgIRColor,cv::COLORMAP_HOT);
                 cv::cvtColor(m_imgIRColor, m_imgI420, cv::COLOR_BGR2YUV_I420);
             }
@@ -155,7 +155,7 @@ void VDisplayWorker::process()
             if(m_enOD){
                 if(m_countUpdateOD == 0){
                     //----------------------------- Draw EO object detected
-                    DetectedObjectsCacheItem detectedObjsItem = m_rbSearchObjs->last();
+                    DetectedObjectsCacheItem& detectedObjsItem = m_rbSearchObjs->last();
 
                     if(abs(
                         static_cast<int>(detectedObjsItem.getDetectedObjects().size() - 0)) > 1 | m_listObj.size() == 0)
@@ -184,7 +184,7 @@ void VDisplayWorker::process()
             trackRect.y = pointAfterStab.y - trackRect.height/2;
             cv::Scalar colorInvision(255,0,0);
             cv::Scalar colorOccluded(0,0,0);
-            if(processImgItem.lockMode() == "TRACK"){
+            if(processImgItem.lockMode() == 1){
                 if(processImgItem.trackStatus() == TRACK_INVISION){
                     VideoEngine::rectangle(imgYWarped,imgUWarped,imgVWarped,
                                            trackRect,colorInvision,2);
@@ -194,7 +194,7 @@ void VDisplayWorker::process()
                 }else{
 
                 }
-            }else if(processImgItem.lockMode() == "VISUAL"){
+            }else if(processImgItem.lockMode() == 2){
                 if(processImgItem.trackStatus() == TRACK_INVISION){
                     VideoEngine::drawSteeringCenter(imgYWarped,imgUWarped,imgVWarped,
                                         trackRect.width,

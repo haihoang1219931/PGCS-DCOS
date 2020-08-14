@@ -35,7 +35,7 @@
 //#define _dbg_show_level_1_
 #endif
 //#define TRACK_DANDO
-//#define DEBUG_TIMER
+#define DEBUG_TIMER
 class ClickTrack;
 class GimbalInterface;
 class OCR;
@@ -206,7 +206,8 @@ public:
     cv::RotatedRect m_plrRR;
 #endif
     // color mode
-    QString m_colorMode = "WHITE_HOT";
+    QMap <QString,int>m_mapColorMode;
+    int m_colorMode = 0; // 0: white hot, 1: red hot
     // Object detect
     Detector *m_detector = nullptr;
     int m_objectType = -1;
