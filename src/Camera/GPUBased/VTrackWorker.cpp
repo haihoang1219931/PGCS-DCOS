@@ -246,19 +246,19 @@ void VTrackWorker::run()
 #ifdef DEBUG_TIMER
         start = clock();
 #endif
+//        if(processImgItem.getIndex() == -1 ||
+//                processImgItem.getIndex() <= m_currID){
+//            msleep(10);
+//            processImgItem = m_matImageBuff->last();
+//        }
+//        if(processImgItem.getIndex() == -1 ||
+//                processImgItem.getIndex() <= m_currID){
+//            msleep(10);
+//            processImgItem = m_matImageBuff->last();
+//        }
         if(processImgItem.getIndex() == -1 ||
                 processImgItem.getIndex() <= m_currID){
-            msleep(10);
-            processImgItem = m_matImageBuff->last();
-        }
-        if(processImgItem.getIndex() == -1 ||
-                processImgItem.getIndex() <= m_currID){
-            msleep(10);
-            processImgItem = m_matImageBuff->last();
-        }
-        if(processImgItem.getIndex() == -1 ||
-                processImgItem.getIndex() <= m_currID){
-            msleep(10);
+            msleep(5);
             continue;
         }
 
