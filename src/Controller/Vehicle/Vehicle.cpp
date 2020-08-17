@@ -927,7 +927,6 @@ void Vehicle::_handleHeartbeat(mavlink_message_t &message)
                     m_firmwarePlugin = newFimware;
                     m_firmwarePlugin->initializeVehicle();
                     m_paramsController->refreshAllParameters();
-    //                _loadDefaultParamsShow();
                     Q_EMIT flightModesChanged();
                     Q_EMIT flightModesOnAirChanged();
                     flightModeChanged(flightMode());

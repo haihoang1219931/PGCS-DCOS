@@ -150,6 +150,7 @@ ApplicationWindow {
         onVehicleTypeChanged: {
             mapPane.changeVehicleType(vehicle.vehicleType);
             preflightCheck.changeVehicleType(vehicle.vehicleType);
+            FCSConfig.changeData("VehicleType",vehicle.vehicleType);
         }
 
         onHomePositionChanged:{
@@ -2072,6 +2073,10 @@ ApplicationWindow {
             mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));
             mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));
         }
+        if(FCSConfig.value("Settings:VehicleType:Value:data") !== ""){
+            mapPane.changeVehicleType(parseInt(FCSConfig.value("Settings:VehicleType:Value:data")));
+        }
+
         if(ApplicationConfig.value("Settings:Language:Value:data") !== "")
             UIConstants.languageID = ApplicationConfig.value("Settings:Language:Value:data");
         timerStart.start();
