@@ -1185,19 +1185,19 @@ void Vehicle::_handleSysStatus(mavlink_message_t &message)
         _onboardControlSensorsUnhealthy = newSensorsUnhealthy;
 //        Q_EMIT unhealthySensorsChanged();
         if(_onboardControlSensorsUnhealthy && Vehicle::SysStatusSensor3dMag){
-            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"Failure. Magnetometer issues. Check console.");
+            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"[GCS] Failure. Magnetometer issues. Check console.");
         }else if(_onboardControlSensorsUnhealthy && Vehicle::SysStatusSensor3dAccel){
-            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"Failure. Accelerometer issues. Check console.");
+            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"[GCS] Failure. Accelerometer issues. Check console.");
         }else if(_onboardControlSensorsUnhealthy && Vehicle::SysStatusSensor3dGyro){
-            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"Failure. Gyroscope issues. Check console.");
+            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"[GCS] Failure. Gyroscope issues. Check console.");
         }else if(_onboardControlSensorsUnhealthy && Vehicle::SysStatusSensorAbsolutePressure){
-            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"Failure. Barometer issues. Check console.");
+            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"[GCS] Failure. Barometer issues. Check console.");
         }else if(_onboardControlSensorsUnhealthy && Vehicle::SysStatusSensorDifferentialPressure){
-            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"Failure. Airspeed issues. Check console.");
+            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"[GCS] Failure. Airspeed issues. Check console.");
         }else if(_onboardControlSensorsUnhealthy && Vehicle::SysStatusSensorAHRS){
-            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"Failure. AHRS issues. Check console.");
+            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"[GCS] Failure. AHRS issues. Check console.");
         }else if(_onboardControlSensorsUnhealthy && Vehicle::SysStatusSensorGPS){
-            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"Failure. GPS issues. Check console.");
+            m_uas->handleTextMessage(0,m_com->componentId(),MAV_SEVERITY_ERROR,"[GCS] Failure. GPS issues. Check console.");
         }
     }
 }
