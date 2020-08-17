@@ -24,6 +24,7 @@ NetworkManager::NetworkManager(QObject *parent) : QObject(parent)
     connect(&m_timerReloadAddress,&QTimer::timeout,this,&NetworkManager::reloadAddresses);
 }
 void NetworkManager::reloadAddresses(){
+    printf("%s\r\n",__func__);
     // get list info
     struct ifaddrs *ifaddr, *ifa;
     int s;
@@ -51,13 +52,16 @@ void NetworkManager::reloadAddresses(){
                 addresses[hostInterface] ["Subnet"] = QString::fromUtf8(subnet);
                 addresses[hostInterface] ["Broadcast"] = QString::fromUtf8(broadcast);
                 addresses[hostInterface] ["Gateway"] = hostGateway;
-                if(hostString.length() >= 1 && hostString.at(0) == QChar('e')){
+                printf("%s [%s] [%s]\r\n",__func__,
+                       hostInterface.toStdString().c_str(),
+                       hostString.toStdString().c_str());
+                if(hostString.length() >= 1 && hostInterface.at(0) == QChar('e')){
                     QString multicast = QString("echo ") + m_pass +
                             QString(" | sudo -S ip route add 224.0.0.0/4 dev ")+
                             hostInterface + " &";
                     printf("%s\r\n",multicast.toStdString().c_str());
                     system(multicast.toStdString().c_str());
-                }else if(hostString.length() >= 1 && hostString.at(0) == QChar('w')){
+                }else if(hostString.length() >= 1 && hostInterface.at(0) == QChar('w')){
                     QString internet =  QString("echo ") + m_pass +
                             QString(" | sudo -S ip route replace default via ")+
                             hostGateway + QString(" dev ") +
