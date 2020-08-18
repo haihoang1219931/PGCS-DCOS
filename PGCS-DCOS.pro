@@ -26,9 +26,9 @@ CONFIG += use_ucapi
 
 CONFIG += use_camera_control
 
-CONFIG += use_video_gpu
+#CONFIG += use_video_gpu
 
-#CONFIG += use_video_cpu
+CONFIG += use_video_cpu
 
 #CONFIG += use_line_detector
 
@@ -187,7 +187,6 @@ unix:!macx: LIBS += -L/usr/local/lib/  \
     -lopencv_imgcodecs \
     -lopencv_imgproc \
     -lopencv_videoio
-Tracker::
 # GStreamer
 unix:!macx: DEPENDPATH += /usr/local/include
 unix:!macx: INCLUDEPATH += /usr/include/gstreamer-1.0

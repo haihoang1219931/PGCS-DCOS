@@ -25,6 +25,7 @@ namespace rva
 
             void release()
             {
+
             }
 
             void setHostImage(unsigned char *_hImage)
