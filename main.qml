@@ -150,6 +150,7 @@ ApplicationWindow {
         onVehicleTypeChanged: {
             mapPane.changeVehicleType(vehicle.vehicleType);
             preflightCheck.changeVehicleType(vehicle.vehicleType);
+            FCSConfig.changeData("VehicleType",vehicle.vehicleType);
         }
 
         onHomePositionChanged:{
@@ -449,6 +450,9 @@ ApplicationWindow {
                 toast.toastContent = dataObject.participant.name + " đã rời phòng. !";
                 toast.show();
                 UCDataModel.userLeftRoom(UcApi.getRoomName());
+                // hide PCDVIDEO
+                if(userOnMap.pcdVideoView.visible)
+                    userOnMap.pcdVideoView.visible = false;
             }
 
             console.log("--------------------------------------> Done handle update room signal\n");
@@ -1147,7 +1151,7 @@ ApplicationWindow {
                 anchors.top: parent.top
                 anchors.left: mapControl.right
                 anchors.leftMargin: 8
-                anchors.topMargin: UIConstants.sRect + 8
+                anchors.topMargin: UIConstants.sRect + 8                
                 property bool show: true
             }
             PropertyAnimation{
@@ -1188,7 +1192,7 @@ ApplicationWindow {
                 width: UIConstants.sRect * 3
                 height: UIConstants.sRect
                 z: 5
-                visible: UIConstants.monitorMode === UIConstants.monitorModeFlight
+//                visible   : UIConstants.monitorMode === UIConstants.monitorModeFlight
                 anchors.horizontalCenter: uavProfilePath.horizontalCenter
                 anchors.top: uavProfilePath.bottom
                 anchors.topMargin: 0
@@ -1251,6 +1255,27 @@ ApplicationWindow {
                                     compo.destroy();
                                     footerBar.isShowConfirm = false;
                                     computer.quitApplication();
+                                }else if(func === "DIALOG_CANCEL"){
+                                    confirmDialogObj.destroy();
+                                    compo.destroy();
+                                    footerBar.isShowConfirm = false;
+                                }
+                            });
+                        }if(func === "RESTART_APP"){
+                            var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
+                            var confirmDialogObj = compo.createObject(parent,{
+                                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["RESTART_APP"]
+                                                        [UIConstants.language[UIConstants.languageID]],
+                                              "type": "CONFIRM",
+                                              "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
+                                              "y":parent.height / 2 - UIConstants.sRect * 6 / 2,
+                                              "z":200});
+                            confirmDialogObj.clicked.connect(function (type,func){
+                                if(func === "DIALOG_OK"){
+                                    confirmDialogObj.destroy();
+                                    compo.destroy();
+                                    footerBar.isShowConfirm = false;
+                                    computer.restartApplication();
                                 }else if(func === "DIALOG_CANCEL"){
                                     confirmDialogObj.destroy();
                                     compo.destroy();
@@ -1999,7 +2024,8 @@ ApplicationWindow {
         id: timerStart
         repeat: false
         interval: 2000
-        onTriggered: {
+        onTriggered: {            
+            // --- Map
             // --- Joystick
             joystick.mapFile = "conf/joystick.conf"
             joystick.start();
@@ -2042,11 +2068,17 @@ ApplicationWindow {
     }
     Component.onCompleted: {
         UIConstants.changeTheme(UIConstants.themeNormal);
-        if(FCSConfig.value("Settings:MapDefault:Value:data") !== "")
+        // --- Map
+        if(FCSConfig.value("Settings:MapDefault:Value:data") !== ""){
             mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));
+            mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));
+        }
+        if(FCSConfig.value("Settings:VehicleType:Value:data") !== ""){
+            mapPane.changeVehicleType(parseInt(FCSConfig.value("Settings:VehicleType:Value:data")));
+        }
+
         if(ApplicationConfig.value("Settings:Language:Value:data") !== "")
             UIConstants.languageID = ApplicationConfig.value("Settings:Language:Value:data");
         timerStart.start();
-
     }
 }

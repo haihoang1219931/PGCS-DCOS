@@ -664,7 +664,7 @@ cv::Rect ITrack::getPosition()
 //! \brief ITrack::trackStatus
 //! \return
 //!
-int ITrack::Get_State()
+int ITrack::getState()
 {
     return m_trackStatus;
 }

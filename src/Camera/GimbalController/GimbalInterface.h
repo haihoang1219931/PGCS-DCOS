@@ -148,8 +148,8 @@ protected:
     double m_dPanOld= 0 ;
     double m_panRate= 0 ;
     double m_uPan= 0 ;
-    double m_kpPan = 1.2; //1.4
-    double m_kiPan = 0.02;//0.02
+    double m_kpPan = 1.3; //1.4
+    double m_kiPan = 0.15;//0.02
     double m_kdPan = 0;
     double m_iTilt= 0 ;
     double m_cTilt= 0 ;
@@ -159,6 +159,8 @@ protected:
     double m_kpTilt = 1.1; //1.3
     double m_kiTilt = 0.02;
     double m_kdTilt= 0.0;
+
+    double m_pan_limit_i_default = 20;
 
     clock_t m_beginTime=0;
     clock_t m_endTime=0;

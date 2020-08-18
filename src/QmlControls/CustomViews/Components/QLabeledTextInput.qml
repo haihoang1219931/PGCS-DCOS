@@ -18,6 +18,7 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
 import QtQuick 2.0
 //---------------- Include custom libs ----------------------------------------
+
 import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
 

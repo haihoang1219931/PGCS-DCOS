@@ -363,7 +363,7 @@ unsigned short VideoEngine::checksum(
     return bcc;
 } // end of bcc_16 ()
 std::vector<uint8_t> VideoEngine::encodeMeta(GimbalInterface* gimbal){
-    uint8_t keyST0601[] = {0X06,0X0E,0X2B,0X34,0X02,0X0B,0X01,0X01,0X0E,0X01,0X03,0X01,0X01,0X00,0X00,0X00};
+    uint8_t keyST0601[16] = {0X06,0X0E,0X2B,0X34,0X02,0X0B,0X01,0X01,0X0E,0X01,0X03,0X01,0X01,0X00,0X00,0X00};
     int totalLength = 0;
     uint16_t checkSum = 0;
     struct timeval tv;

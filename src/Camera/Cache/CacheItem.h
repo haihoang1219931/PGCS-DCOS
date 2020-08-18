@@ -8,7 +8,7 @@ class CacheItem {
 public:
   explicit CacheItem() {}
   explicit CacheItem(index_type _id) : m_id(_id) {}
-  ~CacheItem(){};
+  ~CacheItem(){}
 
   void setIndex(const index_type &_id) { m_id = _id; }
   index_type getIndex() { return m_id; }

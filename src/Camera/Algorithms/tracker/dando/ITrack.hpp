@@ -127,7 +127,7 @@ public:
     void performTrack( cv::Mat &_image );
     cv::Rect getPosition();
     int getZoomDirection();
-    int Get_State();
+    int getState();
     bool isInitialized();
     void resetTrack();
     bool isRunning();

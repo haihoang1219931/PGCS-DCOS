@@ -26,9 +26,9 @@ CONFIG += use_ucapi
 
 CONFIG += use_camera_control
 
-#CONFIG += use_video_gpu
+CONFIG += use_video_gpu
 
-CONFIG += use_video_cpu
+#CONFIG += use_video_cpu
 
 #CONFIG += use_line_detector
 
@@ -187,6 +187,7 @@ unix:!macx: LIBS += -L/usr/local/lib/  \
     -lopencv_imgcodecs \
     -lopencv_imgproc \
     -lopencv_videoio
+Tracker::
 # GStreamer
 unix:!macx: DEPENDPATH += /usr/local/include
 unix:!macx: INCLUDEPATH += /usr/include/gstreamer-1.0
@@ -227,8 +228,6 @@ HEADERS += \
     src/Camera/Packet/Common_type.h \
     src/Camera/Buffer/BufferOut.h \
     src/Camera/Buffer/RollBuffer.h \
-    src/Camera/Buffer/RollBuffer_.h \
-    src/Camera/Buffer/RollBuffer_q.h \
     src/Camera/Cache/Cache.h \
     src/Camera/Cache/TrackObject.h \
     src/Camera/Cache/CacheItem.h \
@@ -578,7 +577,7 @@ HEADERS += \
     src/Camera/Algorithms/tracker/dando/LME/lme.hpp \
     src/Camera/Algorithms/tracker/dando/ITrack.hpp \
     src/Camera/Algorithms/tracker/dando/Utilities.hpp \
-    src/Camera/Algorithms/tracker/mosse/tracker.
+    src/Camera/Algorithms/tracker/mosse/tracker.h
 SOURCES += \
     src/Camera/Algorithms/stabilizer/dando_02/stab_gcs_kiir.cpp \
     src/Camera/Algorithms/tracker/dando/HTrack/ffttools.cpp \

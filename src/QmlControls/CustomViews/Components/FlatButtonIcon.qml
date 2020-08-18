@@ -19,9 +19,9 @@ import QtGraphicalEffects 1.0
 import QtQuick 2.0
 
 //---------------- Include custom libs ----------------------------------------
+
 import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
-
 Rectangle {
     id: rootItem
 

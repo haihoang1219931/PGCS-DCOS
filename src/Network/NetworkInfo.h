@@ -2,7 +2,14 @@
 #define NETWORKINFO_H
 
 #include <QObject>
+#include <QList>
+#include <QVariantMap>
 #include <QNetworkConfiguration>
+typedef QMap<QString, QMap<QString, QVariant>> ConnectionSetting;
+//typedef QVariantMap ConnectionSetting;
+Q_DECLARE_METATYPE(ConnectionSetting)
+Q_DECLARE_METATYPE(QList<uint>);
+Q_DECLARE_METATYPE(QList<QList<uint>>);
 class NetworkInfo : public QObject
 {
     Q_OBJECT
@@ -20,6 +27,7 @@ class NetworkInfo : public QObject
     Q_PROPERTY(int      frequency READ frequency WRITE setFrequency NOTIFY frequencyChanged)
     Q_PROPERTY(int      strength READ strength WRITE setStrength NOTIFY strengthChanged)
     Q_PROPERTY(bool     hasPass READ hasPass WRITE setHasPass NOTIFY hasPassChanged)
+    Q_PROPERTY(ConnectionSetting    settingMap READ settingMap WRITE setSettingMap NOTIFY settingMapChanged)
 public:
     explicit NetworkInfo(QObject *parent = nullptr);
     QString bearerTypeName(){ return m_bearerTypeName; }
@@ -114,18 +122,10 @@ public:
             Q_EMIT hasPassChanged();
         }
     }
-    QNetworkConfiguration config(){return m_config;}
-    void setConfig(QNetworkConfiguration config){
-//        printf("Network[%02d] [%s] [%s] [%s] [%s]\r\n",0,
-//               config.bearerTypeName().toStdString().c_str(),
-//               config.name().toStdString().c_str(),
-//               config.identifier().toStdString().c_str(),
-//               config.state() == QNetworkConfiguration::Active? "Active":"Not active");
-        m_config = config;
-        setName(m_config.name());
-        setActivated(m_config.state() == QNetworkConfiguration::Active);
-        setBearerTypeName(m_config.bearerTypeName());
-        setSetting(config.identifier());
+    ConnectionSetting settingMap(){return m_settingMap;}
+    void setSettingMap(ConnectionSetting configMap){
+        m_settingMap = configMap;
+        Q_EMIT settingMapChanged();
     }
 
 Q_SIGNALS:
@@ -143,6 +143,7 @@ Q_SIGNALS:
     void frequencyChanged();
     void strengthChanged();
     void hasPassChanged();
+    void settingMapChanged();
 public Q_SLOTS:
 
 private:
@@ -158,6 +159,7 @@ private:
     QString m_setting;
     QString m_device;
     QString m_accessPoint;
+    ConnectionSetting m_settingMap;
     int m_frequency = 0;
     int m_strength = 0;
     bool m_hasPass = false;

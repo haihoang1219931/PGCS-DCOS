@@ -20,13 +20,14 @@ import CustomViews.UIConstants  1.0
 import CustomViews.Dialogs      1.0
 /// ConfigPage
 Rectangle {
-    id: rootItem
+    id: root
     color: UIConstants.transparentColor
     width: 1376
     height: 768
     property var vehicle
     property var itemListName:
         UIConstants.itemTextMultilanguages["CONFIGURATION"]["CONNECTION"]
+    property var config
     Row{
         id: rectSelect
         anchors.topMargin: 8
@@ -38,36 +39,15 @@ Rectangle {
             id: cbxListConfig
             width: UIConstants.sRect * 6
             height: UIConstants.sRect * 1.5
-        }
-        OldCtrl.Button{
-            id: btnSelectConfig
-            width: UIConstants.sRect * 4
-            height: UIConstants.sRect * 1.5
-            text: itemListName["SELECT"]
-                  [UIConstants.language[UIConstants.languageID]]
-            style: ButtonStyle{
-                background: Rectangle{
-                    color: UIConstants.info
-                }
-                label: Label{
-                    color: UIConstants.textColor
-                    font.pixelSize: UIConstants.fontSize
-                    font.family: UIConstants.appFont
-                    verticalAlignment: Label.AlignVCenter
-                    horizontalAlignment: Label.AlignHCenter
-                    text: btnSelectConfig.text
-                }
-            }
-
-            onClicked: {
+            onCurrentIndexChanged: {
                 if(cbxListConfig.currentIndex === 0){
-                    listView.model = FCSConfig.paramsModel
+                    root.config = FCSConfig;
                 }else if(cbxListConfig.currentIndex === 1){
-                    listView.model = TRKConfig.paramsModel
+                    root.config = TRKConfig;
                 }else if(cbxListConfig.currentIndex === 2){
-                    listView.model = PCSConfig.paramsModel
+                    root.config = PCSConfig
                 }else if(cbxListConfig.currentIndex === 3){
-                    listView.model = UcApiConfig.paramsModel
+                    root.config = UcApiConfig
                 }
             }
         }
@@ -84,7 +64,7 @@ Rectangle {
         anchors.rightMargin: 8
         anchors.left: parent.left
         anchors.leftMargin: 8
-        model: FCSConfig.paramsModel
+        model: root.config.paramsModel
         delegate: Rectangle {
             id: rectItem
             height: visible?UIConstants.sRect:0
@@ -162,7 +142,7 @@ Rectangle {
                 text: "Save"
                 isEnable: lblValue.text != value
                 onClicked: {
-                    FCSConfig.setPropertyValue(lblName.text,lblValue.text);
+                    root.config.setPropertyValue(lblName.text,lblValue.text);
                     lblValue.focus = false;
                 }
             }

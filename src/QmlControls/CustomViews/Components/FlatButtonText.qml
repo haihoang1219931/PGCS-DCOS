@@ -21,7 +21,6 @@ import QtQuick 2.0
 //---------------- Include custom libs ----------------------------------------
 import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
-
 Rectangle {
     id: rootItem
 
@@ -38,6 +37,8 @@ Rectangle {
     property color textColor: UIConstants.textColor
     property alias text: lblText.text
     property bool isEnable: true
+    property alias horizontalAlignment: lblText.horizontalAlignment
+    property alias verticalAlignment: lblText.verticalAlignment
     //--- Signals
     signal clicked()
     signal entered()
@@ -49,15 +50,14 @@ Rectangle {
     opacity: isEnable?(isPressed?0.5:1):0.9
     Label{
         id: lblText
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.fill: parent
+        anchors.margins: 5
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         font.family: UIConstants.appFont
         font.pixelSize: UIConstants.fontSize
         color: textColor
     }
-
     MouseArea {
         id: btnSelectedArea
         anchors.fill: parent

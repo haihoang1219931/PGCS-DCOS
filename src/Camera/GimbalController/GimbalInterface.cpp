@@ -60,10 +60,13 @@ void GimbalInterface::lockScreenPoint(int _id,
 
         double deltaPan = atan(-px/focalLength) * 180.0 / M_PI;
 
-//        printf("delta pan: %.4f\r\n",deltaPan);
+        printf("delta pan: %.4f\r\n",deltaPan);
         //            if(deltaPan > 10)deltaPan = 10
         //            else if(deltaPan < -10)deltaPan = -10
-        if(deltaPan<0.1 && deltaPan>-0.1)
+        double min_focal_length = _w / 2 / tan(70.2/2);
+        double m_pan_limit = (min_focal_length / focalLength) *m_pan_limit_i_default;
+        printf("limit pan: %.4f\r\n",m_pan_limit);
+        if(deltaPan<m_pan_limit && deltaPan>-m_pan_limit)
             m_iPan+=deltaPan/fps;
         else
             m_iPan = 0;

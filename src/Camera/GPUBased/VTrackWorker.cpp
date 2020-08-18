@@ -18,6 +18,8 @@ VTrackWorker::VTrackWorker()
     m_mutexCommand = new QMutex();
     m_mutex = new QMutex();
     m_pauseCond = new QWaitCondition();
+    m_mapColorMode["WHITE_HOT"] = 0;
+    m_mapColorMode["COLOR"] = 1;
 }
 
 VTrackWorker::~VTrackWorker()
@@ -34,7 +36,7 @@ void VTrackWorker::init()
 
 void VTrackWorker::changeTrackSize(float _trackSize)
 {
-    m_trackSize = (int)_trackSize;
+    m_trackSize = static_cast<int>(_trackSize/8)*8;
     m_trackSizePrev = m_trackSize;
 }
 void VTrackWorker::setClick(float x, float y,float width,float height){
@@ -74,7 +76,7 @@ void VTrackWorker::setPowerLineDetectRect(QRect rect){
 #endif
 }
 void VTrackWorker::setSensorColor(QString colorMode){
-    m_colorMode = colorMode;
+    m_colorMode = m_mapColorMode[colorMode];
 }
 void VTrackWorker::moveImage(float panRate,float tiltRate,float zoomRate, float alpha){    
     if(m_grayFrame.cols <= 0 || m_grayFrame.rows <= 0){
@@ -199,7 +201,6 @@ void VTrackWorker::run()
     long sleepTime = 0;
     m_matImageBuff = Cache::instance()->getProcessImageCache();
     m_matTrackBuff = Cache::instance()->getTrackImageCache();
-    ProcessImageCacheItem processImgItem;
 
 #ifdef _test_ORBSearcher_
     cv::Mat bgrImg;
@@ -234,20 +235,30 @@ void VTrackWorker::run()
 #ifdef DEBUG_TIMER
         start = clock();
 #endif
-        processImgItem = m_matImageBuff->last();
-        if(processImgItem.getIndex() == -1 ||
-                processImgItem.getIndex() <= m_currID){
-            msleep(10);
-            processImgItem = m_matImageBuff->last();
+        ProcessImageCacheItem& processImgItem = m_matImageBuff->last();
+#ifdef DEBUG_TIMER
+        stop = clock();
+        {
+            clock_t timeSpan = stop - start;
+            std::cout << "Track Get last frame ["<< m_currID <<"/" << processImgItem.getIndex()<<"] ["<<((double)timeSpan)/CLOCKS_PER_SEC * 1000<< "]" << std::endl;
         }
+#endif
+#ifdef DEBUG_TIMER
+        start = clock();
+#endif
+//        if(processImgItem.getIndex() == -1 ||
+//                processImgItem.getIndex() <= m_currID){
+//            msleep(10);
+//            processImgItem = m_matImageBuff->last();
+//        }
+//        if(processImgItem.getIndex() == -1 ||
+//                processImgItem.getIndex() <= m_currID){
+//            msleep(10);
+//            processImgItem = m_matImageBuff->last();
+//        }
         if(processImgItem.getIndex() == -1 ||
                 processImgItem.getIndex() <= m_currID){
-            msleep(10);
-            processImgItem = m_matImageBuff->last();
-        }
-        if(processImgItem.getIndex() == -1 ||
-                processImgItem.getIndex() <= m_currID){
-            msleep(10);
+            msleep(5);
             continue;
         }
 
@@ -519,7 +530,7 @@ void VTrackWorker::run()
                     m_trackRect.width = m_trackSize;
                     m_trackRect.height = m_trackSize;
                 }
-                if(m_tracker->Get_State() == TRACK_INVISION || m_tracker->Get_State() == TRACK_OCCLUDED){
+                if(m_tracker->getState() == TRACK_INVISION || m_tracker->getState() == TRACK_OCCLUDED){
                     if(m_gimbal->context()->m_lockMode == "TRACK"){
 #ifdef _test_ORBSearcher_
                         if(m_objectSearch){
@@ -662,27 +673,27 @@ void VTrackWorker::run()
         start = clock();
 #endif
         // add data to display worker
-        ProcessImageCacheItem processImgItem;
-        processImgItem.setIndex(m_currID);
-        processImgItem.setHostImage(h_i420Image);
-        processImgItem.setDeviceImage(d_i420Image);
-        processImgItem.setImageSize(imgSize);
-        processImgItem.setHostStabMatrix(m_ptzMatrix);
-        processImgItem.setDeviceStabMatrix(d_stabMat);
-        processImgItem.setHostGMEMatrix(h_gmeMat);
-        processImgItem.setDeviceGMEMatrix(d_gmeMat);
-        processImgItem.setLockMode(m_gimbal->context()->m_lockMode);
-        processImgItem.setTrackRect(m_trackRect);
-        processImgItem.setTrackStatus(m_tracker->Get_State());
-        processImgItem.setZoom(m_gimbal->context()->m_zoom[m_gimbal->context()->m_sensorID]);
+        ProcessImageCacheItem resProcessImgItem;
+        resProcessImgItem.setIndex(m_currID);
+        resProcessImgItem.setHostImage(h_i420Image);
+        resProcessImgItem.setDeviceImage(d_i420Image);
+        resProcessImgItem.setImageSize(imgSize);
+        resProcessImgItem.setHostStabMatrix(m_ptzMatrix);
+        resProcessImgItem.setDeviceStabMatrix(d_stabMat);
+        resProcessImgItem.setHostGMEMatrix(h_gmeMat);
+        resProcessImgItem.setDeviceGMEMatrix(d_gmeMat);
+        resProcessImgItem.setLockMode(m_gimbal->context()->m_mapLockMode[m_gimbal->context()->m_lockMode]);
+        resProcessImgItem.setTrackRect(m_trackRect);
+        resProcessImgItem.setTrackStatus(m_tracker->getState());
+        resProcessImgItem.setZoom(m_gimbal->context()->m_zoom[m_gimbal->context()->m_sensorID]);
 #ifdef USE_LINE_DETECTOR
-        processImgItem.setPowerlineDetectEnable(m_powerLineDetectEnable);
-        processImgItem.setPowerlineDetectRect(m_powerLineDetectRect);
-        processImgItem.setPowerLineList(m_powerLineList);
+        resProcessImgItem.setPowerlineDetectEnable(m_powerLineDetectEnable);
+        resProcessImgItem.setPowerlineDetectRect(m_powerLineDetectRect);
+        resProcessImgItem.setPowerLineList(m_powerLineList);
 #endif
-        processImgItem.setSensorID(m_gimbal->context()->m_sensorID == 0?"EO":"IR");
-        processImgItem.setColorMode(m_colorMode);
-        m_matTrackBuff->add(processImgItem);
+        resProcessImgItem.setSensorID(m_gimbal->context()->m_sensorID);
+        resProcessImgItem.setColorMode(m_colorMode);
+        m_matTrackBuff->add(resProcessImgItem);
 #ifdef DEBUG_TIMER
         stop = clock();
         {

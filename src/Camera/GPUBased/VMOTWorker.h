@@ -30,9 +30,9 @@ class VMOTWorker : public QThread
 
     private:
         index_type m_currID = 0;
-        RollBuffer_<ProcessImageCacheItem> *m_matImageBuff;
-        RollBuffer_<DetectedObjectsCacheItem> *m_rbDetectedObjs;
-        RollBuffer_<DetectedObjectsCacheItem> *m_rbMOTObjs;
+        RollBuffer<ProcessImageCacheItem> *m_matImageBuff;
+        RollBuffer<DetectedObjectsCacheItem> *m_rbDetectedObjs;
+        RollBuffer<DetectedObjectsCacheItem> *m_rbMOTObjs;
 //        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
 //        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
         bool m_running = true;

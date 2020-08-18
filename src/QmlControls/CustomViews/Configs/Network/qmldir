@@ -1,0 +1,13 @@
+Module CustomViews.Configs.Network
+
+ConnectionSetting 	1.0 ConnectionSetting.qml
+DCBSetting 		1.0 DCBSetting.qml
+ESecuritySetting	1.0 ESecuritySetting.qml
+EthernetSetting		1.0 EthernetSetting.qml
+GeneralSetting		1.0 GeneralSetting.qml
+IPV4Setting		1.0 IPV4Setting.qml
+IPV6Setting 		1.0 IPV6Setting.qml
+NetworkConnections	1.0 NetworkConnections.qml
+NetworkList		1.0 NetworkList.qml
+WiFiSecurity		1.0 WiFiSecurity.qml
+WiFiSetting		1.0 WiFiSetting.qml

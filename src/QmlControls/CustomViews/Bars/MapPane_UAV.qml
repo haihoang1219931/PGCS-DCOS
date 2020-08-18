@@ -84,7 +84,7 @@ Flickable {
 
     // === hainh added
 
-    property int wpBoundSize: UIConstants.sRect
+    property int wpBoundSize: UIConstants.sRect * 5 / 3
     property int wpFontSize: wpBoundSize / 2
 
     property string vehicleType: "MAV_TYPE_GENERIC"
@@ -963,6 +963,7 @@ Flickable {
             z:UIConstants.z_waypoint
             id: _waypoint
             visible: true
+            wpBoundSize: rootItem.wpBoundSize
             Component.onCompleted: {
 
                 var wp_Id     = Id_Role;
@@ -1122,6 +1123,7 @@ Flickable {
             id: _marker
             visible: true
             isMarker: true
+            wpBoundSize: rootItem.wpBoundSize
             Component.onCompleted: {
                 var _id_marker  = Id_Role
                 var _type       = Type_Role
@@ -1510,7 +1512,7 @@ Flickable {
 
             if(index === 1){
                 coord.altitude = 50;
-                if(vehicleType === 2 || vehicleType === 3){
+                if(vehicleType === "MAV_TYPE_QUADROTOR" || vehicleType === "MAV_TYPE_OCTOROTOR"){
                     _waypointModel.addSymbol(index,UIConstants.takeoffType,0,0,0,0,"",coord)
                     _trajactoryModel.addSymbol(index,UIConstants.takeoffType,0,0,0,0,"",coord)
                 }else{
@@ -1519,7 +1521,7 @@ Flickable {
                 }
             }else if(index === 2){
                 coord.altitude = 0;
-                if(vehicleType === 2 || vehicleType === 3){
+                if(vehicleType === "MAV_TYPE_QUADROTOR" || vehicleType === "MAV_TYPE_OCTOROTOR"){
                     _waypointModel.addSymbol(index,UIConstants.landType,0,0,0,0,"",coord)
                     _trajactoryModel.addSymbol(index,UIConstants.landType,0,0,0,0,"",coord)
                 }else{
@@ -2260,6 +2262,7 @@ Flickable {
 
     function setMap(mapData){
         urlMaps = mapFolderPath  + mapData
+        console.log("urlMaps = "+urlMaps);
         createMap()
         //        //map.refresh()
         //        map.plugin = createPluginMap("esri",Helper.convertUrltoPath(urlMaps))
@@ -2296,7 +2299,7 @@ Flickable {
             map.tilt = tilt
             map.bearing = bearing
             map.fieldOfView = fov
-            map.zoomLevel = zoomLevel
+            map.zoomLevel = 14;
             map.center = center
             //map.slidersExpanded = panelExpanded
         } else {
@@ -2387,4 +2390,3 @@ Flickable {
             scrollWP.hideScrollWP()
     }
 }
-

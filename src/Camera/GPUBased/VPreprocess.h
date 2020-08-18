@@ -28,8 +28,8 @@ class VPreprocess : public QThread
 
     private:
         index_type m_currID;
-        RollBuffer_<GstFrameCacheItem> *m_gstFrameBuff;
-        RollBuffer_<ProcessImageCacheItem> *m_matImageBuff;
+        RollBuffer<GstFrameCacheItem> *m_gstFrameBuff;
+        RollBuffer<ProcessImageCacheItem> *m_matImageBuff;
         bool m_enStab = true;
         bool m_running = true;
 

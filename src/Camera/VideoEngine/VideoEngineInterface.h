@@ -29,7 +29,6 @@
 #include <QList>
 #include <QRect>
 #include "Camera/Buffer/RollBuffer.h"
-#include "Camera/Buffer/RollBuffer_.h"
 #include "../Cache/TrackObject.h"
 #include "../Cache/GstFrameCacheItem.h"
 #include "../../../Files/PlateLog.h"
@@ -195,8 +194,8 @@ protected:
     virtual void setPlateLog(PlateLog* plateLog){
         Q_UNUSED(plateLog);
     }
-
 protected:
+//    static uint8_t m_keyST0601[16] = {0X06,0X0E,0X2B,0X34,0X02,0X0B,0X01,0X01,0X0E,0X01,0X03,0X01,0X01,0X00,0X00,0X00};
     GimbalInterface* m_gimbal = nullptr;
     // === sub viewer
     QList<VideoRender*> m_listRender;

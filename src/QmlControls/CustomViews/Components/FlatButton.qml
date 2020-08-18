@@ -15,9 +15,9 @@ import QtQuick 2.6
 import QtQuick.Controls 2.1
 
 //---------------- Include custom libs ----------------------------------------
+
 import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
-
 //----------------------- Component definition- ------------------------------
 Rectangle {
     id: flatBtn

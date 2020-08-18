@@ -112,6 +112,7 @@ Rectangle {
         }
         FlatButton {
             id: btnVideoFolder
+            visible: USE_VIDEO_CPU || USE_VIDEO_GPU
             btnText: itemListName["VIDEO_FOLDER"][UIConstants.language[UIConstants.languageID]]
             btnTextColor: UIConstants.textFooterColor
             height: UIConstants.sRect * 2
@@ -198,6 +199,36 @@ Rectangle {
                 font.family: UIConstants.appFont
                 font.pixelSize: UIConstants.fontSize
                 text: itemListName["QUIT_APP"]
+                      [UIConstants.language[UIConstants.languageID]]
+                color: UIConstants.textColor
+            }
+        }
+        RowLayout{
+            Layout.preferredHeight: UIConstants.sRect * 2
+            Layout.fillWidth: true
+            layoutDirection: Qt.RightToLeft
+            FlatButtonIcon{
+                Layout.preferredWidth: UIConstants.sRect * 2
+                Layout.preferredHeight: UIConstants.sRect * 2
+                width: UIConstants.sRect * 2
+                height: width
+                icon: UIConstants.iRefresh
+                isSolid: true
+                isShowRect: false
+                iconSize: UIConstants.sRect*3/2 - 5
+                iconColor: UIConstants.textColor
+                color: UIConstants.redColor
+                radius: UIConstants.rectRadius
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                isAutoReturn: true
+                onClicked: {
+                    root.clicked(root.type,"RESTART_APP");
+                }
+            }
+            Label{
+                font.family: UIConstants.appFont
+                font.pixelSize: UIConstants.fontSize
+                text: itemListName["RESTART_APP"]
                       [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.textColor
             }

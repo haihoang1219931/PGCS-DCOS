@@ -34,7 +34,7 @@
 #include "../Algorithms/search/ipsearch_orbSearcher.h"
 //#define _dbg_show_level_1_
 #endif
-#define TRACK_DANDO
+//#define TRACK_DANDO
 //#define DEBUG_TIMER
 class ClickTrack;
 class GimbalInterface;
@@ -89,8 +89,8 @@ Q_SIGNALS:
 private:
     bool m_running = true;
     index_type m_currID;
-    RollBuffer_<ProcessImageCacheItem> *m_matImageBuff = nullptr;
-    RollBuffer_<ProcessImageCacheItem> *m_matTrackBuff = nullptr;
+    RollBuffer<ProcessImageCacheItem> *m_matImageBuff = nullptr;
+    RollBuffer<ProcessImageCacheItem> *m_matTrackBuff = nullptr;
     //        RollBuffer<Eye::TrackResponse> *m_rbTrackResIR = nullptr;
     //        RollBuffer<Eye::TrackResponse> *m_rbTrackResEO = nullptr;
     //        RollBuffer<Eye::SystemStatus> *m_rbSystem = nullptr;
@@ -206,7 +206,8 @@ public:
     cv::RotatedRect m_plrRR;
 #endif
     // color mode
-    QString m_colorMode = "WHITE_HOT";
+    QMap <QString,int>m_mapColorMode;
+    int m_colorMode = 0; // 0: white hot, 1: red hot
     // Object detect
     Detector *m_detector = nullptr;
     int m_objectType = -1;

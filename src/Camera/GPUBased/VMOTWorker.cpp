@@ -16,7 +16,7 @@ void VMOTWorker::run()
     m_rbMOTObjs = Cache::instance()->getMOTCache();
 //    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();
 //    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();
-    ProcessImageCacheItem processImgItem;
+
     int prevID = -1;
     float *h_gmeMat;
     float *d_gmeMat;
@@ -30,7 +30,7 @@ void VMOTWorker::run()
         }
 
         start = std::chrono::high_resolution_clock::now();
-        processImgItem = m_matImageBuff->at(m_matImageBuff->size() - 3);;//m_matImageBuff->last(); ?giapvn: Why -3?
+        ProcessImageCacheItem& processImgItem = m_matImageBuff->at(m_matImageBuff->size() - 3);;//m_matImageBuff->last(); ?giapvn: Why -3?
 
         // Check if buffer is empty or there have no new image is pushed, waiting for 10ms and then go to the next loop.
         if ((processImgItem.getIndex() == -1) ||
