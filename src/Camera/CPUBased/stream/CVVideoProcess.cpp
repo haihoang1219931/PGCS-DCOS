@@ -29,7 +29,7 @@ CVVideoProcess::~CVVideoProcess()
 void CVVideoProcess::changeTrackSize(float _trackSize)
 {
     m_trackSize = (int)_trackSize;
-    m_trackSizePrev = m_trackSize;
+//    m_trackSizePrev = m_trackSize;
 }
 void CVVideoProcess::setClick(float x, float y,float width,float height){
     if(m_grayFrame.cols <= 0 || m_grayFrame.rows <= 0
@@ -245,9 +245,9 @@ void CVVideoProcess::doWork()
                     if( h/2 > m_trackSize)
                         m_trackSize = h/2;
                 }else{
-                    if(m_trackSizePrev != m_trackSize){
-                        m_trackSize = m_trackSizePrev;
-                    }
+//                    if(m_trackSizePrev != m_trackSize){
+//                        m_trackSize = m_trackSizePrev;
+//                    }
                 }
             }
             if(m_clickSet || m_jsQueue.size()>0){
@@ -357,7 +357,7 @@ void CVVideoProcess::doWork()
                                 static_cast<float>(m_dy) - static_cast<float>(m_trackSize)/2);
                     m_trackRect.width = m_trackSize;
                     m_trackRect.height = m_trackSize;
-                    if(m_tracker->Get_State() == TRACK_INVISION || m_tracker->Get_State() == TRACK_OCCLUDED){
+                    if(m_tracker->getState() == TRACK_INVISION || m_tracker->getState() == TRACK_OCCLUDED){
                         Q_EMIT trackStateFound(0,
                                                static_cast<double>(m_trackRect.x),
                                                static_cast<double>(m_trackRect.y),
@@ -424,23 +424,23 @@ void CVVideoProcess::doWork()
             cv::Scalar colorInvision(255,0,0);
             cv::Scalar colorOccluded(0,0,0);
             if(m_gimbal->context()->m_lockMode == "TRACK"){
-                if(m_tracker->Get_State() == TRACK_INVISION){
+                if(m_tracker->getState() == TRACK_INVISION){
                     VideoEngine::rectangle(imgYWarped,imgUWarped,imgVWarped,
                                            trackRect,colorInvision,2);
-                }else if(m_tracker->Get_State() == TRACK_OCCLUDED){
+                }else if(m_tracker->getState() == TRACK_OCCLUDED){
                     VideoEngine::rectangle(imgYWarped,imgUWarped,imgVWarped,
                                            trackRect,colorOccluded,2);
                 }else{
 
                 }
             }else if(m_gimbal->context()->m_lockMode == "VISUAL"){
-                if(m_tracker->Get_State() == TRACK_INVISION){
+                if(m_tracker->getState() == TRACK_INVISION){
                     VideoEngine::drawSteeringCenter(imgYWarped,imgUWarped,imgVWarped,
                                        trackRect.width,
                                        static_cast<int>(trackRect.x + trackRect.width/2),
                                        static_cast<int>(trackRect.y + trackRect.height/2),
                                        colorInvision);
-                }else if(m_tracker->Get_State() == TRACK_OCCLUDED){
+                }else if(m_tracker->getState() == TRACK_OCCLUDED){
                     VideoEngine::drawSteeringCenter(imgYWarped,imgUWarped,imgVWarped,
                                        trackRect.width,
                                        static_cast<int>(trackRect.x + trackRect.width/2),
