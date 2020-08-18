@@ -187,6 +187,7 @@
         <file alias="qmlimages/ZoomPlus.svg">src/QmlControls/CustomViews/assets/images/widgets/ZoomPlus.svg</file>
         <file alias="CustomViews/ToolBar/EngineIndicator.qml">src/QmlControls/CustomViews/ToolBar/EngineIndicator.qml</file>
         <file alias="CustomViews/HUD/AhrsHUD.qml">src/QmlControls/CustomViews/HUD/AhrsHUD.qml</file>
+        <file alias="CustomViews/ToolBar/BatteryIndicator.qml">src/QmlControls/CustomViews/ToolBar/BatteryIndicator.qml</file>
     </qresource>
     <qresource prefix="/qmlimages">
         <file alias="markers/AntiClockwiseCircle.png">src/QmlControls/CustomViews/assets/images/markers/AntiClockwiseCircle.png</file>
@@ -266,5 +267,7 @@
         <file alias="objects/jet.png">src/QmlControls/CustomViews/assets/objects/jet.png</file>
         <file alias="objects/tree.png">src/QmlControls/CustomViews/assets/objects/tree.png</file>
         <file alias="ToolBar/Images/engine.svg">src/QmlControls/CustomViews/ToolBar/Images/engine.svg</file>
+        <file alias="ToolBar/Images/Battery.svg">src/QmlControls/CustomViews/ToolBar/Images/Battery.svg</file>
+        <file alias="ToolBar/Images/battery.svg">src/QmlControls/CustomViews/ToolBar/Images/battery.svg</file>
     </qresource>
 </RCC>

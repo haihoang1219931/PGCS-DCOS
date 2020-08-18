@@ -78,7 +78,19 @@ class Vehicle : public QObject
     Q_PROPERTY(int                  countGPS                    READ countGPS                                       NOTIFY countGPSChanged)
     Q_PROPERTY(QString              lockGPS                     READ lockGPS                                        NOTIFY lockGPSChanged)
 
-    Q_PROPERTY(float                fuelUsed                    READ fuelUsed                                       NOTIFY fuelUsedChanged)
+//    Q_PROPERTY(float                vBatt12S                    READ vBatt12S                                       NOTIFY vBatt12SChanged)
+//    Q_PROPERTY(float                vBattA                      READ vBattA                                         NOTIFY vBattAChanged)
+//    Q_PROPERTY(float                iBattA                      READ iBattA                                         NOTIFY iBattAChanged)
+//    Q_PROPERTY(float                vBattB                      READ vBattB                                         NOTIFY vBattBChanged)
+//    Q_PROPERTY(float                iBattB                      READ iBattB                                         NOTIFY iBattBChanged)
+//    Q_PROPERTY(float                pwTemp                      READ pwTemp                                         NOTIFY pwTempChanged)
+//    Q_PROPERTY(int                  genStatus                   READ genStatus                                      NOTIFY genStatusChanged)
+
+//    Q_PROPERTY(float                engineFuelUsed              READ engineFuelUsed                                 NOTIFY engineFuelUsedChanged)
+//    Q_PROPERTY(float                engineCht                   READ engineCht                                      NOTIFY engineChtChanged)
+//    Q_PROPERTY(float                engineRpm                   READ engineRpm                                      NOTIFY engineRpmChanged)
+//    Q_PROPERTY(float                engineFuelPressure          READ engineFuelPressure                             NOTIFY engineFuelPressureChanged)
+
     Q_PROPERTY(float                fuelAvailble                READ fuelAvailble                                   NOTIFY fuelAvailbleChanged)
 
     Q_PROPERTY(QString              messageSecurity             READ messageSecurity    WRITE setMessageSecurity    NOTIFY messageSecurityChanged)
@@ -255,8 +267,21 @@ public:
     int   countGPS(){ return _countGPS;}
     QString lockGPS(){ return _lockGPS;}
 
-    float fuelUsed(){return _fuelUsed;}
+//    float engineFuelUsed(){return _engineFuelUsed;}
+//    float engineCht(){return _engineCht;}
+//    float engineRpm(){return _engineRpm;}
+//    float engineFuelPressure(){return _engineFuelPressure;}
+
+
     float fuelAvailble(){return _fuelAvailble;}
+
+//    float vBatt12S(){return _vBatt12S;}
+//    float vBattA(){return _vBattA;}
+//    float iBattA(){return _iBattA;}
+//    float vBattB(){return _vBattB;}
+//    float iBattB(){return _iBattB;}
+//    float pwTemp(){return _pwTemp;}
+//    int   genStatus(){return _genStatus;}
 
     QString messageSecurity(){ return _messageSecurity;}
     void setMessageSecurity(QString messageSecurity){
@@ -527,8 +552,20 @@ Q_SIGNALS:
     void countGPSChanged();
     void lockGPSChanged();
 
-    void fuelUsedChanged();
+//    void engineFuelUsedChanged();
+//    void engineChtChanged();
+//    void engineFuelPressureChanged();
+//    void engineRpmChanged();
     void fuelAvailbleChanged();
+
+//    void vBatt12SChanged();
+//    void vBattAChanged();
+//    void iBattAChanged();
+//    void vBattBChanged();
+//    void iBattBChanged();
+//    void pwTempChanged();
+//    void genStatusChanged();
+
 
     void uasChanged();
     void firmwareVersionChanged(void);
@@ -735,8 +772,21 @@ private:
     float           _courseOverGroundGPS = 0;
     int             _countGPS  = 0;
     QString         _lockGPS;
-    float           _fuelUsed=0;
+
+//    float           _engineFuelUsed=0;
+//    float           _engineCht=0;
+//    float           _engineRpm=0;
+//    float           _engineFuelPressure=0;
+
     float           _fuelAvailble=0;
+
+//    float           _vBatt12S = 0;
+//    float           _vBattA   = 0;
+//    float           _iBattA   = 0;
+//    float           _vBattB   = 0;
+//    float           _iBattB   = 0;
+//    float           _pwTemp   = 0;
+//    int             _genStatus= -1;
 
     QString         _messageSecurity = "MSG_INFO";
     float           _sonarRange = 0;

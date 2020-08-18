@@ -1032,6 +1032,7 @@ qrc_qml.cpp: ../qml.qrc \
 		../src/QmlControls/CustomViews/ToolBar/GPSIndicator.qml \
 		../src/QmlControls/CustomViews/ToolBar/SignalIndicator.qml \
 		../src/QmlControls/CustomViews/ToolBar/qmldir \
+		../src/QmlControls/CustomViews/ToolBar/BatteryIndicator.qml \
 		../src/QmlControls/CustomViews/ToolBar/EngineIndicator.qml \
 		../src/QmlControls/CustomViews/ToolBar/MessageIndicator.qml \
 		../src/QmlControls/CustomViews/Dialogs/AltitudeEditor.qml \
@@ -1122,6 +1123,8 @@ qrc_qml.cpp: ../qml.qrc \
 		../src/QmlControls/CustomViews/assets/images/widgets/rollPointerWhite.svg \
 		../src/QmlControls/CustomViews/assets/images/widgets/Home.svg \
 		../src/QmlControls/CustomViews/assets/images/widgets/MapSyncChanged.svg \
+		../src/QmlControls/CustomViews/ToolBar/Images/Battery.svg \
+		../src/QmlControls/CustomViews/ToolBar/Images/battery.svg \
 		../src/QmlControls/CustomViews/ToolBar/Images/Yield.svg \
 		../src/QmlControls/CustomViews/ToolBar/Images/engine.svg \
 		../src/QmlControls/CustomViews/ToolBar/Images/Signal.svg \

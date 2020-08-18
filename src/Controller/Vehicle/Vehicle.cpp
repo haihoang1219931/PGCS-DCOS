@@ -1495,17 +1495,17 @@ void Vehicle::_handlePMU(mavlink_message_t &message)
 #ifdef DEBUG_FUNC
     printf("%s \r\n", __func__);
 #endif
-    _setPropertyValue("PMU_IBatA",
+    _setPropertyValue("I_BattA",
                    QString::fromStdString(std::to_string(pmu.IbattA)),"A");
-    _setPropertyValue("PMU_IBatB",
+    _setPropertyValue("I_BattB",
                    QString::fromStdString(std::to_string(pmu.IbattB)),"A");
-    _setPropertyValue("PMU_vBatA",
+    _setPropertyValue("V_BattA",
             QString::fromStdString(std::to_string(pmu.VbattA)),"V");
-    _setPropertyValue("PMU_vBatB",
+    _setPropertyValue("V_BattB",
             QString::fromStdString(std::to_string(pmu.VbattB)),"V");
     _setPropertyValue("PMU_Rpm",
             QString::fromStdString(std::to_string(pmu.PMU_RPM)),"rpm");
-    _setPropertyValue("PMU_vBatt12S",
+    _setPropertyValue("V_Batt12S",
             QString::fromStdString(std::to_string(pmu.Vbatt12S)),"V");
     _setPropertyValue("PMU_Temp",
             QString::fromStdString(std::to_string(pmu.env_temp)),"deg");
@@ -1521,6 +1521,7 @@ void Vehicle::_handlePMU(mavlink_message_t &message)
             QString::fromStdString(std::to_string(pmu.PMU_frame_ok)),"");
     _setPropertyValue("PMU_com",
                       QString::fromStdString(std::to_string(pmu.PMU_com)),"");
+
 }
 
 void Vehicle::_handlePW(mavlink_message_t &message)
@@ -1530,15 +1531,15 @@ void Vehicle::_handlePW(mavlink_message_t &message)
 #ifdef DEBUG_FUNC
     printf("%s \r\n", __func__);
 #endif
-    _setPropertyValue("PW_VBattA",
+    _setPropertyValue("V_BattA",
                    QString::fromStdString(std::to_string(pw.VbattA)),"V");
-    _setPropertyValue("PW_IBattA",
+    _setPropertyValue("I_BattA",
                    QString::fromStdString(std::to_string(pw.IbattA)),"A");
-    _setPropertyValue("PW_VBattB",
+    _setPropertyValue("V_BattB",
                    QString::fromStdString(std::to_string(pw.VbattB)),"V");
-    _setPropertyValue("PW_IBattB",
+    _setPropertyValue("I_BattB",
                    QString::fromStdString(std::to_string(pw.IbattB)),"A");
-    _setPropertyValue("PW_Vgen",
+    _setPropertyValue("V_Gen",
                    QString::fromStdString(std::to_string(pw.Vgen)),"V");
     _setPropertyValue("PW_Vavionics",
                    QString::fromStdString(std::to_string(pw.Vavionics)),"V");
@@ -1560,7 +1561,7 @@ void Vehicle::_handlePW(mavlink_message_t &message)
                    QString::fromStdString(std::to_string(pw.energyA)),"mAh");
     _setPropertyValue("PW_energyB",
                    QString::fromStdString(std::to_string(pw.energyB)),"mAh");
-    _setPropertyValue("PW_Temp",
+    _setPropertyValue("PMU_Temp",
                    QString::fromStdString(std::to_string(pw.pw_temp)),"°C");
 
     int genstt=0;
@@ -1571,8 +1572,22 @@ void Vehicle::_handlePW(mavlink_message_t &message)
     else
         genstt = 0;
 
-    _setPropertyValue("PW_Genstatus",
+    _setPropertyValue("GenStatus",
                    QString::fromStdString(std::to_string(genstt))," ");
+
+//    _vBattA = pw.VbattA;
+//    _vBattB = pw.VbattB;
+//    _iBattA = pw.IbattA;
+//    _iBattB = pw.IbattB;
+//    _pwTemp = static_cast<float>(pw.pw_temp);
+//    _genStatus = genstt;
+
+//    Q_EMIT vBattAChanged();
+//    Q_EMIT iBattAChanged();
+//    Q_EMIT vBattBChanged();
+//    Q_EMIT iBattBChanged();
+//    Q_EMIT pwTempChanged();
+//    Q_EMIT genStatusChanged();
 
     }
 
@@ -1584,12 +1599,14 @@ void Vehicle::_handleECU(mavlink_message_t &message)
     printf("%s \r\n", __func__);
 #endif
 
-    _fuelUsed = static_cast<float>(ecu.fuelUsed)  / 750;
+//    _fuelUsed = static_cast<float>(ecu.fuelUsed)  / 750;
 
     _setPropertyValue("ECU_Throttle",
                    QString::fromStdString(std::to_string(ecu.throttle)),"%");
     _setPropertyValue("ECU_FuelUsed",
-                   QString::fromStdString(std::to_string(_fuelUsed)),"l");
+                   QString::fromStdString(std::to_string(ecu.fuelUsed)),"l");
+//    _setPropertyValue("ECU_FuelUsed",
+//                   QString::fromStdString(std::to_string(_fuelUsed)),"l");
     _setPropertyValue("ECU_CHT",
                    QString::fromStdString(std::to_string(ecu.CHT)),"°C");
     _setPropertyValue("ECU_FuelPressure",
@@ -1607,8 +1624,15 @@ void Vehicle::_handleECU(mavlink_message_t &message)
     _setPropertyValue("ECU_ThrottlePulse",
                    QString::fromStdString(std::to_string(ecu.throttlePulse))," ");
 
+//    _engineFuelUsed = ecu.fuelUsed;
+//    _engineCht = ecu.CHT;
+//    _engineRpm = ecu.rpm;
+//    _engineFuelPressure = ecu.fuelPressure;
 
-    Q_EMIT fuelUsedChanged();
+//    Q_EMIT engineFuelUsedChanged();
+//    Q_EMIT engineChtChanged();
+//    Q_EMIT engineRpmChanged();
+//    Q_EMIT engineFuelPressureChanged();
 }
 
 
@@ -1627,9 +1651,11 @@ void Vehicle::_handleAUX_ADC(mavlink_message_t &message)
                    QString::fromStdString(std::to_string(aux_adc.env_temp))," ");
     _setPropertyValue("ADC_EnvRH",
                    QString::fromStdString(std::to_string(aux_adc.env_RH))," ");
-    _setPropertyValue("ADC_Voltage12S",
+    _setPropertyValue("V_Batt12S",
                    QString::fromStdString(std::to_string(aux_adc.Voltage12S_ADC))," ");
 
+//    _vBatt12S = aux_adc.Voltage12S_ADC;
+//    Q_EMIT vBatt12SChanged();
 }
 
 void Vehicle::_handleAutopilotVersion(mavlink_message_t &message)

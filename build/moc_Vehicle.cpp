@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Vehicle_t {
-    QByteArrayData data[320];
-    char stringdata0[5124];
+    QByteArrayData data[318];
+    char stringdata0[5099];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -99,258 +99,256 @@ QT_MOC_LITERAL(64, 1035, 14), // "vdopGPSChanged"
 QT_MOC_LITERAL(65, 1050, 26), // "courseOverGroundGPSChanged"
 QT_MOC_LITERAL(66, 1077, 15), // "countGPSChanged"
 QT_MOC_LITERAL(67, 1093, 14), // "lockGPSChanged"
-QT_MOC_LITERAL(68, 1108, 15), // "fuelUsedChanged"
-QT_MOC_LITERAL(69, 1124, 19), // "fuelAvailbleChanged"
-QT_MOC_LITERAL(70, 1144, 10), // "uasChanged"
-QT_MOC_LITERAL(71, 1155, 22), // "firmwareVersionChanged"
-QT_MOC_LITERAL(72, 1178, 28), // "firmwareCustomVersionChanged"
-QT_MOC_LITERAL(73, 1207, 17), // "vehicleUIDChanged"
-QT_MOC_LITERAL(74, 1225, 22), // "messageSecurityChanged"
-QT_MOC_LITERAL(75, 1248, 26), // "_sendMessageOnLinkOnThread"
-QT_MOC_LITERAL(76, 1275, 19), // "IOFlightController*"
-QT_MOC_LITERAL(77, 1295, 4), // "link"
-QT_MOC_LITERAL(78, 1300, 19), // "textMessageReceived"
-QT_MOC_LITERAL(79, 1320, 5), // "uasid"
-QT_MOC_LITERAL(80, 1326, 11), // "componentid"
-QT_MOC_LITERAL(81, 1338, 8), // "severity"
-QT_MOC_LITERAL(82, 1347, 4), // "text"
-QT_MOC_LITERAL(83, 1352, 23), // "unhealthySensorsChanged"
-QT_MOC_LITERAL(84, 1376, 25), // "sensorsPresentBitsChanged"
-QT_MOC_LITERAL(85, 1402, 18), // "sensorsPresentBits"
-QT_MOC_LITERAL(86, 1421, 25), // "sensorsEnabledBitsChanged"
-QT_MOC_LITERAL(87, 1447, 18), // "sensorsEnabledBits"
-QT_MOC_LITERAL(88, 1466, 24), // "sensorsHealthBitsChanged"
-QT_MOC_LITERAL(89, 1491, 17), // "sensorsHealthBits"
-QT_MOC_LITERAL(90, 1509, 20), // "mavlinkStatusChanged"
-QT_MOC_LITERAL(91, 1530, 18), // "vehicleTypeChanged"
-QT_MOC_LITERAL(92, 1549, 20), // "paramAirSpeedChanged"
-QT_MOC_LITERAL(93, 1570, 24), // "paramLoiterRadiusChanged"
-QT_MOC_LITERAL(94, 1595, 12), // "paramChanged"
-QT_MOC_LITERAL(95, 1608, 4), // "name"
-QT_MOC_LITERAL(96, 1613, 11), // "rssiChanged"
-QT_MOC_LITERAL(97, 1625, 15), // "pressABSChanged"
-QT_MOC_LITERAL(98, 1641, 17), // "sonarRangeChanged"
-QT_MOC_LITERAL(99, 1659, 18), // "temperatureChanged"
-QT_MOC_LITERAL(100, 1678, 22), // "propertiesModelChanged"
-QT_MOC_LITERAL(101, 1701, 26), // "propertiesShowCountChanged"
-QT_MOC_LITERAL(102, 1728, 18), // "paramsModelChanged"
-QT_MOC_LITERAL(103, 1747, 10), // "picChanged"
-QT_MOC_LITERAL(104, 1758, 18), // "useJoystickChanged"
-QT_MOC_LITERAL(105, 1777, 6), // "enable"
-QT_MOC_LITERAL(106, 1784, 16), // "rcinChan1Changed"
-QT_MOC_LITERAL(107, 1801, 16), // "rcinChan2Changed"
-QT_MOC_LITERAL(108, 1818, 16), // "rcinChan3Changed"
-QT_MOC_LITERAL(109, 1835, 16), // "rcinChan4Changed"
-QT_MOC_LITERAL(110, 1852, 22), // "_loadDefaultParamsShow"
-QT_MOC_LITERAL(111, 1875, 17), // "_setPropertyValue"
-QT_MOC_LITERAL(112, 1893, 4), // "unit"
-QT_MOC_LITERAL(113, 1898, 18), // "_sendMessageOnLink"
-QT_MOC_LITERAL(114, 1917, 23), // "_mavlinkMessageReceived"
-QT_MOC_LITERAL(115, 1941, 17), // "_sendGCSHeartbeat"
-QT_MOC_LITERAL(116, 1959, 16), // "_checkCameraLink"
-QT_MOC_LITERAL(117, 1976, 14), // "_sendGetParams"
-QT_MOC_LITERAL(118, 1991, 21), // "_sendQGCTimeToVehicle"
-QT_MOC_LITERAL(119, 2013, 17), // "requestDataStream"
-QT_MOC_LITERAL(120, 2031, 9), // "messageID"
-QT_MOC_LITERAL(121, 2041, 2), // "hz"
-QT_MOC_LITERAL(122, 2044, 17), // "_startPlanRequest"
-QT_MOC_LITERAL(123, 2062, 21), // "_mavlinkMessageStatus"
-QT_MOC_LITERAL(124, 2084, 5), // "uasId"
-QT_MOC_LITERAL(125, 2090, 8), // "uint64_t"
-QT_MOC_LITERAL(126, 2099, 9), // "totalSent"
-QT_MOC_LITERAL(127, 2109, 13), // "totalReceived"
-QT_MOC_LITERAL(128, 2123, 9), // "totalLoss"
-QT_MOC_LITERAL(129, 2133, 11), // "lossPercent"
-QT_MOC_LITERAL(130, 2145, 9), // "handlePIC"
-QT_MOC_LITERAL(131, 2155, 17), // "handleUseJoystick"
-QT_MOC_LITERAL(132, 2173, 11), // "useJoystick"
-QT_MOC_LITERAL(133, 2185, 19), // "commandLoiterRadius"
-QT_MOC_LITERAL(134, 2205, 6), // "radius"
-QT_MOC_LITERAL(135, 2212, 10), // "commandRTL"
-QT_MOC_LITERAL(136, 2223, 11), // "commandLand"
-QT_MOC_LITERAL(137, 2235, 14), // "commandTakeoff"
-QT_MOC_LITERAL(138, 2250, 16), // "altitudeRelative"
-QT_MOC_LITERAL(139, 2267, 22), // "minimumTakeoffAltitude"
-QT_MOC_LITERAL(140, 2290, 19), // "commandGotoLocation"
-QT_MOC_LITERAL(141, 2310, 9), // "gotoCoord"
-QT_MOC_LITERAL(142, 2320, 21), // "commandChangeAltitude"
-QT_MOC_LITERAL(143, 2342, 14), // "altitudeChange"
-QT_MOC_LITERAL(144, 2357, 18), // "commandSetAltitude"
-QT_MOC_LITERAL(145, 2376, 11), // "newAltitude"
-QT_MOC_LITERAL(146, 2388, 18), // "commandChangeSpeed"
-QT_MOC_LITERAL(147, 2407, 11), // "speedChange"
-QT_MOC_LITERAL(148, 2419, 12), // "commandOrbit"
-QT_MOC_LITERAL(149, 2432, 11), // "centerCoord"
-QT_MOC_LITERAL(150, 2444, 12), // "amslAltitude"
-QT_MOC_LITERAL(151, 2457, 12), // "pauseVehicle"
-QT_MOC_LITERAL(152, 2470, 13), // "emergencyStop"
-QT_MOC_LITERAL(153, 2484, 12), // "abortLanding"
-QT_MOC_LITERAL(154, 2497, 16), // "climbOutAltitude"
-QT_MOC_LITERAL(155, 2514, 12), // "startMission"
-QT_MOC_LITERAL(156, 2527, 11), // "startEngine"
-QT_MOC_LITERAL(157, 2539, 25), // "setCurrentMissionSequence"
-QT_MOC_LITERAL(158, 2565, 3), // "seq"
-QT_MOC_LITERAL(159, 2569, 13), // "rebootVehicle"
-QT_MOC_LITERAL(160, 2583, 13), // "clearMessages"
-QT_MOC_LITERAL(161, 2597, 13), // "triggerCamera"
-QT_MOC_LITERAL(162, 2611, 8), // "sendPlan"
-QT_MOC_LITERAL(163, 2620, 8), // "planFile"
-QT_MOC_LITERAL(164, 2629, 14), // "versionCompare"
-QT_MOC_LITERAL(165, 2644, 8), // "QString&"
-QT_MOC_LITERAL(166, 2653, 7), // "compare"
-QT_MOC_LITERAL(167, 2661, 5), // "major"
-QT_MOC_LITERAL(168, 2667, 5), // "minor"
-QT_MOC_LITERAL(169, 2673, 5), // "patch"
-QT_MOC_LITERAL(170, 2679, 9), // "motorTest"
-QT_MOC_LITERAL(171, 2689, 5), // "motor"
-QT_MOC_LITERAL(172, 2695, 7), // "percent"
-QT_MOC_LITERAL(173, 2703, 15), // "setHomeLocation"
-QT_MOC_LITERAL(174, 2719, 3), // "lat"
-QT_MOC_LITERAL(175, 2723, 3), // "lon"
-QT_MOC_LITERAL(176, 2727, 14), // "setAltitudeRTL"
-QT_MOC_LITERAL(177, 2742, 3), // "alt"
-QT_MOC_LITERAL(178, 2746, 16), // "sendHomePosition"
-QT_MOC_LITERAL(179, 2763, 8), // "location"
-QT_MOC_LITERAL(180, 2772, 14), // "activeProperty"
-QT_MOC_LITERAL(181, 2787, 6), // "active"
-QT_MOC_LITERAL(182, 2794, 21), // "countActiveProperties"
-QT_MOC_LITERAL(183, 2816, 8), // "setArmed"
-QT_MOC_LITERAL(184, 2825, 11), // "sendCommand"
-QT_MOC_LITERAL(185, 2837, 9), // "showError"
-QT_MOC_LITERAL(186, 2847, 6), // "param1"
-QT_MOC_LITERAL(187, 2854, 6), // "param2"
-QT_MOC_LITERAL(188, 2861, 6), // "param3"
-QT_MOC_LITERAL(189, 2868, 6), // "param4"
-QT_MOC_LITERAL(190, 2875, 6), // "param5"
-QT_MOC_LITERAL(191, 2882, 6), // "param6"
-QT_MOC_LITERAL(192, 2889, 6), // "param7"
-QT_MOC_LITERAL(193, 2896, 3), // "uav"
-QT_MOC_LITERAL(194, 2900, 8), // "Vehicle*"
-QT_MOC_LITERAL(195, 2909, 8), // "joystick"
-QT_MOC_LITERAL(196, 2918, 17), // "JoystickThreaded*"
-QT_MOC_LITERAL(197, 2936, 13), // "communication"
-QT_MOC_LITERAL(198, 2950, 14), // "planController"
-QT_MOC_LITERAL(199, 2965, 15), // "PlanController*"
-QT_MOC_LITERAL(200, 2981, 16), // "paramsController"
-QT_MOC_LITERAL(201, 2998, 17), // "ParamsController*"
-QT_MOC_LITERAL(202, 3016, 11), // "flightModes"
-QT_MOC_LITERAL(203, 3028, 16), // "flightModesOnAir"
-QT_MOC_LITERAL(204, 3045, 9), // "rcinChan1"
-QT_MOC_LITERAL(205, 3055, 9), // "rcinChan2"
-QT_MOC_LITERAL(206, 3065, 9), // "rcinChan3"
-QT_MOC_LITERAL(207, 3075, 9), // "rcinChan4"
-QT_MOC_LITERAL(208, 3085, 3), // "pic"
-QT_MOC_LITERAL(209, 3089, 6), // "landed"
-QT_MOC_LITERAL(210, 3096, 10), // "coordinate"
-QT_MOC_LITERAL(211, 3107, 12), // "homePosition"
-QT_MOC_LITERAL(212, 3120, 4), // "roll"
-QT_MOC_LITERAL(213, 3125, 5), // "pitch"
-QT_MOC_LITERAL(214, 3131, 7), // "heading"
-QT_MOC_LITERAL(215, 3139, 8), // "airSpeed"
-QT_MOC_LITERAL(216, 3148, 14), // "engineSensor_1"
-QT_MOC_LITERAL(217, 3163, 14), // "engineSensor_2"
-QT_MOC_LITERAL(218, 3178, 9), // "gpsSignal"
-QT_MOC_LITERAL(219, 3188, 9), // "ekfSignal"
-QT_MOC_LITERAL(220, 3198, 10), // "vibeSignal"
-QT_MOC_LITERAL(221, 3209, 13), // "headingToHome"
-QT_MOC_LITERAL(222, 3223, 14), // "distanceToHome"
-QT_MOC_LITERAL(223, 3238, 15), // "currentWaypoint"
-QT_MOC_LITERAL(224, 3254, 25), // "distanceToCurrentWaypoint"
-QT_MOC_LITERAL(225, 3280, 14), // "batteryVoltage"
-QT_MOC_LITERAL(226, 3295, 11), // "batteryAmpe"
-QT_MOC_LITERAL(227, 3307, 11), // "groundSpeed"
-QT_MOC_LITERAL(228, 3319, 10), // "climbSpeed"
-QT_MOC_LITERAL(229, 3330, 12), // "altitudeAMSL"
-QT_MOC_LITERAL(230, 3343, 11), // "altitudeAGL"
-QT_MOC_LITERAL(231, 3355, 6), // "latGPS"
-QT_MOC_LITERAL(232, 3362, 6), // "lonGPS"
-QT_MOC_LITERAL(233, 3369, 7), // "hdopGPS"
-QT_MOC_LITERAL(234, 3377, 7), // "vdopGPS"
-QT_MOC_LITERAL(235, 3385, 19), // "courseOverGroundGPS"
-QT_MOC_LITERAL(236, 3405, 8), // "countGPS"
-QT_MOC_LITERAL(237, 3414, 7), // "lockGPS"
-QT_MOC_LITERAL(238, 3422, 8), // "fuelUsed"
-QT_MOC_LITERAL(239, 3431, 12), // "fuelAvailble"
-QT_MOC_LITERAL(240, 3444, 15), // "messageSecurity"
-QT_MOC_LITERAL(241, 3460, 3), // "uas"
-QT_MOC_LITERAL(242, 3464, 4), // "UAS*"
-QT_MOC_LITERAL(243, 3469, 16), // "unhealthySensors"
-QT_MOC_LITERAL(244, 3486, 16), // "mavlinkSentCount"
-QT_MOC_LITERAL(245, 3503, 20), // "mavlinkReceivedCount"
-QT_MOC_LITERAL(246, 3524, 16), // "mavlinkLossCount"
-QT_MOC_LITERAL(247, 3541, 18), // "mavlinkLossPercent"
-QT_MOC_LITERAL(248, 3560, 11), // "vehicleType"
-QT_MOC_LITERAL(249, 3572, 16), // "VEHICLE_MAV_TYPE"
-QT_MOC_LITERAL(250, 3589, 13), // "paramAirSpeed"
-QT_MOC_LITERAL(251, 3603, 17), // "paramLoiterRadius"
-QT_MOC_LITERAL(252, 3621, 8), // "pressABS"
-QT_MOC_LITERAL(253, 3630, 10), // "sonarRange"
-QT_MOC_LITERAL(254, 3641, 11), // "temperature"
-QT_MOC_LITERAL(255, 3653, 15), // "propertiesModel"
-QT_MOC_LITERAL(256, 3669, 22), // "QQmlListProperty<Fact>"
-QT_MOC_LITERAL(257, 3692, 19), // "propertiesShowCount"
-QT_MOC_LITERAL(258, 3712, 11), // "paramsModel"
-QT_MOC_LITERAL(259, 3724, 16), // "MavlinkSysStatus"
-QT_MOC_LITERAL(260, 3741, 21), // "SysStatusSensor3dGyro"
-QT_MOC_LITERAL(261, 3763, 22), // "SysStatusSensor3dAccel"
-QT_MOC_LITERAL(262, 3786, 20), // "SysStatusSensor3dMag"
-QT_MOC_LITERAL(263, 3807, 31), // "SysStatusSensorAbsolutePressure"
-QT_MOC_LITERAL(264, 3839, 35), // "SysStatusSensorDifferentialPr..."
-QT_MOC_LITERAL(265, 3875, 18), // "SysStatusSensorGPS"
-QT_MOC_LITERAL(266, 3894, 26), // "SysStatusSensorOpticalFlow"
-QT_MOC_LITERAL(267, 3921, 29), // "SysStatusSensorVisionPosition"
-QT_MOC_LITERAL(268, 3951, 28), // "SysStatusSensorLaserPosition"
-QT_MOC_LITERAL(269, 3980, 34), // "SysStatusSensorExternalGround..."
-QT_MOC_LITERAL(270, 4015, 33), // "SysStatusSensorAngularRateCon..."
-QT_MOC_LITERAL(271, 4049, 36), // "SysStatusSensorAttitudeStabil..."
-QT_MOC_LITERAL(272, 4086, 26), // "SysStatusSensorYawPosition"
-QT_MOC_LITERAL(273, 4113, 31), // "SysStatusSensorZAltitudeControl"
-QT_MOC_LITERAL(274, 4145, 32), // "SysStatusSensorXYPositionControl"
-QT_MOC_LITERAL(275, 4178, 27), // "SysStatusSensorMotorOutputs"
-QT_MOC_LITERAL(276, 4206, 25), // "SysStatusSensorRCReceiver"
-QT_MOC_LITERAL(277, 4232, 22), // "SysStatusSensor3dGyro2"
-QT_MOC_LITERAL(278, 4255, 23), // "SysStatusSensor3dAccel2"
-QT_MOC_LITERAL(279, 4279, 21), // "SysStatusSensor3dMag2"
-QT_MOC_LITERAL(280, 4301, 23), // "SysStatusSensorGeoFence"
-QT_MOC_LITERAL(281, 4325, 19), // "SysStatusSensorAHRS"
-QT_MOC_LITERAL(282, 4345, 22), // "SysStatusSensorTerrain"
-QT_MOC_LITERAL(283, 4368, 27), // "SysStatusSensorReverseMotor"
-QT_MOC_LITERAL(284, 4396, 22), // "SysStatusSensorLogging"
-QT_MOC_LITERAL(285, 4419, 22), // "SysStatusSensorBattery"
-QT_MOC_LITERAL(286, 4442, 16), // "MAV_TYPE_GENERIC"
-QT_MOC_LITERAL(287, 4459, 19), // "MAV_TYPE_FIXED_WING"
-QT_MOC_LITERAL(288, 4479, 18), // "MAV_TYPE_QUADROTOR"
-QT_MOC_LITERAL(289, 4498, 16), // "MAV_TYPE_COAXIAL"
-QT_MOC_LITERAL(290, 4515, 19), // "MAV_TYPE_HELICOPTER"
-QT_MOC_LITERAL(291, 4535, 24), // "MAV_TYPE_ANTENNA_TRACKER"
-QT_MOC_LITERAL(292, 4560, 12), // "MAV_TYPE_GCS"
-QT_MOC_LITERAL(293, 4573, 16), // "MAV_TYPE_AIRSHIP"
-QT_MOC_LITERAL(294, 4590, 21), // "MAV_TYPE_FREE_BALLOON"
-QT_MOC_LITERAL(295, 4612, 15), // "MAV_TYPE_ROCKET"
-QT_MOC_LITERAL(296, 4628, 21), // "MAV_TYPE_GROUND_ROVER"
-QT_MOC_LITERAL(297, 4650, 21), // "MAV_TYPE_SURFACE_BOAT"
-QT_MOC_LITERAL(298, 4672, 18), // "MAV_TYPE_SUBMARINE"
-QT_MOC_LITERAL(299, 4691, 18), // "MAV_TYPE_HEXAROTOR"
-QT_MOC_LITERAL(300, 4710, 18), // "MAV_TYPE_OCTOROTOR"
-QT_MOC_LITERAL(301, 4729, 18), // "MAV_TYPE_TRICOPTER"
-QT_MOC_LITERAL(302, 4748, 22), // "MAV_TYPE_FLAPPING_WING"
-QT_MOC_LITERAL(303, 4771, 13), // "MAV_TYPE_KITE"
-QT_MOC_LITERAL(304, 4785, 27), // "MAV_TYPE_ONBOARD_CONTROLLER"
-QT_MOC_LITERAL(305, 4813, 22), // "MAV_TYPE_VTOL_DUOROTOR"
-QT_MOC_LITERAL(306, 4836, 23), // "MAV_TYPE_VTOL_QUADROTOR"
-QT_MOC_LITERAL(307, 4860, 23), // "MAV_TYPE_VTOL_TILTROTOR"
-QT_MOC_LITERAL(308, 4884, 23), // "MAV_TYPE_VTOL_RESERVED2"
-QT_MOC_LITERAL(309, 4908, 23), // "MAV_TYPE_VTOL_RESERVED3"
-QT_MOC_LITERAL(310, 4932, 23), // "MAV_TYPE_VTOL_RESERVED4"
-QT_MOC_LITERAL(311, 4956, 23), // "MAV_TYPE_VTOL_RESERVED5"
-QT_MOC_LITERAL(312, 4980, 15), // "MAV_TYPE_GIMBAL"
-QT_MOC_LITERAL(313, 4996, 13), // "MAV_TYPE_ADSB"
-QT_MOC_LITERAL(314, 5010, 17), // "MAV_TYPE_PARAFOIL"
-QT_MOC_LITERAL(315, 5028, 20), // "MAV_TYPE_DODECAROTOR"
-QT_MOC_LITERAL(316, 5049, 15), // "MAV_TYPE_CAMERA"
-QT_MOC_LITERAL(317, 5065, 25), // "MAV_TYPE_CHARGING_STATION"
-QT_MOC_LITERAL(318, 5091, 14), // "MAV_TYPE_FLARM"
-QT_MOC_LITERAL(319, 5106, 17) // "MAV_TYPE_ENUM_END"
+QT_MOC_LITERAL(68, 1108, 19), // "fuelAvailbleChanged"
+QT_MOC_LITERAL(69, 1128, 10), // "uasChanged"
+QT_MOC_LITERAL(70, 1139, 22), // "firmwareVersionChanged"
+QT_MOC_LITERAL(71, 1162, 28), // "firmwareCustomVersionChanged"
+QT_MOC_LITERAL(72, 1191, 17), // "vehicleUIDChanged"
+QT_MOC_LITERAL(73, 1209, 22), // "messageSecurityChanged"
+QT_MOC_LITERAL(74, 1232, 26), // "_sendMessageOnLinkOnThread"
+QT_MOC_LITERAL(75, 1259, 19), // "IOFlightController*"
+QT_MOC_LITERAL(76, 1279, 4), // "link"
+QT_MOC_LITERAL(77, 1284, 19), // "textMessageReceived"
+QT_MOC_LITERAL(78, 1304, 5), // "uasid"
+QT_MOC_LITERAL(79, 1310, 11), // "componentid"
+QT_MOC_LITERAL(80, 1322, 8), // "severity"
+QT_MOC_LITERAL(81, 1331, 4), // "text"
+QT_MOC_LITERAL(82, 1336, 23), // "unhealthySensorsChanged"
+QT_MOC_LITERAL(83, 1360, 25), // "sensorsPresentBitsChanged"
+QT_MOC_LITERAL(84, 1386, 18), // "sensorsPresentBits"
+QT_MOC_LITERAL(85, 1405, 25), // "sensorsEnabledBitsChanged"
+QT_MOC_LITERAL(86, 1431, 18), // "sensorsEnabledBits"
+QT_MOC_LITERAL(87, 1450, 24), // "sensorsHealthBitsChanged"
+QT_MOC_LITERAL(88, 1475, 17), // "sensorsHealthBits"
+QT_MOC_LITERAL(89, 1493, 20), // "mavlinkStatusChanged"
+QT_MOC_LITERAL(90, 1514, 18), // "vehicleTypeChanged"
+QT_MOC_LITERAL(91, 1533, 20), // "paramAirSpeedChanged"
+QT_MOC_LITERAL(92, 1554, 24), // "paramLoiterRadiusChanged"
+QT_MOC_LITERAL(93, 1579, 12), // "paramChanged"
+QT_MOC_LITERAL(94, 1592, 4), // "name"
+QT_MOC_LITERAL(95, 1597, 11), // "rssiChanged"
+QT_MOC_LITERAL(96, 1609, 15), // "pressABSChanged"
+QT_MOC_LITERAL(97, 1625, 17), // "sonarRangeChanged"
+QT_MOC_LITERAL(98, 1643, 18), // "temperatureChanged"
+QT_MOC_LITERAL(99, 1662, 22), // "propertiesModelChanged"
+QT_MOC_LITERAL(100, 1685, 26), // "propertiesShowCountChanged"
+QT_MOC_LITERAL(101, 1712, 18), // "paramsModelChanged"
+QT_MOC_LITERAL(102, 1731, 10), // "picChanged"
+QT_MOC_LITERAL(103, 1742, 18), // "useJoystickChanged"
+QT_MOC_LITERAL(104, 1761, 6), // "enable"
+QT_MOC_LITERAL(105, 1768, 16), // "rcinChan1Changed"
+QT_MOC_LITERAL(106, 1785, 16), // "rcinChan2Changed"
+QT_MOC_LITERAL(107, 1802, 16), // "rcinChan3Changed"
+QT_MOC_LITERAL(108, 1819, 16), // "rcinChan4Changed"
+QT_MOC_LITERAL(109, 1836, 22), // "_loadDefaultParamsShow"
+QT_MOC_LITERAL(110, 1859, 17), // "_setPropertyValue"
+QT_MOC_LITERAL(111, 1877, 4), // "unit"
+QT_MOC_LITERAL(112, 1882, 18), // "_sendMessageOnLink"
+QT_MOC_LITERAL(113, 1901, 23), // "_mavlinkMessageReceived"
+QT_MOC_LITERAL(114, 1925, 17), // "_sendGCSHeartbeat"
+QT_MOC_LITERAL(115, 1943, 16), // "_checkCameraLink"
+QT_MOC_LITERAL(116, 1960, 14), // "_sendGetParams"
+QT_MOC_LITERAL(117, 1975, 21), // "_sendQGCTimeToVehicle"
+QT_MOC_LITERAL(118, 1997, 17), // "requestDataStream"
+QT_MOC_LITERAL(119, 2015, 9), // "messageID"
+QT_MOC_LITERAL(120, 2025, 2), // "hz"
+QT_MOC_LITERAL(121, 2028, 17), // "_startPlanRequest"
+QT_MOC_LITERAL(122, 2046, 21), // "_mavlinkMessageStatus"
+QT_MOC_LITERAL(123, 2068, 5), // "uasId"
+QT_MOC_LITERAL(124, 2074, 8), // "uint64_t"
+QT_MOC_LITERAL(125, 2083, 9), // "totalSent"
+QT_MOC_LITERAL(126, 2093, 13), // "totalReceived"
+QT_MOC_LITERAL(127, 2107, 9), // "totalLoss"
+QT_MOC_LITERAL(128, 2117, 11), // "lossPercent"
+QT_MOC_LITERAL(129, 2129, 9), // "handlePIC"
+QT_MOC_LITERAL(130, 2139, 17), // "handleUseJoystick"
+QT_MOC_LITERAL(131, 2157, 11), // "useJoystick"
+QT_MOC_LITERAL(132, 2169, 19), // "commandLoiterRadius"
+QT_MOC_LITERAL(133, 2189, 6), // "radius"
+QT_MOC_LITERAL(134, 2196, 10), // "commandRTL"
+QT_MOC_LITERAL(135, 2207, 11), // "commandLand"
+QT_MOC_LITERAL(136, 2219, 14), // "commandTakeoff"
+QT_MOC_LITERAL(137, 2234, 16), // "altitudeRelative"
+QT_MOC_LITERAL(138, 2251, 22), // "minimumTakeoffAltitude"
+QT_MOC_LITERAL(139, 2274, 19), // "commandGotoLocation"
+QT_MOC_LITERAL(140, 2294, 9), // "gotoCoord"
+QT_MOC_LITERAL(141, 2304, 21), // "commandChangeAltitude"
+QT_MOC_LITERAL(142, 2326, 14), // "altitudeChange"
+QT_MOC_LITERAL(143, 2341, 18), // "commandSetAltitude"
+QT_MOC_LITERAL(144, 2360, 11), // "newAltitude"
+QT_MOC_LITERAL(145, 2372, 18), // "commandChangeSpeed"
+QT_MOC_LITERAL(146, 2391, 11), // "speedChange"
+QT_MOC_LITERAL(147, 2403, 12), // "commandOrbit"
+QT_MOC_LITERAL(148, 2416, 11), // "centerCoord"
+QT_MOC_LITERAL(149, 2428, 12), // "amslAltitude"
+QT_MOC_LITERAL(150, 2441, 12), // "pauseVehicle"
+QT_MOC_LITERAL(151, 2454, 13), // "emergencyStop"
+QT_MOC_LITERAL(152, 2468, 12), // "abortLanding"
+QT_MOC_LITERAL(153, 2481, 16), // "climbOutAltitude"
+QT_MOC_LITERAL(154, 2498, 12), // "startMission"
+QT_MOC_LITERAL(155, 2511, 11), // "startEngine"
+QT_MOC_LITERAL(156, 2523, 25), // "setCurrentMissionSequence"
+QT_MOC_LITERAL(157, 2549, 3), // "seq"
+QT_MOC_LITERAL(158, 2553, 13), // "rebootVehicle"
+QT_MOC_LITERAL(159, 2567, 13), // "clearMessages"
+QT_MOC_LITERAL(160, 2581, 13), // "triggerCamera"
+QT_MOC_LITERAL(161, 2595, 8), // "sendPlan"
+QT_MOC_LITERAL(162, 2604, 8), // "planFile"
+QT_MOC_LITERAL(163, 2613, 14), // "versionCompare"
+QT_MOC_LITERAL(164, 2628, 8), // "QString&"
+QT_MOC_LITERAL(165, 2637, 7), // "compare"
+QT_MOC_LITERAL(166, 2645, 5), // "major"
+QT_MOC_LITERAL(167, 2651, 5), // "minor"
+QT_MOC_LITERAL(168, 2657, 5), // "patch"
+QT_MOC_LITERAL(169, 2663, 9), // "motorTest"
+QT_MOC_LITERAL(170, 2673, 5), // "motor"
+QT_MOC_LITERAL(171, 2679, 7), // "percent"
+QT_MOC_LITERAL(172, 2687, 15), // "setHomeLocation"
+QT_MOC_LITERAL(173, 2703, 3), // "lat"
+QT_MOC_LITERAL(174, 2707, 3), // "lon"
+QT_MOC_LITERAL(175, 2711, 14), // "setAltitudeRTL"
+QT_MOC_LITERAL(176, 2726, 3), // "alt"
+QT_MOC_LITERAL(177, 2730, 16), // "sendHomePosition"
+QT_MOC_LITERAL(178, 2747, 8), // "location"
+QT_MOC_LITERAL(179, 2756, 14), // "activeProperty"
+QT_MOC_LITERAL(180, 2771, 6), // "active"
+QT_MOC_LITERAL(181, 2778, 21), // "countActiveProperties"
+QT_MOC_LITERAL(182, 2800, 8), // "setArmed"
+QT_MOC_LITERAL(183, 2809, 11), // "sendCommand"
+QT_MOC_LITERAL(184, 2821, 9), // "showError"
+QT_MOC_LITERAL(185, 2831, 6), // "param1"
+QT_MOC_LITERAL(186, 2838, 6), // "param2"
+QT_MOC_LITERAL(187, 2845, 6), // "param3"
+QT_MOC_LITERAL(188, 2852, 6), // "param4"
+QT_MOC_LITERAL(189, 2859, 6), // "param5"
+QT_MOC_LITERAL(190, 2866, 6), // "param6"
+QT_MOC_LITERAL(191, 2873, 6), // "param7"
+QT_MOC_LITERAL(192, 2880, 3), // "uav"
+QT_MOC_LITERAL(193, 2884, 8), // "Vehicle*"
+QT_MOC_LITERAL(194, 2893, 8), // "joystick"
+QT_MOC_LITERAL(195, 2902, 17), // "JoystickThreaded*"
+QT_MOC_LITERAL(196, 2920, 13), // "communication"
+QT_MOC_LITERAL(197, 2934, 14), // "planController"
+QT_MOC_LITERAL(198, 2949, 15), // "PlanController*"
+QT_MOC_LITERAL(199, 2965, 16), // "paramsController"
+QT_MOC_LITERAL(200, 2982, 17), // "ParamsController*"
+QT_MOC_LITERAL(201, 3000, 11), // "flightModes"
+QT_MOC_LITERAL(202, 3012, 16), // "flightModesOnAir"
+QT_MOC_LITERAL(203, 3029, 9), // "rcinChan1"
+QT_MOC_LITERAL(204, 3039, 9), // "rcinChan2"
+QT_MOC_LITERAL(205, 3049, 9), // "rcinChan3"
+QT_MOC_LITERAL(206, 3059, 9), // "rcinChan4"
+QT_MOC_LITERAL(207, 3069, 3), // "pic"
+QT_MOC_LITERAL(208, 3073, 6), // "landed"
+QT_MOC_LITERAL(209, 3080, 10), // "coordinate"
+QT_MOC_LITERAL(210, 3091, 12), // "homePosition"
+QT_MOC_LITERAL(211, 3104, 4), // "roll"
+QT_MOC_LITERAL(212, 3109, 5), // "pitch"
+QT_MOC_LITERAL(213, 3115, 7), // "heading"
+QT_MOC_LITERAL(214, 3123, 8), // "airSpeed"
+QT_MOC_LITERAL(215, 3132, 14), // "engineSensor_1"
+QT_MOC_LITERAL(216, 3147, 14), // "engineSensor_2"
+QT_MOC_LITERAL(217, 3162, 9), // "gpsSignal"
+QT_MOC_LITERAL(218, 3172, 9), // "ekfSignal"
+QT_MOC_LITERAL(219, 3182, 10), // "vibeSignal"
+QT_MOC_LITERAL(220, 3193, 13), // "headingToHome"
+QT_MOC_LITERAL(221, 3207, 14), // "distanceToHome"
+QT_MOC_LITERAL(222, 3222, 15), // "currentWaypoint"
+QT_MOC_LITERAL(223, 3238, 25), // "distanceToCurrentWaypoint"
+QT_MOC_LITERAL(224, 3264, 14), // "batteryVoltage"
+QT_MOC_LITERAL(225, 3279, 11), // "batteryAmpe"
+QT_MOC_LITERAL(226, 3291, 11), // "groundSpeed"
+QT_MOC_LITERAL(227, 3303, 10), // "climbSpeed"
+QT_MOC_LITERAL(228, 3314, 12), // "altitudeAMSL"
+QT_MOC_LITERAL(229, 3327, 11), // "altitudeAGL"
+QT_MOC_LITERAL(230, 3339, 6), // "latGPS"
+QT_MOC_LITERAL(231, 3346, 6), // "lonGPS"
+QT_MOC_LITERAL(232, 3353, 7), // "hdopGPS"
+QT_MOC_LITERAL(233, 3361, 7), // "vdopGPS"
+QT_MOC_LITERAL(234, 3369, 19), // "courseOverGroundGPS"
+QT_MOC_LITERAL(235, 3389, 8), // "countGPS"
+QT_MOC_LITERAL(236, 3398, 7), // "lockGPS"
+QT_MOC_LITERAL(237, 3406, 12), // "fuelAvailble"
+QT_MOC_LITERAL(238, 3419, 15), // "messageSecurity"
+QT_MOC_LITERAL(239, 3435, 3), // "uas"
+QT_MOC_LITERAL(240, 3439, 4), // "UAS*"
+QT_MOC_LITERAL(241, 3444, 16), // "unhealthySensors"
+QT_MOC_LITERAL(242, 3461, 16), // "mavlinkSentCount"
+QT_MOC_LITERAL(243, 3478, 20), // "mavlinkReceivedCount"
+QT_MOC_LITERAL(244, 3499, 16), // "mavlinkLossCount"
+QT_MOC_LITERAL(245, 3516, 18), // "mavlinkLossPercent"
+QT_MOC_LITERAL(246, 3535, 11), // "vehicleType"
+QT_MOC_LITERAL(247, 3547, 16), // "VEHICLE_MAV_TYPE"
+QT_MOC_LITERAL(248, 3564, 13), // "paramAirSpeed"
+QT_MOC_LITERAL(249, 3578, 17), // "paramLoiterRadius"
+QT_MOC_LITERAL(250, 3596, 8), // "pressABS"
+QT_MOC_LITERAL(251, 3605, 10), // "sonarRange"
+QT_MOC_LITERAL(252, 3616, 11), // "temperature"
+QT_MOC_LITERAL(253, 3628, 15), // "propertiesModel"
+QT_MOC_LITERAL(254, 3644, 22), // "QQmlListProperty<Fact>"
+QT_MOC_LITERAL(255, 3667, 19), // "propertiesShowCount"
+QT_MOC_LITERAL(256, 3687, 11), // "paramsModel"
+QT_MOC_LITERAL(257, 3699, 16), // "MavlinkSysStatus"
+QT_MOC_LITERAL(258, 3716, 21), // "SysStatusSensor3dGyro"
+QT_MOC_LITERAL(259, 3738, 22), // "SysStatusSensor3dAccel"
+QT_MOC_LITERAL(260, 3761, 20), // "SysStatusSensor3dMag"
+QT_MOC_LITERAL(261, 3782, 31), // "SysStatusSensorAbsolutePressure"
+QT_MOC_LITERAL(262, 3814, 35), // "SysStatusSensorDifferentialPr..."
+QT_MOC_LITERAL(263, 3850, 18), // "SysStatusSensorGPS"
+QT_MOC_LITERAL(264, 3869, 26), // "SysStatusSensorOpticalFlow"
+QT_MOC_LITERAL(265, 3896, 29), // "SysStatusSensorVisionPosition"
+QT_MOC_LITERAL(266, 3926, 28), // "SysStatusSensorLaserPosition"
+QT_MOC_LITERAL(267, 3955, 34), // "SysStatusSensorExternalGround..."
+QT_MOC_LITERAL(268, 3990, 33), // "SysStatusSensorAngularRateCon..."
+QT_MOC_LITERAL(269, 4024, 36), // "SysStatusSensorAttitudeStabil..."
+QT_MOC_LITERAL(270, 4061, 26), // "SysStatusSensorYawPosition"
+QT_MOC_LITERAL(271, 4088, 31), // "SysStatusSensorZAltitudeControl"
+QT_MOC_LITERAL(272, 4120, 32), // "SysStatusSensorXYPositionControl"
+QT_MOC_LITERAL(273, 4153, 27), // "SysStatusSensorMotorOutputs"
+QT_MOC_LITERAL(274, 4181, 25), // "SysStatusSensorRCReceiver"
+QT_MOC_LITERAL(275, 4207, 22), // "SysStatusSensor3dGyro2"
+QT_MOC_LITERAL(276, 4230, 23), // "SysStatusSensor3dAccel2"
+QT_MOC_LITERAL(277, 4254, 21), // "SysStatusSensor3dMag2"
+QT_MOC_LITERAL(278, 4276, 23), // "SysStatusSensorGeoFence"
+QT_MOC_LITERAL(279, 4300, 19), // "SysStatusSensorAHRS"
+QT_MOC_LITERAL(280, 4320, 22), // "SysStatusSensorTerrain"
+QT_MOC_LITERAL(281, 4343, 27), // "SysStatusSensorReverseMotor"
+QT_MOC_LITERAL(282, 4371, 22), // "SysStatusSensorLogging"
+QT_MOC_LITERAL(283, 4394, 22), // "SysStatusSensorBattery"
+QT_MOC_LITERAL(284, 4417, 16), // "MAV_TYPE_GENERIC"
+QT_MOC_LITERAL(285, 4434, 19), // "MAV_TYPE_FIXED_WING"
+QT_MOC_LITERAL(286, 4454, 18), // "MAV_TYPE_QUADROTOR"
+QT_MOC_LITERAL(287, 4473, 16), // "MAV_TYPE_COAXIAL"
+QT_MOC_LITERAL(288, 4490, 19), // "MAV_TYPE_HELICOPTER"
+QT_MOC_LITERAL(289, 4510, 24), // "MAV_TYPE_ANTENNA_TRACKER"
+QT_MOC_LITERAL(290, 4535, 12), // "MAV_TYPE_GCS"
+QT_MOC_LITERAL(291, 4548, 16), // "MAV_TYPE_AIRSHIP"
+QT_MOC_LITERAL(292, 4565, 21), // "MAV_TYPE_FREE_BALLOON"
+QT_MOC_LITERAL(293, 4587, 15), // "MAV_TYPE_ROCKET"
+QT_MOC_LITERAL(294, 4603, 21), // "MAV_TYPE_GROUND_ROVER"
+QT_MOC_LITERAL(295, 4625, 21), // "MAV_TYPE_SURFACE_BOAT"
+QT_MOC_LITERAL(296, 4647, 18), // "MAV_TYPE_SUBMARINE"
+QT_MOC_LITERAL(297, 4666, 18), // "MAV_TYPE_HEXAROTOR"
+QT_MOC_LITERAL(298, 4685, 18), // "MAV_TYPE_OCTOROTOR"
+QT_MOC_LITERAL(299, 4704, 18), // "MAV_TYPE_TRICOPTER"
+QT_MOC_LITERAL(300, 4723, 22), // "MAV_TYPE_FLAPPING_WING"
+QT_MOC_LITERAL(301, 4746, 13), // "MAV_TYPE_KITE"
+QT_MOC_LITERAL(302, 4760, 27), // "MAV_TYPE_ONBOARD_CONTROLLER"
+QT_MOC_LITERAL(303, 4788, 22), // "MAV_TYPE_VTOL_DUOROTOR"
+QT_MOC_LITERAL(304, 4811, 23), // "MAV_TYPE_VTOL_QUADROTOR"
+QT_MOC_LITERAL(305, 4835, 23), // "MAV_TYPE_VTOL_TILTROTOR"
+QT_MOC_LITERAL(306, 4859, 23), // "MAV_TYPE_VTOL_RESERVED2"
+QT_MOC_LITERAL(307, 4883, 23), // "MAV_TYPE_VTOL_RESERVED3"
+QT_MOC_LITERAL(308, 4907, 23), // "MAV_TYPE_VTOL_RESERVED4"
+QT_MOC_LITERAL(309, 4931, 23), // "MAV_TYPE_VTOL_RESERVED5"
+QT_MOC_LITERAL(310, 4955, 15), // "MAV_TYPE_GIMBAL"
+QT_MOC_LITERAL(311, 4971, 13), // "MAV_TYPE_ADSB"
+QT_MOC_LITERAL(312, 4985, 17), // "MAV_TYPE_PARAFOIL"
+QT_MOC_LITERAL(313, 5003, 20), // "MAV_TYPE_DODECAROTOR"
+QT_MOC_LITERAL(314, 5024, 15), // "MAV_TYPE_CAMERA"
+QT_MOC_LITERAL(315, 5040, 25), // "MAV_TYPE_CHARGING_STATION"
+QT_MOC_LITERAL(316, 5066, 14), // "MAV_TYPE_FLARM"
+QT_MOC_LITERAL(317, 5081, 17) // "MAV_TYPE_ENUM_END"
 
     },
     "Vehicle\0missingParametersChanged\0\0"
@@ -383,8 +381,8 @@ QT_MOC_LITERAL(319, 5106, 17) // "MAV_TYPE_ENUM_END"
     "latGPSChanged\0lonGPSChanged\0hdopGPSChanged\0"
     "vdopGPSChanged\0courseOverGroundGPSChanged\0"
     "countGPSChanged\0lockGPSChanged\0"
-    "fuelUsedChanged\0fuelAvailbleChanged\0"
-    "uasChanged\0firmwareVersionChanged\0"
+    "fuelAvailbleChanged\0uasChanged\0"
+    "firmwareVersionChanged\0"
     "firmwareCustomVersionChanged\0"
     "vehicleUIDChanged\0messageSecurityChanged\0"
     "_sendMessageOnLinkOnThread\0"
@@ -447,8 +445,8 @@ QT_MOC_LITERAL(319, 5106, 17) // "MAV_TYPE_ENUM_END"
     "climbSpeed\0altitudeAMSL\0altitudeAGL\0"
     "latGPS\0lonGPS\0hdopGPS\0vdopGPS\0"
     "courseOverGroundGPS\0countGPS\0lockGPS\0"
-    "fuelUsed\0fuelAvailble\0messageSecurity\0"
-    "uas\0UAS*\0unhealthySensors\0mavlinkSentCount\0"
+    "fuelAvailble\0messageSecurity\0uas\0UAS*\0"
+    "unhealthySensors\0mavlinkSentCount\0"
     "mavlinkReceivedCount\0mavlinkLossCount\0"
     "mavlinkLossPercent\0vehicleType\0"
     "VEHICLE_MAV_TYPE\0paramAirSpeed\0"
@@ -503,149 +501,148 @@ static const uint qt_meta_data_Vehicle[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-     131,   14, // methods
-      68, 1046, // properties
-       2, 1318, // enums/sets
+     130,   14, // methods
+      67, 1040, // properties
+       2, 1308, // enums/sets
        0,    0, // constructors
        0,       // flags
-      80,       // signalCount
+      79,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  669,    2, 0x06 /* Public */,
-       4,    1,  672,    2, 0x06 /* Public */,
-       6,    1,  675,    2, 0x06 /* Public */,
-       9,    5,  678,    2, 0x06 /* Public */,
-      15,    1,  689,    2, 0x06 /* Public */,
-      18,    1,  692,    2, 0x06 /* Public */,
-      20,    0,  695,    2, 0x06 /* Public */,
-      21,    1,  696,    2, 0x06 /* Public */,
-      23,    0,  699,    2, 0x06 /* Public */,
-      24,    0,  700,    2, 0x06 /* Public */,
-      25,    1,  701,    2, 0x06 /* Public */,
-      27,    0,  704,    2, 0x06 /* Public */,
-      28,    0,  705,    2, 0x06 /* Public */,
-      29,    0,  706,    2, 0x06 /* Public */,
-      30,    0,  707,    2, 0x06 /* Public */,
-      31,    1,  708,    2, 0x06 /* Public */,
-      34,    1,  711,    2, 0x06 /* Public */,
-      35,    1,  714,    2, 0x06 /* Public */,
-      36,    1,  717,    2, 0x06 /* Public */,
-      37,    1,  720,    2, 0x06 /* Public */,
-      38,    0,  723,    2, 0x06 /* Public */,
-      39,    0,  724,    2, 0x06 /* Public */,
-      40,    0,  725,    2, 0x06 /* Public */,
-      41,    0,  726,    2, 0x06 /* Public */,
-      42,    0,  727,    2, 0x06 /* Public */,
-      43,    0,  728,    2, 0x06 /* Public */,
-      44,    0,  729,    2, 0x06 /* Public */,
-      45,    0,  730,    2, 0x06 /* Public */,
-      46,    1,  731,    2, 0x06 /* Public */,
-      48,    0,  734,    2, 0x06 /* Public */,
-      49,    0,  735,    2, 0x06 /* Public */,
-      50,    0,  736,    2, 0x06 /* Public */,
-      51,    0,  737,    2, 0x06 /* Public */,
-      52,    0,  738,    2, 0x06 /* Public */,
-      53,    0,  739,    2, 0x06 /* Public */,
-      54,    0,  740,    2, 0x06 /* Public */,
-      55,    0,  741,    2, 0x06 /* Public */,
-      56,    0,  742,    2, 0x06 /* Public */,
-      57,    0,  743,    2, 0x06 /* Public */,
-      58,    0,  744,    2, 0x06 /* Public */,
-      59,    0,  745,    2, 0x06 /* Public */,
-      60,    0,  746,    2, 0x06 /* Public */,
-      61,    0,  747,    2, 0x06 /* Public */,
-      62,    0,  748,    2, 0x06 /* Public */,
-      63,    0,  749,    2, 0x06 /* Public */,
-      64,    0,  750,    2, 0x06 /* Public */,
-      65,    0,  751,    2, 0x06 /* Public */,
-      66,    0,  752,    2, 0x06 /* Public */,
-      67,    0,  753,    2, 0x06 /* Public */,
-      68,    0,  754,    2, 0x06 /* Public */,
-      69,    0,  755,    2, 0x06 /* Public */,
-      70,    0,  756,    2, 0x06 /* Public */,
-      71,    0,  757,    2, 0x06 /* Public */,
-      72,    0,  758,    2, 0x06 /* Public */,
-      73,    0,  759,    2, 0x06 /* Public */,
-      74,    0,  760,    2, 0x06 /* Public */,
-      75,    2,  761,    2, 0x06 /* Public */,
-      78,    4,  766,    2, 0x06 /* Public */,
-      83,    0,  775,    2, 0x06 /* Public */,
-      84,    1,  776,    2, 0x06 /* Public */,
-      86,    1,  779,    2, 0x06 /* Public */,
-      88,    1,  782,    2, 0x06 /* Public */,
-      90,    0,  785,    2, 0x06 /* Public */,
-      91,    0,  786,    2, 0x06 /* Public */,
-      92,    0,  787,    2, 0x06 /* Public */,
-      93,    0,  788,    2, 0x06 /* Public */,
-      94,    1,  789,    2, 0x06 /* Public */,
-      96,    0,  792,    2, 0x06 /* Public */,
-      97,    0,  793,    2, 0x06 /* Public */,
-      98,    0,  794,    2, 0x06 /* Public */,
-      99,    0,  795,    2, 0x06 /* Public */,
-     100,    0,  796,    2, 0x06 /* Public */,
-     101,    0,  797,    2, 0x06 /* Public */,
-     102,    0,  798,    2, 0x06 /* Public */,
-     103,    0,  799,    2, 0x06 /* Public */,
-     104,    1,  800,    2, 0x06 /* Public */,
-     106,    0,  803,    2, 0x06 /* Public */,
-     107,    0,  804,    2, 0x06 /* Public */,
-     108,    0,  805,    2, 0x06 /* Public */,
-     109,    0,  806,    2, 0x06 /* Public */,
+       1,    1,  664,    2, 0x06 /* Public */,
+       4,    1,  667,    2, 0x06 /* Public */,
+       6,    1,  670,    2, 0x06 /* Public */,
+       9,    5,  673,    2, 0x06 /* Public */,
+      15,    1,  684,    2, 0x06 /* Public */,
+      18,    1,  687,    2, 0x06 /* Public */,
+      20,    0,  690,    2, 0x06 /* Public */,
+      21,    1,  691,    2, 0x06 /* Public */,
+      23,    0,  694,    2, 0x06 /* Public */,
+      24,    0,  695,    2, 0x06 /* Public */,
+      25,    1,  696,    2, 0x06 /* Public */,
+      27,    0,  699,    2, 0x06 /* Public */,
+      28,    0,  700,    2, 0x06 /* Public */,
+      29,    0,  701,    2, 0x06 /* Public */,
+      30,    0,  702,    2, 0x06 /* Public */,
+      31,    1,  703,    2, 0x06 /* Public */,
+      34,    1,  706,    2, 0x06 /* Public */,
+      35,    1,  709,    2, 0x06 /* Public */,
+      36,    1,  712,    2, 0x06 /* Public */,
+      37,    1,  715,    2, 0x06 /* Public */,
+      38,    0,  718,    2, 0x06 /* Public */,
+      39,    0,  719,    2, 0x06 /* Public */,
+      40,    0,  720,    2, 0x06 /* Public */,
+      41,    0,  721,    2, 0x06 /* Public */,
+      42,    0,  722,    2, 0x06 /* Public */,
+      43,    0,  723,    2, 0x06 /* Public */,
+      44,    0,  724,    2, 0x06 /* Public */,
+      45,    0,  725,    2, 0x06 /* Public */,
+      46,    1,  726,    2, 0x06 /* Public */,
+      48,    0,  729,    2, 0x06 /* Public */,
+      49,    0,  730,    2, 0x06 /* Public */,
+      50,    0,  731,    2, 0x06 /* Public */,
+      51,    0,  732,    2, 0x06 /* Public */,
+      52,    0,  733,    2, 0x06 /* Public */,
+      53,    0,  734,    2, 0x06 /* Public */,
+      54,    0,  735,    2, 0x06 /* Public */,
+      55,    0,  736,    2, 0x06 /* Public */,
+      56,    0,  737,    2, 0x06 /* Public */,
+      57,    0,  738,    2, 0x06 /* Public */,
+      58,    0,  739,    2, 0x06 /* Public */,
+      59,    0,  740,    2, 0x06 /* Public */,
+      60,    0,  741,    2, 0x06 /* Public */,
+      61,    0,  742,    2, 0x06 /* Public */,
+      62,    0,  743,    2, 0x06 /* Public */,
+      63,    0,  744,    2, 0x06 /* Public */,
+      64,    0,  745,    2, 0x06 /* Public */,
+      65,    0,  746,    2, 0x06 /* Public */,
+      66,    0,  747,    2, 0x06 /* Public */,
+      67,    0,  748,    2, 0x06 /* Public */,
+      68,    0,  749,    2, 0x06 /* Public */,
+      69,    0,  750,    2, 0x06 /* Public */,
+      70,    0,  751,    2, 0x06 /* Public */,
+      71,    0,  752,    2, 0x06 /* Public */,
+      72,    0,  753,    2, 0x06 /* Public */,
+      73,    0,  754,    2, 0x06 /* Public */,
+      74,    2,  755,    2, 0x06 /* Public */,
+      77,    4,  760,    2, 0x06 /* Public */,
+      82,    0,  769,    2, 0x06 /* Public */,
+      83,    1,  770,    2, 0x06 /* Public */,
+      85,    1,  773,    2, 0x06 /* Public */,
+      87,    1,  776,    2, 0x06 /* Public */,
+      89,    0,  779,    2, 0x06 /* Public */,
+      90,    0,  780,    2, 0x06 /* Public */,
+      91,    0,  781,    2, 0x06 /* Public */,
+      92,    0,  782,    2, 0x06 /* Public */,
+      93,    1,  783,    2, 0x06 /* Public */,
+      95,    0,  786,    2, 0x06 /* Public */,
+      96,    0,  787,    2, 0x06 /* Public */,
+      97,    0,  788,    2, 0x06 /* Public */,
+      98,    0,  789,    2, 0x06 /* Public */,
+      99,    0,  790,    2, 0x06 /* Public */,
+     100,    0,  791,    2, 0x06 /* Public */,
+     101,    0,  792,    2, 0x06 /* Public */,
+     102,    0,  793,    2, 0x06 /* Public */,
+     103,    1,  794,    2, 0x06 /* Public */,
+     105,    0,  797,    2, 0x06 /* Public */,
+     106,    0,  798,    2, 0x06 /* Public */,
+     107,    0,  799,    2, 0x06 /* Public */,
+     108,    0,  800,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-     110,    0,  807,    2, 0x0a /* Public */,
-     111,    3,  808,    2, 0x0a /* Public */,
-     113,    2,  815,    2, 0x0a /* Public */,
-     114,    1,  820,    2, 0x0a /* Public */,
-     115,    0,  823,    2, 0x0a /* Public */,
-     116,    0,  824,    2, 0x0a /* Public */,
-     117,    0,  825,    2, 0x0a /* Public */,
-     118,    0,  826,    2, 0x0a /* Public */,
-     119,    3,  827,    2, 0x0a /* Public */,
-     119,    2,  834,    2, 0x2a /* Public | MethodCloned */,
-     122,    0,  839,    2, 0x0a /* Public */,
-     123,    5,  840,    2, 0x0a /* Public */,
-     130,    0,  851,    2, 0x0a /* Public */,
-     131,    1,  852,    2, 0x0a /* Public */,
+     109,    0,  801,    2, 0x0a /* Public */,
+     110,    3,  802,    2, 0x0a /* Public */,
+     112,    2,  809,    2, 0x0a /* Public */,
+     113,    1,  814,    2, 0x0a /* Public */,
+     114,    0,  817,    2, 0x0a /* Public */,
+     115,    0,  818,    2, 0x0a /* Public */,
+     116,    0,  819,    2, 0x0a /* Public */,
+     117,    0,  820,    2, 0x0a /* Public */,
+     118,    3,  821,    2, 0x0a /* Public */,
+     118,    2,  828,    2, 0x2a /* Public | MethodCloned */,
+     121,    0,  833,    2, 0x0a /* Public */,
+     122,    5,  834,    2, 0x0a /* Public */,
+     129,    0,  845,    2, 0x0a /* Public */,
+     130,    1,  846,    2, 0x0a /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-     133,    1,  855,    2, 0x02 /* Public */,
-     135,    0,  858,    2, 0x02 /* Public */,
-     136,    0,  859,    2, 0x02 /* Public */,
-     137,    1,  860,    2, 0x02 /* Public */,
-     139,    0,  863,    2, 0x02 /* Public */,
-     140,    1,  864,    2, 0x02 /* Public */,
-     142,    1,  867,    2, 0x02 /* Public */,
-     144,    1,  870,    2, 0x02 /* Public */,
-     146,    1,  873,    2, 0x02 /* Public */,
-     148,    3,  876,    2, 0x02 /* Public */,
-     151,    0,  883,    2, 0x02 /* Public */,
-     152,    0,  884,    2, 0x02 /* Public */,
-     153,    1,  885,    2, 0x02 /* Public */,
-     155,    0,  888,    2, 0x02 /* Public */,
-     156,    0,  889,    2, 0x02 /* Public */,
-     157,    1,  890,    2, 0x02 /* Public */,
-     159,    0,  893,    2, 0x02 /* Public */,
-     160,    0,  894,    2, 0x02 /* Public */,
-     161,    0,  895,    2, 0x02 /* Public */,
-     162,    1,  896,    2, 0x02 /* Public */,
-     164,    1,  899,    2, 0x02 /* Public */,
-     164,    3,  902,    2, 0x02 /* Public */,
-     170,    2,  909,    2, 0x02 /* Public */,
-     173,    2,  914,    2, 0x02 /* Public */,
-     176,    1,  919,    2, 0x02 /* Public */,
-     178,    1,  922,    2, 0x02 /* Public */,
-     180,    2,  925,    2, 0x02 /* Public */,
-     182,    0,  930,    2, 0x02 /* Public */,
-     183,    1,  931,    2, 0x02 /* Public */,
-     184,   10,  934,    2, 0x02 /* Public */,
-     184,    9,  955,    2, 0x22 /* Public | MethodCloned */,
-     184,    8,  974,    2, 0x22 /* Public | MethodCloned */,
-     184,    7,  991,    2, 0x22 /* Public | MethodCloned */,
-     184,    6, 1006,    2, 0x22 /* Public | MethodCloned */,
-     184,    5, 1019,    2, 0x22 /* Public | MethodCloned */,
-     184,    4, 1030,    2, 0x22 /* Public | MethodCloned */,
-     184,    3, 1039,    2, 0x22 /* Public | MethodCloned */,
+     132,    1,  849,    2, 0x02 /* Public */,
+     134,    0,  852,    2, 0x02 /* Public */,
+     135,    0,  853,    2, 0x02 /* Public */,
+     136,    1,  854,    2, 0x02 /* Public */,
+     138,    0,  857,    2, 0x02 /* Public */,
+     139,    1,  858,    2, 0x02 /* Public */,
+     141,    1,  861,    2, 0x02 /* Public */,
+     143,    1,  864,    2, 0x02 /* Public */,
+     145,    1,  867,    2, 0x02 /* Public */,
+     147,    3,  870,    2, 0x02 /* Public */,
+     150,    0,  877,    2, 0x02 /* Public */,
+     151,    0,  878,    2, 0x02 /* Public */,
+     152,    1,  879,    2, 0x02 /* Public */,
+     154,    0,  882,    2, 0x02 /* Public */,
+     155,    0,  883,    2, 0x02 /* Public */,
+     156,    1,  884,    2, 0x02 /* Public */,
+     158,    0,  887,    2, 0x02 /* Public */,
+     159,    0,  888,    2, 0x02 /* Public */,
+     160,    0,  889,    2, 0x02 /* Public */,
+     161,    1,  890,    2, 0x02 /* Public */,
+     163,    1,  893,    2, 0x02 /* Public */,
+     163,    3,  896,    2, 0x02 /* Public */,
+     169,    2,  903,    2, 0x02 /* Public */,
+     172,    2,  908,    2, 0x02 /* Public */,
+     175,    1,  913,    2, 0x02 /* Public */,
+     177,    1,  916,    2, 0x02 /* Public */,
+     179,    2,  919,    2, 0x02 /* Public */,
+     181,    0,  924,    2, 0x02 /* Public */,
+     182,    1,  925,    2, 0x02 /* Public */,
+     183,   10,  928,    2, 0x02 /* Public */,
+     183,    9,  949,    2, 0x22 /* Public | MethodCloned */,
+     183,    8,  968,    2, 0x22 /* Public | MethodCloned */,
+     183,    7,  985,    2, 0x22 /* Public | MethodCloned */,
+     183,    6, 1000,    2, 0x22 /* Public | MethodCloned */,
+     183,    5, 1013,    2, 0x22 /* Public | MethodCloned */,
+     183,    4, 1024,    2, 0x22 /* Public | MethodCloned */,
+     183,    3, 1033,    2, 0x22 /* Public | MethodCloned */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Bool,    3,
@@ -703,19 +700,17 @@ static const uint qt_meta_data_Vehicle[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 75, 0x80000000 | 7,   76,    8,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Int, QMetaType::QString,   78,   79,   80,   81,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 76, 0x80000000 | 7,   77,    8,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Int, QMetaType::QString,   79,   80,   81,   82,
-    QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   85,
-    QMetaType::Void, QMetaType::Int,   87,
-    QMetaType::Void, QMetaType::Int,   89,
-    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   84,
+    QMetaType::Void, QMetaType::Int,   86,
+    QMetaType::Void, QMetaType::Int,   88,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,   95,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::QString,   94,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -723,7 +718,8 @@ static const uint qt_meta_data_Vehicle[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Bool,  105,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Bool,  104,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -731,92 +727,93 @@ static const uint qt_meta_data_Vehicle[] = {
 
  // slots: parameters
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::QString,   95,    5,  112,
-    QMetaType::Void, 0x80000000 | 76, 0x80000000 | 7,   77,    8,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::QString,   94,    5,  111,
+    QMetaType::Void, 0x80000000 | 75, 0x80000000 | 7,   76,    8,
     QMetaType::Void, 0x80000000 | 7,    8,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Int,  120,  121,  105,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int,  120,  121,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Int,  119,  120,  104,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int,  119,  120,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int, 0x80000000 | 125, 0x80000000 | 125, 0x80000000 | 125, QMetaType::Float,  124,  126,  127,  128,  129,
+    QMetaType::Void, QMetaType::Int, 0x80000000 | 124, 0x80000000 | 124, 0x80000000 | 124, QMetaType::Float,  123,  125,  126,  127,  128,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Bool,  132,
+    QMetaType::Void, QMetaType::Bool,  131,
 
  // methods: parameters
-    QMetaType::Void, QMetaType::Float,  134,
+    QMetaType::Void, QMetaType::Float,  133,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Double,  138,
+    QMetaType::Void, QMetaType::Double,  137,
     QMetaType::Double,
-    QMetaType::Void, 0x80000000 | 16,  141,
-    QMetaType::Void, QMetaType::Double,  143,
-    QMetaType::Void, QMetaType::Double,  145,
-    QMetaType::Void, QMetaType::Double,  147,
-    QMetaType::Void, 0x80000000 | 16, QMetaType::Double, QMetaType::Double,  149,  134,  150,
+    QMetaType::Void, 0x80000000 | 16,  140,
+    QMetaType::Void, QMetaType::Double,  142,
+    QMetaType::Void, QMetaType::Double,  144,
+    QMetaType::Void, QMetaType::Double,  146,
+    QMetaType::Void, 0x80000000 | 16, QMetaType::Double, QMetaType::Double,  148,  133,  149,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Double,  154,
+    QMetaType::Void, QMetaType::Double,  153,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,  158,
+    QMetaType::Void, QMetaType::Int,  157,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,  163,
-    QMetaType::Int, 0x80000000 | 165,  166,
-    QMetaType::Int, QMetaType::Int, QMetaType::Int, QMetaType::Int,  167,  168,  169,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int,  171,  172,
-    QMetaType::Void, QMetaType::Float, QMetaType::Float,  174,  175,
-    QMetaType::Void, QMetaType::Float,  177,
-    QMetaType::Void, 0x80000000 | 16,  179,
-    QMetaType::Void, QMetaType::QString, QMetaType::Bool,   95,  181,
+    QMetaType::Void, QMetaType::QString,  162,
+    QMetaType::Int, 0x80000000 | 164,  165,
+    QMetaType::Int, QMetaType::Int, QMetaType::Int, QMetaType::Int,  166,  167,  168,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int,  170,  171,
+    QMetaType::Void, QMetaType::Float, QMetaType::Float,  173,  174,
+    QMetaType::Void, QMetaType::Float,  176,
+    QMetaType::Void, 0x80000000 | 16,  178,
+    QMetaType::Void, QMetaType::QString, QMetaType::Bool,   94,  180,
     QMetaType::Int,
     QMetaType::Void, QMetaType::Bool,   19,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   11,   12,  185,  186,  187,  188,  189,  190,  191,  192,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   11,   12,  185,  186,  187,  188,  189,  190,  191,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   11,   12,  185,  186,  187,  188,  189,  190,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   11,   12,  185,  186,  187,  188,  189,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double,   11,   12,  185,  186,  187,  188,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double,   11,   12,  185,  186,  187,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double,   11,   12,  185,  186,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool,   11,   12,  185,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   11,   12,  184,  185,  186,  187,  188,  189,  190,  191,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   11,   12,  184,  185,  186,  187,  188,  189,  190,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   11,   12,  184,  185,  186,  187,  188,  189,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::Double,   11,   12,  184,  185,  186,  187,  188,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double, QMetaType::Double,   11,   12,  184,  185,  186,  187,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double, QMetaType::Double,   11,   12,  184,  185,  186,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool, QMetaType::Double,   11,   12,  184,  185,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Bool,   11,   12,  184,
 
  // properties: name, type, flags
-     193, 0x80000000 | 194, 0x0009510b,
-     195, 0x80000000 | 196, 0x0009510b,
-     197, 0x80000000 | 76, 0x0009510b,
-     198, 0x80000000 | 199, 0x0009510b,
-     200, 0x80000000 | 201, 0x0009510b,
+     192, 0x80000000 | 193, 0x0009510b,
+     194, 0x80000000 | 195, 0x0009510b,
+     196, 0x80000000 | 75, 0x0009510b,
+     197, 0x80000000 | 198, 0x0009510b,
+     199, 0x80000000 | 200, 0x0009510b,
+     201, QMetaType::QStringList, 0x00495001,
      202, QMetaType::QStringList, 0x00495001,
-     203, QMetaType::QStringList, 0x00495001,
       22, QMetaType::QString, 0x00495103,
+     203, QMetaType::Float, 0x00495001,
      204, QMetaType::Float, 0x00495001,
      205, QMetaType::Float, 0x00495001,
      206, QMetaType::Float, 0x00495001,
-     207, QMetaType::Float, 0x00495001,
-     132, QMetaType::Bool, 0x00495103,
-     208, QMetaType::Bool, 0x00495001,
+     131, QMetaType::Bool, 0x00495103,
+     207, QMetaType::Bool, 0x00495001,
       19, QMetaType::Bool, 0x00495001,
-     209, QMetaType::Bool, 0x00495001,
-     210, 0x80000000 | 16, 0x00495009,
-     211, 0x80000000 | 16, 0x0049510b,
+     208, QMetaType::Bool, 0x00495001,
+     209, 0x80000000 | 16, 0x00495009,
+     210, 0x80000000 | 16, 0x0049510b,
+     211, QMetaType::Float, 0x00495001,
      212, QMetaType::Float, 0x00495001,
      213, QMetaType::Float, 0x00495001,
      214, QMetaType::Float, 0x00495001,
+     137, QMetaType::Float, 0x00495001,
      215, QMetaType::Float, 0x00495001,
-     138, QMetaType::Float, 0x00495001,
      216, QMetaType::Float, 0x00495001,
-     217, QMetaType::Float, 0x00495001,
-     218, QMetaType::Bool, 0x00495001,
-      77, QMetaType::Bool, 0x00495103,
+     217, QMetaType::Bool, 0x00495001,
+      76, QMetaType::Bool, 0x00495103,
+     218, QMetaType::QString, 0x00495103,
      219, QMetaType::QString, 0x00495103,
-     220, QMetaType::QString, 0x00495103,
+     220, QMetaType::Float, 0x00495001,
      221, QMetaType::Float, 0x00495001,
-     222, QMetaType::Float, 0x00495001,
-     223, QMetaType::Int, 0x00495001,
+     222, QMetaType::Int, 0x00495001,
+     223, QMetaType::Float, 0x00495001,
      224, QMetaType::Float, 0x00495001,
      225, QMetaType::Float, 0x00495001,
      226, QMetaType::Float, 0x00495001,
@@ -828,31 +825,29 @@ static const uint qt_meta_data_Vehicle[] = {
      232, QMetaType::Float, 0x00495001,
      233, QMetaType::Float, 0x00495001,
      234, QMetaType::Float, 0x00495001,
-     235, QMetaType::Float, 0x00495001,
-     236, QMetaType::Int, 0x00495001,
-     237, QMetaType::QString, 0x00495001,
-     238, QMetaType::Float, 0x00495001,
-     239, QMetaType::Float, 0x00495001,
-     240, QMetaType::QString, 0x00495103,
-     241, 0x80000000 | 242, 0x00495009,
-     243, QMetaType::QStringList, 0x00495001,
-      85, QMetaType::Int, 0x00495001,
-      87, QMetaType::Int, 0x00495001,
-      89, QMetaType::Int, 0x00495001,
+     235, QMetaType::Int, 0x00495001,
+     236, QMetaType::QString, 0x00495001,
+     237, QMetaType::Float, 0x00495001,
+     238, QMetaType::QString, 0x00495103,
+     239, 0x80000000 | 240, 0x00495009,
+     241, QMetaType::QStringList, 0x00495001,
+      84, QMetaType::Int, 0x00495001,
+      86, QMetaType::Int, 0x00495001,
+      88, QMetaType::Int, 0x00495001,
+     242, QMetaType::ULongLong, 0x00495001,
+     243, QMetaType::ULongLong, 0x00495001,
      244, QMetaType::ULongLong, 0x00495001,
-     245, QMetaType::ULongLong, 0x00495001,
-     246, QMetaType::ULongLong, 0x00495001,
-     247, QMetaType::Float, 0x00495001,
-     248, 0x80000000 | 249, 0x0049510b,
-     250, QMetaType::Float, 0x00495103,
-     251, QMetaType::Float, 0x00495103,
+     245, QMetaType::Float, 0x00495001,
+     246, 0x80000000 | 247, 0x0049510b,
+     248, QMetaType::Float, 0x00495103,
+     249, QMetaType::Float, 0x00495103,
       33, QMetaType::Int, 0x00495001,
-     252, QMetaType::Float, 0x00495001,
-     253, QMetaType::Float, 0x00495001,
-     254, QMetaType::Int, 0x00495001,
-     255, 0x80000000 | 256, 0x00495009,
-     257, QMetaType::Int, 0x00495103,
-     258, 0x80000000 | 256, 0x00495009,
+     250, QMetaType::Float, 0x00495001,
+     251, QMetaType::Float, 0x00495001,
+     252, QMetaType::Int, 0x00495001,
+     253, 0x80000000 | 254, 0x00495009,
+     255, QMetaType::Int, 0x00495103,
+     256, 0x80000000 | 254, 0x00495009,
 
  // properties: notify_signal_id
        0,
@@ -863,12 +858,12 @@ static const uint qt_meta_data_Vehicle[] = {
        8,
        9,
        7,
+      75,
       76,
       77,
       78,
-      79,
-      75,
       74,
+      73,
        5,
        6,
       10,
@@ -902,93 +897,92 @@ static const uint qt_meta_data_Vehicle[] = {
       47,
       48,
       49,
+      54,
       50,
-      55,
-      51,
+      57,
       58,
       59,
       60,
       61,
-      62,
-      62,
-      62,
+      61,
+      61,
+      61,
       62,
       63,
       64,
-      65,
+      66,
       67,
       68,
       69,
       70,
       71,
       72,
-      73,
 
  // enums: name, flags, count, data
-     259, 0x0,   26, 1326,
-     249, 0x0,   34, 1378,
+     257, 0x0,   26, 1316,
+     247, 0x0,   34, 1368,
 
  // enum data: key, value
-     260, uint(Vehicle::SysStatusSensor3dGyro),
-     261, uint(Vehicle::SysStatusSensor3dAccel),
-     262, uint(Vehicle::SysStatusSensor3dMag),
-     263, uint(Vehicle::SysStatusSensorAbsolutePressure),
-     264, uint(Vehicle::SysStatusSensorDifferentialPressure),
-     265, uint(Vehicle::SysStatusSensorGPS),
-     266, uint(Vehicle::SysStatusSensorOpticalFlow),
-     267, uint(Vehicle::SysStatusSensorVisionPosition),
-     268, uint(Vehicle::SysStatusSensorLaserPosition),
-     269, uint(Vehicle::SysStatusSensorExternalGroundTruth),
-     270, uint(Vehicle::SysStatusSensorAngularRateControl),
-     271, uint(Vehicle::SysStatusSensorAttitudeStabilization),
-     272, uint(Vehicle::SysStatusSensorYawPosition),
-     273, uint(Vehicle::SysStatusSensorZAltitudeControl),
-     274, uint(Vehicle::SysStatusSensorXYPositionControl),
-     275, uint(Vehicle::SysStatusSensorMotorOutputs),
-     276, uint(Vehicle::SysStatusSensorRCReceiver),
-     277, uint(Vehicle::SysStatusSensor3dGyro2),
-     278, uint(Vehicle::SysStatusSensor3dAccel2),
-     279, uint(Vehicle::SysStatusSensor3dMag2),
-     280, uint(Vehicle::SysStatusSensorGeoFence),
-     281, uint(Vehicle::SysStatusSensorAHRS),
-     282, uint(Vehicle::SysStatusSensorTerrain),
-     283, uint(Vehicle::SysStatusSensorReverseMotor),
-     284, uint(Vehicle::SysStatusSensorLogging),
-     285, uint(Vehicle::SysStatusSensorBattery),
-     286, uint(Vehicle::MAV_TYPE_GENERIC),
-     287, uint(Vehicle::MAV_TYPE_FIXED_WING),
-     288, uint(Vehicle::MAV_TYPE_QUADROTOR),
-     289, uint(Vehicle::MAV_TYPE_COAXIAL),
-     290, uint(Vehicle::MAV_TYPE_HELICOPTER),
-     291, uint(Vehicle::MAV_TYPE_ANTENNA_TRACKER),
-     292, uint(Vehicle::MAV_TYPE_GCS),
-     293, uint(Vehicle::MAV_TYPE_AIRSHIP),
-     294, uint(Vehicle::MAV_TYPE_FREE_BALLOON),
-     295, uint(Vehicle::MAV_TYPE_ROCKET),
-     296, uint(Vehicle::MAV_TYPE_GROUND_ROVER),
-     297, uint(Vehicle::MAV_TYPE_SURFACE_BOAT),
-     298, uint(Vehicle::MAV_TYPE_SUBMARINE),
-     299, uint(Vehicle::MAV_TYPE_HEXAROTOR),
-     300, uint(Vehicle::MAV_TYPE_OCTOROTOR),
-     301, uint(Vehicle::MAV_TYPE_TRICOPTER),
-     302, uint(Vehicle::MAV_TYPE_FLAPPING_WING),
-     303, uint(Vehicle::MAV_TYPE_KITE),
-     304, uint(Vehicle::MAV_TYPE_ONBOARD_CONTROLLER),
-     305, uint(Vehicle::MAV_TYPE_VTOL_DUOROTOR),
-     306, uint(Vehicle::MAV_TYPE_VTOL_QUADROTOR),
-     307, uint(Vehicle::MAV_TYPE_VTOL_TILTROTOR),
-     308, uint(Vehicle::MAV_TYPE_VTOL_RESERVED2),
-     309, uint(Vehicle::MAV_TYPE_VTOL_RESERVED3),
-     310, uint(Vehicle::MAV_TYPE_VTOL_RESERVED4),
-     311, uint(Vehicle::MAV_TYPE_VTOL_RESERVED5),
-     312, uint(Vehicle::MAV_TYPE_GIMBAL),
-     313, uint(Vehicle::MAV_TYPE_ADSB),
-     314, uint(Vehicle::MAV_TYPE_PARAFOIL),
-     315, uint(Vehicle::MAV_TYPE_DODECAROTOR),
-     316, uint(Vehicle::MAV_TYPE_CAMERA),
-     317, uint(Vehicle::MAV_TYPE_CHARGING_STATION),
-     318, uint(Vehicle::MAV_TYPE_FLARM),
-     319, uint(Vehicle::MAV_TYPE_ENUM_END),
+     258, uint(Vehicle::SysStatusSensor3dGyro),
+     259, uint(Vehicle::SysStatusSensor3dAccel),
+     260, uint(Vehicle::SysStatusSensor3dMag),
+     261, uint(Vehicle::SysStatusSensorAbsolutePressure),
+     262, uint(Vehicle::SysStatusSensorDifferentialPressure),
+     263, uint(Vehicle::SysStatusSensorGPS),
+     264, uint(Vehicle::SysStatusSensorOpticalFlow),
+     265, uint(Vehicle::SysStatusSensorVisionPosition),
+     266, uint(Vehicle::SysStatusSensorLaserPosition),
+     267, uint(Vehicle::SysStatusSensorExternalGroundTruth),
+     268, uint(Vehicle::SysStatusSensorAngularRateControl),
+     269, uint(Vehicle::SysStatusSensorAttitudeStabilization),
+     270, uint(Vehicle::SysStatusSensorYawPosition),
+     271, uint(Vehicle::SysStatusSensorZAltitudeControl),
+     272, uint(Vehicle::SysStatusSensorXYPositionControl),
+     273, uint(Vehicle::SysStatusSensorMotorOutputs),
+     274, uint(Vehicle::SysStatusSensorRCReceiver),
+     275, uint(Vehicle::SysStatusSensor3dGyro2),
+     276, uint(Vehicle::SysStatusSensor3dAccel2),
+     277, uint(Vehicle::SysStatusSensor3dMag2),
+     278, uint(Vehicle::SysStatusSensorGeoFence),
+     279, uint(Vehicle::SysStatusSensorAHRS),
+     280, uint(Vehicle::SysStatusSensorTerrain),
+     281, uint(Vehicle::SysStatusSensorReverseMotor),
+     282, uint(Vehicle::SysStatusSensorLogging),
+     283, uint(Vehicle::SysStatusSensorBattery),
+     284, uint(Vehicle::MAV_TYPE_GENERIC),
+     285, uint(Vehicle::MAV_TYPE_FIXED_WING),
+     286, uint(Vehicle::MAV_TYPE_QUADROTOR),
+     287, uint(Vehicle::MAV_TYPE_COAXIAL),
+     288, uint(Vehicle::MAV_TYPE_HELICOPTER),
+     289, uint(Vehicle::MAV_TYPE_ANTENNA_TRACKER),
+     290, uint(Vehicle::MAV_TYPE_GCS),
+     291, uint(Vehicle::MAV_TYPE_AIRSHIP),
+     292, uint(Vehicle::MAV_TYPE_FREE_BALLOON),
+     293, uint(Vehicle::MAV_TYPE_ROCKET),
+     294, uint(Vehicle::MAV_TYPE_GROUND_ROVER),
+     295, uint(Vehicle::MAV_TYPE_SURFACE_BOAT),
+     296, uint(Vehicle::MAV_TYPE_SUBMARINE),
+     297, uint(Vehicle::MAV_TYPE_HEXAROTOR),
+     298, uint(Vehicle::MAV_TYPE_OCTOROTOR),
+     299, uint(Vehicle::MAV_TYPE_TRICOPTER),
+     300, uint(Vehicle::MAV_TYPE_FLAPPING_WING),
+     301, uint(Vehicle::MAV_TYPE_KITE),
+     302, uint(Vehicle::MAV_TYPE_ONBOARD_CONTROLLER),
+     303, uint(Vehicle::MAV_TYPE_VTOL_DUOROTOR),
+     304, uint(Vehicle::MAV_TYPE_VTOL_QUADROTOR),
+     305, uint(Vehicle::MAV_TYPE_VTOL_TILTROTOR),
+     306, uint(Vehicle::MAV_TYPE_VTOL_RESERVED2),
+     307, uint(Vehicle::MAV_TYPE_VTOL_RESERVED3),
+     308, uint(Vehicle::MAV_TYPE_VTOL_RESERVED4),
+     309, uint(Vehicle::MAV_TYPE_VTOL_RESERVED5),
+     310, uint(Vehicle::MAV_TYPE_GIMBAL),
+     311, uint(Vehicle::MAV_TYPE_ADSB),
+     312, uint(Vehicle::MAV_TYPE_PARAFOIL),
+     313, uint(Vehicle::MAV_TYPE_DODECAROTOR),
+     314, uint(Vehicle::MAV_TYPE_CAMERA),
+     315, uint(Vehicle::MAV_TYPE_CHARGING_STATION),
+     316, uint(Vehicle::MAV_TYPE_FLARM),
+     317, uint(Vehicle::MAV_TYPE_ENUM_END),
 
        0        // eod
 };
@@ -1048,92 +1042,91 @@ void Vehicle::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         case 46: _t->courseOverGroundGPSChanged(); break;
         case 47: _t->countGPSChanged(); break;
         case 48: _t->lockGPSChanged(); break;
-        case 49: _t->fuelUsedChanged(); break;
-        case 50: _t->fuelAvailbleChanged(); break;
-        case 51: _t->uasChanged(); break;
-        case 52: _t->firmwareVersionChanged(); break;
-        case 53: _t->firmwareCustomVersionChanged(); break;
-        case 54: _t->vehicleUIDChanged(); break;
-        case 55: _t->messageSecurityChanged(); break;
-        case 56: _t->_sendMessageOnLinkOnThread((*reinterpret_cast< IOFlightController*(*)>(_a[1])),(*reinterpret_cast< mavlink_message_t(*)>(_a[2]))); break;
-        case 57: _t->textMessageReceived((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4]))); break;
-        case 58: _t->unhealthySensorsChanged(); break;
-        case 59: _t->sensorsPresentBitsChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 60: _t->sensorsEnabledBitsChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 61: _t->sensorsHealthBitsChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 62: _t->mavlinkStatusChanged(); break;
-        case 63: _t->vehicleTypeChanged(); break;
-        case 64: _t->paramAirSpeedChanged(); break;
-        case 65: _t->paramLoiterRadiusChanged(); break;
-        case 66: _t->paramChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 67: _t->rssiChanged(); break;
-        case 68: _t->pressABSChanged(); break;
-        case 69: _t->sonarRangeChanged(); break;
-        case 70: _t->temperatureChanged(); break;
-        case 71: _t->propertiesModelChanged(); break;
-        case 72: _t->propertiesShowCountChanged(); break;
-        case 73: _t->paramsModelChanged(); break;
-        case 74: _t->picChanged(); break;
-        case 75: _t->useJoystickChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 76: _t->rcinChan1Changed(); break;
-        case 77: _t->rcinChan2Changed(); break;
-        case 78: _t->rcinChan3Changed(); break;
-        case 79: _t->rcinChan4Changed(); break;
-        case 80: _t->_loadDefaultParamsShow(); break;
-        case 81: _t->_setPropertyValue((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3]))); break;
-        case 82: _t->_sendMessageOnLink((*reinterpret_cast< IOFlightController*(*)>(_a[1])),(*reinterpret_cast< mavlink_message_t(*)>(_a[2]))); break;
-        case 83: _t->_mavlinkMessageReceived((*reinterpret_cast< mavlink_message_t(*)>(_a[1]))); break;
-        case 84: _t->_sendGCSHeartbeat(); break;
-        case 85: _t->_checkCameraLink(); break;
-        case 86: _t->_sendGetParams(); break;
-        case 87: _t->_sendQGCTimeToVehicle(); break;
-        case 88: _t->requestDataStream((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3]))); break;
-        case 89: _t->requestDataStream((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 90: _t->_startPlanRequest(); break;
-        case 91: _t->_mavlinkMessageStatus((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< uint64_t(*)>(_a[2])),(*reinterpret_cast< uint64_t(*)>(_a[3])),(*reinterpret_cast< uint64_t(*)>(_a[4])),(*reinterpret_cast< float(*)>(_a[5]))); break;
-        case 92: _t->handlePIC(); break;
-        case 93: _t->handleUseJoystick((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 94: _t->commandLoiterRadius((*reinterpret_cast< float(*)>(_a[1]))); break;
-        case 95: _t->commandRTL(); break;
-        case 96: _t->commandLand(); break;
-        case 97: _t->commandTakeoff((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 98: { double _r = _t->minimumTakeoffAltitude();
+        case 49: _t->fuelAvailbleChanged(); break;
+        case 50: _t->uasChanged(); break;
+        case 51: _t->firmwareVersionChanged(); break;
+        case 52: _t->firmwareCustomVersionChanged(); break;
+        case 53: _t->vehicleUIDChanged(); break;
+        case 54: _t->messageSecurityChanged(); break;
+        case 55: _t->_sendMessageOnLinkOnThread((*reinterpret_cast< IOFlightController*(*)>(_a[1])),(*reinterpret_cast< mavlink_message_t(*)>(_a[2]))); break;
+        case 56: _t->textMessageReceived((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4]))); break;
+        case 57: _t->unhealthySensorsChanged(); break;
+        case 58: _t->sensorsPresentBitsChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 59: _t->sensorsEnabledBitsChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 60: _t->sensorsHealthBitsChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 61: _t->mavlinkStatusChanged(); break;
+        case 62: _t->vehicleTypeChanged(); break;
+        case 63: _t->paramAirSpeedChanged(); break;
+        case 64: _t->paramLoiterRadiusChanged(); break;
+        case 65: _t->paramChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 66: _t->rssiChanged(); break;
+        case 67: _t->pressABSChanged(); break;
+        case 68: _t->sonarRangeChanged(); break;
+        case 69: _t->temperatureChanged(); break;
+        case 70: _t->propertiesModelChanged(); break;
+        case 71: _t->propertiesShowCountChanged(); break;
+        case 72: _t->paramsModelChanged(); break;
+        case 73: _t->picChanged(); break;
+        case 74: _t->useJoystickChanged((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 75: _t->rcinChan1Changed(); break;
+        case 76: _t->rcinChan2Changed(); break;
+        case 77: _t->rcinChan3Changed(); break;
+        case 78: _t->rcinChan4Changed(); break;
+        case 79: _t->_loadDefaultParamsShow(); break;
+        case 80: _t->_setPropertyValue((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3]))); break;
+        case 81: _t->_sendMessageOnLink((*reinterpret_cast< IOFlightController*(*)>(_a[1])),(*reinterpret_cast< mavlink_message_t(*)>(_a[2]))); break;
+        case 82: _t->_mavlinkMessageReceived((*reinterpret_cast< mavlink_message_t(*)>(_a[1]))); break;
+        case 83: _t->_sendGCSHeartbeat(); break;
+        case 84: _t->_checkCameraLink(); break;
+        case 85: _t->_sendGetParams(); break;
+        case 86: _t->_sendQGCTimeToVehicle(); break;
+        case 87: _t->requestDataStream((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3]))); break;
+        case 88: _t->requestDataStream((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 89: _t->_startPlanRequest(); break;
+        case 90: _t->_mavlinkMessageStatus((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< uint64_t(*)>(_a[2])),(*reinterpret_cast< uint64_t(*)>(_a[3])),(*reinterpret_cast< uint64_t(*)>(_a[4])),(*reinterpret_cast< float(*)>(_a[5]))); break;
+        case 91: _t->handlePIC(); break;
+        case 92: _t->handleUseJoystick((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 93: _t->commandLoiterRadius((*reinterpret_cast< float(*)>(_a[1]))); break;
+        case 94: _t->commandRTL(); break;
+        case 95: _t->commandLand(); break;
+        case 96: _t->commandTakeoff((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 97: { double _r = _t->minimumTakeoffAltitude();
             if (_a[0]) *reinterpret_cast< double*>(_a[0]) = std::move(_r); }  break;
-        case 99: _t->commandGotoLocation((*reinterpret_cast< const QGeoCoordinate(*)>(_a[1]))); break;
-        case 100: _t->commandChangeAltitude((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 101: _t->commandSetAltitude((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 102: _t->commandChangeSpeed((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 103: _t->commandOrbit((*reinterpret_cast< const QGeoCoordinate(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3]))); break;
-        case 104: _t->pauseVehicle(); break;
-        case 105: _t->emergencyStop(); break;
-        case 106: _t->abortLanding((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 107: _t->startMission(); break;
-        case 108: _t->startEngine(); break;
-        case 109: _t->setCurrentMissionSequence((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 110: _t->rebootVehicle(); break;
-        case 111: _t->clearMessages(); break;
-        case 112: _t->triggerCamera(); break;
-        case 113: _t->sendPlan((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 114: { int _r = _t->versionCompare((*reinterpret_cast< QString(*)>(_a[1])));
+        case 98: _t->commandGotoLocation((*reinterpret_cast< const QGeoCoordinate(*)>(_a[1]))); break;
+        case 99: _t->commandChangeAltitude((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 100: _t->commandSetAltitude((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 101: _t->commandChangeSpeed((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 102: _t->commandOrbit((*reinterpret_cast< const QGeoCoordinate(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3]))); break;
+        case 103: _t->pauseVehicle(); break;
+        case 104: _t->emergencyStop(); break;
+        case 105: _t->abortLanding((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 106: _t->startMission(); break;
+        case 107: _t->startEngine(); break;
+        case 108: _t->setCurrentMissionSequence((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 109: _t->rebootVehicle(); break;
+        case 110: _t->clearMessages(); break;
+        case 111: _t->triggerCamera(); break;
+        case 112: _t->sendPlan((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 113: { int _r = _t->versionCompare((*reinterpret_cast< QString(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 115: { int _r = _t->versionCompare((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])));
+        case 114: { int _r = _t->versionCompare((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 116: _t->motorTest((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 117: _t->setHomeLocation((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2]))); break;
-        case 118: _t->setAltitudeRTL((*reinterpret_cast< float(*)>(_a[1]))); break;
-        case 119: _t->sendHomePosition((*reinterpret_cast< QGeoCoordinate(*)>(_a[1]))); break;
-        case 120: _t->activeProperty((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
-        case 121: { int _r = _t->countActiveProperties();
+        case 115: _t->motorTest((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 116: _t->setHomeLocation((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2]))); break;
+        case 117: _t->setAltitudeRTL((*reinterpret_cast< float(*)>(_a[1]))); break;
+        case 118: _t->sendHomePosition((*reinterpret_cast< QGeoCoordinate(*)>(_a[1]))); break;
+        case 119: _t->activeProperty((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
+        case 120: { int _r = _t->countActiveProperties();
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
-        case 122: _t->setArmed((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 123: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5])),(*reinterpret_cast< double(*)>(_a[6])),(*reinterpret_cast< double(*)>(_a[7])),(*reinterpret_cast< double(*)>(_a[8])),(*reinterpret_cast< double(*)>(_a[9])),(*reinterpret_cast< double(*)>(_a[10]))); break;
-        case 124: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5])),(*reinterpret_cast< double(*)>(_a[6])),(*reinterpret_cast< double(*)>(_a[7])),(*reinterpret_cast< double(*)>(_a[8])),(*reinterpret_cast< double(*)>(_a[9]))); break;
-        case 125: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5])),(*reinterpret_cast< double(*)>(_a[6])),(*reinterpret_cast< double(*)>(_a[7])),(*reinterpret_cast< double(*)>(_a[8]))); break;
-        case 126: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5])),(*reinterpret_cast< double(*)>(_a[6])),(*reinterpret_cast< double(*)>(_a[7]))); break;
-        case 127: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5])),(*reinterpret_cast< double(*)>(_a[6]))); break;
-        case 128: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5]))); break;
-        case 129: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
-        case 130: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
+        case 121: _t->setArmed((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 122: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5])),(*reinterpret_cast< double(*)>(_a[6])),(*reinterpret_cast< double(*)>(_a[7])),(*reinterpret_cast< double(*)>(_a[8])),(*reinterpret_cast< double(*)>(_a[9])),(*reinterpret_cast< double(*)>(_a[10]))); break;
+        case 123: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5])),(*reinterpret_cast< double(*)>(_a[6])),(*reinterpret_cast< double(*)>(_a[7])),(*reinterpret_cast< double(*)>(_a[8])),(*reinterpret_cast< double(*)>(_a[9]))); break;
+        case 124: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5])),(*reinterpret_cast< double(*)>(_a[6])),(*reinterpret_cast< double(*)>(_a[7])),(*reinterpret_cast< double(*)>(_a[8]))); break;
+        case 125: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5])),(*reinterpret_cast< double(*)>(_a[6])),(*reinterpret_cast< double(*)>(_a[7]))); break;
+        case 126: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5])),(*reinterpret_cast< double(*)>(_a[6]))); break;
+        case 127: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4])),(*reinterpret_cast< double(*)>(_a[5]))); break;
+        case 128: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< double(*)>(_a[4]))); break;
+        case 129: _t->sendCommand((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -1188,7 +1181,16 @@ void Vehicle::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
                 *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< mavlink_message_t >(); break;
             }
             break;
-        case 56:
+        case 55:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+            case 0:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< IOFlightController* >(); break;
+            case 1:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< mavlink_message_t >(); break;
+            }
+            break;
+        case 81:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -1201,33 +1203,24 @@ void Vehicle::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< IOFlightController* >(); break;
-            case 1:
                 *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< mavlink_message_t >(); break;
             }
             break;
-        case 83:
-            switch (*reinterpret_cast<int*>(_a[1])) {
-            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-            case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< mavlink_message_t >(); break;
-            }
-            break;
-        case 99:
+        case 98:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
                 *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QGeoCoordinate >(); break;
             }
             break;
-        case 103:
+        case 102:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
                 *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QGeoCoordinate >(); break;
             }
             break;
-        case 119:
+        case 118:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -1582,218 +1575,211 @@ void Vehicle::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         }
         {
             using _t = void (Vehicle::*)();
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::fuelUsedChanged)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::fuelAvailbleChanged)) {
                 *result = 49;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::fuelAvailbleChanged)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::uasChanged)) {
                 *result = 50;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::uasChanged)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::firmwareVersionChanged)) {
                 *result = 51;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::firmwareVersionChanged)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::firmwareCustomVersionChanged)) {
                 *result = 52;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::firmwareCustomVersionChanged)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::vehicleUIDChanged)) {
                 *result = 53;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::vehicleUIDChanged)) {
-                *result = 54;
-                return;
-            }
-        }
-        {
-            using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::messageSecurityChanged)) {
-                *result = 55;
+                *result = 54;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)(IOFlightController * , mavlink_message_t );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::_sendMessageOnLinkOnThread)) {
-                *result = 56;
+                *result = 55;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)(int , int , int , QString );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::textMessageReceived)) {
-                *result = 57;
+                *result = 56;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::unhealthySensorsChanged)) {
-                *result = 58;
+                *result = 57;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)(int );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::sensorsPresentBitsChanged)) {
-                *result = 59;
+                *result = 58;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)(int );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::sensorsEnabledBitsChanged)) {
-                *result = 60;
+                *result = 59;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)(int );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::sensorsHealthBitsChanged)) {
-                *result = 61;
+                *result = 60;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::mavlinkStatusChanged)) {
-                *result = 62;
+                *result = 61;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::vehicleTypeChanged)) {
-                *result = 63;
+                *result = 62;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::paramAirSpeedChanged)) {
-                *result = 64;
+                *result = 63;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::paramLoiterRadiusChanged)) {
-                *result = 65;
+                *result = 64;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)(QString );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::paramChanged)) {
-                *result = 66;
+                *result = 65;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::rssiChanged)) {
-                *result = 67;
+                *result = 66;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::pressABSChanged)) {
-                *result = 68;
+                *result = 67;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::sonarRangeChanged)) {
-                *result = 69;
+                *result = 68;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::temperatureChanged)) {
-                *result = 70;
+                *result = 69;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::propertiesModelChanged)) {
-                *result = 71;
+                *result = 70;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::propertiesShowCountChanged)) {
-                *result = 72;
+                *result = 71;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::paramsModelChanged)) {
-                *result = 73;
+                *result = 72;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::picChanged)) {
-                *result = 74;
+                *result = 73;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)(bool );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::useJoystickChanged)) {
-                *result = 75;
+                *result = 74;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::rcinChan1Changed)) {
-                *result = 76;
+                *result = 75;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::rcinChan2Changed)) {
-                *result = 77;
+                *result = 76;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::rcinChan3Changed)) {
-                *result = 78;
+                *result = 77;
                 return;
             }
         }
         {
             using _t = void (Vehicle::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Vehicle::rcinChan4Changed)) {
-                *result = 79;
+                *result = 78;
                 return;
             }
         }
@@ -1809,7 +1795,7 @@ void Vehicle::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         case 17:
         case 16:
             *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QGeoCoordinate >(); break;
-        case 49:
+        case 48:
             *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< UAS* >(); break;
         case 0:
             *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< Vehicle* >(); break;
@@ -1868,28 +1854,27 @@ void Vehicle::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         case 43: *reinterpret_cast< float*>(_v) = _t->courseOverGroundGPS(); break;
         case 44: *reinterpret_cast< int*>(_v) = _t->countGPS(); break;
         case 45: *reinterpret_cast< QString*>(_v) = _t->lockGPS(); break;
-        case 46: *reinterpret_cast< float*>(_v) = _t->fuelUsed(); break;
-        case 47: *reinterpret_cast< float*>(_v) = _t->fuelAvailble(); break;
-        case 48: *reinterpret_cast< QString*>(_v) = _t->messageSecurity(); break;
-        case 49: *reinterpret_cast< UAS**>(_v) = _t->uas(); break;
-        case 50: *reinterpret_cast< QStringList*>(_v) = _t->unhealthySensors(); break;
-        case 51: *reinterpret_cast< int*>(_v) = _t->sensorsPresentBits(); break;
-        case 52: *reinterpret_cast< int*>(_v) = _t->sensorsEnabledBits(); break;
-        case 53: *reinterpret_cast< int*>(_v) = _t->sensorsHealthBits(); break;
-        case 54: *reinterpret_cast< quint64*>(_v) = _t->mavlinkSentCount(); break;
-        case 55: *reinterpret_cast< quint64*>(_v) = _t->mavlinkReceivedCount(); break;
-        case 56: *reinterpret_cast< quint64*>(_v) = _t->mavlinkLossCount(); break;
-        case 57: *reinterpret_cast< float*>(_v) = _t->mavlinkLossPercent(); break;
-        case 58: *reinterpret_cast< VEHICLE_MAV_TYPE*>(_v) = _t->vehicleType(); break;
-        case 59: *reinterpret_cast< float*>(_v) = _t->paramAirSpeed(); break;
-        case 60: *reinterpret_cast< float*>(_v) = _t->paramLoiterRadius(); break;
-        case 61: *reinterpret_cast< int*>(_v) = _t->rssi(); break;
-        case 62: *reinterpret_cast< float*>(_v) = _t->pressABS(); break;
-        case 63: *reinterpret_cast< float*>(_v) = _t->sonarRange(); break;
-        case 64: *reinterpret_cast< int*>(_v) = _t->temperature(); break;
-        case 65: *reinterpret_cast< QQmlListProperty<Fact>*>(_v) = _t->propertiesModel(); break;
-        case 66: *reinterpret_cast< int*>(_v) = _t->propertiesShowCount(); break;
-        case 67: *reinterpret_cast< QQmlListProperty<Fact>*>(_v) = _t->paramsModel(); break;
+        case 46: *reinterpret_cast< float*>(_v) = _t->fuelAvailble(); break;
+        case 47: *reinterpret_cast< QString*>(_v) = _t->messageSecurity(); break;
+        case 48: *reinterpret_cast< UAS**>(_v) = _t->uas(); break;
+        case 49: *reinterpret_cast< QStringList*>(_v) = _t->unhealthySensors(); break;
+        case 50: *reinterpret_cast< int*>(_v) = _t->sensorsPresentBits(); break;
+        case 51: *reinterpret_cast< int*>(_v) = _t->sensorsEnabledBits(); break;
+        case 52: *reinterpret_cast< int*>(_v) = _t->sensorsHealthBits(); break;
+        case 53: *reinterpret_cast< quint64*>(_v) = _t->mavlinkSentCount(); break;
+        case 54: *reinterpret_cast< quint64*>(_v) = _t->mavlinkReceivedCount(); break;
+        case 55: *reinterpret_cast< quint64*>(_v) = _t->mavlinkLossCount(); break;
+        case 56: *reinterpret_cast< float*>(_v) = _t->mavlinkLossPercent(); break;
+        case 57: *reinterpret_cast< VEHICLE_MAV_TYPE*>(_v) = _t->vehicleType(); break;
+        case 58: *reinterpret_cast< float*>(_v) = _t->paramAirSpeed(); break;
+        case 59: *reinterpret_cast< float*>(_v) = _t->paramLoiterRadius(); break;
+        case 60: *reinterpret_cast< int*>(_v) = _t->rssi(); break;
+        case 61: *reinterpret_cast< float*>(_v) = _t->pressABS(); break;
+        case 62: *reinterpret_cast< float*>(_v) = _t->sonarRange(); break;
+        case 63: *reinterpret_cast< int*>(_v) = _t->temperature(); break;
+        case 64: *reinterpret_cast< QQmlListProperty<Fact>*>(_v) = _t->propertiesModel(); break;
+        case 65: *reinterpret_cast< int*>(_v) = _t->propertiesShowCount(); break;
+        case 66: *reinterpret_cast< QQmlListProperty<Fact>*>(_v) = _t->paramsModel(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
@@ -1908,11 +1893,11 @@ void Vehicle::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         case 26: _t->setLink(*reinterpret_cast< bool*>(_v)); break;
         case 27: _t->setEkfSignal(*reinterpret_cast< QString*>(_v)); break;
         case 28: _t->setVibeSignal(*reinterpret_cast< QString*>(_v)); break;
-        case 48: _t->setMessageSecurity(*reinterpret_cast< QString*>(_v)); break;
-        case 58: _t->setVehicleType(*reinterpret_cast< VEHICLE_MAV_TYPE*>(_v)); break;
-        case 59: _t->setParamAirSpeed(*reinterpret_cast< float*>(_v)); break;
-        case 60: _t->setParamLoiterRadius(*reinterpret_cast< float*>(_v)); break;
-        case 66: _t->setPropertiesShowCount(*reinterpret_cast< int*>(_v)); break;
+        case 47: _t->setMessageSecurity(*reinterpret_cast< QString*>(_v)); break;
+        case 57: _t->setVehicleType(*reinterpret_cast< VEHICLE_MAV_TYPE*>(_v)); break;
+        case 58: _t->setParamAirSpeed(*reinterpret_cast< float*>(_v)); break;
+        case 59: _t->setParamLoiterRadius(*reinterpret_cast< float*>(_v)); break;
+        case 65: _t->setPropertiesShowCount(*reinterpret_cast< int*>(_v)); break;
         default: break;
         }
     } else if (_c == QMetaObject::ResetProperty) {
@@ -1945,29 +1930,29 @@ int Vehicle::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 131)
+        if (_id < 130)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 131;
+        _id -= 130;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 131)
+        if (_id < 130)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 131;
+        _id -= 130;
     }
 #ifndef QT_NO_PROPERTIES
    else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::RegisterPropertyMetaType) {
         qt_static_metacall(this, _c, _id, _a);
-        _id -= 68;
+        _id -= 67;
     } else if (_c == QMetaObject::QueryPropertyDesignable) {
-        _id -= 68;
+        _id -= 67;
     } else if (_c == QMetaObject::QueryPropertyScriptable) {
-        _id -= 68;
+        _id -= 67;
     } else if (_c == QMetaObject::QueryPropertyStored) {
-        _id -= 68;
+        _id -= 67;
     } else if (_c == QMetaObject::QueryPropertyEditable) {
-        _id -= 68;
+        _id -= 67;
     } else if (_c == QMetaObject::QueryPropertyUser) {
-        _id -= 68;
+        _id -= 67;
     }
 #endif // QT_NO_PROPERTIES
     return _id;
@@ -2282,196 +2267,190 @@ void Vehicle::lockGPSChanged()
 }
 
 // SIGNAL 49
-void Vehicle::fuelUsedChanged()
+void Vehicle::fuelAvailbleChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 49, nullptr);
 }
 
 // SIGNAL 50
-void Vehicle::fuelAvailbleChanged()
+void Vehicle::uasChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 50, nullptr);
 }
 
 // SIGNAL 51
-void Vehicle::uasChanged()
+void Vehicle::firmwareVersionChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 51, nullptr);
 }
 
 // SIGNAL 52
-void Vehicle::firmwareVersionChanged()
+void Vehicle::firmwareCustomVersionChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 52, nullptr);
 }
 
 // SIGNAL 53
-void Vehicle::firmwareCustomVersionChanged()
+void Vehicle::vehicleUIDChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 53, nullptr);
 }
 
 // SIGNAL 54
-void Vehicle::vehicleUIDChanged()
+void Vehicle::messageSecurityChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 54, nullptr);
 }
 
 // SIGNAL 55
-void Vehicle::messageSecurityChanged()
-{
-    QMetaObject::activate(this, &staticMetaObject, 55, nullptr);
-}
-
-// SIGNAL 56
 void Vehicle::_sendMessageOnLinkOnThread(IOFlightController * _t1, mavlink_message_t _t2)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    QMetaObject::activate(this, &staticMetaObject, 55, _a);
+}
+
+// SIGNAL 56
+void Vehicle::textMessageReceived(int _t1, int _t2, int _t3, QString _t4)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)), const_cast<void*>(reinterpret_cast<const void*>(&_t4)) };
     QMetaObject::activate(this, &staticMetaObject, 56, _a);
 }
 
 // SIGNAL 57
-void Vehicle::textMessageReceived(int _t1, int _t2, int _t3, QString _t4)
+void Vehicle::unhealthySensorsChanged()
 {
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)), const_cast<void*>(reinterpret_cast<const void*>(&_t4)) };
-    QMetaObject::activate(this, &staticMetaObject, 57, _a);
+    QMetaObject::activate(this, &staticMetaObject, 57, nullptr);
 }
 
 // SIGNAL 58
-void Vehicle::unhealthySensorsChanged()
+void Vehicle::sensorsPresentBitsChanged(int _t1)
 {
-    QMetaObject::activate(this, &staticMetaObject, 58, nullptr);
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 58, _a);
 }
 
 // SIGNAL 59
-void Vehicle::sensorsPresentBitsChanged(int _t1)
+void Vehicle::sensorsEnabledBitsChanged(int _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 59, _a);
 }
 
 // SIGNAL 60
-void Vehicle::sensorsEnabledBitsChanged(int _t1)
+void Vehicle::sensorsHealthBitsChanged(int _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 60, _a);
 }
 
 // SIGNAL 61
-void Vehicle::sensorsHealthBitsChanged(int _t1)
+void Vehicle::mavlinkStatusChanged()
 {
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
-    QMetaObject::activate(this, &staticMetaObject, 61, _a);
+    QMetaObject::activate(this, &staticMetaObject, 61, nullptr);
 }
 
 // SIGNAL 62
-void Vehicle::mavlinkStatusChanged()
+void Vehicle::vehicleTypeChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 62, nullptr);
 }
 
 // SIGNAL 63
-void Vehicle::vehicleTypeChanged()
+void Vehicle::paramAirSpeedChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 63, nullptr);
 }
 
 // SIGNAL 64
-void Vehicle::paramAirSpeedChanged()
+void Vehicle::paramLoiterRadiusChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 64, nullptr);
 }
 
 // SIGNAL 65
-void Vehicle::paramLoiterRadiusChanged()
-{
-    QMetaObject::activate(this, &staticMetaObject, 65, nullptr);
-}
-
-// SIGNAL 66
 void Vehicle::paramChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
-    QMetaObject::activate(this, &staticMetaObject, 66, _a);
+    QMetaObject::activate(this, &staticMetaObject, 65, _a);
+}
+
+// SIGNAL 66
+void Vehicle::rssiChanged()
+{
+    QMetaObject::activate(this, &staticMetaObject, 66, nullptr);
 }
 
 // SIGNAL 67
-void Vehicle::rssiChanged()
+void Vehicle::pressABSChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 67, nullptr);
 }
 
 // SIGNAL 68
-void Vehicle::pressABSChanged()
+void Vehicle::sonarRangeChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 68, nullptr);
 }
 
 // SIGNAL 69
-void Vehicle::sonarRangeChanged()
+void Vehicle::temperatureChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 69, nullptr);
 }
 
 // SIGNAL 70
-void Vehicle::temperatureChanged()
+void Vehicle::propertiesModelChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 70, nullptr);
 }
 
 // SIGNAL 71
-void Vehicle::propertiesModelChanged()
+void Vehicle::propertiesShowCountChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 71, nullptr);
 }
 
 // SIGNAL 72
-void Vehicle::propertiesShowCountChanged()
+void Vehicle::paramsModelChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 72, nullptr);
 }
 
 // SIGNAL 73
-void Vehicle::paramsModelChanged()
+void Vehicle::picChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 73, nullptr);
 }
 
 // SIGNAL 74
-void Vehicle::picChanged()
-{
-    QMetaObject::activate(this, &staticMetaObject, 74, nullptr);
-}
-
-// SIGNAL 75
 void Vehicle::useJoystickChanged(bool _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
-    QMetaObject::activate(this, &staticMetaObject, 75, _a);
+    QMetaObject::activate(this, &staticMetaObject, 74, _a);
+}
+
+// SIGNAL 75
+void Vehicle::rcinChan1Changed()
+{
+    QMetaObject::activate(this, &staticMetaObject, 75, nullptr);
 }
 
 // SIGNAL 76
-void Vehicle::rcinChan1Changed()
+void Vehicle::rcinChan2Changed()
 {
     QMetaObject::activate(this, &staticMetaObject, 76, nullptr);
 }
 
 // SIGNAL 77
-void Vehicle::rcinChan2Changed()
+void Vehicle::rcinChan3Changed()
 {
     QMetaObject::activate(this, &staticMetaObject, 77, nullptr);
 }
 
 // SIGNAL 78
-void Vehicle::rcinChan3Changed()
-{
-    QMetaObject::activate(this, &staticMetaObject, 78, nullptr);
-}
-
-// SIGNAL 79
 void Vehicle::rcinChan4Changed()
 {
-    QMetaObject::activate(this, &staticMetaObject, 79, nullptr);
+    QMetaObject::activate(this, &staticMetaObject, 78, nullptr);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

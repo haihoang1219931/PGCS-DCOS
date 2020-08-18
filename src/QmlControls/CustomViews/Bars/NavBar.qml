@@ -203,6 +203,27 @@ Item {
         }
 
         //----------- Division
+        BatteryIndicator
+        {
+            id: btnBattery
+            anchors.right: btnEngine.left
+            anchors.rightMargin: UIConstants.sRect
+            anchors.top: parent.top
+            anchors.topMargin: 5
+            height: parent.height
+            width: parent.height
+            iconSize: UIConstants.sRect*3/2
+            z: navbarWrapper.z + 1
+            showIndicator: dialogShow === "DIALOG_BATTERY"
+            onClicked: {
+                if(dialogShow !== "DIALOG_BATTERY"){
+                    dialogShow = "DIALOG_BATTERY";
+                }else{
+                    dialogShow = "";
+                }
+            }
+        }
+
         EngineIndicator{
             id: btnEngine
             anchors.right: btnLinkStatus.left

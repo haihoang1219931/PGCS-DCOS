@@ -70,22 +70,17 @@ void FirmwarePlugin::loadFromFile(QString fileName){
         _listParamShow.append(new Fact(false,"Latitude","0","Deg"));
         _listParamShow.append(new Fact(false,"Longitude","0","Deg"));
         _listParamShow.append(new Fact(true,"Pitch","0","Deg"));
-        _listParamShow.append(new Fact(true,"PMU_IBatA","0","A"));
-        _listParamShow.append(new Fact(true,"PMU_IBatB","0","A"));
         _listParamShow.append(new Fact(true,"PMU_Rpm","0","rpm"));
         _listParamShow.append(new Fact(true,"PMU_Temp","0","°C",65.0,75.0,QString("transparent"),QString("red"),QString("sandybrown")));
-        _listParamShow.append(new Fact(true,"PMU_vBatt12S","0","V",46.08,48.96,QString("red"),QString("transparent"),QString("sandybrown")));
-        _listParamShow.append(new Fact(true,"PMU_vBatA","0","V",22.8,24,QString("red"),QString("transparent"),QString("sandybrown")));
-        _listParamShow.append(new Fact(true,"PMU_vBatB","0","V",22.8,24,QString("red"),QString("transparent"),QString("sandybrown")));
 
 
 
         //pw
-        _listParamShow.append(new Fact(true,"PW_VBattA","0","V",22.8,24,QString("red"),QString("transparent"),QString("sandybrown")));
-        _listParamShow.append(new Fact(true,"PW_IBattA","0","A",0.0,3.0,QString("red"),QString("transparent"),QString("transparent")));
-        _listParamShow.append(new Fact(true,"PW_VBattB","0","V",22.8,24,QString("red"),QString("transparent"),QString("sandybrown")));
-        _listParamShow.append(new Fact(true,"PW_IBattB","0","A",0.0,3.0,QString("red"),QString("transparent"),QString("transparent")));
-        _listParamShow.append(new Fact(true,"PW_Vgen","0","V"));
+        _listParamShow.append(new Fact(true,"V_BattA","0","V",22.8,24,QString("red"),QString("transparent"),QString("sandybrown")));
+        _listParamShow.append(new Fact(true,"I_BattA","0","A",0.0,3.0,QString("red"),QString("transparent"),QString("transparent")));
+        _listParamShow.append(new Fact(true,"V_BattB","0","V",22.8,24,QString("red"),QString("transparent"),QString("sandybrown")));
+        _listParamShow.append(new Fact(true,"I_BattB","0","A",0.0,3.0,QString("red"),QString("transparent"),QString("transparent")));
+        _listParamShow.append(new Fact(true,"V_Gen","0","V"));
 
         _listParamShow.append(new Fact(true,"PW_Vavionics","0","V"));
         _listParamShow.append(new Fact(true,"PW_Iavionics","0","A"));
@@ -99,9 +94,9 @@ void FirmwarePlugin::loadFromFile(QString fileName){
         _listParamShow.append(new Fact(true,"PW_energyA","0","mAh"));
         _listParamShow.append(new Fact(true,"PW_energyB","0","mAh"));
 
-        _listParamShow.append(new Fact(true,"PW_Temp","0","°C",65.0,75.0,QString("transparent"),QString("red"),QString("sandybrown")));
+//        _listParamShow.append(new Fact(true,"PW_Temp","0","°C",65.0,75.0,QString("transparent"),QString("red"),QString("sandybrown")));
 
-        _listParamShow.append(new Fact(true,"PW_Genstatus","0"," ",0.5,1.5,QString("red"),QString("transparent"),QString("sandybrown")));
+        _listParamShow.append(new Fact(true,"GenStatus","0"," ",0.5,1.5,QString("red"),QString("transparent"),QString("sandybrown")));
 
         //ecu
         _listParamShow.append(new Fact(true,"ECU_Throttle","0","%"));
@@ -120,7 +115,7 @@ void FirmwarePlugin::loadFromFile(QString fileName){
         _listParamShow.append(new Fact(true,"ADC_RawFuelLevel","0"," "));
         _listParamShow.append(new Fact(true,"ADC_EnvTemp","0"," ",0,7,QString("red"),QString("transparent"),QString("sandybrown")));
         _listParamShow.append(new Fact(true,"ADC_EnvRH","0"," ",40,70,QString("transparent"),QString("red"),QString("sandybrown")));
-        _listParamShow.append(new Fact(true,"ADC_Voltage12S","0","V",46.08,48.96,QString("red"),QString("transparent"),QString("sandybrown")));
+        _listParamShow.append(new Fact(true,"V_Batt12S","0","V",46.08,48.96,QString("red"),QString("transparent"),QString("sandybrown")));
 
 
         _listParamShow.append(new Fact(false,"PTU_Alt","0","m"));
