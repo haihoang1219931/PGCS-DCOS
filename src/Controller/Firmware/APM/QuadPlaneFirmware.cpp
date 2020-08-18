@@ -166,6 +166,11 @@ void QuadPlaneFirmware::startEngine(Vehicle *vehicle)
     vehicle->sendMavCommand(vehicle->defaultComponentId(),MAV_CMD_START_ENGINE,true);//send command start engine
 }
 
+void QuadPlaneFirmware::resetFuelUsed(Vehicle *vehicle)
+{
+    vehicle->sendMavCommand(vehicle->defaultComponentId(),MAV_CMD_RESET_FUELUSED,true);//send command reset fuelused
+}
+
 void QuadPlaneFirmware::setCurrentMissionSequence(Vehicle* vehicle, int seq){
     Q_UNUSED(seq);
     if(vehicle->flightMode()=="RTL"){

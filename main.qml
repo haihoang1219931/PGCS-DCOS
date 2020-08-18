@@ -646,7 +646,6 @@ ApplicationWindow {
                 visible: false
                 title:"Select minor params to show"
                 type: "CONFIRM"
-                vehicle: vehicle
                 x:parent.width / 2 - UIConstants.sRect * 50 / 2
                 y:parent.height / 2 - UIConstants.sRect * 24 / 2
                 z:200

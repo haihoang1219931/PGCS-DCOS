@@ -3,7 +3,7 @@
 
 #define MAVLINK_MSG_ID_PW 11026
 
-MAVPACKED(
+
 typedef struct __mavlink_pw_t {
  float VbattA; /*<  Voltage battery A.*/
  float IbattA; /*<  Current battery A.*/
@@ -18,18 +18,18 @@ typedef struct __mavlink_pw_t {
  float Iservo; /*<  Current servo.*/
  float V28DC; /*<  Voltage 28VDC.*/
  float I28DC; /*<  Current 28VDC.*/
- int16_t energyA; /*<  Energy battery A.*/
- int16_t energyB; /*<  Energy battery B.*/
+ int16_t EnergyA; /*<  Energy battery A.*/
+ int16_t EnergyB; /*<  Energy battery B.*/
  int8_t pw_temp; /*<  Internal temperature.*/
-}) mavlink_pw_t;
+} mavlink_pw_t;
 
 #define MAVLINK_MSG_ID_PW_LEN 57
 #define MAVLINK_MSG_ID_PW_MIN_LEN 57
 #define MAVLINK_MSG_ID_11026_LEN 57
 #define MAVLINK_MSG_ID_11026_MIN_LEN 57
 
-#define MAVLINK_MSG_ID_PW_CRC 17
-#define MAVLINK_MSG_ID_11026_CRC 17
+#define MAVLINK_MSG_ID_PW_CRC 204
+#define MAVLINK_MSG_ID_11026_CRC 204
 
 
 
@@ -52,8 +52,8 @@ typedef struct __mavlink_pw_t {
          { "V28DC", NULL, MAVLINK_TYPE_FLOAT, 0, 44, offsetof(mavlink_pw_t, V28DC) }, \
          { "I28DC", NULL, MAVLINK_TYPE_FLOAT, 0, 48, offsetof(mavlink_pw_t, I28DC) }, \
          { "pw_temp", NULL, MAVLINK_TYPE_INT8_T, 0, 56, offsetof(mavlink_pw_t, pw_temp) }, \
-         { "energyA", NULL, MAVLINK_TYPE_INT16_T, 0, 52, offsetof(mavlink_pw_t, energyA) }, \
-         { "energyB", NULL, MAVLINK_TYPE_INT16_T, 0, 54, offsetof(mavlink_pw_t, energyB) }, \
+         { "EnergyA", NULL, MAVLINK_TYPE_INT16_T, 0, 52, offsetof(mavlink_pw_t, EnergyA) }, \
+         { "EnergyB", NULL, MAVLINK_TYPE_INT16_T, 0, 54, offsetof(mavlink_pw_t, EnergyB) }, \
          } \
 }
 #else
@@ -74,8 +74,8 @@ typedef struct __mavlink_pw_t {
          { "V28DC", NULL, MAVLINK_TYPE_FLOAT, 0, 44, offsetof(mavlink_pw_t, V28DC) }, \
          { "I28DC", NULL, MAVLINK_TYPE_FLOAT, 0, 48, offsetof(mavlink_pw_t, I28DC) }, \
          { "pw_temp", NULL, MAVLINK_TYPE_INT8_T, 0, 56, offsetof(mavlink_pw_t, pw_temp) }, \
-         { "energyA", NULL, MAVLINK_TYPE_INT16_T, 0, 52, offsetof(mavlink_pw_t, energyA) }, \
-         { "energyB", NULL, MAVLINK_TYPE_INT16_T, 0, 54, offsetof(mavlink_pw_t, energyB) }, \
+         { "EnergyA", NULL, MAVLINK_TYPE_INT16_T, 0, 52, offsetof(mavlink_pw_t, EnergyA) }, \
+         { "EnergyB", NULL, MAVLINK_TYPE_INT16_T, 0, 54, offsetof(mavlink_pw_t, EnergyB) }, \
          } \
 }
 #endif
@@ -100,12 +100,12 @@ typedef struct __mavlink_pw_t {
  * @param V28DC  Voltage 28VDC.
  * @param I28DC  Current 28VDC.
  * @param pw_temp  Internal temperature.
- * @param energyA  Energy battery A.
- * @param energyB  Energy battery B.
+ * @param EnergyA  Energy battery A.
+ * @param EnergyB  Energy battery B.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_pw_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               float VbattA, float IbattA, float VbattB, float IbattB, float Vgen, float Vavionics, float Iavionics, float Vpayload, float Ipayload, float Vservo, float Iservo, float V28DC, float I28DC, int8_t pw_temp, int16_t energyA, int16_t energyB)
+                               float VbattA, float IbattA, float VbattB, float IbattB, float Vgen, float Vavionics, float Iavionics, float Vpayload, float Ipayload, float Vservo, float Iservo, float V28DC, float I28DC, int8_t pw_temp, int16_t EnergyA, int16_t EnergyB)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_PW_LEN];
@@ -122,8 +122,8 @@ static inline uint16_t mavlink_msg_pw_pack(uint8_t system_id, uint8_t component_
     _mav_put_float(buf, 40, Iservo);
     _mav_put_float(buf, 44, V28DC);
     _mav_put_float(buf, 48, I28DC);
-    _mav_put_int16_t(buf, 52, energyA);
-    _mav_put_int16_t(buf, 54, energyB);
+    _mav_put_int16_t(buf, 52, EnergyA);
+    _mav_put_int16_t(buf, 54, EnergyB);
     _mav_put_int8_t(buf, 56, pw_temp);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_PW_LEN);
@@ -142,8 +142,8 @@ static inline uint16_t mavlink_msg_pw_pack(uint8_t system_id, uint8_t component_
     packet.Iservo = Iservo;
     packet.V28DC = V28DC;
     packet.I28DC = I28DC;
-    packet.energyA = energyA;
-    packet.energyB = energyB;
+    packet.EnergyA = EnergyA;
+    packet.EnergyB = EnergyB;
     packet.pw_temp = pw_temp;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_PW_LEN);
@@ -173,13 +173,13 @@ static inline uint16_t mavlink_msg_pw_pack(uint8_t system_id, uint8_t component_
  * @param V28DC  Voltage 28VDC.
  * @param I28DC  Current 28VDC.
  * @param pw_temp  Internal temperature.
- * @param energyA  Energy battery A.
- * @param energyB  Energy battery B.
+ * @param EnergyA  Energy battery A.
+ * @param EnergyB  Energy battery B.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_pw_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   float VbattA,float IbattA,float VbattB,float IbattB,float Vgen,float Vavionics,float Iavionics,float Vpayload,float Ipayload,float Vservo,float Iservo,float V28DC,float I28DC,int8_t pw_temp,int16_t energyA,int16_t energyB)
+                                   float VbattA,float IbattA,float VbattB,float IbattB,float Vgen,float Vavionics,float Iavionics,float Vpayload,float Ipayload,float Vservo,float Iservo,float V28DC,float I28DC,int8_t pw_temp,int16_t EnergyA,int16_t EnergyB)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_PW_LEN];
@@ -196,8 +196,8 @@ static inline uint16_t mavlink_msg_pw_pack_chan(uint8_t system_id, uint8_t compo
     _mav_put_float(buf, 40, Iservo);
     _mav_put_float(buf, 44, V28DC);
     _mav_put_float(buf, 48, I28DC);
-    _mav_put_int16_t(buf, 52, energyA);
-    _mav_put_int16_t(buf, 54, energyB);
+    _mav_put_int16_t(buf, 52, EnergyA);
+    _mav_put_int16_t(buf, 54, EnergyB);
     _mav_put_int8_t(buf, 56, pw_temp);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_PW_LEN);
@@ -216,8 +216,8 @@ static inline uint16_t mavlink_msg_pw_pack_chan(uint8_t system_id, uint8_t compo
     packet.Iservo = Iservo;
     packet.V28DC = V28DC;
     packet.I28DC = I28DC;
-    packet.energyA = energyA;
-    packet.energyB = energyB;
+    packet.EnergyA = EnergyA;
+    packet.EnergyB = EnergyB;
     packet.pw_temp = pw_temp;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_PW_LEN);
@@ -237,7 +237,7 @@ static inline uint16_t mavlink_msg_pw_pack_chan(uint8_t system_id, uint8_t compo
  */
 static inline uint16_t mavlink_msg_pw_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_pw_t* pw)
 {
-    return mavlink_msg_pw_pack(system_id, component_id, msg, pw->VbattA, pw->IbattA, pw->VbattB, pw->IbattB, pw->Vgen, pw->Vavionics, pw->Iavionics, pw->Vpayload, pw->Ipayload, pw->Vservo, pw->Iservo, pw->V28DC, pw->I28DC, pw->pw_temp, pw->energyA, pw->energyB);
+    return mavlink_msg_pw_pack(system_id, component_id, msg, pw->VbattA, pw->IbattA, pw->VbattB, pw->IbattB, pw->Vgen, pw->Vavionics, pw->Iavionics, pw->Vpayload, pw->Ipayload, pw->Vservo, pw->Iservo, pw->V28DC, pw->I28DC, pw->pw_temp, pw->EnergyA, pw->EnergyB);
 }
 
 /**
@@ -251,7 +251,7 @@ static inline uint16_t mavlink_msg_pw_encode(uint8_t system_id, uint8_t componen
  */
 static inline uint16_t mavlink_msg_pw_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_pw_t* pw)
 {
-    return mavlink_msg_pw_pack_chan(system_id, component_id, chan, msg, pw->VbattA, pw->IbattA, pw->VbattB, pw->IbattB, pw->Vgen, pw->Vavionics, pw->Iavionics, pw->Vpayload, pw->Ipayload, pw->Vservo, pw->Iservo, pw->V28DC, pw->I28DC, pw->pw_temp, pw->energyA, pw->energyB);
+    return mavlink_msg_pw_pack_chan(system_id, component_id, chan, msg, pw->VbattA, pw->IbattA, pw->VbattB, pw->IbattB, pw->Vgen, pw->Vavionics, pw->Iavionics, pw->Vpayload, pw->Ipayload, pw->Vservo, pw->Iservo, pw->V28DC, pw->I28DC, pw->pw_temp, pw->EnergyA, pw->EnergyB);
 }
 
 /**
@@ -272,12 +272,12 @@ static inline uint16_t mavlink_msg_pw_encode_chan(uint8_t system_id, uint8_t com
  * @param V28DC  Voltage 28VDC.
  * @param I28DC  Current 28VDC.
  * @param pw_temp  Internal temperature.
- * @param energyA  Energy battery A.
- * @param energyB  Energy battery B.
+ * @param EnergyA  Energy battery A.
+ * @param EnergyB  Energy battery B.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_pw_send(mavlink_channel_t chan, float VbattA, float IbattA, float VbattB, float IbattB, float Vgen, float Vavionics, float Iavionics, float Vpayload, float Ipayload, float Vservo, float Iservo, float V28DC, float I28DC, int8_t pw_temp, int16_t energyA, int16_t energyB)
+static inline void mavlink_msg_pw_send(mavlink_channel_t chan, float VbattA, float IbattA, float VbattB, float IbattB, float Vgen, float Vavionics, float Iavionics, float Vpayload, float Ipayload, float Vservo, float Iservo, float V28DC, float I28DC, int8_t pw_temp, int16_t EnergyA, int16_t EnergyB)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_PW_LEN];
@@ -294,8 +294,8 @@ static inline void mavlink_msg_pw_send(mavlink_channel_t chan, float VbattA, flo
     _mav_put_float(buf, 40, Iservo);
     _mav_put_float(buf, 44, V28DC);
     _mav_put_float(buf, 48, I28DC);
-    _mav_put_int16_t(buf, 52, energyA);
-    _mav_put_int16_t(buf, 54, energyB);
+    _mav_put_int16_t(buf, 52, EnergyA);
+    _mav_put_int16_t(buf, 54, EnergyB);
     _mav_put_int8_t(buf, 56, pw_temp);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PW, buf, MAVLINK_MSG_ID_PW_MIN_LEN, MAVLINK_MSG_ID_PW_LEN, MAVLINK_MSG_ID_PW_CRC);
@@ -314,8 +314,8 @@ static inline void mavlink_msg_pw_send(mavlink_channel_t chan, float VbattA, flo
     packet.Iservo = Iservo;
     packet.V28DC = V28DC;
     packet.I28DC = I28DC;
-    packet.energyA = energyA;
-    packet.energyB = energyB;
+    packet.EnergyA = EnergyA;
+    packet.EnergyB = EnergyB;
     packet.pw_temp = pw_temp;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PW, (const char *)&packet, MAVLINK_MSG_ID_PW_MIN_LEN, MAVLINK_MSG_ID_PW_LEN, MAVLINK_MSG_ID_PW_CRC);
@@ -330,7 +330,7 @@ static inline void mavlink_msg_pw_send(mavlink_channel_t chan, float VbattA, flo
 static inline void mavlink_msg_pw_send_struct(mavlink_channel_t chan, const mavlink_pw_t* pw)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_pw_send(chan, pw->VbattA, pw->IbattA, pw->VbattB, pw->IbattB, pw->Vgen, pw->Vavionics, pw->Iavionics, pw->Vpayload, pw->Ipayload, pw->Vservo, pw->Iservo, pw->V28DC, pw->I28DC, pw->pw_temp, pw->energyA, pw->energyB);
+    mavlink_msg_pw_send(chan, pw->VbattA, pw->IbattA, pw->VbattB, pw->IbattB, pw->Vgen, pw->Vavionics, pw->Iavionics, pw->Vpayload, pw->Ipayload, pw->Vservo, pw->Iservo, pw->V28DC, pw->I28DC, pw->pw_temp, pw->EnergyA, pw->EnergyB);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PW, (const char *)pw, MAVLINK_MSG_ID_PW_MIN_LEN, MAVLINK_MSG_ID_PW_LEN, MAVLINK_MSG_ID_PW_CRC);
 #endif
@@ -344,7 +344,7 @@ static inline void mavlink_msg_pw_send_struct(mavlink_channel_t chan, const mavl
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_pw_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  float VbattA, float IbattA, float VbattB, float IbattB, float Vgen, float Vavionics, float Iavionics, float Vpayload, float Ipayload, float Vservo, float Iservo, float V28DC, float I28DC, int8_t pw_temp, int16_t energyA, int16_t energyB)
+static inline void mavlink_msg_pw_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  float VbattA, float IbattA, float VbattB, float IbattB, float Vgen, float Vavionics, float Iavionics, float Vpayload, float Ipayload, float Vservo, float Iservo, float V28DC, float I28DC, int8_t pw_temp, int16_t EnergyA, int16_t EnergyB)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
@@ -361,8 +361,8 @@ static inline void mavlink_msg_pw_send_buf(mavlink_message_t *msgbuf, mavlink_ch
     _mav_put_float(buf, 40, Iservo);
     _mav_put_float(buf, 44, V28DC);
     _mav_put_float(buf, 48, I28DC);
-    _mav_put_int16_t(buf, 52, energyA);
-    _mav_put_int16_t(buf, 54, energyB);
+    _mav_put_int16_t(buf, 52, EnergyA);
+    _mav_put_int16_t(buf, 54, EnergyB);
     _mav_put_int8_t(buf, 56, pw_temp);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PW, buf, MAVLINK_MSG_ID_PW_MIN_LEN, MAVLINK_MSG_ID_PW_LEN, MAVLINK_MSG_ID_PW_CRC);
@@ -381,8 +381,8 @@ static inline void mavlink_msg_pw_send_buf(mavlink_message_t *msgbuf, mavlink_ch
     packet->Iservo = Iservo;
     packet->V28DC = V28DC;
     packet->I28DC = I28DC;
-    packet->energyA = energyA;
-    packet->energyB = energyB;
+    packet->EnergyA = EnergyA;
+    packet->EnergyB = EnergyB;
     packet->pw_temp = pw_temp;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PW, (const char *)packet, MAVLINK_MSG_ID_PW_MIN_LEN, MAVLINK_MSG_ID_PW_LEN, MAVLINK_MSG_ID_PW_CRC);
@@ -536,21 +536,21 @@ static inline int8_t mavlink_msg_pw_get_pw_temp(const mavlink_message_t* msg)
 }
 
 /**
- * @brief Get field energyA from pw message
+ * @brief Get field EnergyA from pw message
  *
  * @return  Energy battery A.
  */
-static inline int16_t mavlink_msg_pw_get_energyA(const mavlink_message_t* msg)
+static inline int16_t mavlink_msg_pw_get_EnergyA(const mavlink_message_t* msg)
 {
     return _MAV_RETURN_int16_t(msg,  52);
 }
 
 /**
- * @brief Get field energyB from pw message
+ * @brief Get field EnergyB from pw message
  *
  * @return  Energy battery B.
  */
-static inline int16_t mavlink_msg_pw_get_energyB(const mavlink_message_t* msg)
+static inline int16_t mavlink_msg_pw_get_EnergyB(const mavlink_message_t* msg)
 {
     return _MAV_RETURN_int16_t(msg,  54);
 }
@@ -577,8 +577,8 @@ static inline void mavlink_msg_pw_decode(const mavlink_message_t* msg, mavlink_p
     pw->Iservo = mavlink_msg_pw_get_Iservo(msg);
     pw->V28DC = mavlink_msg_pw_get_V28DC(msg);
     pw->I28DC = mavlink_msg_pw_get_I28DC(msg);
-    pw->energyA = mavlink_msg_pw_get_energyA(msg);
-    pw->energyB = mavlink_msg_pw_get_energyB(msg);
+    pw->EnergyA = mavlink_msg_pw_get_EnergyA(msg);
+    pw->EnergyB = mavlink_msg_pw_get_EnergyB(msg);
     pw->pw_temp = mavlink_msg_pw_get_pw_temp(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_PW_LEN? msg->len : MAVLINK_MSG_ID_PW_LEN;

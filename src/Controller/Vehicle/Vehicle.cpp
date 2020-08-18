@@ -1558,9 +1558,9 @@ void Vehicle::_handlePW(mavlink_message_t &message)
     _setPropertyValue("PW_I28DC",
                    QString::fromStdString(std::to_string(pw.I28DC)),"A");
     _setPropertyValue("PW_energyA",
-                   QString::fromStdString(std::to_string(pw.energyA)),"mAh");
+                   QString::fromStdString(std::to_string(pw.EnergyA)),"mAh");
     _setPropertyValue("PW_energyB",
-                   QString::fromStdString(std::to_string(pw.energyB)),"mAh");
+                   QString::fromStdString(std::to_string(pw.EnergyB)),"mAh");
     _setPropertyValue("PMU_Temp",
                    QString::fromStdString(std::to_string(pw.pw_temp)),"°C");
 
@@ -1652,7 +1652,7 @@ void Vehicle::_handleAUX_ADC(mavlink_message_t &message)
     _setPropertyValue("ADC_EnvRH",
                    QString::fromStdString(std::to_string(aux_adc.env_RH))," ");
     _setPropertyValue("V_Batt12S",
-                   QString::fromStdString(std::to_string(aux_adc.Voltage12S_ADC))," ");
+                   QString::fromStdString(std::to_string(aux_adc.Voltage12S_ADC / 1000.0f)),"V");
 
 //    _vBatt12S = aux_adc.Voltage12S_ADC;
 //    Q_EMIT vBatt12SChanged();

@@ -340,6 +340,11 @@ void FirmwarePlugin::startEngine(Vehicle *vehicle)
     Q_UNUSED(vehicle);
 }
 
+void FirmwarePlugin::resetFuelUsed(Vehicle *vehicle)
+{
+    Q_UNUSED(vehicle);
+}
+
 void FirmwarePlugin::setCurrentMissionSequence(Vehicle* vehicle, int seq){
     Q_UNUSED(vehicle);
     Q_UNUSED(seq);

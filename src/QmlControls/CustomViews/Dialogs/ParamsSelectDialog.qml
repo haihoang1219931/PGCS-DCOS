@@ -15,7 +15,6 @@ Rectangle {
     radius: UIConstants.rectRadius
     border.color: "gray"
     border.width: 1
-    property var vehicle
     property alias title: txtDialog.text
     property string type: ""
     property color fontColor: UIConstants.textColor
@@ -65,6 +64,7 @@ Rectangle {
 
             layoutDirection: Qt.LeftToRight
             flow: GridView.FlowTopToBottom
+            model:vehicle.propertiesModel
             delegate: Item {
                 height: gridView.cellHeight
                 width: gridView.cellWidth
@@ -128,7 +128,5 @@ Rectangle {
     Component.onCompleted: {
         console.log("Set Focus true");
         setFocus(true);
-        if(vehicle !== null)
-            gridView.model = vehicle.propertiesModel;
     }
 }

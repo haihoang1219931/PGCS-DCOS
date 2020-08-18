@@ -229,7 +229,7 @@ import CustomViews.UIConstants  1.0
 
 import io.qdt.dev               1.0
 //-------------------------------------------------------------------------
-//-- GPS Indicator
+//-- Engine Indicator
 Item {
     id:             rootItem
     width:  640

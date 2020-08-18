@@ -125,6 +125,7 @@ Rectangle {
                     anchors.bottom: parent.bottom
                     anchors.top: parent.top
                     anchors.leftMargin: 2
+                    clip:true
 
                     Label {
                         id: lblValue

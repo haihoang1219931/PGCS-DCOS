@@ -89,6 +89,9 @@ public:
     /// command start engine
     void startEngine(Vehicle* vehicle) override;
 
+    ///command reset fuel used
+    void resetFuelUsed(Vehicle* vehicle) override;
+
     /// Alter the current mission item on the vehicle
     void setCurrentMissionSequence(Vehicle* vehicle, int seq) override;
 

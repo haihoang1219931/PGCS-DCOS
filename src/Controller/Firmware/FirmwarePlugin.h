@@ -127,6 +127,8 @@ public:
 
     virtual void startEngine(Vehicle* vehicle);
 
+    virtual void resetFuelUsed(Vehicle* vehicle);
+
     /// Alter the current mission item on the vehicle
     virtual void setCurrentMissionSequence(Vehicle* vehicle, int seq);
 
