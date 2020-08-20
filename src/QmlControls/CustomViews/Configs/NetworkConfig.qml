@@ -96,7 +96,7 @@ Rectangle {
             id: stkNetwork
             anchors.left: parent.left
             anchors.leftMargin: 10
-            width: UIConstants.sRect * 21.5
+            width: UIConstants.sRect * 23
             height: parent.height-rowRefresh.height - 5
             clip: true
             NetworkList{

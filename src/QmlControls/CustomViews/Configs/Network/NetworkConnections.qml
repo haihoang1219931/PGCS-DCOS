@@ -123,6 +123,7 @@ Rectangle {
 
         FlatButtonText {
             id: btnDelete
+            isAutoReturn: true
             width: UIConstants.sRect*3
             height: UIConstants.sRect
             border.width: 1
