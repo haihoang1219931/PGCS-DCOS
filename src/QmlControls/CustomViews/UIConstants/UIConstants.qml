@@ -555,8 +555,9 @@ QtObject {
                     "Sử dụng tay cầm điều khiển máy bay"],
                 "BTN_SAVE":["Save joystick","Lưu thay đổi"],
                 "BTN_RESET":["Reset default","Thiết lập lại"],
-                "AXES_MONITOR":["Axes monitor","Giám sát cần trục"],
-                "BUTTONS_MONITOR":["Buttons monitor","Giám sát nút bấm"],
+                "AXES_MONITOR":["Axes flight monitor","Danh sách trục điều khiển bay"],
+                "AXES_CAM_MONITOR":["Axes camera monitor","Danh sách trục điều khiển camera"],
+                "BUTTONS_MONITOR":["Buttons monitor","Danh sách nút bấm"],
                 "INVERT":["Invert","Đảo ngược"],
             },
             "CONNECTION":{

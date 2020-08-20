@@ -102,6 +102,8 @@ class JoystickThreaded: public QObject
     Q_PROPERTY(QQmlListProperty<JSButton> buttons READ buttons NOTIFY buttonsChanged)
     Q_PROPERTY(QQmlListProperty<JSAxis> axesConfig READ axesConfig NOTIFY axesConfigChanged)
     Q_PROPERTY(QQmlListProperty<JSButton> buttonsConfig READ buttonsConfig NOTIFY buttonsConfigChanged)
+    Q_PROPERTY(QQmlListProperty<JSAxis> axesCam READ axesCam NOTIFY axesCamChanged)
+    Q_PROPERTY(QQmlListProperty<JSAxis> axesCamConfig READ axesCamConfig NOTIFY axesCamConfigChanged)
     Q_PROPERTY(int axisRoll READ axisRoll WRITE setAxisRoll NOTIFY axisRollChanged)
     Q_PROPERTY(int axisPitch READ axisPitch WRITE setAxisPitch NOTIFY axisPitchChanged)
     Q_PROPERTY(int axisYaw READ axisYaw WRITE setAxisYaw NOTIFY axisYawChanged)
@@ -119,6 +121,7 @@ public:
     Q_INVOKABLE void loadConfig();
     Q_INVOKABLE void resetConfig();
     Q_INVOKABLE void mapAxisConfig(int axisID, QString mapFunc, bool invert);
+    Q_INVOKABLE void mapAxisCamConfig(int axisID, QString mapFunc, bool invert);
     Q_INVOKABLE void mapButtonConfig(int buttonID, QString mapFunc);
     Q_INVOKABLE void setInvert(QString camFunc,bool invert);
     void mapAxis(int axisID, QString mapFunc, bool invert);
@@ -146,6 +149,12 @@ public:
     }
     QQmlListProperty<JSAxis> axesConfig(){
         return QQmlListProperty<JSAxis>(this, m_axesTemp);
+    }
+    QQmlListProperty<JSAxis> axesCam(){
+        return QQmlListProperty<JSAxis>(this, m_axesCam);
+    }
+    QQmlListProperty<JSAxis> axesCamConfig(){
+        return QQmlListProperty<JSAxis>(this, m_axesCamTemp);
     }
     // List of Button
     QQmlListProperty<JSButton> buttons(){
@@ -238,6 +247,8 @@ Q_SIGNALS:
     void buttonsChanged();
     void axesConfigChanged();
     void buttonsConfigChanged();
+    void axesCamChanged();
+    void axesCamConfigChanged();
     void axisValueChanged(int axisID, float value);
     void buttonStateChanged(int buttonID, bool pressed);
     void axisRollChanged();
@@ -249,6 +260,8 @@ private:
     JoystickTask* m_task = nullptr;
     QList<JSAxis*> m_axes;
     QList<JSAxis*> m_axesTemp;
+    QList<JSAxis*> m_axesCam;
+    QList<JSAxis*> m_axesCamTemp;
     QList<JSButton*> m_buttons;
     QList<JSButton*> m_buttonsTemp;
     QString m_mapFile;

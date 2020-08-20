@@ -212,7 +212,11 @@ void JoystickThreaded::updateButtonAxis(bool connected){
             // update axes
             m_axes.clear();
             for(int i=0; i< m_task->m_joystick.m_axes; i++)
-                m_axes.append(new JSAxis(i));            
+                m_axes.append(new JSAxis(i));
+            // update axesCam
+            m_axesCam.clear();
+            for(int i=0; i< m_task->m_joystick.m_axes; i++)
+                m_axesCam.append(new JSAxis(i));
             // update buttons
             m_buttons.clear();
             for(int i=0; i< m_task->m_joystick.m_buttons; i++)
@@ -222,6 +226,10 @@ void JoystickThreaded::updateButtonAxis(bool connected){
             m_axesTemp.clear();
             for(int i=0; i< m_task->m_joystick.m_axes; i++)
                 m_axesTemp.append(new JSAxis(i));
+            // update axesCamTemp
+            m_axesCamTemp.clear();
+            for(int i=0; i< m_task->m_joystick.m_axes; i++)
+                m_axesCamTemp.append(new JSAxis(i));
             // update buttons
             m_buttonsTemp.clear();
             for(int i=0; i< m_task->m_joystick.m_buttons; i++)
@@ -229,6 +237,7 @@ void JoystickThreaded::updateButtonAxis(bool connected){
             resetConfig();
             loadConfig();
             Q_EMIT axesConfigChanged();
+            Q_EMIT axesCamConfigChanged();
             Q_EMIT buttonsConfigChanged();
             Q_EMIT buttonAxisLoaded();
         }
@@ -266,6 +275,18 @@ void JoystickThreaded::mapAxisConfig(int axisID, QString mapFunc, bool inverted)
         }else{
             if(mapFunc == m_axesTemp.at(i)->mapFunc()){
                 m_axesTemp.at(i)->setMapFunc("Unused");
+            }
+        }
+    }
+}
+void JoystickThreaded::mapAxisCamConfig(int axisID, QString mapFunc, bool inverted){
+    for(int i=0;i<m_axesCamTemp.size(); i++){
+        if(m_axesCamTemp.at(i)->id() == axisID){
+            m_axesCamTemp.at(i)->setMapFunc(mapFunc);
+            m_axesCamTemp.at(i)->setInverted(inverted);
+        }else{
+            if(mapFunc == m_axesCamTemp.at(i)->mapFunc()){
+                m_axesCamTemp.at(i)->setMapFunc("Unused");
             }
         }
     }
