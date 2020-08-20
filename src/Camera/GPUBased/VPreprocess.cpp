@@ -11,7 +11,7 @@ VPreprocess::~VPreprocess() {}
 
 void VPreprocess::run()
 {
-    GstFrameCacheItem gstFrame;
+
     std::chrono::high_resolution_clock::time_point start, stop;
     long sleepTime = 0;
     FixedMemory fixedMemI420(20, 1920 * 1080 * 3 / 2);
@@ -30,7 +30,7 @@ void VPreprocess::run()
 
     while (m_running) {
         start = std::chrono::high_resolution_clock::now();
-        gstFrame = m_gstFrameBuff->last();
+        GstFrameCacheItem& gstFrame = m_gstFrameBuff->last();
 
         if ((gstFrame.getIndex() == -1) || (gstFrame.getIndex() == m_currID)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));

@@ -10,15 +10,18 @@ Item {
     height: 320
     property var settingMap
     onSettingMapChanged: {
-        // method
-        for(var i=0; i< cbxMethod.model.length; i++){
-            if(cbxMethod.model[i].toLowerCase().includes(settingMap["ipv4"]["method"])){
-                cbxMethod.currentIndex = i;
-                break;
+        if(settingMap !== undefined){
+            // method
+            for(var i=0; i< cbxMethod.model.length; i++){
+                if(cbxMethod.model[i].toLowerCase().includes(settingMap["ipv4"]["method"])){
+                    cbxMethod.currentIndex = i;
+                    break;
+                }
             }
+            // address
+            tblAdresses.model = settingMap["ipv4"]["addresses"]
+            tblAdresses.currentRow = -1
         }
-        // address
-        tblAdresses.model = settingMap["ipv4"]["addresses"]
     }
 
     Column {
@@ -54,6 +57,37 @@ Item {
                     "Link-Local Only",
                     "Shared to other computer",
                     "Disabled"]
+                onCurrentIndexChanged: {
+                    if(settingMap !== undefined){
+                    switch(currentIndex){
+                        case 0:
+                            settingMap["ipv4"]["method"] = "auto";
+    //                        if(settingMap["ipv4"].hasKey("ignore-auto-dns"))
+    //                              delete settingMap["ipv4"].container["ignore-auto-dns"];
+                            break;
+                        case 1:
+                            settingMap["ipv4"]["method"] = "auto";
+                            settingMap["ipv4"]["ignore-auto-dns"] = "true";
+                            break;
+                        case 2:
+                            settingMap["ipv4"]["method"] = "manual"
+                            break;
+                        case 3:
+                            settingMap["ipv4"]["method"] = "link-local"
+                            break;
+                        case 4:
+                            settingMap["ipv4"]["method"] = "shared"
+                            break;
+                        case 5:
+                            settingMap["ipv4"]["method"] = "disabled"
+                            break;
+                        }
+                        if(settingMap["ipv4"]["method"] !== "manual"){
+                            settingMap["ipv4"]["addresses"] = [];
+                            tblAdresses.model = settingMap["ipv4"]["addresses"];
+                        }
+                    }
+                }
             }
         }
         Item{
@@ -134,60 +168,37 @@ Item {
                                 resizable: false
                                 width: tblAdresses.viewport.width / 3
                             }
-//                            itemDelegate: TextField{
-//                                textColor: UIConstants.textColor
-//                                text: styleData.value
-//                                horizontalAlignment: Text.AlignLeft
-//                                verticalAlignment: Text.AlignVCenter
-//                                font.family: UIConstants.appFont
-//                                font.pixelSize: UIConstants.fontSize
-//                                enabled: false
-//                                style: TextFieldStyle {
-//                                    background: Rectangle {
-//                                        color: tblAdresses.currentRow === ?
-//                                                   UIConstants.bgAppColor : UIConstants.blueColor
-//                                        border.color: UIConstants.grayColor
-//                                        border.width: 1
-//                                    }
-//                                }
-//                            }
-//                            itemDelegate: Rectangle {
+                            itemDelegate: TextField{
+                                id: txtIP
+                                textColor: UIConstants.textColor
+                                text: styleData.value
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+                                font.family: UIConstants.appFont
+                                font.pixelSize: UIConstants.fontSize
+                                style: TextFieldStyle {
+                                    background: Item{
+                                        Rectangle {
+                                            anchors.fill: parent
+                                            color: !txtIP.activeFocus?
+                                                UIConstants.bgAppColor:UIConstants.activeNav
+                                        }
+                                    }
+                                    selectedTextColor: UIConstants.textColor
+                                    selectionColor: UIConstants.orangeColor
+                                }
+                                onTextChanged: {
+                                    if(styleData.column === 0)
+                                        settingMap["ipv4"]["addresses"][styleData.row]["address"] = text;
+                                    else if(styleData.column === 1)
+                                        settingMap["ipv4"]["addresses"][styleData.row]["netmask"] = text;
+                                    else if(styleData.column === 2)
+                                        settingMap["ipv4"]["addresses"][styleData.row]["gateway"] = text;
 
-//                                Text {
-//                                    id: textItem
-//                                    text: styleData.value
-//                                }
-
-//                                Loader {
-//                                    id: editLoader
-//                                }
-
-//                                MouseArea {
-//                                    anchors.fill: parent
-
-//                                    onPressAndHold:  {
-//                                        if(styleData.column === 3)
-//                                             editLoader.sourceComponent = textInputComponent
-//                                    }
-//                                }
-
-//                                Component {
-//                                    id: textInputComponent
-
-//                                    Component.onCompleted: {
-//                                        textinput.forceActiveFocus();
-//                                    }
-
-//                                     TextField {
-//                                           id: textinput
-//                                          anchors.fill: textItem
-//                                          text: styleData.value
-//                                     }
-//                                }
-//                            }
+                                }
+                            }
                             style: TableViewStyle{
                                 backgroundColor: UIConstants.transparentColor
-
                             }
                         }
                     }
@@ -203,6 +214,14 @@ Item {
                             isAutoReturn: true
                             border.width: 1
                             border.color: UIConstants.grayColor
+                            onClicked: {
+                                settingMap["ipv4"]["addresses"].push({
+                                                                         "address":"192.168.0.4",
+                                                                         "netmask":"24",
+                                                                         "gateway":"192.168.0.1",
+                                                                     });
+                                tblAdresses.model = settingMap["ipv4"]["addresses"];
+                            }
                         }
                         FlatButtonText{
                             width: parent.width
@@ -212,9 +231,9 @@ Item {
                             border.width: 1
                             border.color: UIConstants.grayColor
                             onClicked: {
-                                console.log("Delete "+tblAdresses.currentRow);
-//                                settingMap["ipv4"]["addresses"].removeAt(tblAdresses.currentRow);
-//                                tblAdresses.model = settingMap["ipv4"]["addresses"]
+                                console.log("Delete "+tblAdresses.model);
+                                settingMap["ipv4"]["addresses"].splice(tblAdresses.currentRow, 1);
+                                tblAdresses.model = settingMap["ipv4"]["addresses"];
                             }
                         }
                     }
@@ -235,7 +254,11 @@ Item {
                         id: txtDNSServers
                         height: parent.height
                         width: parent.width - UIConstants.sRect * 8
-                        text: settingMap["ipv4"]["dns"].toString()
+                        text: (settingMap === undefined)?"":
+                                settingMap["ipv4"]["dns"].toString()
+                        onTextChanged: {
+                            settingMap["ipv4"]["dns"] = text.split(",");
+                        }
                     }
                 }
                 Row{
@@ -253,14 +276,17 @@ Item {
                         id: txtSearchDomain
                         height: parent.height
                         width: parent.width - UIConstants.sRect * 8
-                        text: settingMap["ipv4"]["dns-search"].toString()
+                        text: (settingMap === undefined)?"":settingMap["ipv4"]["dns-search"].toString()
+                        onTextChanged: {
+                            settingMap["ipv4"]["dns-search"] = text.split(",");
+                        }
                     }
                 }
                 Row{
                     width: parent.width
                     height: UIConstants.sRect * 1.5
                     opacity: enabled?1:0.5
-                    enabled: settingMap["ipv4"]["method"].includes("addresses only")
+                    enabled: (settingMap === undefined)?false:settingMap["ipv4"]["method"].includes("addresses only")
                     QLabel {
                         width: UIConstants.sRect * 8
                         height: parent.height

@@ -227,8 +227,6 @@ HEADERS += \
     src/Camera/Packet/Common_type.h \
     src/Camera/Buffer/BufferOut.h \
     src/Camera/Buffer/RollBuffer.h \
-    src/Camera/Buffer/RollBuffer_.h \
-    src/Camera/Buffer/RollBuffer_q.h \
     src/Camera/Cache/Cache.h \
     src/Camera/Cache/TrackObject.h \
     src/Camera/Cache/CacheItem.h \

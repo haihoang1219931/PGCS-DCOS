@@ -76,7 +76,7 @@ public:
     GstRTSPMediaFactory *factory = nullptr;
     guint m_rtspAttachID;
     uint32_t m_clientCount=0;
-    RollBuffer_<GstFrameCacheItem> *m_gstRTSPBuff;
+    RollBuffer<GstFrameCacheItem> *m_gstRTSPBuff;
 };
 
 #endif // VRTSPSERVER_H

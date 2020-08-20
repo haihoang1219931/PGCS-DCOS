@@ -5,11 +5,13 @@
 #include <QList>
 #include <QVariantMap>
 #include <QNetworkConfiguration>
+#include <QPair>
 typedef QMap<QString, QMap<QString, QVariant>> ConnectionSetting;
-//typedef QVariantMap ConnectionSetting;
 Q_DECLARE_METATYPE(ConnectionSetting)
 Q_DECLARE_METATYPE(QList<uint>);
 Q_DECLARE_METATYPE(QList<QList<uint>>);
+Q_DECLARE_METATYPE(QList<QByteArray>);
+//Q_DECLARE_METATYPE(IPv6Address);
 class NetworkInfo : public QObject
 {
     Q_OBJECT
@@ -41,6 +43,10 @@ public:
     void setName(QString name){
         m_name = name;
         Q_EMIT nameChanged();
+    }
+    QString uuid(){ return m_uuid;}
+    void setUUID(QString uuid){
+        m_uuid = uuid;
     }
     bool activated(){
         return m_active;
@@ -148,6 +154,7 @@ public Q_SLOTS:
 
 private:
     QNetworkConfiguration m_config;
+    QString m_uuid;
     QString m_name;
     QString m_bearerTypeName;
     bool m_active = false;

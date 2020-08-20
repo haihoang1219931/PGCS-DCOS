@@ -32,6 +32,9 @@ Rectangle {
         onNeedWLANPass: {
             openPassEditor();
         }
+        onSettingSaved:{
+            networkManager.reloadListSetting();
+        }
     }
     function openPassEditor(){
         rectWLANPass.visible = true;
@@ -99,8 +102,16 @@ Rectangle {
             NetworkList{
                 id: accessList
                 model: networkManager.listAccess
+                networkEnabled: networkManager.networkEnabled
+                wifiEnabled: networkManager.wifiEnabled
                 onConnectNetwork: {
                     networkManager.connectNetwork(bearerTypeName,name,activated);
+                }
+                onEnableNetwork: {
+                    networkManager.networkEnabled = enable;
+                }
+                onEnableWiFi: {
+                    networkManager.wifiEnabled = enable;
                 }
             }
             NetworkConnections{
@@ -115,8 +126,8 @@ Rectangle {
                         connetionSetting.x = root.width/2 - connetionSetting.width/2
                         connetionSetting.y = root.height/2 - connetionSetting.height/2
                     }
-
-                    connetionSetting.loadSetting(networkManager.getConnectionSetting(selectedSetting));
+                    if(selectedSetting.includes("/org/freedesktop/NetworkManager/Settings"))
+                        connetionSetting.loadSetting(selectedSetting,networkManager.getConnectionSetting(selectedSetting));
                 }
             }
         }
@@ -182,6 +193,7 @@ Rectangle {
         visible: false
         onSaveClicked: {
             connetionSetting.visible = false;
+            networkManager.saveSetting(selectedSetting,settingMap);
         }
         onCancelClicked: {
             connetionSetting.visible = false;

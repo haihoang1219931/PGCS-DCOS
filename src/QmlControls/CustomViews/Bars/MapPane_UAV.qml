@@ -1512,7 +1512,7 @@ Flickable {
 
             if(index === 1){
                 coord.altitude = 50;
-                if(vehicleType === 2 || vehicleType === 3){
+                if(vehicleType === "MAV_TYPE_QUADROTOR" || vehicleType === "MAV_TYPE_OCTOROTOR"){
                     _waypointModel.addSymbol(index,UIConstants.takeoffType,0,0,0,0,"",coord)
                     _trajactoryModel.addSymbol(index,UIConstants.takeoffType,0,0,0,0,"",coord)
                 }else{
@@ -1521,7 +1521,7 @@ Flickable {
                 }
             }else if(index === 2){
                 coord.altitude = 0;
-                if(vehicleType === 2 || vehicleType === 3){
+                if(vehicleType === "MAV_TYPE_QUADROTOR" || vehicleType === "MAV_TYPE_OCTOROTOR"){
                     _waypointModel.addSymbol(index,UIConstants.landType,0,0,0,0,"",coord)
                     _trajactoryModel.addSymbol(index,UIConstants.landType,0,0,0,0,"",coord)
                 }else{

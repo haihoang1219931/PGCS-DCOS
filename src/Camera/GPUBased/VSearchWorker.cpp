@@ -30,9 +30,7 @@ void VSearchWorker::run()
     m_rbMOTObjs = Cache::instance()->getMOTCache();                 /**< */
     m_rbSearchObjs = Cache::instance()->getSearchCache();           /**< */
 //    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();         /**< */
-//    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();         /**< */
-    ProcessImageCacheItem processImgItem;                           /**< */
-    DetectedObjectsCacheItem motCacheItem;                          /**< */
+//    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();         /**< */    
     int prevID = -1;
 
     cv::Size imgSize;
@@ -52,7 +50,7 @@ void VSearchWorker::run()
         }
         // For OD mode is enable
         start = std::chrono::high_resolution_clock::now();
-        motCacheItem = m_rbMOTObjs->last();     /**< */
+        DetectedObjectsCacheItem& motCacheItem = m_rbMOTObjs->last();     /**< */
 
         // If buffer is empty or there have no new frame, go to the next loop
         if ((motCacheItem.getIndex() == -1) ||
@@ -65,7 +63,7 @@ void VSearchWorker::run()
         m_currID = motCacheItem.getIndex();
         motBoxs = motCacheItem.getDetectedObjects();
 
-        processImgItem = m_matImageBuff->getElementById(m_currID);  // Get image by id
+        ProcessImageCacheItem& processImgItem = m_matImageBuff->getElementById(m_currID);  // Get image by id
 
         if(processImgItem.getIndex() != m_currID) continue;
 

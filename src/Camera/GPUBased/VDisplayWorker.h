@@ -56,19 +56,12 @@ class VDisplayWorker : public QObject
         cv::Point convertPoint(cv::Point originPoint, cv::Mat stabMatrix);
     public:
         index_type m_currID;
-        RollBuffer_<ProcessImageCacheItem> *m_matImageBuff;
-        RollBuffer_<GstFrameCacheItem> *m_gstRTSPBuff;
-        RollBuffer_<GstFrameCacheItem> *m_gstEOSavingBuff;
-        RollBuffer_<GstFrameCacheItem> *m_gstIRSavingBuff;
-        RollBuffer_<DetectedObjectsCacheItem> *m_rbSearchObjs;
-        RollBuffer_<DetectedObjectsCacheItem> *m_rbMOTObjs;
-//        RollBuffer<Eye::TrackResponse> *m_rbTrackResEO;
-//        RollBuffer<Eye::XPoint> *m_rbXPointEO;
-//        RollBuffer<Eye::TrackResponse> *m_rbTrackResIR;
-//        RollBuffer<Eye::XPoint> *m_rbXPointIR;
-//        RollBuffer<Eye::SystemStatus> *m_rbSystem;
-//        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
-//        RollBuffer<Eye::MotionImage> *m_rbIPCIR;
+        RollBuffer<ProcessImageCacheItem> *m_matImageBuff;
+        RollBuffer<GstFrameCacheItem> *m_gstRTSPBuff;
+        RollBuffer<GstFrameCacheItem> *m_gstEOSavingBuff;
+        RollBuffer<GstFrameCacheItem> *m_gstIRSavingBuff;
+        RollBuffer<DetectedObjectsCacheItem> *m_rbSearchObjs;
+        RollBuffer<DetectedObjectsCacheItem> *m_rbMOTObjs;
         std::vector<std::string> m_objName;
         cv::Mat m_imgI420;
         cv::Mat m_imgI420Warped;

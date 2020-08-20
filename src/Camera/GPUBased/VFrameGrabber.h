@@ -105,7 +105,7 @@ class VFrameGrabber : public QThread
         bool m_stop = false;
         index_type m_currID = 0;        
         std::string m_filename;
-        RollBuffer_<GstFrameCacheItem> *m_gstFrameBuff;
+        RollBuffer<GstFrameCacheItem> *m_gstFrameBuff;
         GstAppSrc* m_klvAppSrc = nullptr;
         index_type m_metaID = 0;
         GimbalInterface* m_gimbal = nullptr;

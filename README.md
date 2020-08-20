@@ -16,3 +16,4 @@
     ## Fixed error map uav on 6H
     ## Added network status
     ## Fixed error map on UC	
+    ## Added changing network settings

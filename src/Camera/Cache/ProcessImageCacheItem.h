@@ -116,8 +116,8 @@ namespace rva
                 return m_dGMEMat;
             }
 
-            QString lockMode() {return m_lockMode;}
-            void setLockMode(QString lockMode){m_lockMode = lockMode;}
+            int lockMode() {return m_lockMode;}
+            void setLockMode(int lockMode){m_lockMode = lockMode;}
             cv::Rect trackRect() {return m_trackRect;}
             void setTrackRect(cv::Rect trackRect){m_trackRect = trackRect;}
             int trackStatus() {return m_trackStatus;}
@@ -132,11 +132,11 @@ namespace rva
             void setPowerLineList(std::vector<cv::Scalar>& powerLineList){
                 m_powerLineList = powerLineList;
             }
-            QString sensorID(){ return m_sensorID; }
-            void setSensorID(QString sensorID){ m_sensorID = sensorID; }
+            int sensorID(){ return m_sensorID; }
+            void setSensorID(int sensorID){ m_sensorID = sensorID; }
 
-            QString colorMode(){ return m_colorMode; }
-            void setColorMode(QString colorMode){ m_colorMode = colorMode; }
+            int colorMode(){ return m_colorMode; }
+            void setColorMode(int colorMode){ m_colorMode = colorMode; }
         private:
             unsigned char *m_dImage = nullptr;
             unsigned char *m_hImage = nullptr;
@@ -146,9 +146,9 @@ namespace rva
             float *m_dStabMat = nullptr;
             float *m_hGMEMat = nullptr;
             float *m_dGMEMat = nullptr;
-            QString m_lockMode = "FREE";
-            QString m_sensorID = "EO";
-            QString m_colorMode = "WHITE_HOT";
+            int m_lockMode = 0;
+            int m_sensorID = 0;
+            int m_colorMode = 0;
             cv::Rect m_trackRect;
             int m_trackStatus = 0;
             bool m_powerlineDetectEnable = false;

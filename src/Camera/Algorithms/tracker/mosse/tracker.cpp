@@ -33,15 +33,11 @@ void Tracker::initTrack(const cv::Mat &input_image, cv::Rect input_rect)
 
     m_trackSize = std::max(input_rect.width, input_rect.height);
 
-    if(m_trackSize < 101)
+    if(m_trackSize < 200)
         m_stdSize = m_trackSize;
-    else if(m_trackSize < 201)
-    {
-        m_stdSize = m_trackSize / 2;
-    }
     else
     {
-        m_stdSize = m_trackSize / 4;
+        m_stdSize = m_trackSize / 2;
     }
     if(input_rect.x + input_rect.width >= input_image.cols ||
             input_rect.y + input_rect.height >= input_image.rows){
