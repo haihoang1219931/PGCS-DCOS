@@ -15,8 +15,9 @@
 NetworkManager::NetworkManager(QObject *parent) : QObject(parent)
 {
     qDBusRegisterMetaType<ConnectionSetting>();
-    qDBusRegisterMetaType<QList<uint> >();
-    qDBusRegisterMetaType<QList<QList<uint> > >();
+    qDBusRegisterMetaType<QList<uint>>();
+    qDBusRegisterMetaType<QList<QList<uint>>>();
+    qDBusRegisterMetaType<QList<QByteArray>>();
     reloadListAccess();
     reloadListSetting();
     m_timerReloadAddress.setInterval(1000);
@@ -86,7 +87,6 @@ void NetworkManager::reloadAddresses(){
     }
 }
 void NetworkManager::reloadListAccess(){
-    QStringList listInterface;
     // get list interface ip
     m_listAccess.clear();
     QDBusInterface dbusInterface(
@@ -119,6 +119,7 @@ void NetworkManager::reloadListAccess(){
 //                   name.toStdString().c_str(),type,
 //                   udi.toStdString().c_str(),
 //                   connection.path().toStdString().c_str());
+
             if(type == 1){
                 NetworkInterface *net = new NetworkInterface();
                 net->setDevice(connection.path());
@@ -130,8 +131,14 @@ void NetworkManager::reloadListAccess(){
                 else
                     net->setBearerTypeName("Ethernet");
                 getListSetting(net);
-                m_listAccess.append(net);
-                listInterface.append(net->bearerTypeName());
+                if(m_listAccess.size() > 0){
+                    if(!m_listAccess[0]->bearerTypeName().contains("Ethernet")){
+                        m_listAccess.insert(0,net);
+                    }else{
+                        m_listAccess.append(net);
+                    }
+                }else
+                    m_listAccess.append(net);
             }else if(type == 2){
                 NetworkInterface *net = new NetworkInterface();
                 net->setDevice(connection.path());
@@ -139,15 +146,6 @@ void NetworkManager::reloadListAccess(){
                 net->setBearerTypeName("Wi-Fi");
                 getListAccess(net);
                 m_listAccess.append(net);
-                listInterface.append(net->bearerTypeName());
-            }else if(type == 13){
-                NetworkInterface *net = new NetworkInterface();
-                net->setDevice(connection.path());
-                net->setName(name);
-                net->setBearerTypeName("Bridge");
-                getListSetting(net);
-                m_listAccess.append(net);
-                listInterface.append(net->bearerTypeName());
             }
         }
     }
@@ -192,21 +190,21 @@ void NetworkManager::reloadListSetting(){
                 net->setName(name);
                 net->setBearerTypeName("Ethernet");
                 getListSetting(net);
-                m_listSetting.append(net);
+                if(m_listSetting.size() > 0){
+                    if(!m_listSetting[0]->bearerTypeName().contains("Ethernet")){
+                        m_listSetting.insert(0,net);
+                    }else {
+
+                        m_listSetting.append(net);
+                    }
+                }else
+                    m_listSetting.append(net);
                 listNettypes.append(net->bearerTypeName());
             }else if(type == 2 && !listNettypes.contains("Wi-Fi")){
                 NetworkInterface *net = new NetworkInterface();
                 net->setDevice(connection.path());
                 net->setName(name);
                 net->setBearerTypeName("Wi-Fi");
-                getListSetting(net);
-                m_listSetting.append(net);
-                listNettypes.append(net->bearerTypeName());
-            }else if(type == 13 && !listNettypes.contains("Bridge")){
-                NetworkInterface *net = new NetworkInterface();
-                net->setDevice(connection.path());
-                net->setName(name);
-                net->setBearerTypeName("Bridge");
                 getListSetting(net);
                 m_listSetting.append(net);
                 listNettypes.append(net->bearerTypeName());
@@ -347,6 +345,64 @@ QString NetworkManager::convertIP(QString type,uint ipv4){
     }
     return result;
 }
+void NetworkManager::saveSetting(QString settingPath,QVariant setting){
+    qDebug() << "Save Setting: " << settingPath;
+    ConnectionSetting connection;
+    QMap<QString,QVariant> mapSetting = setting.toMap();
+    Q_FOREACH(QString outer, mapSetting.keys()){
+        QMap<QString,QVariant> mapOuter = mapSetting[outer].toMap();
+        if(outer == "ipv4"){
+            QList<uint> dns;
+            Q_FOREACH(QVariant dnsItem, mapOuter["dns"].toList()){
+                dns << htonl(QHostAddress(dnsItem.toString()).toIPv4Address());
+            }
+            mapOuter["dns"] = QVariant::fromValue(dns);
+            QStringList dnsSearch;
+            Q_FOREACH(QVariant dnsSearchItem, mapOuter["dns-search"].toList()){
+                dnsSearch << dnsSearchItem.toString();
+            }
+            mapOuter["dns-search"] = QVariant::fromValue(dnsSearch);
+            QList<QList<uint>> addresses;
+            Q_FOREACH(QVariant addressMap, mapOuter["addresses"].toList()){
+                QList<uint> address;
+                address << htonl(QHostAddress(addressMap.toMap()["address"].toString()).toIPv4Address())
+                        << addressMap.toMap()["netmask"].toUInt()
+                        << htonl(QHostAddress(addressMap.toMap()["gateway"].toString()).toIPv4Address());
+                addresses << address;
+            }
+            mapOuter["addresses"] = QVariant::fromValue(addresses);
+            connection[outer] = mapOuter;
+        }else if(outer == "ipv6"){
+            // Do not using in this version
+        }else if(outer == "802-11-wireless"){
+//            connection[outer] = mapOuter;
+            QByteArray mac;
+            QStringList macStrList = mapOuter["mac-address"].toString().split(":");
+            Q_FOREACH(const QString &str, macStrList)
+            {
+                bool ok;
+                mac.append(static_cast<char>(str.toUInt(&ok,16)));
+            }
+            mapOuter["mac-address"] = mac;
+            connection[outer] = mapOuter;
+        }else {
+            connection[outer] = mapOuter;
+        }
+    }
+    QDBusInterface dbusInterface(
+                "org.freedesktop.NetworkManager",
+                settingPath,
+                "org.freedesktop.NetworkManager.Settings.Connection",
+                QDBusConnection::systemBus());
+    QDBusReply<void> result = dbusInterface.call("Update",
+                                        QVariant::fromValue(connection));
+    if (!result.isValid()) {
+        qDebug() << QString("Error Update connection: %1 %2").arg(result.error().name()).arg(result.error().message());
+    }else{
+        qDebug() << QString("Setting saved");
+        Q_EMIT settingSaved();
+    }
+}
 void NetworkManager::insertWLANPass(QString pass){
     if(m_currentAccessPoint == nullptr) return;
     ConnectionSetting connection;
@@ -398,9 +454,7 @@ void NetworkManager::getConnectionSetting(NetworkInterface *interface,QString se
     if (result.isValid()) {
         settings = result.value();
         QVariantMap connectionSettings = settings.value("connection");
-        if(connectionSettings["type"].toString().contains("bridge")){
-            setting->setBearerTypeName("Bridge");
-        }else if(connectionSettings["type"].toString().contains("wireless")){
+        if(connectionSettings["type"].toString().contains("wireless")){
             setting->setBearerTypeName("Wi-Fi");
         }else if(connectionSettings["type"].toString().contains("ethernet")){
             setting->setBearerTypeName("Ethernet");
@@ -411,7 +465,21 @@ void NetworkManager::getConnectionSetting(NetworkInterface *interface,QString se
 
     }
 }
+void NetworkManager::getConnectionSetting(QString settingPath,ConnectionSetting* connection){
+    ConnectionSetting settings;
+    QDBusInterface ifaceForSettings(
+                "org.freedesktop.NetworkManager",
+                settingPath,
+                "org.freedesktop.NetworkManager.Settings.Connection",
+                QDBusConnection::systemBus());
+    QDBusReply<ConnectionSetting> result = ifaceForSettings.call("GetSettings");
+    if (result.isValid()){
+        settings = result.value();
+        *connection = settings;
+    }
+}
 QVariant NetworkManager::getConnectionSetting(QString settingPath){
+    qDebug() << "getConnectionSetting "<< settingPath ;
     QVariant resultReturn;
     ConnectionSetting settings;
     QDBusInterface ifaceForSettings(
@@ -430,9 +498,8 @@ QVariant NetworkManager::getConnectionSetting(QString settingPath){
 //        qDebug() << "Key: " << outer_key;
         QVariantMap qmlInnerMap;
         for( QString inner_key : innerMap.keys() ){
-//                        qDebug() << "    " << inner_key << ":" << innerMap.value( inner_key );
+//            qDebug() << "    " << inner_key << ":" << innerMap.value( inner_key );
             QString dataTypeName(innerMap.value( inner_key ).typeName());
-//                        qDebug() << "        dataTypeName "<< dataTypeName;
             if(dataTypeName == "QDBusArgument"){
                 if(inner_key == "addresses"){
                     QList<QList<uint>> elems = qdbus_cast<QList<QList<uint>>>( innerMap.value( inner_key ) );
@@ -478,7 +545,7 @@ QVariant NetworkManager::getConnectionSetting(QString settingPath){
             }else{
                 if(inner_key == "mac-address"){
                     QByteArray mac = innerMap[inner_key].value<QByteArray>();
-                    qDebug() << "mac-address: " << innerMap[inner_key];
+//                    qDebug() << "mac-address: " << innerMap[inner_key];
                     QString macAddress;
                     for(int bID = 0; bID < mac.size(); bID++){
                         char macElement[10] ;
@@ -528,9 +595,9 @@ QVariant NetworkManager::getConnectionSetting(QString settingPath){
     return resultReturn;
 }
 void NetworkManager::getListAccess(NetworkInterface* interfaceName){
-    printf("%s\r\n",__func__);
+//    printf("%s\r\n",__func__);
     // Get active connection
-    QString activeConnectionID;
+    QString activeConnectionObject;
     {
         QDBusInterface dbusInterface(
                     "org.freedesktop.NetworkManager",
@@ -538,29 +605,14 @@ void NetworkManager::getListAccess(NetworkInterface* interfaceName){
                     "org.freedesktop.DBus.Properties",
                     QDBusConnection::systemBus());
         QDBusReply<QDBusVariant> result = dbusInterface.call("Get",
-                                                             QVariant::fromValue(QString("org.freedesktop.NetworkManager.Device")),
-                                                             QVariant::fromValue(QString("ActiveConnection")));
-        QString activeConnectionPath = result.value().variant().value<QDBusObjectPath>().path();
+                                                             QVariant::fromValue(QString("org.freedesktop.NetworkManager.Device.Wireless")),
+                                                             QVariant::fromValue(QString("ActiveAccessPoint")));
+
         if (!result.isValid()) {
             qDebug() << QString("Error get ActiveConnection: %1 %2").arg(result.error().name()).arg(result.error().message());
         }else{
-            qDebug() << interfaceName->device() << ":" << activeConnectionPath;
-        }
-        if(activeConnectionPath != "/"){
-            QDBusInterface dbusInterface(
-                        "org.freedesktop.NetworkManager",
-                        activeConnectionPath,
-                        "org.freedesktop.DBus.Properties",
-                        QDBusConnection::systemBus());
-            QDBusReply<QDBusVariant> result = dbusInterface.call("Get",
-                                                                 QVariant::fromValue(QString("org.freedesktop.NetworkManager.Connection.Active")),
-                                                                 QVariant::fromValue(QString("Id")));
-            if (!result.isValid()) {
-                qDebug() << QString("Error Get Id: %1 %2").arg(result.error().name()).arg(result.error().message());
-            }else{
-                qDebug() << activeConnectionPath << ":" << result.value().variant().toString();
-            }
-            activeConnectionID = result.value().variant().toString();
+            activeConnectionObject = result.value().variant().value<QDBusObjectPath>().path();
+            qDebug() << interfaceName->device() << ":" << activeConnectionObject;
         }
     }
     // Get list setting
@@ -581,7 +633,7 @@ void NetworkManager::getListAccess(NetworkInterface* interfaceName){
                 accessPoint->setAccessPoint(connection.path());
                 accessPoint->setDevice(interfaceName->device());
                 getAccessPointInfo(accessPoint);
-                if(activeConnectionID == accessPoint->name()){
+                if(activeConnectionObject == accessPoint->accessPoint()){
                     accessPoint->setActivated(true);
                 }
                 if(accessPoint->name()!= ""){
@@ -594,8 +646,8 @@ void NetworkManager::getListAccess(NetworkInterface* interfaceName){
     }
 }
 void NetworkManager::getListSetting(NetworkInterface *interface){
-    printf("%s(%s)\r\n",__func__,
-           interface->device().toStdString().c_str());
+//    printf("%s(%s)\r\n",__func__,
+//           interface->device().toStdString().c_str());
     if(interface == nullptr){
         return;
     }
@@ -624,7 +676,7 @@ void NetworkManager::getListSetting(NetworkInterface *interface){
             if (!result.isValid()) {
                 qDebug() << QString("Error Get Id: %1 %2").arg(result.error().name()).arg(result.error().message());
             }else{
-                qDebug() << activeConnectionPath << ":" << result.value().variant().toString();
+//                qDebug() << activeConnectionPath << ":" << result.value().variant().toString();
             }
             activeConnectionID = result.value().variant().toString();
         }
@@ -720,6 +772,50 @@ void NetworkManager::getAccessPointInfo(NetworkInfo* accessPoint){
             accessPoint->setHasPass(result.value().variant().toInt() != 0);
         }
     }
+}
+bool NetworkManager::networkEnabled(){
+    return m_networkEnabled;
+}
+bool NetworkManager::wifiEnabled(){
+    return m_wifiEnabled;
+}
+void NetworkManager::setNetworkEnabled(bool enable){
+    QDBusInterface dbusInterface(
+                "org.freedesktop.NetworkManager",
+                "/org/freedesktop/NetworkManager",
+                "org.freedesktop.NetworkManager",
+                QDBusConnection::systemBus());
+    // Connect/Disconnect interface
+    QDBusMessage result;
+    result = dbusInterface.call("Enable",
+                                 QVariant::fromValue(enable));
+    qDebug() << "setNetworkEnabled: " << result;
+    m_networkEnabled = enable;
+    Q_EMIT networkEnabledChanged();
+}
+void NetworkManager::setWifiEnabled(bool enable){
+    QDBusInterface dbusInterface(
+                "org.freedesktop.NetworkManager",
+                "/org/freedesktop/NetworkManager",
+                "org.freedesktop.DBus.Properties",
+                QDBusConnection::systemBus());
+    // Connect/Disconnect interface using dus properties
+    QDBusMessage result;
+    result = dbusInterface.call("Set",
+            QVariant::fromValue(QString("org.freedesktop.NetworkManager")),
+            QVariant::fromValue(QString("WirelessEnabled")),
+            QVariant::fromValue(QDBusVariant(enable))
+                                );
+    qDebug() << "setWifiEnabled: " << result;
+    m_wifiEnabled = enable;
+    Q_EMIT wifiEnabledChanged();
+    // Connect/Disconnect interface using direct set
+//    QDBusInterface dbusInterface(
+//                "org.freedesktop.NetworkManager",
+//                "/org/freedesktop/NetworkManager",
+//                "org.freedesktop.NetworkManager",
+//                QDBusConnection::systemBus());
+//    dbusInterface.setProperty("WirelessEnabled",QVariant::fromValue(enable));
 }
 /*
  * dbus-send --system --print-reply \

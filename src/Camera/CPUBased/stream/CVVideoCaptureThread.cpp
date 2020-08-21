@@ -187,7 +187,7 @@ void CVVideoCaptureThread::updateFOV(float eoFOV, float irFOV)
 }
 bool CVVideoCaptureThread::getTrackEnable()
 {
-    return (m_process->m_tracker->isInitialized());
+    return (m_process->m_trackEnable);
 }
 void CVVideoCaptureThread::changeTrackSize(int newSize)
 {

@@ -24,9 +24,8 @@ void Tracker::initTrack(const cv::Mat &input_image, cv::Rect input_rect)
     if(input_rect.width < 5 || input_rect.height < 5){
         return;
     }
-    if(input_image.empty())
-    {
-        std::runtime_error("Error in getting tracked object.\r\n");
+    if(input_image.cols < 5 || input_image.rows < 5){
+        std::cerr << "Init Image too small\r\n";
         return;
     }
     this->m_imgSize.width = input_image.cols;
@@ -40,11 +39,15 @@ void Tracker::initTrack(const cv::Mat &input_image, cv::Rect input_rect)
     {
         m_stdSize = m_trackSize / 2;
     }
-//    else
-//    {
-//        m_stdSize = m_trackSize / 4;
-//    }
-
+    if(input_rect.x + input_rect.width >= input_image.cols ||
+            input_rect.y + input_rect.height >= input_image.rows){
+        std::cerr << "Init Current ROI out of input\r\n";
+        return;
+    }
+    if(m_stdSize < 5 ){
+        std::cerr << "Standard size too small\r\n";
+        return;
+    }
     cv::Mat temp = input_image(input_rect).clone();
     cv::resize(temp, temp, cv::Size(m_stdSize, m_stdSize));
     temp.copyTo(m_prevImg.real_image);
