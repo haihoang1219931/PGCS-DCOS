@@ -6,9 +6,11 @@ Item {
     height: 320
     property var settingMap
     onSettingMapChanged: {
-        // method
-        if(settingMap["802-11-wireless-security"]["key-mgmt"] === "wpa-psk"){
-            cbxAuthen.currentIndex = 5;
+        if(settingMap !== undefined && settingMap["connection"]["type"].includes("wireless")){
+            // method
+            if(settingMap["802-11-wireless-security"]["key-mgmt"] === "wpa-psk"){
+                cbxAuthen.currentIndex = 5;
+            }
         }
     }
     Column {
@@ -74,7 +76,14 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 echoMode: !chkShowPass.checked?
                     TextInput.Password:TextInput.Normal
-                text: settingMap["802-11-wireless-security"]["psk"]
+                text: (settingMap === undefined ||
+                       !settingMap["connection"]["type"].includes("wireless"))?"":
+                    settingMap["802-11-wireless-security"]["psk"]
+
+                onTextChanged:{
+                    settingMap["802-11-wireless-security"]["psk"] = text;
+                }
+
             }
         }
         Item {

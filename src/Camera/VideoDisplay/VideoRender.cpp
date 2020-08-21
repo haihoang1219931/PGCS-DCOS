@@ -33,7 +33,7 @@ public:
         QOpenGLFramebufferObjectFormat format;
         format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
         format.setSamples(1);
-        return new QOpenGLFramebufferObject(QSize(1920,1080),format);
+        return new QOpenGLFramebufferObject(size,format);
     }
 
 private:
@@ -48,7 +48,7 @@ private:
 
 VideoRender::VideoRender(QQuickItem *parent) : QQuickFramebufferObject(parent)
 {
-    setTextureFollowsItemSize(false);
+//    setTextureFollowsItemSize(false);
 }
 
 VideoRender::~VideoRender()

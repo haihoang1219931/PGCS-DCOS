@@ -187,7 +187,6 @@ unix:!macx: LIBS += -L/usr/local/lib/  \
     -lopencv_imgcodecs \
     -lopencv_imgproc \
     -lopencv_videoio
-Tracker::
 # GStreamer
 unix:!macx: DEPENDPATH += /usr/local/include
 unix:!macx: INCLUDEPATH += /usr/include/gstreamer-1.0

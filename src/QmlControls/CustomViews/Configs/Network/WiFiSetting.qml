@@ -32,7 +32,9 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 8
                 anchors.verticalCenter: parent.verticalCenter
-                text: settingMap["802-11-wireless"]["ssid"]
+                text: (settingMap === undefined ||
+                       !settingMap["connection"]["type"].includes("wireless"))?"":
+                    settingMap["802-11-wireless"]["ssid"]
             }
         }
 
@@ -76,7 +78,7 @@ Item {
                 text: "BSSID:"
             }
 
-            QTextInput {
+            QComboBox {
                 id: txtBSSID
                 height: parent.height
                 anchors.left: lblBSSID.right
@@ -84,7 +86,9 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 8
                 anchors.verticalCenter: parent.verticalCenter
-                text: settingMap["802-11-wireless"]["seen-bssids"]
+                model: (settingMap === undefined ||
+                       !settingMap["connection"]["type"].includes("wireless"))?[]:
+                    settingMap["802-11-wireless"]["seen-bssids"]
             }
         }
 
@@ -110,7 +114,9 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 8
                 anchors.verticalCenter: parent.verticalCenter
-                text: settingMap["802-11-wireless"]["mac-address"]
+                text: (settingMap === undefined ||
+                       !settingMap["connection"]["type"].includes("wireless"))?"":
+                    settingMap["802-11-wireless"]["mac-address"]
             }
         }
 

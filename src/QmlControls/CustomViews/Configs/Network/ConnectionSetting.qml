@@ -17,10 +17,13 @@ Rectangle {
     border.color: UIConstants.grayColor
     border.width: 1
     property string deviceType: "Ethernet"
-    property var settingMap
-    signal saveClicked()
-    signal cancelClicked()
-    function loadSetting(setting){
+    property var selectedSetting
+    property var settingMap: undefined
+    signal saveClicked(string selectedSetting,var setting)
+    signal cancelClicked(string selectedSetting,var setting)
+
+    function loadSetting(selectedSetting,setting){
+        root.selectedSetting = selectedSetting;
         settingMap=setting;
         if(setting["connection"]["type"].includes("wireless")){
             deviceType = "Wi-Fi";
@@ -68,7 +71,11 @@ Rectangle {
                 anchors.left: lblName.right
                 anchors.leftMargin: 5
                 anchors.rightMargin: 5
-                text: settingMap["connection"]["id"]
+                text: settingMap !== undefined?settingMap["connection"]["id"]:""
+                onTextChanged: {
+                    if(settingMap !== undefined)
+                        settingMap["connection"]["id"] = text;
+                }
             }
         }
         QTabBar{
@@ -79,30 +86,32 @@ Rectangle {
             QTabButton{
                 text: "General"
                 height: UIConstants.sRect*1.5
+                width: visible?implicitWidth:-1
+                visible: true
             }
             QTabButton{
                 text: "Wi-Fi"
                 height: UIConstants.sRect*1.5
-                width: deviceType === "Wi-Fi"?implicitWidth:-1
-                visible: deviceType === "Wi-Fi"
+                width: visible?implicitWidth:-1
+                visible: false
             }
             QTabButton{
                 text: "Wi-Fi Security"
                 height: UIConstants.sRect*1.5
-                width: deviceType === "Wi-Fi"?implicitWidth:-1
+                width: visible?implicitWidth:-1
                 visible: deviceType === "Wi-Fi"
             }
             QTabButton{
                 text: "Ethernet"
                 height: UIConstants.sRect*1.5
-                width: deviceType === "Wi-Fi"?-1:implicitWidth
-                visible: deviceType !== "Wi-Fi"
+                width: visible?implicitWidth:-1
+                visible: false
             }
             QTabButton{
                 text: "802.1x Security"
                 height: UIConstants.sRect*1.5
-                width: deviceType === "Wi-Fi"?-1:implicitWidth
-                visible: deviceType !== "Wi-Fi"
+                width: visible?implicitWidth:-1
+                visible: false
             }
             QTabButton{
                 text: "DCB"
@@ -207,7 +216,7 @@ Rectangle {
                 border.color: UIConstants.grayColor
                 text: "Save"
                 onClicked: {
-                    root.saveClicked();
+                    root.saveClicked(root.selectedSetting,root.settingMap);
                 }
             }
             FlatButtonText{
@@ -218,7 +227,7 @@ Rectangle {
                 border.color: UIConstants.grayColor
                 text: "Cancel"
                 onClicked: {
-                    root.cancelClicked();
+                    root.cancelClicked(root.selectedSetting,root.settingMap);
                 }
             }
         }
