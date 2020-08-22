@@ -2,33 +2,32 @@
 #include <QQmlApplicationEngine>
 #include <QtWebEngine/QtWebEngine>
 //--- Flight controller
-#include "src/Controller/Com/IOFlightController.h"
-#include "src/Controller/Vehicle/Vehicle.h"
-#include "src/Controller/Mission/PlanController.h"
-#include "src/Controller/Mission/MissionController.h"
-#include "src/Controller/Params/ParamsController.h"
-#include "src/Files/PlateLog.h"
-#include "src/Maplib/Elevation.h"
-#include "src/Maplib/Marker/MarkerList.h"
-#include "src/Machine/computer.hpp"
-#include "src/Camera/VideoDisplay/ImageItem.h"
+#include "Flight/Com/IOFlightController.h"
+#include "Flight/Vehicle/Vehicle.h"
+#include "Flight/Mission/PlanController.h"
+#include "Flight/Mission/MissionController.h"
+#include "Flight/Params/ParamsController.h"
+#include "Utils/Files/PlateLog.h"
+#include "Utils/Maplib/Elevation.h"
+#include "Utils/Maplib/Marker/MarkerList.h"
+#include "Utils/Machine/computer.hpp"
 //----Model nhatdn1
-#include "src/Maplib/Model/symbol.h"
-#include "src/Maplib/Model/symbolmodel.h"
-#include "src/Maplib/profilepath.h"
+#include "Utils/Maplib/Model/symbol.h"
+#include "Utils/Maplib/Model/symbolmodel.h"
+#include "Utils/Maplib/profilepath.h"
 #ifdef CAMERA_CONTROL
-    #include "src/Camera/CameraController.h"
+    #include "Payload/CameraController.h"
 #endif
 //--- UC
 #ifdef UC_API
     #include "api/app_socket_api.hpp"
-    #include "src/UC/UCEventListener.hpp"
-    #include "src/UC/UCDataModel.hpp"
+    #include "src/Cpp/UC/UCEventListener.hpp"
+    #include "src/Cpp/UC/UCDataModel.hpp"
 #endif
 //--- Payload controller
 #ifdef USE_VIDEO_CPU
-    #include "src/Camera/VideoDisplay/ImageItem.h"
-    #include "src/Camera/CPUBased/stream/CVVideoCaptureThread.h"
+    #include "Payload/VideoDisplay/ImageItem.h"
+    #include "Payload/CPUBased/CVVideoCaptureThread.h"
 #endif
 //--- GPU Process
 #ifdef USE_VIDEO_GPU
@@ -36,13 +35,13 @@
     #include "src/Camera/GPUBased/VDisplay.h"
 #endif
 //--- Joystick
-#include "src/Joystick/JoystickLib/JoystickThreaded.h"
+#include "Utils/Joystick/JoystickThreaded.h"
 
 //--- Config
-#include "src/Setting/config.h"
+#include "Utils/Setting/config.h"
 
 // --- Network
-#include "Network/NetworkManager.h"
+#include "Utils/Network/NetworkManager.h"
 int main(int argc, char *argv[])
 {
 

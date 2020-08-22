@@ -277,7 +277,7 @@ Item {
             Column {
                 id: clmButton
                 width: UIConstants.sRect * 10
-                height: parent.height - clmAxis.height - parent.spacing
+                height: parent.height
                 spacing:    UIConstants.sRect/2
                 Label {
                     id: lblButtonMonitor
@@ -342,11 +342,11 @@ Item {
                         font.family: UIConstants.appFont
                     }
 
-                    Repeater {
+                    ListView {
                         id:     axisMonitorRepeater
                         width:  parent.width
                         model: joystick.axesConfig
-
+                        height: UIConstants.sRect*1.5*joystick.axesConfig.count
                         delegate:Row {
                             id: rowAxis
                             spacing: UIConstants.sRect/2
@@ -460,11 +460,11 @@ Item {
                         font.family: UIConstants.appFont
                     }
 
-                    Repeater {
+                    ListView {
                         id:     axisMonitorRepeaterCam
                         width:  parent.width
                         model: joystick.axesCamConfig
-
+                        height: UIConstants.sRect*1.5*joystick.axesCamConfig.count
                         delegate:Row {
                             id: rowAxisCam
                             spacing: UIConstants.sRect/2

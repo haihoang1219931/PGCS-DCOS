@@ -17,3 +17,5 @@
     ## Added network status
     ## Fixed error map on UC	
     ## Added changing network settings
+# v1.0.4
+    ## Clean code to src/Cpp/[Utils,Flight,Payload,UC] and src/QmlControls

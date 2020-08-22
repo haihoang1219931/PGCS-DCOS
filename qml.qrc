@@ -167,7 +167,7 @@
         <file alias="CustomViews/ToolBar/SignalIndicator.qml">src/QmlControls/CustomViews/ToolBar/SignalIndicator.qml</file>
         <file alias="CustomViews/ToolBar/MessageIndicator.qml">src/QmlControls/CustomViews/ToolBar/MessageIndicator.qml</file>
         <file alias="CustomViews/ToolBar/qmldir">src/QmlControls/CustomViews/ToolBar/qmldir</file>
-        <file alias="Maplib/transform.js">src/Maplib/transform.js</file>
+        <file alias="Maplib/transform.js">src/Cpp/Utils/Maplib/transform.js</file>
         <file alias="UC/OnlineCCs.qml">src/QmlControls/UC/OnlineCCs.qml</file>
         <file alias="UC/OnlineFCSs.qml">src/QmlControls/UC/OnlineFCSs.qml</file>
         <file alias="UC/OnlineUsers.qml">src/QmlControls/UC/OnlineUsers.qml</file>
