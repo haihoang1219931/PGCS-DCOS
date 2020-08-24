@@ -346,7 +346,7 @@ Item {
                         id:     axisMonitorRepeater
                         width:  parent.width
                         model: joystick.axesConfig
-                        height: UIConstants.sRect*1.5*joystick.axesConfig.count
+                        height: UIConstants.sRect*1.5*joystick.axesConfig.length
                         delegate:Row {
                             id: rowAxis
                             spacing: UIConstants.sRect/2
@@ -464,7 +464,7 @@ Item {
                         id:     axisMonitorRepeaterCam
                         width:  parent.width
                         model: joystick.axesCamConfig
-                        height: UIConstants.sRect*1.5*joystick.axesCamConfig.count
+                        height: UIConstants.sRect*1.5*joystick.axesCamConfig.length
                         delegate:Row {
                             id: rowAxisCam
                             spacing: UIConstants.sRect/2
