@@ -22,7 +22,7 @@ Rectangle {
     property int fontSize: UIConstants.fontSize
     signal clicked(string type,string func)
     signal died()
-    width: UIConstants.sRect * 12.5
+    width: UIConstants.sRect * 14
     height: UIConstants.sRect * 3/2 + listView.height
     function setFocus(enable){
         rectangle.focus = enable
@@ -101,7 +101,7 @@ Rectangle {
                 width: listView.width
                 Label {
                     id: lblName
-                    width: UIConstants.sRect * 5
+                    width: UIConstants.sRect * 6
                     height: UIConstants.sRect
                     text: name
                     anchors.verticalCenter: parent.verticalCenter
@@ -110,6 +110,7 @@ Rectangle {
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
+                    clip:true
                 }
 
                 Rectangle {

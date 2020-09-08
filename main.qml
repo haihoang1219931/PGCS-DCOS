@@ -633,7 +633,7 @@ ApplicationWindow {
                 title: "Minor params"
                 z:6
                 vehicle: vehicle
-                width: hud.width
+                width: UIConstants.sRect * 12.5
                 anchors {
                     bottom: parent.bottom;
                     bottomMargin: 5;
@@ -817,7 +817,7 @@ ApplicationWindow {
                 }
                 onHomePositionChanged: {
                     console.log("Home change to "+lat+","+lon);
-                    vehicle.setHomeLocation(lat,lon);
+//                    vehicle.setHomeLocation(lat,lon);
                     vehicle.setAltitudeRTL(alt);
                 }
                 Connections{

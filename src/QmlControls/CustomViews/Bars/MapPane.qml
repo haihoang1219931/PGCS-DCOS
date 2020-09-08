@@ -2687,6 +2687,7 @@ Item {
                 drag.target: parent
                 onPressed: {
                     if(selectedWP !== undefined &&
+                        selectedWP.attributes.attributeValue("id") !== 0 &&
                         selectedWP.attributes.attributeValue("command") !== lstWaypointCommand[vehicleType]["DO_JUMP"]["COMMAND"]){
                         console.log("set drag target to parent");
                         drag.target = parent;
@@ -2706,6 +2707,7 @@ Item {
                 }
                 onPositionChanged: {
                     if(selectedWP !== undefined &&
+                        selectedWP.attributes.attributeValue("id") !== 0 &&
                         selectedWP.attributes.attributeValue("command") !== lstWaypointCommand[vehicleType]["DO_JUMP"]["COMMAND"]){
                         var center = Qt.point(parent.x + parent.width/2,
                                               parent.y + parent.height/2);
@@ -2740,12 +2742,12 @@ Item {
                     timerPressAndHoldWaypoint.stop();
                     cvsWaypoint.angle = 0;
                     cvsWaypoint.requestPaint();
-                    if(selectedWP !== undefined &&
-                        selectedWP.attributes.attributeValue("id") === 0){
-                        homePositionChanged(selectedWP.attributes.attributeValue("latitude"),
-                                            selectedWP.attributes.attributeValue("longitude"),
-                                            selectedWP.attributes.attributeValue("altitude"));
-                    }
+//                    if(selectedWP !== undefined &&
+//                        selectedWP.attributes.attributeValue("id") === 0){
+//                        homePositionChanged(selectedWP.attributes.attributeValue("latitude"),
+//                                            selectedWP.attributes.attributeValue("longitude"),
+//                                            selectedWP.attributes.attributeValue("altitude"));
+//                    }
                 }
             }
             Canvas {
