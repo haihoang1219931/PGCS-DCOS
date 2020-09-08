@@ -1505,6 +1505,8 @@ void Vehicle::_handlePMU(mavlink_message_t &message)
             QString::fromStdString(std::to_string(pmu.VbattB)),"V");
     _setPropertyValue("PMU_Rpm",
             QString::fromStdString(std::to_string(pmu.PMU_RPM)),"rpm");
+    _engineRpm = pmu.PMU_RPM;
+    Q_EMIT engineRpmChanged();
     _setPropertyValue("V_Batt12S",
             QString::fromStdString(std::to_string(pmu.Vbatt12S)),"V");
     _setPropertyValue("PMU_Temp",

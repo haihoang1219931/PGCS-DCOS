@@ -1944,6 +1944,36 @@ ApplicationWindow {
         visible: chkLog.checked && (USE_VIDEO_CPU || USE_VIDEO_GPU)
         z: 8
     }
+    ConfirmDialog{
+        id: dlgEngine
+        x: parent.width/2-width/2
+        y: parent.height/2-height/2
+        z: 8
+        title: "Engine failure"
+        visible: false
+        onClicked: {
+            if(func === "DIALOG_OK"){
+
+            }else if(func === "DIALOG_CANCEL"){
+
+            }
+            visible = false;
+        }
+        Timer{
+            id: timerCheckError
+            interval: 10000
+            repeat: true
+            running: false
+            onTriggered: {
+                if(vehicle.airSpeed > 14 &&
+                        vehicle.altitudeRelative > 100 &&
+                        vehicle.engineRpm < 100){
+                    dlgEngine.visible = true;
+                }
+            }
+        }
+    }
+
     Timer{
         id: timerStart
         repeat: false
@@ -1958,8 +1988,8 @@ ApplicationWindow {
             comTracker.loadConfig(TRKConfig);
             comTracker.connectLink();
             tracker.communication = comTracker;
-
             tracker.uav = vehicle;
+            timerCheckError.start();
             console.log("CAMERA_CONTROL = "+CAMERA_CONTROL)
             // --- Payload
             if(CAMERA_CONTROL){

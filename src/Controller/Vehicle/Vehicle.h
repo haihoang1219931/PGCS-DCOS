@@ -88,7 +88,7 @@ class Vehicle : public QObject
 
 //    Q_PROPERTY(float                engineFuelUsed              READ engineFuelUsed                                 NOTIFY engineFuelUsedChanged)
 //    Q_PROPERTY(float                engineCht                   READ engineCht                                      NOTIFY engineChtChanged)
-//    Q_PROPERTY(float                engineRpm                   READ engineRpm                                      NOTIFY engineRpmChanged)
+    Q_PROPERTY(float                engineRpm                   READ engineRpm                                      NOTIFY engineRpmChanged)
 //    Q_PROPERTY(float                engineFuelPressure          READ engineFuelPressure                             NOTIFY engineFuelPressureChanged)
 
     Q_PROPERTY(float                fuelAvailble                READ fuelAvailble                                   NOTIFY fuelAvailbleChanged)
@@ -269,7 +269,7 @@ public:
 
 //    float engineFuelUsed(){return _engineFuelUsed;}
 //    float engineCht(){return _engineCht;}
-//    float engineRpm(){return _engineRpm;}
+    float engineRpm(){return _engineRpm;}
 //    float engineFuelPressure(){return _engineFuelPressure;}
 
 
@@ -555,7 +555,7 @@ Q_SIGNALS:
 //    void engineFuelUsedChanged();
 //    void engineChtChanged();
 //    void engineFuelPressureChanged();
-//    void engineRpmChanged();
+    void engineRpmChanged();
     void fuelAvailbleChanged();
 
 //    void vBatt12SChanged();
@@ -775,7 +775,7 @@ private:
 
 //    float           _engineFuelUsed=0;
 //    float           _engineCht=0;
-//    float           _engineRpm=0;
+    float           _engineRpm=0;
 //    float           _engineFuelPressure=0;
 
     float           _fuelAvailble=0;
