@@ -1456,6 +1456,8 @@ void Vehicle::_handleRPMEngine(mavlink_message_t &message)
     mavlink_msg_rpm_decode(&message, &rpm_status);
     _engineSensor_1 = (rpm_status.rpm1);
     _engineSensor_2 = (rpm_status.rpm2);
+    _engineRpm = _engineSensor_1;
+    Q_EMIT engineRpmChanged();
     Q_EMIT engineSensor_1Changed();
     Q_EMIT engineSensor_2Changed();
     _setPropertyValue("RPM1",QString::fromStdString(std::to_string(rpm_status.rpm1)),"rpm");
@@ -1505,8 +1507,6 @@ void Vehicle::_handlePMU(mavlink_message_t &message)
             QString::fromStdString(std::to_string(pmu.VbattB)),"V");
     _setPropertyValue("PMU_Rpm",
             QString::fromStdString(std::to_string(pmu.PMU_RPM)),"rpm");
-    _engineRpm = pmu.PMU_RPM;
-    Q_EMIT engineRpmChanged();
     _setPropertyValue("V_Batt12S",
             QString::fromStdString(std::to_string(pmu.Vbatt12S)),"V");
     _setPropertyValue("PMU_Temp",
