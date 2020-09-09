@@ -1456,10 +1456,10 @@ ApplicationWindow {
 
         }
         onDoNextWP: {
-            if(mapPane.selectedIndex >= planController.missionItems.length-1){
-                mapPane.selectedIndex = -1;
-            }
             mapPane.selectedIndex ++;
+            if(mapPane.selectedIndex > mapPane.lastWPIndex()){
+                mapPane.selectedIndex = 0;
+            }
             mapPane.focusOnWP(mapPane.selectedIndex);
         }
 
