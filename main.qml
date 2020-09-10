@@ -1989,7 +1989,10 @@ ApplicationWindow {
             comTracker.connectLink();
             tracker.communication = comTracker;
             tracker.uav = vehicle;
-            timerCheckError.start();
+            if(FCSConfig.value("Settings:WarningEngine:Value:data") === "True"){
+                timerCheckError.start();
+            }
+
             console.log("CAMERA_CONTROL = "+CAMERA_CONTROL)
             // --- Payload
             if(CAMERA_CONTROL){
@@ -2012,6 +2015,8 @@ ApplicationWindow {
 
     Component.onCompleted: {
         UIConstants.changeTheme(UIConstants.themeNormal);
+        navbar.engineInfoVisible = (FCSConfig.value("Settings:EngineInfo:Value:data") === "True");
+        navbar.batteryInfoVisible = (FCSConfig.value("Settings:BatteryInfo:Value:data") === "True");
         if(FCSConfig.value("Settings:MapDefault:Value:data") !== "")
             mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));
         timerStart.start();

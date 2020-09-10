@@ -44,6 +44,8 @@ Item {
     property bool   _showParams: true
     property int   _lastSeq: -1
     property int fontSize: 30
+    property alias batteryInfoVisible: btnBattery.visible
+    property alias engineInfoVisible: btnEngine.visible
     //----- Signals
     signal itemNavChoosed(real seq) 
     signal requestDisplayMessages()
