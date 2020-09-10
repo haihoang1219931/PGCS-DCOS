@@ -1948,7 +1948,7 @@ ApplicationWindow {
         id: dlgEngine
         x: parent.width/2-width/2
         y: parent.height/2-height/2
-        z: 8
+        z: 200
         title: "Engine failure"
         visible: false
         onClicked: {
@@ -1965,9 +1965,10 @@ ApplicationWindow {
             repeat: true
             running: false
             onTriggered: {
-                if(vehicle.airSpeed > 14 &&
-                        vehicle.altitudeRelative > 100 &&
-                        vehicle.engineRpm < 100){
+                if((vehicle.engineRpm < 100) &&
+                     (vehicle.airSpeed > 14) &&
+                    (vehicle.altitudeRelative > 100)
+                        ){
                     dlgEngine.visible = true;
                 }
             }
