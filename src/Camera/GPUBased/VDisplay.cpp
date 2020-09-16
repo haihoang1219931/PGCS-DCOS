@@ -74,9 +74,19 @@ void VDisplay::handleZoomTargetChanged(float zoomTarget){
 }
 void VDisplay::init()
 {
+    // Using for yolov3-tiny_3l
     std::string names_file   = "../GPUBased/OD/yolo-setup/visdrone2019.names";
     std::string cfg_file     = "../GPUBased/OD/yolo-setup/yolov3-tiny_3l.cfg";
     std::string weights_file = "../GPUBased/OD/yolo-setup/yolov3-tiny_3l_last.weights";
+    /*
+     * @Editor: Giapvn
+     * For testing of object detector with yolov3-tiny with coco
+     */
+
+//    std::string names_file   = "../GPUBased/OD/yolo-setup/coco.names";
+//    std::string cfg_file     = "../GPUBased/OD/yolo-setup/yolov3-tiny.cfg";
+//    std::string weights_file = "../GPUBased/OD/yolo-setup/yolov3-tiny.weights";
+
     std::string plate_cfg_file_click = "../GPUBased/Clicktrack/yolo-setup/yolov3-tiny_512.cfg";
     std::string plate_weights_file_click = "../GPUBased/Clicktrack/yolo-setup/yolov3-tiny_best.weights";
     std::string plate_cfg_search = "../GPUBased/plateOCR/yolo-setup/yolov3-tiny.cfg";

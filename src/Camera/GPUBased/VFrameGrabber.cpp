@@ -1,6 +1,14 @@
 #include "VFrameGrabber.h"
 #include <gobject/gobject.h>
 #include "Camera/VideoEngine/VideoEngineInterface.h"
+// FFmpeg
+extern "C" {
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libavutil/avutil.h>
+#include <libavutil/pixdesc.h>
+#include <libswscale/swscale.h>
+}
 VFrameGrabber::VFrameGrabber()
 {
     gst_init(0, NULL);
@@ -39,6 +47,25 @@ void VFrameGrabber::run()
 
 void VFrameGrabber::setSource(std::string _ip, int _port)
 {
+    QString qSource = QString::fromStdString(_ip);
+    if(qSource.contains("filesrc")){
+        QString fileName;
+        QRegularExpression re("[ ]*filesrc[ ]+location=(.*)[ ]+");
+        QRegularExpressionMatch match = re.match(qSource.split("!")[0]);
+        if (match.hasMatch()) {
+            fileName = match.captured(1);
+        }
+        qDebug() << "File name: " <<fileName;
+        if(FileController::isExists(fileName.toStdString())){
+            av_register_all();
+            av_log_set_level(AV_LOG_QUIET);
+            AVFormatContext* inctx = nullptr;
+            int ret = avformat_open_input(&inctx, fileName.toStdString().c_str(), nullptr, nullptr);
+            ret = avformat_find_stream_info(inctx, nullptr);
+            m_totalTime = inctx->duration*1000;
+            avformat_close_input(&inctx);
+        }
+    }
     m_ip = _ip;
     m_port = (uint16_t)_port;
     g_main_loop_quit(m_loop);
@@ -283,7 +310,7 @@ bool VFrameGrabber::initPipeline()
     std::string m_pipelineStr = m_ip + std::string(" ! appsink name=mysink sync=")+
         (QString::fromStdString(m_ip).contains("filesrc")?std::string("true"):std::string("false"))+""
         " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
-        " appsrc name=klvsrc ! mux. "
+//        " appsrc name=klvsrc ! mux. "
             ;
     printf("\nReading pipeline: %s\r\n", m_pipelineStr.data());
     m_pipeline = GST_PIPELINE(gst_parse_launch(m_pipelineStr.data(), &m_err));

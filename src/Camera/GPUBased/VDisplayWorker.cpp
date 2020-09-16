@@ -119,7 +119,7 @@ void VDisplayWorker::process()
         if(processImgItem.sensorID() == 1){
             if(processImgItem.colorMode() == 0){
 
-            }else if(processImgItem.colorMode() == 0){
+            }else if(processImgItem.colorMode() == 1){
                 cv::applyColorMap(m_imgGray,m_imgIRColor,cv::COLORMAP_HOT);
                 cv::cvtColor(m_imgIRColor, m_imgI420, cv::COLOR_BGR2YUV_I420);
             }
