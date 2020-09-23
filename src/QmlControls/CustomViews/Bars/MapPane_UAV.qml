@@ -91,6 +91,9 @@ Flickable {
 
     property bool mousePressed: false
 
+    property bool idleRefreshWaypoints: false
+    property bool dragingWaypoint: false
+
     property var lstWaypointCommand:{
         "MAV_TYPE_GENERIC":{
             "WAYPOINT":{
@@ -702,7 +705,7 @@ Flickable {
                     rootItem.showAdvancedConfigChanged();
                     console.log("showAdvancedConfigChanged");
                     rootItem.ctrlPress = false;
-                }else if(rootItem.ctrlPress && event.key === Qt.Key_A){
+                }else if(rootItem.ctrlPress && event.key === Qt.Key_Z){
                     if(vehicle.vehicleType === 1){
                         ahrsHUD.visible = !ahrsHUD.visible;
                     }
@@ -774,7 +777,7 @@ Flickable {
                 visible: scaleText.text != "0 m"
                 anchors.bottom: parent.bottom;
                 anchors.right: parent.right
-                anchors{bottomMargin: 15;rightMargin: 380;}
+                anchors{bottomMargin: UIConstants.sRect /2;rightMargin: UIConstants.sRect * 13;}
                 height: scaleText.height * 2
                 width: scaleImage.width
 
@@ -803,7 +806,8 @@ Flickable {
                     text: "1 m"
                 }
                 Component.onCompleted: {
-                    Helper.calculateScale(map,scaleLine,scaleImage,scaleImageLeft,map.scaleLengths,scaleText)
+                    if(map.scaleLengths !== undefined)
+                        Helper.calculateScale(map,scaleLine,scaleImage,scaleImageLeft,map.scaleLengths,scaleText)
                 }
             }
 
@@ -1072,12 +1076,24 @@ Flickable {
                     }
                     _waypoint.stopTimerEditSymbol()
                     totalWPsDistanceChanged(getTotalDistanceWP())
+
+                    //added before go to VT
+                    dragingWaypoint = false
+                    if(idleRefreshWaypoints)
+                    {
+                        _waypointModel.refreshModel()
+                        idleRefreshWaypoints = false
+                    }
                 }
 
                 onPositionChanged:{
                     if(UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint){
                         if(pressSymbol && (Math.abs(mouseX-pressMouseX)>3 || Math.abs(mouseY-pressMouseY)>3) && _waypoint.missionItemType !== UIConstants.dojumpType)
                         {
+                            //added before go to VT
+                            dragingWaypoint = true
+
+
                             var npoint = normalizePoint(_waypoint.x+mouseX,_waypoint.y+mouseY)
                             _waypoint.coordinate = map.toCoordinate(npoint)
                             _trajactoryModel.moveSymbol(_waypoint.symbolId,_waypoint.coordinate)
@@ -1310,7 +1326,7 @@ Flickable {
                 acceptEditWP(selectedIndex,QtPositioning.coordinate(latitude,longitude,agl),itemType,param1,param2,param3,param4)
             }
             waypointEditor.visible = false;
-            isMapSync = false;
+//            isMapSync = false;
         }
         onCancelClicked: {
             rootItem.restoreWP();
@@ -1576,7 +1592,8 @@ Flickable {
                 //                                selectedWP.coordinate.longitude,
                 //                                position.altitude);
                 vehicle.setAltitudeRTL(position.altitude)
-                console.log("change altitude: "+position.altitude)
+                console.log("change RTL altitude: "+position.altitude)
+                return;
             }
         }
 
@@ -1876,7 +1893,10 @@ Flickable {
         currentWpIndex=index;
         if(currentWpIndex !== old_currentWpIndex)
         {
-            _waypointModel.refreshModel()
+            if(dragingWaypoint === true)
+                idleRefreshWaypoints = true
+            else
+                _waypointModel.refreshModel()
 
             //show vehicle point on profile path
             var p1 = listwaypoint[old_currentWpIndex]
@@ -1934,7 +1954,7 @@ Flickable {
             console.log("goto wp"+currentWpIndex)
             isGotoWP = false;
             var p = listwaypoint[currentWpIndex]
-            if(mainWindow.seqTab === 2){
+            if(mainWindow.seqTab === 2 && p !== undefined){
                 var toPos2 = normalizeCoordinate(p.coordinate,altHome)
                 uavProfilePath.setUavProfilePathMode(1)
                 uavProfilePath.setLocation(plane.coordinate, toPos2);

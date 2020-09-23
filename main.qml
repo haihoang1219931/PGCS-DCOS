@@ -142,6 +142,7 @@ ApplicationWindow {
         //        communication: comVehicle
         onCoordinateChanged: {
             mapPane.updatePlane(position);
+//            console.log("alt:"+position.altitue)
         }
         onHeadingChanged: {
             mapPane.updateHeadingPlane(vehicle.heading);
@@ -722,7 +723,7 @@ ApplicationWindow {
                        [UIConstants.language[UIConstants.languageID]]
                 z:6
                 vehicle: vehicle
-                width: hud.width
+                width: vehicle.vehicleType === 1 ? UIConstants.sRect * 12.5 : hud.width
                 anchors {
                     bottom: parent.bottom;
                     bottomMargin: 5;
@@ -750,6 +751,37 @@ ApplicationWindow {
                 y: parent.height/2-height/2
                 visible: paneControl.visible && chkLog.checked && (USE_VIDEO_CPU || USE_VIDEO_GPU)
                 z: 8
+            }
+
+            ConfirmDialog{
+                id: dlgEngine
+                x: parent.width/2-width/2
+                y: parent.height/2-height/2
+                z: 200
+                title: "Engine failure"
+                visible: false
+                onClicked: {
+                    if(func === "DIALOG_OK"){
+
+                    }else if(func === "DIALOG_CANCEL"){
+
+                    }
+                    visible = false;
+                }
+                Timer{
+                    id: timerCheckError
+                    interval: 10000
+                    repeat: true
+                    running: false
+                    onTriggered: {
+                        if((vehicle.engineRpm < 100) &&
+                             (vehicle.airSpeed > 14) &&
+                            (vehicle.altitudeRelative > 100)
+                                ){
+                            dlgEngine.visible = true;
+                        }
+                    }
+                }
             }
 
             VideoPane{
@@ -2040,6 +2072,10 @@ ApplicationWindow {
             tracker.communication = comTracker;
             tracker.uav = vehicle;
 
+            if(FCSConfig.value("Settings:WarningEngine:Value:data") === "True"){
+                timerCheckError.start();
+            }
+
             console.log("CAMERA_CONTROL = "+CAMERA_CONTROL)
             // --- Payload
             if(CAMERA_CONTROL){
@@ -2068,6 +2104,8 @@ ApplicationWindow {
     }
     Component.onCompleted: {
         UIConstants.changeTheme(UIConstants.themeNormal);
+        navbar.engineInfoVisible = (FCSConfig.value("Settings:EngineInfo:Value:data") === "True");
+        navbar.batteryInfoVisible = (FCSConfig.value("Settings:BatteryInfo:Value:data") === "True");
         // --- Map
         if(FCSConfig.value("Settings:MapDefault:Value:data") !== ""){
             mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));

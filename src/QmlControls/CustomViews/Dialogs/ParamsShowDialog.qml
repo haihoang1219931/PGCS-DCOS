@@ -22,7 +22,7 @@ Rectangle {
     property int fontSize: UIConstants.fontSize
     signal clicked(string type,string func)
     signal died()
-    width: UIConstants.sRect * 12.5
+    width: vehicle.vehicleType === 1 ? UIConstants.sRect * 14 : UIConstants.sRect * 12.5
     height: UIConstants.sRect * 3/2 + listView.height
     function setFocus(enable){
         rectangle.focus = enable
@@ -101,7 +101,7 @@ Rectangle {
                 width: listView.width
                 Label {
                     id: lblName
-                    width: UIConstants.sRect * 4
+                    width: vehicle.vehicleType === 1 ? UIConstants.sRect * 6 : UIConstants.sRect * 4
                     height: UIConstants.sRect
                     text: name
                     anchors.verticalCenter: parent.verticalCenter
@@ -110,11 +110,16 @@ Rectangle {
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
+                    clip:true
                 }
-
                 Rectangle {
                     id: rectValue
-                    color: rectMinize.color
+                    color: vehicle.vehicleType === 1 ?(!isNaN(parseFloat(value)) ?
+                                                           ((parseFloat(value) < lowerValue) ?
+                                                                lowerColor :
+                                                                ((parseFloat(value) > upperValue) ? upperColor : middleColor))
+                                                         : "transparent" )
+                                                     :rectMinize.color
                     anchors.bottomMargin: 2
                     anchors.topMargin: 2
                     anchors.rightMargin: 2
@@ -123,10 +128,11 @@ Rectangle {
                     anchors.bottom: parent.bottom
                     anchors.top: parent.top
                     anchors.leftMargin: 2
+                    clip: true
 
                     Label {
                         id: lblValue
-                        text: value
+                        text: parseFloat(value).toFixed(2)//value
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignRight
                         anchors.fill: parent

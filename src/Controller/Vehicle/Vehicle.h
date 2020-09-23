@@ -76,6 +76,8 @@ class Vehicle : public QObject
     Q_PROPERTY(int                  countGPS                    READ countGPS                                       NOTIFY countGPSChanged)
     Q_PROPERTY(QString              lockGPS                     READ lockGPS                                        NOTIFY lockGPSChanged)
 
+    Q_PROPERTY(float                engineRpm                   READ engineRpm                                      NOTIFY engineRpmChanged)
+
     Q_PROPERTY(float                fuelUsed                    READ fuelUsed                                       NOTIFY fuelUsedChanged)
     Q_PROPERTY(float                fuelAvailble                READ fuelAvailble                                   NOTIFY fuelAvailbleChanged)
 
@@ -256,6 +258,8 @@ public:
     float courseOverGroundGPS(){ return _courseOverGroundGPS;}
     int   countGPS(){ return _countGPS;}
     QString lockGPS(){ return _lockGPS;}
+
+    float engineRpm(){return _engineRpm;}
 
     float fuelUsed(){return _fuelUsed;}
     float fuelAvailble(){return _fuelAvailble;}
@@ -538,6 +542,8 @@ Q_SIGNALS:
     void fuelUsedChanged();
     void fuelAvailbleChanged();
 
+    void engineRpmChanged();
+
     void uasChanged();
     void firmwareVersionChanged(void);
     void firmwareCustomVersionChanged(void);
@@ -748,6 +754,8 @@ private:
     QString         _lockGPS;
     float           _fuelUsed=0;
     float           _fuelAvailble=0;
+
+    float           _engineRpm=0;
 
     QString         _messageSecurity = "MSG_INFO";
     float           _sonarRange = 0;

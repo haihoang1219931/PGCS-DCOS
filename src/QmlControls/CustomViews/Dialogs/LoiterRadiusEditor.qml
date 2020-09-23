@@ -29,10 +29,12 @@ Rectangle {
     border.color: "gray"
     border.width: 1
     property real minValue: 150
-    property real maxValue: 500
+    property real maxValue: 3000
     property real currentValue: 200
     property real stepValue: 10
-    property var validatorValue: /^([1-9][0-9]|[1-3][0-9][0-9]|[400])/
+    property var validatorValue: /^([1-9][0-9]|[1-9][0-9][0-9]|[1-3][0-9][0-9][0-9])/
+    property var itemListName:
+        UIConstants.itemTextMultilanguages["DIALOG"]["LOITER_EDITOR"]
     signal confirmClicked()
     signal cancelClicked()
     MouseArea{
@@ -44,7 +46,8 @@ Rectangle {
         x: 8
         width: 264
         height: 25
-        text: qsTr("Altitude editor")
+        text: itemListName["TITTLE"]
+              [UIConstants.language[UIConstants.languageID]]
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: 8

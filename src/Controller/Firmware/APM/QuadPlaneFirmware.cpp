@@ -39,18 +39,18 @@ QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
     m_mapFlightMode.insert(QRTL,           "QuadPlane RTL");
 
     m_mapFlightModeOnGround.insert(MANUAL,         "Manual");
-    m_mapFlightModeOnGround.insert(GUIDED,         "Guided");
-    m_mapFlightModeOnGround.insert(LOITER,         "Loiter");
-    m_mapFlightModeOnGround.insert(STABILIZE,      "Stabilize");
-    m_mapFlightModeOnGround.insert(FLY_BY_WIRE_A,  "FBW A");
-    m_mapFlightModeOnGround.insert(FLY_BY_WIRE_B,  "FBW B");
+//    m_mapFlightModeOnGround.insert(GUIDED,         "Guided");//comment for quadplane
+//    m_mapFlightModeOnGround.insert(LOITER,         "Loiter");
+//    m_mapFlightModeOnGround.insert(STABILIZE,      "Stabilize");
+//    m_mapFlightModeOnGround.insert(FLY_BY_WIRE_A,  "FBW A");
+//    m_mapFlightModeOnGround.insert(FLY_BY_WIRE_B,  "FBW B");
 
     m_mapFlightModeOnAir.insert(MANUAL,         "Manual");
-    m_mapFlightModeOnAir.insert(GUIDED,         "Guided");
-    m_mapFlightModeOnAir.insert(LOITER,         "Loiter");
-    m_mapFlightModeOnAir.insert(STABILIZE,      "Stabilize");
-    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
-    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_B,  "FBW B");
+//    m_mapFlightModeOnAir.insert(GUIDED,         "Guided"); //comment for quadplane
+//    m_mapFlightModeOnAir.insert(LOITER,         "Loiter");
+//    m_mapFlightModeOnAir.insert(STABILIZE,      "Stabilize");
+//    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
+//    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_B,  "FBW B");
 
     connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
     connect(&m_joystickClearRCTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendClearRC);
