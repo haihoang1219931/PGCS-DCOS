@@ -728,6 +728,6 @@ QtObject {
 
     readonly property color planeTrajactoryColor: "#ffee44"
 
-    readonly property int maxDistance: 20000 //m
+    readonly property int maxDistance: 400000 //m
 
 }
