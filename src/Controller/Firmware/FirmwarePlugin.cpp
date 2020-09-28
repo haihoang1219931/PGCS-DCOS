@@ -416,7 +416,9 @@ QString FirmwarePlugin::getGimbalCurrentMode()
 {
 
 }
+void FirmwarePlugin::setJoystick(JoystickThreaded* joystick){
 
+}
 void FirmwarePlugin::setGimbalAngle(float pan, float tilt)
 {
     Q_UNUSED(pan);

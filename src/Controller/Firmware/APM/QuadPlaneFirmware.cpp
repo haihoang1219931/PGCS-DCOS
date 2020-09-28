@@ -6,13 +6,6 @@ QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
 {
     m_connectedSequence = 0;
     m_vehicle = vehicle;
-    if(m_vehicle->joystick()->connected()){
-        m_vehicle->joystick()->setUseJoystick(false);
-        connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&QuadPlaneFirmware::handleUseJoystick);
-        m_connectedSequence = 1;
-    }
-    connect(m_vehicle->joystick(),&JoystickThreaded::joystickConnected,this,&QuadPlaneFirmware::handleJoystickConnected);
-    connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&QuadPlaneFirmware::handleJSButton);
 
     loadFromFile("conf/Properties.conf");
     m_rtlAltParamName = "ALT_HOLD_RTL";
@@ -51,6 +44,17 @@ QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
 //    m_mapFlightModeOnAir.insert(STABILIZE,      "Stabilize");
 //    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
 //    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_B,  "FBW B");
+
+
+}
+void QuadPlaneFirmware::setJoystick(JoystickThreaded* joystick){
+    if(m_vehicle->joystick()->connected()){
+        m_vehicle->joystick()->setUseJoystick(false);
+        connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&QuadPlaneFirmware::handleUseJoystick);
+        m_connectedSequence = 1;
+    }
+    connect(m_vehicle->joystick(),&JoystickThreaded::joystickConnected,this,&QuadPlaneFirmware::handleJoystickConnected);
+    connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&QuadPlaneFirmware::handleJSButton);
 
     connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
     connect(&m_joystickClearRCTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendClearRC);

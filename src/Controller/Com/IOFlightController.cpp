@@ -200,17 +200,15 @@ void IOFlightController::handleDataReceived(QString ip, int snr, int rssi){
         m_localSNR = snr;
         m_localRSSI = rssi;
         Q_EMIT teleDataReceived("LOCAL",
-                                QString("[G]")+
-//                                " R["+QString::fromStdString(std::to_string(m_localRSSI)) + "]"
-                                " S["+QString::fromStdString(std::to_string(m_localSNR)) + "]"
+                                QString("DH ")+
+                                "SNR:"+QString::fromStdString(std::to_string(m_localSNR)) + ""
                                 ,0);
     }else if(ip == m_linkConfig->value("Settings:TeleRemoteIP:Value:data").toString()){
         m_remoteSNR = snr;
         m_remoteRSSI = rssi;
         Q_EMIT teleDataReceived("REMOTE",
-                                QString("[A]")+
-//                                "R["+QString::fromStdString(std::to_string(m_remoteRSSI)) + "]"
-                                " S["+QString::fromStdString(std::to_string(m_remoteSNR)) + "]"
+                                QString("VH ")+
+                                "SNR:"+QString::fromStdString(std::to_string(m_remoteSNR)) + ""
                                 ,0);
     }
     mavlink_message_t msg;

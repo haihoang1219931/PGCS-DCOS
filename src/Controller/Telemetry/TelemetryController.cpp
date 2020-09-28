@@ -97,7 +97,7 @@ void TelemetryController::handlePacketReceived(){
         m_socket->read(buffer.data(), buffer.size());
         m_buffer.push_back(buffer);
         QString command(m_buffer);
-//        printf("TCP Received: %s\r\n",command.toStdString().c_str());
+//        printf("TCP Received: %s\r\n",QString(buffer).toStdString().c_str());
         if(!m_authenticated){
             if(command.contains("UserDevice login: ")){
                 if(!m_sendUser){

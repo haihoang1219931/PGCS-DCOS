@@ -242,7 +242,7 @@ ApplicationWindow {
         id: missionController
         vehicle: vehicle
         onCurrentIndexChanged: {
-            console.log("changeCurrentWP to "+sequence);
+//            console.log("changeCurrentWP to "+sequence);
             mapPane.changeCurrentWP(sequence);
         }
     }
@@ -1003,6 +1003,20 @@ ApplicationWindow {
                 }
                 z: 5
             }
+
+            WindIndicator{
+                id:windIndicator
+                visible: UIConstants.monitorMode === UIConstants.monitorModeFlight &&
+                         (vehicle.vehicleType === 1)
+                anchors{
+                    right: mapPane.right
+                    top: mapPane.top
+                    rightMargin: UIConstants.sRect / 2
+                    topMargin: UIConstants.sRect * 3/ 2
+                }
+                z:5
+            }
+
             StackLayout{
                 id: popUpInfo
 
@@ -1621,7 +1635,7 @@ ApplicationWindow {
                         minValue = 10;
                         maxValue = 500;
                     }else {
-                        minValue = 150;
+                        minValue = 100;
                         maxValue = 3000;
                     }
 
@@ -1847,10 +1861,11 @@ ApplicationWindow {
             if(!isShowConfirm){
                 isShowConfirm = true;
                 console.log("Do Arm");
+                var armed = vehicle.armed;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                 var confirmDialogObj = compo.createObject(parent,{
                                   "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["WANT_TO"]
-                                        [UIConstants.language[UIConstants.languageID]]+" \n"+(!vehicle.armed?
+                                        [UIConstants.language[UIConstants.languageID]]+" \n"+(!armed?
                                           mainWindow.itemListName["DIALOG"]["CONFIRM"]["ARM"]
                                             [UIConstants.language[UIConstants.languageID]]:
                                           mainWindow.itemListName["DIALOG"]["CONFIRM"]["DISARM"]
@@ -1862,8 +1877,8 @@ ApplicationWindow {
                                   "z":200});
                 confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
-                        vehicle.setArmed(!vehicle.armed);
-                        if(arm){
+                        vehicle.setArmed(!armed);
+                        if(armed){
                             mapPane.moveWPWithID(0,vehicle.coordinate);
                         }
                     }else if(func === "DIALOG_CANCEL"){
@@ -2048,7 +2063,7 @@ ApplicationWindow {
         interval: 1000
         running: true
         onTriggered: {
-            console.log("=================================================\r\n");
+//            console.log("=================================================\r\n");
         }
     }
 

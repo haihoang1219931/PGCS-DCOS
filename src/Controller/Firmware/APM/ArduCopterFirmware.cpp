@@ -2,8 +2,6 @@
 ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
 {
     m_vehicle = vehicle;
-    connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&ArduCopterFirmware::handleJSButton);
-    connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&ArduCopterFirmware::handleUseJoystick);
 
     //connect(m_vehicle,&Vehicle::mavCommandResult,this,&ArduCopterFirmware::handleMavCommandResult);
 
@@ -34,6 +32,16 @@ ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
     m_mapFlightModeOnGround.insert(LOITER,    "Loiter");
     m_mapFlightModeOnAir.insert(STABILIZE, "Stabilize");
     m_mapFlightModeOnAir.insert(LOITER,    "Loiter");
+
+    m_gimbalHearbeatTimer.setInterval(1000);
+    m_gimbalHearbeatTimer.setSingleShot(false);
+    connect(&m_gimbalHearbeatTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendGimbalHeartbeat);
+    m_gimbalHearbeatTimer.start();
+}
+void ArduCopterFirmware::setJoystick(JoystickThreaded* joystick){
+    connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&ArduCopterFirmware::handleJSButton);
+    connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&ArduCopterFirmware::handleUseJoystick);
+
     m_joystickTimer.setInterval(50);
     m_joystickTimer.setSingleShot(false);
     m_joystickClearRCTimer.setInterval(20);
@@ -44,11 +52,6 @@ ArduCopterFirmware::ArduCopterFirmware(Vehicle* vehicle)
     if(m_vehicle->joystick()!=nullptr){
         m_vehicle->setFlightMode(m_vehicle->joystick()->pic()?"Loiter":"Guided");
     }
-
-    m_gimbalHearbeatTimer.setInterval(1000);
-    m_gimbalHearbeatTimer.setSingleShot(false);
-    connect(&m_gimbalHearbeatTimer,&QTimer::timeout,this,&ArduCopterFirmware::sendGimbalHeartbeat);
-    m_gimbalHearbeatTimer.start();
 }
 ArduCopterFirmware::~ArduCopterFirmware(){
     if(m_joystickTimer.isActive()){

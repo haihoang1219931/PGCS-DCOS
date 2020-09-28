@@ -119,6 +119,7 @@ public:
 
     void setGimbalMode(QString mode) override;
 
+    void setJoystick(JoystickThreaded* joystick) override;
 Q_SIGNALS:
 
 public Q_SLOTS:

@@ -36,3 +36,4 @@ UavProfilePath                  1.0 UavProfilePath.qml
 QTabBar				1.0 QTabBar.qml
 QTabButton			1.0 QTabButton.qml
 QCheckBox			1.0 QCheckBox.qml
+WindIndicator                   1.0 WindIndicator.qml

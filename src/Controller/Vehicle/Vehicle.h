@@ -50,6 +50,9 @@ class Vehicle : public QObject
     Q_PROPERTY(float                roll                        READ roll                                           NOTIFY rollChanged)
     Q_PROPERTY(float                pitch                       READ pitch                                          NOTIFY pitchChanged)
     Q_PROPERTY(float                heading                     READ heading                                        NOTIFY headingChanged)
+    Q_PROPERTY(float                windHeading                 READ windHeading                                    NOTIFY windHeadingChanged)
+    Q_PROPERTY(float                windSpeed                   READ windSpeed                                      NOTIFY windSpeedChanged)
+
     Q_PROPERTY(float                airSpeed                    READ airSpeed                                       NOTIFY airSpeedChanged)
     Q_PROPERTY(float                altitudeRelative            READ altitudeRelative                               NOTIFY altitudeRelativeChanged)
     Q_PROPERTY(float                engineSensor_1              READ engineSensor_1                                 NOTIFY engineSensor_1Changed)
@@ -195,6 +198,8 @@ public:
     float roll(){return _roll;}
     float pitch(){return _pitch;}
     float heading(){return _heading;}
+    float windHeading(){return _windHeading;}
+    float windSpeed(){return _windSpeed;}
     float airSpeed(){return _airSpeed;}
     float altitudeRelative(){return _altitudeAGL;}
     float engineSensor_1(){return _engineSensor_1;}
@@ -512,6 +517,8 @@ Q_SIGNALS:
     void rollChanged();
     void pitchChanged();
     void headingChanged();
+    void windHeadingChanged();
+    void windSpeedChanged();
     void airSpeedChanged();
     void altitudeRelativeChanged();
     void engineSensor_1Changed();
@@ -727,6 +734,8 @@ private:
     float           _pitch = 0;
     float           _heading = 0;
     float           _airSpeed = 0;
+    float           _windHeading = 0;
+    float           _windSpeed = 0;
     float           _climbRate = 0;
     float           _altitudeAGL = 0;
     float           _engineSensor_1 = 0;

@@ -1578,7 +1578,14 @@ Flickable {
 
     function acceptEditWP(index,position,command,param1,param2,param3,param4)
     {
-        console.log("accept edit wp id:"+index)
+//        console.log("accept edit wp id:"+index + ":"+position.altitude)
+        var alt = position.altitude
+        if(index === 0){
+                var homeWP = listwaypoint[0]
+                if( homeWP !== undefined && homeWP !== null){
+                    position.altitude = homeWP.coordinate.altitude
+                }
+        }
         _waypointModel.editSymbol(index,command,param1,param2,param3,param4,"",position)
         _trajactoryModel.editSymbol(index,command,0,0,0,0,"",position)
 
@@ -1586,15 +1593,15 @@ Flickable {
         //            rollbackhomeposition=position
 
         console.log("alt wp:"+ position.altitude)
-        if(index === 0 && selectedWP !== null && selectedWP !== undefined){
-            if(position.altitude !== selectedWP.coordinate.altitude){
+        if(index === 0 && homeWP !== null && homeWP !== undefined){
+//            if(alt !== homeWP.coordinate.altitude){
                 //                homePositionChanged(selectedWP.coordinate.latitude,
                 //                                selectedWP.coordinate.longitude,
                 //                                position.altitude);
-                vehicle.setAltitudeRTL(position.altitude)
-                console.log("change RTL altitude: "+position.altitude)
+                vehicle.setAltitudeRTL(alt)
+                console.log("change RTL altitude: "+alt)
                 return;
-            }
+//            }
         }
 
         isMapSync = false;

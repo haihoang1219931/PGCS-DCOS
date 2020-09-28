@@ -44,6 +44,7 @@ JoystickThreaded* Vehicle::joystick(){
 }
 void Vehicle::setJoystick(JoystickThreaded* joystick){
     m_joystick = joystick;
+    m_firmwarePlugin->setJoystick(m_joystick);
 }
 
 ParamsController *Vehicle::paramsController()
@@ -1001,6 +1002,7 @@ void Vehicle::_handleScaledPressure(mavlink_message_t& message) {
     mavlink_msg_scaled_pressure_decode(&message, &pressure);
     _temperature = pressure.temperature;
     _pressABS = pressure.press_abs;
+    printf("pres:%.2f\r\n",_pressABS);
     Q_EMIT temperatureChanged();
     Q_EMIT pressABSChanged();
     if(m_uav!= nullptr){
@@ -1801,6 +1803,11 @@ void Vehicle::_handleWind(mavlink_message_t &message)
                       QString::fromStdString(std::to_string(static_cast<int>(direction))),"deg");
     _setPropertyValue("WindSpeed",
                       QString::fromStdString(std::to_string(static_cast<int>(wind.speed*3.6))),"km/h");
+    _windHeading = direction;
+    Q_EMIT windHeadingChanged();
+    _windSpeed= wind.speed;
+    Q_EMIT windSpeedChanged();
+
 }
 void Vehicle::setArmed(bool armed)
 {

@@ -226,6 +226,7 @@
         <file alias="CustomViews/Components/ScrollWaypoint.qml">src/QmlControls/CustomViews/Components/ScrollWaypoint.qml</file>
         <file alias="CustomViews/Components/UavProfilePath.qml">src/QmlControls/CustomViews/Components/UavProfilePath.qml</file>
         <file alias="CustomViews/ToolBar/BatteryIndicator.qml">src/QmlControls/CustomViews/ToolBar/BatteryIndicator.qml</file>
+        <file alias="CustomViews/Components/WindIndicator.qml">src/QmlControls/CustomViews/Components/WindIndicator.qml</file>
     </qresource>
     <qresource prefix="/qmlimages">
         <file alias="markers/AntiClockwiseCircle.png">src/QmlControls/CustomViews/assets/images/markers/AntiClockwiseCircle.png</file>
