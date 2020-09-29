@@ -85,7 +85,6 @@ Item {
             var value = parseInt(dataType)
 //            console.log("value:"+value)
             if(value !== undefined && value !== null){
-                console.log("")
                 if(srcAddr === "LOCAL"){
                     lblSNRLocal.text = "DH-SNR:" + dataType;
                     if(vehicle.link){
