@@ -82,10 +82,27 @@ Item {
     Connections{
         target: comVehicle
         onTeleDataReceived:{
-            if(srcAddr === "LOCAL"){
-                lblSNRLocal.text = dataType;
-            }else if(srcAddr === "REMOTE"){
-                lblSNRRemote.text = dataType;
+            var value = parseInt(dataType)
+//            console.log("value:"+value)
+            if(value !== undefined && value !== null){
+                console.log("")
+                if(srcAddr === "LOCAL"){
+                    lblSNRLocal.text = "DH-SNR:" + dataType;
+                    if(vehicle.link){
+                        if(value < 10) lblSNRLocal.color = UIConstants.redColor;
+                        else if(value >=15)lblSNRLocal.color = messageIcon.color;
+                        else lblSNRLocal.color = UIConstants.orangeColor
+                    }
+                    else lblSNRLocal.color = messageIcon.color
+                }else if(srcAddr === "REMOTE"){
+                    lblSNRRemote.text = "VH-SNR:" + dataType;
+                    if(vehicle.link){
+                        if(value < 10) lblSNRRemote.color = UIConstants.redColor;
+                        else if(value >=15)lblSNRRemote.color = messageIcon.color;
+                        else lblSNRRemote.color = UIConstants.orangeColor
+                    }
+                    else lblSNRRemote.color = messageIcon.color
+                }
             }
         }
     }

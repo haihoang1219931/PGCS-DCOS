@@ -1002,7 +1002,7 @@ void Vehicle::_handleScaledPressure(mavlink_message_t& message) {
     mavlink_msg_scaled_pressure_decode(&message, &pressure);
     _temperature = pressure.temperature;
     _pressABS = pressure.press_abs;
-    printf("pres:%.2f\r\n",_pressABS);
+//    printf("pres:%.2f\r\n",_pressABS);
     Q_EMIT temperatureChanged();
     Q_EMIT pressABSChanged();
     if(m_uav!= nullptr){
