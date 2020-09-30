@@ -32,7 +32,7 @@ Flickable {
     property variant targetPolygon
     property variant opticalLine
 
-    property bool isMapSync: false
+    property bool isMapSync: true
     property int index_row_model_trajactory_plane:0
     property int index_row_model_symbol: 0
     property int index_row_model_marker: 0
@@ -618,7 +618,7 @@ Flickable {
                 var waypoint = listwaypoint[i]
                 if(waypoint !== null && waypoint.missionItemType === UIConstants.dojumpType)
                 {
-                    waypoint.coordinate = QtPositioning.coordinate(previousWP.coordinate.latitude,previousWP.coordinate.longitude + 0.0047 / Helper.getScale(map))
+                    waypoint.coordinate = QtPositioning.coordinate(previousWP.coordinate.latitude,previousWP.coordinate.longitude + 0.00016*UIConstants.sRect / Helper.getScale(map))
                 }
             }
         }
@@ -1071,6 +1071,10 @@ Flickable {
                                 homePositionChanged(_waypoint.coordinate.latitude,_waypoint.coordinate.longitude,_waypoint.coordinate.altitude)
                             }
                             _waypointModel.moveSymbol(_waypoint.symbolId,_waypoint.coordinate)
+                            var npoint = normalizePoint(_waypoint.x+mouseX,_waypoint.y+mouseY)
+                            _waypoint.coordinate = map.toCoordinate(npoint)
+                            _trajactoryModel.moveSymbol(_waypoint.symbolId,_waypoint.coordinate)
+                            symbolMoving(_waypoint.coordinate.latitude , _waypoint.coordinate.longitude)
                             //scrollWP.showScrollWp();
                         }
                     }
@@ -1088,11 +1092,10 @@ Flickable {
 
                 onPositionChanged:{
                     if(UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint){
-                        if(pressSymbol && (Math.abs(mouseX-pressMouseX)>3 || Math.abs(mouseY-pressMouseY)>3) && _waypoint.missionItemType !== UIConstants.dojumpType)
+                        if(pressSymbol && ((Math.abs(mouseX-pressMouseX)>UIConstants.sRect/2 || Math.abs(mouseY-pressMouseY)>UIConstants.sRect/2)||dragingWaypoint===true) && _waypoint.missionItemType !== UIConstants.dojumpType)
                         {
                             //added before go to VT
                             dragingWaypoint = true
-
 
                             var npoint = normalizePoint(_waypoint.x+mouseX,_waypoint.y+mouseY)
                             _waypoint.coordinate = map.toCoordinate(npoint)

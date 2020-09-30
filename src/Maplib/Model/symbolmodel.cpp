@@ -57,7 +57,7 @@ void SymbolModel::moveSymbol(const int id,const QGeoCoordinate coordinate)
          alt = coordinate.altitude();
         // printf("alt changed: %f",alt);
     }
-//    endResetModel();  
+//    endResetModel();
     Q_EMIT symbolModelChanged();
 }
 
