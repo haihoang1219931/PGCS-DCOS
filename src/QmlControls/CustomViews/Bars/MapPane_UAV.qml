@@ -32,7 +32,7 @@ Flickable {
     property variant targetPolygon
     property variant opticalLine
 
-    property bool isMapSync: false
+    property bool isMapSync: true
     property int index_row_model_trajactory_plane:0
     property int index_row_model_symbol: 0
     property int index_row_model_marker: 0
