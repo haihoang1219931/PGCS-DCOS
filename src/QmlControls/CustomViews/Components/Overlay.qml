@@ -20,6 +20,8 @@ Item {
     property real digitalZoomMax: cameraController.gimbal.digitalZoomMax
     property real zoomTarget: cameraController.gimbal.zoomTarget
     property real zoomCalculate
+    property real pan: camState.panPos
+    property real tilt: camState.tiltPos
     property color drawColor: UIConstants.redColor
     property var itemListName:
         UIConstants.itemTextMultilanguages["VIDEO"]
@@ -76,12 +78,58 @@ Item {
         }
     }
     Item {
+        id: itemMode
+        width: UIConstants.sRect * 10
+        height: UIConstants.sRect
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: 8 + UIConstants.sRect
+
+        Label {
+            id: lblLockMode
+            color: root.drawColor
+            text: itemListName["LOCK"]["TITTLE"]
+                  [UIConstants.language[UIConstants.languageID]]+
+                  ": "+
+                  itemListName["LOCK"][camState.lockMode]
+                  [UIConstants.language[UIConstants.languageID]]
+            anchors.leftMargin: 8
+            verticalAlignment: Text.AlignVCenter
+            anchors.bottomMargin: 8
+            font.pixelSize: UIConstants.fontSize
+            anchors.bottom: parent.bottom
+            font.family: UIConstants.appFont
+            anchors.left: parent.left
+            horizontalAlignment: Text.AlignLeft
+        }
+
+        Label {
+            id: lblStab
+            x: 9
+            y: 9
+            color: root.drawColor
+            text: itemListName["STAB"]["TITTLE"]
+                  [UIConstants.language[UIConstants.languageID]]+
+                  ": "+ itemListName["STAB"][(camState.digitalStab?"ON":"OFF")]
+                  [UIConstants.language[UIConstants.languageID]]
+            verticalAlignment: Text.AlignVCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottomMargin: 8
+            font.pixelSize: UIConstants.fontSize
+            anchors.bottom: parent.bottom
+            font.family: UIConstants.appFont
+            anchors.horizontalCenterOffset: UIConstants.sRect * 3
+            horizontalAlignment: Text.AlignLeft
+        }
+    }
+
+    Item {
         id: eoZoom
         width: UIConstants.sRect * 12
         height: UIConstants.sRect * 2
-        anchors.bottomMargin: 8
-        anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: 0
+        anchors.top: itemMode.bottom
         Rectangle {
             id: rectZoom
             color: "#00000000"
@@ -103,8 +151,8 @@ Item {
                 anchors.bottomMargin: 0
                 visible: false
                 x: -width/2 + (root.zoomTarget <= root.zoomMax ?
-                                           root.zoomTarget / root.zoomMax * parent.width * 2 / 3:
-                                           parent.width * 2 / 3 + parent.width * 1 / 3 * (root.zoomTarget / root.zoomMax - 1) / (root.digitalZoomMax - 1))
+                                   root.zoomTarget / root.zoomMax * parent.width * 2 / 3:
+                                   parent.width * 2 / 3 + parent.width * 1 / 3 * (root.zoomTarget / root.zoomMax - 1) / (root.digitalZoomMax - 1))
                 onPaint: {
                     var ctx = getContext("2d");
                     ctx.strokeStyle = parent.border.color;
@@ -154,17 +202,13 @@ Item {
             }
         }
 
-        Rectangle{
-            anchors.top: parent.top
-        }
-
         Label {
             id: lblZoomOptical
             text: itemListName["ZOOM"]["OPTICAL"]
                   [UIConstants.language[UIConstants.languageID]]+
                   ": "+(root.zoomRatio <= root.zoomMax?
-                                Number(convertZoom(root.zoomRatio)).toFixed(2):
-                                Number(convertZoom(root.zoomMax)).toFixed(2)) +"/"+Number(convertZoom(root.zoomMax)).toFixed(0)
+                            Number(convertZoom(root.zoomRatio)).toFixed(2):
+                            Number(convertZoom(root.zoomMax)).toFixed(2)) +"/"+Number(convertZoom(root.zoomMax)).toFixed(0)
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors.bottom: parent.bottom
@@ -193,53 +237,145 @@ Item {
         }
     }
 
-    Item {
-        id: itemMode
-        x: 220
-        width: UIConstants.sRect * 10
-        height: UIConstants.sRect
+    Row {
+        id: canvasPosition
+        width: UIConstants.sRect * 6+spacing
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.topMargin: 8 + UIConstants.sRect
+        spacing: 8
+        //        width: (parent.width - 10 * 3)/2
+        //        height: width
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 8 - UIConstants.sRect/2
+        Column{
+            width: (parent.width-parent.spacing)/2
+            height: width
+            spacing: 4
+            Canvas{
+                id: cvsTilt
+                width: parent.width
+                height: width
+                onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.reset();
+                    var x = width / 2
+                    var y = height / 2
+                    var lineSize = 5;
+                    var losSize = width /2 - lineSize*2;
+                    var tiltDraw = tilt < 180?tilt:tilt-360;
+                    tiltDraw = 90 - tilt;
+                    ctx.beginPath();
+                    ctx.lineWidth = 1
+                    // draw circle
+                    ctx.arc(x, y, (width / 2) - ctx.lineWidth/2, -Math.PI/2, Math.PI, false)
+                    ctx.strokeStyle = drawColor
+                    ctx.stroke()
+                    ctx.beginPath();
+                    ctx.moveTo(width/2,0)
+                    ctx.lineTo(width/2,lineSize)
 
-        Label {
-            id: lblLockMode
-            color: root.drawColor
-            text: itemListName["LOCK"]["TITTLE"]
-                  [UIConstants.language[UIConstants.languageID]]+
-                  ": "+
-                    itemListName["LOCK"][camState.lockMode]
-                    [UIConstants.language[UIConstants.languageID]]
-            anchors.leftMargin: 8
-            verticalAlignment: Text.AlignVCenter
-            anchors.bottomMargin: 8
-            font.pixelSize: UIConstants.fontSize
-            anchors.bottom: parent.bottom
-            font.family: UIConstants.appFont
-            anchors.left: parent.left
-            horizontalAlignment: Text.AlignLeft
+                    ctx.moveTo(width/2,height)
+                    ctx.lineTo(width/2,height-lineSize)
+
+                    ctx.moveTo(0,height/2)
+                    ctx.lineTo(lineSize,height/2)
+                    ctx.lineWidth = 4;
+                    ctx.moveTo(width,height/2)
+                    ctx.lineTo(width-lineSize*3,height/2)
+                    ctx.stroke()
+                    ctx.lineWidth = 2;
+                    ctx.stroke()
+                    // draw LOS
+                    ctx.beginPath();
+                    ctx.fillStyle = drawColor
+                    ctx.moveTo(width/2,height/2)
+                    //                    ctx.arc(x, y, losSize,
+                    //                            (tilt - vfov/2 + 90)/180*Math.PI,
+                    //                            (tilt + vfov/2 + 90)/180*Math.PI, false)
+                    //                    ctx.lineTo(x,y);
+
+                    ctx.lineTo(width/2+Math.cos((tiltDraw)/180*Math.PI)*losSize,
+                               height/2+Math.sin((tiltDraw)/180*Math.PI)*losSize);
+
+                    //            ctx.fill()
+                    ctx.stroke()
+                }
+            }
+
+            QLabel {
+                id: lblTilt
+                width: parent.width
+                height: UIConstants.sRect
+                textColor: drawColor
+                text: Number(tilt).toFixed(1).toString()+UIConstants.degreeSymbol
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                border.width: 0
+                clip: false
+            }
         }
+        Column{
+            width: (parent.width-parent.spacing)/2
+            spacing: 4
+            Canvas{
+                id: cvsPan
+                width: parent.width
+                height: width
+                onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.reset();
+                    var x = width / 2
+                    var y = height / 2
+                    var lineSize = 5;
+                    var losSize = width /2 - lineSize*2;
+                    ctx.beginPath();
+                    ctx.lineWidth = 1;
+                    // draw circle
+                    ctx.arc(x, y, (width / 2) - ctx.lineWidth/2, 0, Math.PI*2, false)
+                    ctx.strokeStyle = drawColor
+                    ctx.stroke()
+                    // draw sequence guide
+                    ctx.beginPath();
+                    ctx.moveTo(width/2,0)
+                    ctx.lineTo(width/2,lineSize)
+                    ctx.moveTo(width/2,height)
+                    ctx.lineTo(width/2,height-lineSize)
+                    ctx.moveTo(0,height/2)
+                    ctx.lineTo(lineSize,height/2)
+                    ctx.lineWidth = 4;
+                    ctx.moveTo(width,height/2)
+                    ctx.lineTo(width-lineSize*3,height/2)
+                    ctx.stroke()
+                    ctx.lineWidth = 2;
+                    ctx.stroke()
+                    // draw LOS
+                    ctx.beginPath();
+                    //                    ctx.fillStyle = drawColor
+                    ctx.moveTo(width/2,height/2)
+                    //                    ctx.arc(x, y, losSize,
+                    //                            (pan - hfov/2 - 90)/180*Math.PI,
+                    //                            (pan + hfov/2 - 90)/180*Math.PI, false)
+                    ctx.lineTo(width/2+Math.cos((pan)/180*Math.PI)*losSize,
+                               height/2+Math.sin((pan)/180*Math.PI)*losSize);
+                    //            ctx.fill()
+                    ctx.stroke()
+                }
+            }
 
-        Label {
-            id: lblStab
-            x: 9
-            y: 9
-            color: root.drawColor
-            text: itemListName["STAB"]["TITTLE"]
-                  [UIConstants.language[UIConstants.languageID]]+
-                  ": "+ itemListName["STAB"][(camState.digitalStab?"ON":"OFF")]
-                  [UIConstants.language[UIConstants.languageID]]
-            verticalAlignment: Text.AlignVCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottomMargin: 8
-            font.pixelSize: UIConstants.fontSize
-            anchors.bottom: parent.bottom
-            font.family: UIConstants.appFont
-            anchors.horizontalCenterOffset: UIConstants.sRect * 3
-            horizontalAlignment: Text.AlignLeft
+            QLabel {
+                id: lblPan
+                width: parent.width
+                height: UIConstants.sRect
+                textColor: drawColor
+                text: Number(pan).toFixed(1).toString()+UIConstants.degreeSymbol
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                border.width: 0
+                clip: false
+            }
         }
     }
-    Row{
+
+    Row {
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 8
         visible: false
@@ -257,6 +393,7 @@ Item {
             }
         }
     }
+
     Timer{
         id: timerPause
         interval: 1000
@@ -285,7 +422,7 @@ Item {
             var posCurrentSeconds = Number(posCurrent % 60).toFixed(0);
             var posCurrentMinute = Number((posCurrent - (posCurrent % 60)) / 60).toFixed(0);
             lblTimeCurrent.text = posCurrentMinute.toString()+":"+posCurrentSeconds.toString();
-                        sldTime.value = value;
+            sldTime.value = value;
         }
     }
 

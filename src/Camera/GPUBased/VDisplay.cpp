@@ -56,6 +56,7 @@ void VDisplay::setGimbal(GimbalInterface* gimbal){
     m_gimbal = gimbal;
     m_vTrackWorker->m_gimbal = gimbal;
     m_vFrameGrabber->m_gimbal = gimbal;
+    m_vDisplayWorker->m_gimbal = gimbal;
 }
 void VDisplay::handleZoomTargetChangeStopped(float zoomTarget){
     if(m_gimbal!= nullptr){
@@ -288,8 +289,8 @@ void VDisplay::stop()
     stopRTSP();
     std::this_thread::sleep_for(std::chrono::seconds(1));
 }
-void VDisplay::capture(){
-    m_vDisplayWorker->capture();
+void VDisplay::capture(bool writeTime, bool writeLocation){
+    m_vDisplayWorker->capture(writeTime,writeLocation);
 }
 void VDisplay::changeTrackSize(int _val)
 {

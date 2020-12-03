@@ -22,9 +22,9 @@ import UC 1.0
 ApplicationWindow {
     id: mainWindow
     visible: true
-    visibility: ApplicationWindow.FullScreen
-    width: 1920
-    height: 1080
+//    visibility: ApplicationWindow.FullScreen
+    width: 1366
+    height: 768
     title: qsTr("DCOS - PGCSv0.1")
     flags: Qt.WindowMinMaxButtonsHint
     property int seqTab: 2
@@ -249,7 +249,7 @@ ApplicationWindow {
     //------------ Toastr notification
     Toast {
         id: toast
-        anchors { bottom: parent.bottom; right: parent.right }
+        anchors { bottom: popUpInfo.bottom; right: popUpInfo.right }
     }
 
 
@@ -1973,6 +1973,8 @@ ApplicationWindow {
             camState.gcsShare = data["GCS_SHARED"];
             camState.digitalStab = data["STAB_DIGITAL"];
             camState.presetMode = data["PRESET"];
+            camState.panPos = data["panPos"];
+            camState.tiltPos = data["tiltPos"];
             mapPane.drawTargetLocalization(
                         QtPositioning.coordinate(data["CORNER01"].x,data["CORNER01"].y),
                         QtPositioning.coordinate(data["CORNER02"].x,data["CORNER02"].y),

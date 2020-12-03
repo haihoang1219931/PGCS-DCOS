@@ -201,7 +201,7 @@ bool VRTSPServer::gstreamer_pipeline_operate()
 //    gst_rtsp_media_factory_set_launch(factory, "( ximagesrc ! video/x-raw,framerate=30/1 ! videoconvert ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay name=pay0 pt=96 )");
 //    gst_rtsp_media_factory_set_launch(factory, "( videotestsrc ! video/x-raw,width=1920,height=1080,framerate=30/1 ! nvh264enc bitrate=4000000 ! rtph264pay name=pay0 pt=96 )");
 
-    gst_rtsp_media_factory_set_shared(factory, FALSE);
+    gst_rtsp_media_factory_set_shared(factory, m_factoryShare);
     gst_rtsp_mount_points_add_factory(mounts, (const gchar *)m_streamMount.data(), factory);
     g_object_unref(mounts);
     m_rtspAttachID = gst_rtsp_server_attach(server, NULL);

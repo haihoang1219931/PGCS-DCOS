@@ -25,7 +25,7 @@
 
 using namespace Eye;
 using namespace rva;
-
+class GimbalInterface;
 class VDisplayWorker : public QObject
 {
     Q_OBJECT    
@@ -34,7 +34,7 @@ class VDisplayWorker : public QObject
         ~VDisplayWorker();
         void setListObjClassID(std::vector<int> _listObjClassID);
         void setVideoSavingState(bool _state);
-        void capture();
+        void capture(bool writeTime = true, bool writeLocation = true);
     public Q_SLOTS:
         void process();
 
@@ -55,6 +55,7 @@ class VDisplayWorker : public QObject
 
         cv::Point convertPoint(cv::Point originPoint, cv::Mat stabMatrix);
     public:
+        GimbalInterface* m_gimbal = nullptr;
         index_type m_currID;
         RollBuffer<ProcessImageCacheItem> *m_matImageBuff;
         RollBuffer<GstFrameCacheItem> *m_gstRTSPBuff;
@@ -80,7 +81,10 @@ class VDisplayWorker : public QObject
         PlateLog* m_plateLog;
         QMutex m_captureMutex;
         bool m_captureSet = false;
+        bool m_writeTime = true;
+        bool m_writeLocation = true;
         int m_countUpdateOD = 0;
         std::vector<bbox_t> m_listObj;
+
 };
 #endif // VDISPLAYWORKER_H

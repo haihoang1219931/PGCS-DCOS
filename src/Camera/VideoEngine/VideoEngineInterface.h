@@ -36,6 +36,7 @@
 #include "Camera/TargetLocation/TargetLocalization.h"
 #include <opencv2/core.hpp>
 #include "Setting/config.h"
+#include "Files/FileControler.h"
 class VRTSPServer;
 class VSavingWorker;
 class VideoRender;
@@ -116,6 +117,11 @@ public:
     static void drawSteeringCenter(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV,
                                    int _wBoundary, int _centerX, int _centerY,
                                    cv::Scalar _color);
+    static void drawTextOnBackground(cv::Mat& imgBGR,cv::Scalar textColor,cv::Scalar backgroundColor,
+                                     const string& text,cv::Point textOrg, cv::Rect rectBackground,
+                                      int fontFace, double fontScale, cv::Scalar color,
+                                      int thickness = 1, int lineType = cv::LINE_AA,
+                                      bool bottomLeftOrigin = false);
     static void rectangle(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Rect rect,cv::Scalar color,
                    int thickness = 1,
                    int lineType = cv::LINE_8, int shift = 0);
@@ -131,8 +137,10 @@ public:
                  cv::Size size,double angle,double startAngle,double endAngle,
                  cv::Scalar centerColor,int thickness = 1, int lineType = cv::LINE_8, int shift = 0);
     static void convertRGB2YUV(const double R, const double G, const double B, double& Y, double& U, double& V);
+
     static unsigned short checksum(unsigned char * buff, unsigned short len);
     static std::vector<uint8_t> encodeMeta(GimbalInterface* gimbal);
+
 public:
     Q_INVOKABLE virtual int addVideoRender(VideoRender *viewer);
     Q_INVOKABLE virtual void removeVideoRender(int viewerID);
@@ -148,7 +156,7 @@ public:
     Q_INVOKABLE virtual void setSensorColor(QString colorMode){}
     Q_INVOKABLE virtual void setShare(bool enable){}
     Q_INVOKABLE virtual void setTrackState(bool enable){}
-    Q_INVOKABLE virtual void capture(){}
+    Q_INVOKABLE virtual void capture(bool writeTime = true, bool writeLocation = true){}
     Q_INVOKABLE virtual void updateFOV(float irFOV, float eoFOV){}
     Q_INVOKABLE virtual void changeTrackSize(int newSize){}
     Q_INVOKABLE virtual bool getTrackEnable(){}

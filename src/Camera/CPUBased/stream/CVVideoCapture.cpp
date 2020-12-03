@@ -285,11 +285,11 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
 {
     loop = g_main_loop_new(NULL, FALSE);
     // launch pipeline
-    std::string m_filename =  "flights/"+getFileNameByTime();
+    std::string m_filename =  m_logFolder+"/"+getFileNameByTime();
     std::string m_pipelineStr = m_source + std::string(" ! appsink name=mysink async=true sync=")+
         (QString::fromStdString(m_source).contains("filesrc")?std::string("true"):std::string("false"))+""
-        " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4"
-        " appsrc name=klvsrc ! mux. "
+//        " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4"
+//        " appsrc name=klvsrc ! mux. "
             ;
     std::cout << m_pipelineStr.c_str() << std::endl;
     m_pipeline = gst_parse_launch(m_pipelineStr.c_str(), &err);
@@ -299,7 +299,7 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
     gst_object_unref (m_bus);
     if (err != NULL) {
         g_print("gstreamer decoder failed to create pipeline\n");
-        g_error_free(err);
+        //g_error_free(err);
         return FALSE;
     } else {
         g_print("gstreamer decoder create pipeline success\n");

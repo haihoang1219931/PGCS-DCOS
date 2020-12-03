@@ -98,6 +98,7 @@ Item{
         iconSize: UIConstants.sRect
         isSolid: false
         isShowRect: false
+        isAutoReturn: true
         visible: rootItem.state === "show"
         onClicked: {
             rootItem.switchClicked();

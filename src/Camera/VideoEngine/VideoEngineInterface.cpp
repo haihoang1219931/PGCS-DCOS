@@ -223,7 +223,7 @@ void VideoEngine::drawOnRenderID(int viewerID, unsigned char *data, int width, i
         if(tmpViewer != nullptr){
             if((width != m_sourceSize.width() ||
                 height != m_sourceSize.height()) &&viewerID == 0){
-                //                printf("drawOnRenderID (%dx%d)\r\n",width,height);
+
                 m_sourceSize.setWidth(width);
                 m_sourceSize.setHeight(height);
                 Q_EMIT VideoEngine::sourceSizeChanged(width,height);
@@ -287,7 +287,14 @@ void VideoEngine::drawSteeringCenter(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV,
                       cv::Point(_centerX + 3 * _wBoundary / 4, _centerY + _wBoundary),
                       _color, 2);
 }
-
+void VideoEngine::drawTextOnBackground(cv::Mat& imgBGR,cv::Scalar textColor,cv::Scalar backgroundColor,
+                                     const string& text,cv::Point textOrg, cv::Rect rectBackground,
+                                      int fontFace, double fontScale, cv::Scalar color,
+                                      int thickness, int lineType,
+                                       bool bottomLeftOrigin){
+    cv::rectangle(imgBGR,rectBackground,backgroundColor,cv::FILLED,cv::LINE_AA);
+    cv::putText(imgBGR,text,textOrg,fontFace, fontScale, textColor, thickness,lineType,bottomLeftOrigin);
+}
 void VideoEngine::rectangle(cv::Mat& imgY,cv::Mat& imgU,cv::Mat& imgV,cv::Rect rect,cv::Scalar color,int thickness, int lineType,int shift){
     double y,u,v;
     convertRGB2YUV((double)color.val[0],(double)color.val[1],(double)color.val[2],y,u,v);

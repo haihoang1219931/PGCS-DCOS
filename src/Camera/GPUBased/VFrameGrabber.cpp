@@ -303,7 +303,9 @@ bool VFrameGrabber::initPipeline()
     m_filename =  getFileNameByTime();
 
     if (createFolder("flights")) {
-        m_filename = "flights/" + m_filename;
+        std::string logFolder = "flights/"+FileController::get_day();
+        createFolder(logFolder);
+        m_filename = logFolder + "/" + m_filename;
     }
     createFolder("img");
     createFolder("plates");
@@ -317,7 +319,7 @@ bool VFrameGrabber::initPipeline()
 
     if ((m_err != NULL) || (!m_pipeline)) {
         g_print("gstreamer decoder failed to create pipeline\n");
-        g_error_free(m_err);
+//        g_error_free(m_err);
         return false;
     } else {
         g_print("gstreamer decoder create pipeline success\n");

@@ -37,6 +37,7 @@ Rectangle {
     property alias btnText: textBtn.text
     property alias iconRotate: icon.rotation
     property bool isEnable: true
+    property color iconColor: textBtn.color
     property color bgColor: UIConstants.transparentColor
     property alias lineThroughEnable: lineThrough.visible
     property bool isSolid: true
@@ -68,7 +69,7 @@ Rectangle {
             font{ pixelSize: rootItem.iconSize;
                 weight: isSolid?Font.Bold:Font.Normal;
                 family: isSolid?ExternalFontLoader.solidFont:ExternalFontLoader.regularFont }
-            color: textBtn.color
+            color: iconColor
             rotation: 0
             anchors.topMargin: 0
             anchors.top: parent.top

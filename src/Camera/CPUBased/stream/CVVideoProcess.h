@@ -54,7 +54,7 @@ public:
     cv::Mat createPtzMatrix(float w, float h, float dx, float dy,float r,float alpha = 0);
     void pause(bool _pause);
     cv::Point convertPoint(cv::Point originPoint, cv::Mat stabMatrix);
-    void capture();
+    void capture(bool writeTime = true, bool writeLocation = true);
 Q_SIGNALS:
     void processDone();
     void stopped();
@@ -148,7 +148,6 @@ public:
     std::string m_stabMode = "STAB_TRACK";
     cv::Mat m_stabMatrix;
     int m_trackSize = 200;
-    int m_trackSizePrev = 200;
     int m_zoomTimer = 0;
     // click
     bool m_clickSet = false;

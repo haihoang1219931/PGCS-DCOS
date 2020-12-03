@@ -322,6 +322,8 @@ void VTrackWorker::run()
         // handle command
         //        printf("m_jsQueue.size() = %d\r\n",m_jsQueue.size());
         if(m_gimbal->context()->m_lockMode == "FREE"){
+            m_dx = w/2;
+            m_dy = h/2;
             m_trackEnable = false;
         }else if(m_gimbal->context()->m_lockMode == "TRACK" ||
                  m_gimbal->context()->m_lockMode == "VISUAL"){

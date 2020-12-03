@@ -29,7 +29,6 @@ CVVideoProcess::~CVVideoProcess()
 void CVVideoProcess::changeTrackSize(float _trackSize)
 {
     m_trackSize = (int)_trackSize;
-    m_trackSizePrev = m_trackSize;
 }
 void CVVideoProcess::setClick(float x, float y,float width,float height){
     if(m_grayFrame.cols <= 0 || m_grayFrame.rows <= 0
@@ -93,12 +92,68 @@ cv::Mat CVVideoProcess::createPtzMatrix(float w, float h, float dx, float dy,flo
     ptzMatrix.at<double>(2, 2) = 1;
     return ptzMatrix;
 }
-void CVVideoProcess::capture()
+void CVVideoProcess::capture(bool writeTime, bool writeLocation)
 {
-    std::string timestamp = Utils::get_time_stamp();
-    std::string captureFile = m_logFolder + "/" + timestamp + ".jpg";
-    printf("Save file %s\r\n", captureFile.c_str());
-    cv::imwrite(captureFile, m_img);
+    if(m_imgI420.rows > 0 && m_imgI420.cols > 0){
+        std::string timestamp = Utils::get_time_stamp();
+        std::string captureFile = m_logFolder + "/" + timestamp + ".jpg";
+        printf("Save file %s\r\n", captureFile.c_str());
+        cv::cvtColor(m_imgI420,m_img,CV_YUV2BGR_I420);
+        time_t t = time(0);   // get time now
+        struct tm * now = localtime( & t );
+        char dayOnTarget[64];
+        sprintf(dayOnTarget, "%04d/%02d/%02d",
+                (now->tm_year + 1900),
+                now->tm_mon + 1,
+                now->tm_mday);
+        char timeOnTarget[64];
+        sprintf(timeOnTarget, "%02d:%02d:%02d",
+                now->tm_hour,
+                now->tm_min,
+                now->tm_sec);
+        char targetLabel[64];
+        char targetLat[64];
+        char targetLon[64];
+        char targetSlr[64];
+        sprintf(targetLabel,"%s","TGT");
+        sprintf(targetLat,"%s: %.07f","LAT",m_gimbal->context()->m_centerLat);
+        sprintf(targetLon,"%s: %.07f","LON",m_gimbal->context()->m_centerLon);
+        sprintf(targetSlr,"%s: %.02fM","SLR",m_gimbal->context()->m_targetSlr);
+
+        int textFont = cv::FONT_HERSHEY_PLAIN;
+        cv::Scalar textColor = cv::Scalar(255, 255, 255);
+        cv::Scalar bgColor = cv::Scalar(0, 0, 0);
+        cv::Point pointTarget(m_img.cols-170,m_img.rows);
+        if(writeTime){
+            VideoEngine::drawTextOnBackground(m_img,textColor,bgColor,
+                std::string(dayOnTarget),cv::Point(20,20),
+                    cv::Rect(10,6,120,18),
+                    textFont, 1, textColor, 1);
+            VideoEngine::drawTextOnBackground(m_img,textColor,bgColor,
+                std::string(timeOnTarget),cv::Point(20,40),
+                    cv::Rect(10,26,120,18),
+                    textFont, 1, textColor, 1);
+        }
+        if(writeLocation){
+            VideoEngine::drawTextOnBackground(m_img,textColor,bgColor,
+                std::string(targetLabel),cv::Point(pointTarget.x,pointTarget.y - 80),
+                    cv::Rect(pointTarget.x,pointTarget.y-94,40,18),
+                    textFont, 1, textColor, 1);
+            VideoEngine::drawTextOnBackground(m_img,textColor,bgColor,
+                std::string(targetLat),cv::Point(pointTarget.x,pointTarget.y - 60),
+                    cv::Rect(pointTarget.x,pointTarget.y-74,160,18),
+                    textFont, 1, textColor, 1);
+            VideoEngine::drawTextOnBackground(m_img,textColor,bgColor,
+                std::string(targetLon),cv::Point(pointTarget.x,pointTarget.y - 40),
+                    cv::Rect(pointTarget.x,pointTarget.y-54,160,18),
+                    textFont, 1, textColor, 1);
+            VideoEngine::drawTextOnBackground(m_img,textColor,bgColor,
+                std::string(targetSlr),cv::Point(pointTarget.x,pointTarget.y - 20),
+                    cv::Rect(pointTarget.x,pointTarget.y-34,160,18),
+                    textFont, 1, textColor, 1);
+        }
+        cv::imwrite(captureFile, m_img);
+    }
 }
 void CVVideoProcess::pause(bool _pause){
     if(_pause == true){
@@ -213,7 +268,8 @@ void CVVideoProcess::doWork()
         gst_buffer_map(buf, &map, GST_MAP_READ);
         //        printf("map.size=%d\r\n", map.size);
         m_imgI420 = cv::Mat(height * 3 / 2 ,  map.size / height / 3 * 2, CV_8UC1, map.data);
-        if(m_imgI420Warped.rows <= 0 || m_imgI420Warped.cols <= 0){
+        if(m_imgI420Warped.rows != m_imgI420.rows ||
+                m_imgI420Warped.cols != m_imgI420.cols){
             m_imgI420Warped = cv::Mat(height * 3 / 2 ,  map.size / height / 3 * 2, CV_8UC1);
             imgYWarped = cv::Mat(static_cast<int>(height), static_cast<int>(width), CV_8UC1, m_imgI420Warped.data);
             imgUWarped = cv::Mat(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420Warped.data + size_t(height * width));
@@ -223,7 +279,7 @@ void CVVideoProcess::doWork()
             m_grayFramePrev = m_grayFrame.clone();
         }
         m_grayFrame = cv::Mat(height,width,CV_8UC1,map.data);
-        gst_buffer_unmap(buf, &map);
+        gst_buffer_unmap(buf,&map);
         gst_buffer_unref(buf);
         start = std::chrono::high_resolution_clock::now();
         if(!m_gimbal->context()->m_processOnBoard){
@@ -234,6 +290,8 @@ void CVVideoProcess::doWork()
             if (m_dy < 0) m_dy = h/2;
             // handle command
             if(m_gimbal->context()->m_lockMode == "FREE"){
+                m_dx = w/2;
+                m_dy = h/2;
                 m_trackEnable = false;
             }else if(m_gimbal->context()->m_lockMode == "TRACK" ||
                      m_gimbal->context()->m_lockMode == "VISUAL"){
@@ -245,9 +303,7 @@ void CVVideoProcess::doWork()
                     if( h/2 > m_trackSize)
                         m_trackSize = h/2;
                 }else{
-                    if(m_trackSizePrev != m_trackSize){
-                        m_trackSize = m_trackSizePrev;
-                    }
+
                 }
             }
             if(m_clickSet || m_jsQueue.size()>0){
@@ -454,7 +510,6 @@ void CVVideoProcess::doWork()
         else{
 //            cv::cvtColor(m_i420Img, *m_imgShow, CV_YUV2BGRA_I420);
         }
-
         Q_EMIT readyDrawOnRenderID(0,m_imgI420Warped.data,width,height,m_warpDataRender.data(),nullptr);
         Q_EMIT readyDrawOnRenderID(1,m_imgI420Warped.data,width,height,m_warpDataRender.data(),nullptr);
 //        if(false)

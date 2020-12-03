@@ -9,7 +9,7 @@ CVVideoCaptureThread::CVVideoCaptureThread(VideoEngine *parent) : VideoEngine(pa
     std::string day = Utils::get_day();
 #ifdef __linux__
     //linux code goes here
-    m_logFolder = QGuiApplication::applicationDirPath().toStdString() + "/flights";
+    m_logFolder = QGuiApplication::applicationDirPath().toStdString() + "/flights/"+day;
     sprintf(cmd, "/bin/mkdir -p %s", m_logFolder.c_str());
 #elif _WIN32
     // windows code goes here
@@ -176,9 +176,9 @@ void CVVideoCaptureThread::setTrackState(bool enable)
 {
     m_process->m_trackEnable = enable;
 }
-void CVVideoCaptureThread::capture()
+void CVVideoCaptureThread::capture(bool writeTime, bool writeLocation)
 {
-    m_process->capture();
+    m_process->capture(writeTime,writeLocation);
 }
 void CVVideoCaptureThread::updateFOV(float eoFOV, float irFOV)
 {
