@@ -672,6 +672,7 @@ ApplicationWindow {
                 footerBar.confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
                         joystick.useJoystick = !joystick.useJoystick;
+                        joystick.saveConfig();
                     }else if(func === "DIALOG_CANCEL"){
 
                     }

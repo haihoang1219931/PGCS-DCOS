@@ -733,9 +733,14 @@ Flickable {
                     break;
                 }
 
-                case Qt.Key_Delete:
-                    clearRuler()
-                    break;
+                case Qt.Key_Backspace:
+                if(rootItem.ctrlPress){
+                    clearRuler();
+                }else{
+                    removeLastRuler();
+                }
+
+                break;
                 default:
                     break;
                 }
@@ -2081,6 +2086,21 @@ Flickable {
         var rulerObject = listRuler[rulerCount]
         if(rulerObject !== null && rulerObject !== undefined)
             rulerCount = rulerCount + 1
+    }
+
+    function removeLastRuler(){
+        if(listRuler.length > 0){
+            try{
+                var object = listRuler[listRuler.length-1];
+                object.destroyChildOject();
+                object.destroy();
+                listRuler.pop();
+                //                map.removeMapItem(object)
+            }
+            catch(ex){
+                console.log(ex)
+            }
+        }
     }
 
     function clearRuler()

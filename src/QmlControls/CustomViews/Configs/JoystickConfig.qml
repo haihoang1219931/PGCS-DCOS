@@ -26,6 +26,8 @@ Item {
         UIConstants.itemTextMultilanguages["CONFIGURATION"]["JOYSTICK"]
     property var mapAxisKeys: ["Unused","Roll","Pitch","Yaw","Throttle"]
     property var mapAxis: {"Unused":-1,"Roll":0,"Pitch":1,"Yaw":2,"Throttle":3}
+    property var mapAxisCamKeys: ["Unused","Pan","Tilt","Zoom"]
+    property var mapAxisCam: {"Unused":-1,"Pan":0,"Tilt":1,"Zoom":2}
     property var mapButtonKeys: ["Unused","PIC/CIC","CIC/PIC","Guided","Loiter","Auto","RTL",
         "EO/IR",
         "SNAPSHOT","VISUAL","FREE","PRESET","DIGITAL_STAB","RECORD"]
@@ -266,9 +268,64 @@ Item {
             }
         }
 
+        // Button monitor
+        Column {
+            id: clmButton
+            width: UIConstants.sRect * 9
+            height: parent.height - parent.spacing
+            spacing:    UIConstants.sRect/2
+            Label {
+                id: lblButtonMonitor
+                text: itemListName["BUTTONS_MONITOR"]
+                      [UIConstants.language[UIConstants.languageID]]
+                color: UIConstants.textColor
+                font.pixelSize: UIConstants.fontSize
+                font.family: UIConstants.appFont
+            }
+
+            ListView {
+                id:     buttonMonitorRepeater
+                width: parent.width
+                height: parent.height - lblButtonMonitor.height - parent.spacing
+                model: joystick.buttons
+                spacing:    UIConstants.sRect/2
+                clip: true
+                delegate: Row{
+                    id: rowButton
+                    spacing: UIConstants.sRect/2
+                    height: UIConstants.sRect*1.5
+                    Rectangle {
+                        width:          parent.height
+                        height:         width
+                        border.width:   1
+                        border.color:   UIConstants.grayColor
+                        color:          pressed ? UIConstants.greenColor : UIConstants.transparentColor
+                        Label {
+                            anchors.fill:           parent
+                            horizontalAlignment:    Text.AlignHCenter
+                            verticalAlignment:      Text.AlignVCenter
+                            text:                   Number(id).toString()
+                            color: UIConstants.textColor
+                            font.pixelSize: UIConstants.fontSize
+                            font.family: UIConstants.appFont
+                        }
+                    }
+                    QComboBox{
+                        id: cbxButton
+                        model: mapButtonKeys
+                        currentIndex: mapButton[mapFuncConfig]+1
+                        onCurrentTextChanged: {
+                            if(currentText !== mapFuncConfig)
+                                joystick.mapButton(id,cbxButton.currentText,false)
+                        }
+                    }
+                }
+            } // Repeater
+        } // Column - Button Monitor
+
         Column {
             id: column
-            width: parent.width - clmJoystick.width - parent.spacing
+            width: parent.width - clmJoystick.width -  clmButton.width - parent.spacing*2
             spacing:    UIConstants.sRect/2
             height: parent.height
             Column {
@@ -276,7 +333,7 @@ Item {
                 spacing:    UIConstants.sRect/2
                 width: parent.width
                 Label {
-                    text: itemListName["AXES_MONITOR"]
+                    text: itemListName["AXES_FLIGHT_MONITOR"]
                           [UIConstants.language[UIConstants.languageID]]
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
@@ -286,7 +343,7 @@ Item {
                 Repeater {
                     id:     axisMonitorRepeater
                     width:  parent.width
-                    model: joystick.axesConfig
+                    model: joystick.axes
 
                     delegate:Row {
                         id: rowAxis
@@ -343,10 +400,10 @@ Item {
                             width: parent.height*4
                             height: parent.height
                             model: mapAxisKeys
-                            currentIndex: mapAxis[mapFunc]+1
+                            currentIndex: mapAxis[mapFuncConfig]+1
                             onCurrentTextChanged: {
-                                if(currentText !== mapFunc){
-                                    joystick.mapAxisConfig(id,cbxAxis.currentText,!inverted);
+                                if(currentText !== mapFuncConfig){
+                                    joystick.mapAxis(id,cbxAxis.currentText,!invertedConfig,false);
                                 }
                             }
                         }
@@ -361,7 +418,7 @@ Item {
                                 radius: 3
                                 Rectangle{
                                     id: rectCheck
-                                    visible: inverted
+                                    visible: invertedConfig
                                     color: "#555"
                                     border.color: "#333"
                                     radius: 1
@@ -371,7 +428,7 @@ Item {
                                 MouseArea{
                                     anchors.fill: parent
                                     onClicked: {
-                                        joystick.mapAxisConfig(id,cbxAxis.currentText,!inverted);
+                                        joystick.mapAxis(id,cbxAxis.currentText,!invertedConfig,false);
                                     }
                                 }
                             }
@@ -389,60 +446,123 @@ Item {
                     }
                 }
             } // Column - Axis Monitor
-
-            // Button monitor
             Column {
-                id: clmButton
-                width: parent.width
-                height: parent.height - clmAxis.height - parent.spacing
+                id: clmAxisCam
                 spacing:    UIConstants.sRect/2
+                width: parent.width
                 Label {
-                    id: lblButtonMonitor
-                    text: itemListName["BUTTONS_MONITOR"]
+                    text: itemListName["AXES_PAYLOAD_MONITOR"]
                           [UIConstants.language[UIConstants.languageID]]
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
                 }
 
-                ListView {
-                    id:     buttonMonitorRepeater
-                    width: parent.width
-                    height: parent.height - lblButtonMonitor.height - parent.spacing
-                    model: joystick.buttonsConfig
-                    spacing:    UIConstants.sRect/2
-                    clip: true
-                    delegate: Row{
-                        id: rowButton
+                Repeater {
+                    id:     axisCamMonitorRepeater
+                    width:  parent.width
+                    model: joystick.axesCam
+
+                    delegate:Row {
+                        id: rowAxisCam
                         spacing: UIConstants.sRect/2
                         height: UIConstants.sRect*1.5
-                        Rectangle {
+                        width: parent.width
+                        Label {
+                            id:     axisCamLabel
                             width:          parent.height
                             height:         width
-                            border.width:   1
-                            border.color:   UIConstants.grayColor
-                            color:          pressed ? UIConstants.greenColor : UIConstants.transparentColor
-                            Label {
-                                anchors.fill:           parent
-                                horizontalAlignment:    Text.AlignHCenter
-                                verticalAlignment:      Text.AlignVCenter
-                                text:                   Number(id).toString()
-                                color: UIConstants.textColor
-                                font.pixelSize: UIConstants.fontSize
-                                font.family: UIConstants.appFont
+                            text:   Number(id).toString()
+                            horizontalAlignment: Label.AlignHCenter
+                            verticalAlignment: Label.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: UIConstants.textColor
+                            font.pixelSize: UIConstants.fontSize
+                            font.family: UIConstants.appFont
+                        }
+
+                        Item{
+                            id: axisCamItem
+                            width: clmAxisCam.width - axisCamLabel.width - cbxAxisCam.width - chbInvertCam.width -
+    //                               btnSaveAxis.width -
+                                   rowAxisCam.spacing * (rowAxisCam.children.length - 1)
+                            height: parent.height
+                            anchors.verticalCenter: parent.verticalCenter
+                            Rectangle {
+                                id:                     barCam
+                                anchors.verticalCenter: parent.verticalCenter
+                                width:                  parent.width
+                                height:                 UIConstants.sRect / 4
+                                color:                  UIConstants.blackColor
+                            }
+                            Rectangle {
+                                id: centerCam
+                                anchors.horizontalCenter:   parent.horizontalCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                                width:                      2
+                                height:                     barCam.height
+                                color:                      UIConstants.textColor
+                            }
+                            Rectangle{
+                                id: indicatorCam
+                                anchors.verticalCenter: parent.verticalCenter
+                                width:                  parent.height/2
+                                height:                 width
+                                radius:                 width / 2
+                                color:                  UIConstants.textColor
+                                x:                      (value*(inverted?-1:1)+32768)/65535 * parent.width - width/2
                             }
                         }
                         QComboBox{
-                            id: cbxButton
-                            model: mapButtonKeys
-                            currentIndex: mapButton[mapFunc]+1
+                            id: cbxAxisCam
+                            width: parent.height*4
+                            height: parent.height
+                            model: mapAxisCamKeys
+                            currentIndex: mapAxisCam[mapFuncConfig]+1
                             onCurrentTextChanged: {
-                                if(currentText !== mapFunc)
-                                    joystick.mapButtonConfig(id,cbxButton.currentText)
+                                if(currentText !== mapFuncConfig){
+                                    joystick.mapAxis(id,cbxAxisCam.currentText,!invertedConfig,false,true);
+                                }
+                            }
+                        }
+                        Row {
+                            id: chbInvertCam
+                            width: parent.height*2.5
+                            height: parent.height
+                            spacing: 5
+                            Rectangle{
+                                width: parent.height
+                                height: parent.height
+                                radius: 3
+                                Rectangle{
+                                    id: rectCheckCam
+                                    visible: invertedConfig
+                                    color: "#555"
+                                    border.color: "#333"
+                                    radius: 1
+                                    anchors.margins: parent.height / 4
+                                    anchors.fill: parent
+                                }
+                                MouseArea{
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        joystick.mapAxis(id,cbxAxisCam.currentText,!invertedConfig,false,true);
+                                    }
+                                }
+                            }
+                            Label{
+                                height: parent.height
+                                verticalAlignment: Label.AlignVCenter
+                                horizontalAlignment: Label.AlignLeft
+                                font.pixelSize: UIConstants.fontSize
+                                font.family: UIConstants.appFont
+                                color: UIConstants.textColor
+                                text: itemListName["INVERT"]
+                                      [UIConstants.language[UIConstants.languageID]]
                             }
                         }
                     }
-                } // Repeater
+                }
             } // Column - Axis Monitor
         }
     }

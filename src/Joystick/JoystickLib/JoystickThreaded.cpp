@@ -69,7 +69,7 @@ void JoystickThreaded::loadConfig(){
             m_useJoystick = QString::fromStdString(std::string(pElementUseJoystick->GetText())) == "True"?true:false;
             Q_EMIT useJoystickChanged(m_useJoystick);
         }
-        // load axes
+        // load axes flight
         tinyxml2::XMLElement * pListElementAxis = pElement->FirstChildElement("Axis");
         while(pListElementAxis!= nullptr){
             tinyxml2::XMLElement * pID = pListElementAxis->FirstChildElement("ID");
@@ -77,11 +77,22 @@ void JoystickThreaded::loadConfig(){
             tinyxml2::XMLElement * pInvert = pListElementAxis->FirstChildElement("Inverted");
             mapAxis(atoi(pID->GetText()),
                     QString::fromStdString(std::string(pFunc->GetText())),
-                    QString::fromStdString(std::string(pInvert->GetText())) == "True"?true:false);
-            mapAxisConfig(atoi(pID->GetText()),
-                    QString::fromStdString(std::string(pFunc->GetText())),
-                    QString::fromStdString(std::string(pInvert->GetText())) == "True"?true:false);
+                    QString::fromStdString(std::string(pInvert->GetText())) == "True"?true:false,
+                    true);
             pListElementAxis = pListElementAxis->NextSiblingElement("Axis");
+        }
+        // load axes Cam
+//        printf("Load Axes cam\r\n");
+        tinyxml2::XMLElement * pListElementAxisCam = pElement->FirstChildElement("AxisCam");
+        while(pListElementAxisCam!= nullptr){
+            tinyxml2::XMLElement * pID = pListElementAxisCam->FirstChildElement("ID");
+            tinyxml2::XMLElement * pFunc = pListElementAxisCam->FirstChildElement("Func");
+            tinyxml2::XMLElement * pInvert = pListElementAxisCam->FirstChildElement("Inverted");
+            mapAxis(atoi(pID->GetText()),
+                    QString::fromStdString(std::string(pFunc->GetText())),
+                    QString::fromStdString(std::string(pInvert->GetText())) == "True"?true:false,
+                    true,true);
+            pListElementAxisCam = pListElementAxisCam->NextSiblingElement("AxisCam");
         }
         // load buttons
         tinyxml2::XMLElement * pListElementButton = pElement->FirstChildElement("Button");
@@ -89,8 +100,6 @@ void JoystickThreaded::loadConfig(){
             tinyxml2::XMLElement * pID = pListElementButton->FirstChildElement("ID");
             tinyxml2::XMLElement * pFunc = pListElementButton->FirstChildElement("Func");
             mapButton(atoi(pID->GetText()),
-                    QString::fromStdString(std::string(pFunc->GetText())));
-            mapButtonConfig(atoi(pID->GetText()),
                     QString::fromStdString(std::string(pFunc->GetText())));
             pListElementButton = pListElementButton->NextSiblingElement("Button");
         }
@@ -103,6 +112,15 @@ void JoystickThreaded::loadConfig(){
                 m_axisYaw = m_axes.at(i)->id();
             }else if(m_axes.at(i)->mapFunc() == "Throttle"){
                 m_axisThrottle = m_axes.at(i)->id();
+            }
+        }
+        for(int i=0;i<m_axesCam.size(); i++){
+            if(m_axesCam.at(i)->mapFunc() == "Pan"){
+                m_axisPan = m_axes.at(i)->id();
+            }else if(m_axesCam.at(i)->mapFunc() == "Tilt"){
+                m_axisTilt = m_axes.at(i)->id();
+            }else if(m_axesCam.at(i)->mapFunc() == "Zoom"){
+                m_axisZoom = m_axes.at(i)->id();
             }
         }
         for(int i=0;i< m_buttons.size(); i++){
@@ -119,10 +137,7 @@ void JoystickThreaded::saveConfig(){
     if(m_mapFile.contains(".conf")){
         for(int i=0;i<m_axes.size(); i++){
             // copy
-            m_axes.at(i)->setId(m_axesTemp.at(i)->id());
-            m_axes.at(i)->setInverted(m_axesTemp.at(i)->inverted());
-            m_axes.at(i)->setMapFunc(m_axesTemp.at(i)->mapFunc());
-
+            m_axes.at(i)->saveConfig();
             if(m_axes.at(i)->mapFunc() == "Roll"){
                 m_axisRoll = m_axes.at(i)->id();
             }else if(m_axes.at(i)->mapFunc() == "Pitch"){
@@ -133,10 +148,20 @@ void JoystickThreaded::saveConfig(){
                 m_axisThrottle = m_axes.at(i)->id();
             }
         }
+        for(int i=0;i<m_axesCam.size(); i++){
+            // copy
+            m_axesCam.at(i)->saveConfig();
+            if(m_axesCam.at(i)->mapFunc() == "Pan"){
+                m_axisPan = m_axesCam.at(i)->id();
+            }else if(m_axesCam.at(i)->mapFunc() == "Tilt"){
+                m_axisTilt = m_axesCam.at(i)->id();
+            }else if(m_axesCam.at(i)->mapFunc() == "Zoom"){
+                m_axisZoom = m_axesCam.at(i)->id();
+            }
+        }
         for(int i=0;i<m_buttons.size(); i++){
             // copy
-            m_buttons.at(i)->setId(m_buttonsTemp.at(i)->id());
-            m_buttons.at(i)->setMapFunc(m_buttonsTemp.at(i)->mapFunc());
+            m_buttons.at(i)->saveConfig();
             if(m_buttons.at(i)->mapFunc() == "PIC/CIC"
                      || m_buttons.at(i)->mapFunc()=="CIC/PIC"){
                 m_butonPICCIC = i;
@@ -164,6 +189,21 @@ void JoystickThreaded::saveConfig(){
             pRoot->InsertEndChild(pElement);
             printf("Save axis[%d] [%s] [%s]\r\n",i,tmp->mapFunc().toStdString().c_str(),tmp->inverted()?"True":"False");
         }
+        for(int i=0; i< m_axesCam.size(); i++){
+            JSAxis *tmp = m_axesCam.at(i);
+            tinyxml2::XMLElement * pElement = xmlDoc.NewElement("AxisCam");
+            tinyxml2::XMLElement * pID = xmlDoc.NewElement("ID");
+            pID->SetText(std::to_string(tmp->id()).c_str());
+            pElement->InsertEndChild(pID);
+            tinyxml2::XMLElement * pFunc = xmlDoc.NewElement("Func");
+            pFunc->SetText(tmp->mapFunc().toStdString().c_str());
+            pElement->InsertEndChild(pFunc);
+            tinyxml2::XMLElement * pInvert = xmlDoc.NewElement("Inverted");
+            pInvert->SetText(tmp->inverted()?"True":"False");
+            pElement->InsertEndChild(pInvert);
+            pRoot->InsertEndChild(pElement);
+            printf("Save axisCam[%d] [%s] [%s]\r\n",i,tmp->mapFunc().toStdString().c_str(),tmp->inverted()?"True":"False");
+        }
         for(int i=0; i< m_buttons.size(); i++){
             JSButton *tmp = m_buttons.at(i);
             tinyxml2::XMLElement * pElement = xmlDoc.NewElement("Button");
@@ -180,25 +220,39 @@ void JoystickThreaded::saveConfig(){
     }
 }
 void JoystickThreaded::resetConfig(){
-    if(m_axesTemp.size() > m_axisRoll){
-        m_axesTemp.at(m_axisRoll)->setMapFunc("Roll");
-        m_axesTemp.at(m_axisRoll)->setInverted(false);
+    // flight
+    if(m_axes.size() > m_axisRoll){
+        m_axes.at(m_axisRoll)->setMapFunc("Roll");
+        m_axes.at(m_axisRoll)->setInverted(false);
     }
-    if(m_axesTemp.size() > m_axisPitch){
-        m_axesTemp.at(m_axisPitch)->setMapFunc("Pitch");
-        m_axesTemp.at(m_axisPitch)->setInverted(false);
+    if(m_axes.size() > m_axisPitch){
+        m_axes.at(m_axisPitch)->setInverted(false);
+        m_axes.at(m_axisPitch)->setMapFunc("Pitch");
     }
-    if(m_axesTemp.size() > m_axisYaw){
-        m_axesTemp.at(m_axisYaw)->setMapFunc("Yaw");
-        m_axesTemp.at(m_axisYaw)->setInverted(false);
+    if(m_axes.size() > m_axisYaw){
+        m_axes.at(m_axisYaw)->setMapFunc("Yaw");
+        m_axes.at(m_axisYaw)->setInverted(false);
     }
-    if(m_axesTemp.size() > m_axisThrottle){
-        m_axesTemp.at(m_axisThrottle)->setMapFunc("Throttle");
-        m_axesTemp.at(m_axisThrottle)->setInverted(false);
+    if(m_axes.size() > m_axisThrottle){
+        m_axes.at(m_axisThrottle)->setMapFunc("Throttle");
+        m_axes.at(m_axisThrottle)->setInverted(false);
     }
-
-    for(int i=0; i< m_buttonsTemp.size(); i++){
-        m_buttonsTemp.at(i)->setMapFunc("Unused");
+    // camera
+    if(m_axes.size() > m_axisPan){
+        m_axes.at(m_axisPan)->setInverted(false);
+        m_axes.at(m_axisPan)->setMapFunc("Pan");
+    }
+    if(m_axes.size() > m_axisTilt){
+        m_axes.at(m_axisTilt)->setInverted(false);
+        m_axes.at(m_axisTilt)->setMapFunc("Tilt");
+    }
+    if(m_axes.size() > m_axisZoom){
+        m_axes.at(m_axisZoom)->setInverted(false);
+        m_axes.at(m_axisZoom)->setMapFunc("Zoom");
+    }
+    // buttons
+    for(int i=0; i< m_buttons.size(); i++){
+        m_buttons.at(i)->setMapFunc("Unused");
     }
 }
 void JoystickThreaded::updateButtonAxis(bool connected){
@@ -213,105 +267,105 @@ void JoystickThreaded::updateButtonAxis(bool connected){
             m_axes.clear();
             for(int i=0; i< m_task->m_joystick.m_axes; i++)
                 m_axes.append(new JSAxis(i));            
+            m_axesCam.clear();
+            for(int i=0; i< m_task->m_joystick.m_axes; i++)
+                m_axesCam.append(new JSAxis(i));
             // update buttons
             m_buttons.clear();
             for(int i=0; i< m_task->m_joystick.m_buttons; i++)
                 m_buttons.append(new JSButton(i));
-            // temp config
-            // update axes
-            m_axesTemp.clear();
-            for(int i=0; i< m_task->m_joystick.m_axes; i++)
-                m_axesTemp.append(new JSAxis(i));
-            // update buttons
-            m_buttonsTemp.clear();
-            for(int i=0; i< m_task->m_joystick.m_buttons; i++)
-                m_buttonsTemp.append(new JSButton(i));
             resetConfig();
             loadConfig();
-            Q_EMIT axesConfigChanged();
-            Q_EMIT buttonsConfigChanged();
+            Q_EMIT axesChanged();
+            Q_EMIT axesCamChanged();
+            Q_EMIT buttonsChanged();
             Q_EMIT buttonAxisLoaded();
         }
     }
 }
-void JoystickThreaded::mapAxis(int axisID, QString mapFunc, bool inverted){
-    for(int i=0;i<m_axes.size(); i++){
-        if(m_axes.at(i)->id() == axisID){
-            m_axes.at(i)->setMapFunc(mapFunc);
-            m_axes.at(i)->setInverted(inverted);
-        }else{
-            if(mapFunc == m_axes.at(i)->mapFunc()){
-                m_axes.at(i)->setMapFunc("Unused");
+void JoystickThreaded::mapAxis(int axisID, QString mapFunc, bool inverted, bool saveCurrent, bool axisCam){
+    if(!axisCam){
+        for(int i=0;i<m_axes.size(); i++){
+            if(m_axes.at(i)->id() == axisID){
+                m_axes.at(i)->setMapFuncConfig(mapFunc);
+                m_axes.at(i)->setInvertedConfig(inverted);
+                if(saveCurrent){
+                    m_axes.at(i)->saveConfig();
+                }
+            }else{
+                if(mapFunc == m_axes.at(i)->mapFuncConfig()){
+                    m_axes.at(i)->setMapFuncConfig("Unused");
+                    if(saveCurrent){
+                        m_axes.at(i)->saveConfig();
+                    }
+                }
+            }
+        }
+    }else{
+        for(int i=0;i<m_axesCam.size(); i++){
+            if(m_axesCam.at(i)->id() == axisID){
+                m_axesCam.at(i)->setMapFuncConfig(mapFunc);
+                m_axesCam.at(i)->setInvertedConfig(inverted);
+                if(saveCurrent){
+                    m_axesCam.at(i)->saveConfig();
+                }
+            }else{
+                if(mapFunc == m_axesCam.at(i)->mapFuncConfig()){
+                    m_axesCam.at(i)->setMapFuncConfig("Unused");
+                    if(saveCurrent){
+                        m_axesCam.at(i)->saveConfig();
+                    }
+                }
             }
         }
     }
+
+
 }
-void JoystickThreaded::mapButton(int buttonID, QString mapFunc){
+void JoystickThreaded::mapButton(int buttonID, QString mapFunc, bool saveCurrent){
     for(int i=0;i<m_buttons.size(); i++){
         if(m_buttons.at(i)->id() == buttonID){
-            m_buttons.at(i)->setMapFunc(mapFunc);
+            m_buttons.at(i)->setMapFuncConfig(mapFunc);
+            if(saveCurrent)
+                m_buttons.at(i)->saveConfig();
         }else{
             if(mapFunc.contains("PIC")&&
-                    m_buttons.at(i)->mapFunc().contains("PIC")){
-                m_buttons.at(i)->setMapFunc("Unused");
+                    m_buttons.at(i)->mapFuncConfig().contains("PIC")){
+                m_buttons.at(i)->setMapFuncConfig("Unused");
+                if(saveCurrent)
+                    m_buttons.at(i)->saveConfig();
             }
         }
     }
 }
-void JoystickThreaded::mapAxisConfig(int axisID, QString mapFunc, bool inverted){
-    for(int i=0;i<m_axesTemp.size(); i++){
-        if(m_axesTemp.at(i)->id() == axisID){
-            m_axesTemp.at(i)->setMapFunc(mapFunc);
-            m_axesTemp.at(i)->setInverted(inverted);
-        }else{
-            if(mapFunc == m_axesTemp.at(i)->mapFunc()){
-                m_axesTemp.at(i)->setMapFunc("Unused");
-            }
-        }
-    }
-}
-void JoystickThreaded::mapButtonConfig(int buttonID, QString mapFunc){
-//    printf("%s %d %s\r\n",__func__,buttonID,mapFunc.toStdString().c_str());
-    for(int i=0;i<m_buttonsTemp.size(); i++){
-//        printf("Button[%d] = %s\r\n",i,
-//               m_buttonsTemp.at(i)->mapFunc().toStdString().c_str());
-        if(m_buttonsTemp.at(i)->id() == buttonID){
-            m_buttonsTemp.at(i)->setMapFunc(mapFunc);            
-        }else{
-            if(mapFunc.contains("PIC")&&
-                    m_buttonsTemp.at(i)->mapFunc().contains("PIC")){
-                m_buttonsTemp.at(i)->setMapFunc("Unused");
-            }
-        }
-    }
-}
-void JoystickThreaded::setInvert(QString camFunc,bool invert){
+
+void JoystickThreaded::setInvertCam(QString camFunc,bool invert){
     if(camFunc == "PAN"){
-        m_invertPan = invert?-1:1;
+        mapAxis(m_axisPan,camFunc,invert,true,true);
     }else if(camFunc == "TILT"){
-        m_invertTilt = invert?-1:1;
+        mapAxis(m_axisTilt,camFunc,invert,true,true);
     }else if(camFunc == "ZOOM"){
-        m_invertZoom = invert?-1:1;
+        mapAxis(m_axisZoom,camFunc,invert,true,true);
     }
 }
 void JoystickThreaded::changeButtonState(int btnID,bool clicked){
     if(btnID < m_buttons.size()){
 //        qDebug("Button %d is %s\n", btnID, !clicked ? "up" : "down");
         if(btnID == m_butonPICCIC){
-            m_buttonsTemp[btnID]->setPressed(m_buttonsTemp[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
-            setPIC(m_buttonsTemp[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
-            Q_EMIT buttonStateChanged(btnID,m_buttonsTemp[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
+            m_buttons[btnID]->setPressed(m_buttons[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
+            setPIC(m_buttons[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
+            Q_EMIT buttonStateChanged(btnID,m_buttons[btnID]->mapFunc() == "PIC/CIC"?clicked:!clicked);
         }else{
-            m_buttonsTemp[btnID]->setPressed(clicked);
+            m_buttons[btnID]->setPressed(clicked);
             Q_EMIT buttonStateChanged(btnID,clicked);
         }
     }
 }
 void JoystickThreaded::changeAxisValue(int axisID, float value){
     if(axisID < m_axes.size()){
-//        qDebug("axisStateChanged %d value to %f\n", axisID, value);
-        m_axesTemp[axisID]->setValue(value);
         m_axes[axisID]->setValue(value);
+        m_axesCam[axisID]->setValue(value);
         Q_EMIT axisValueChanged(axisID,value);
+
     }
 }
