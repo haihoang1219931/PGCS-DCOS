@@ -6,8 +6,6 @@ import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
 Rectangle {
     id: root
-    width: 640
-    height: 480
     color: UIConstants.transparentColor
     property alias model: lstSetting.model
     property string selectedSetting
@@ -90,7 +88,7 @@ Rectangle {
     }
     Column{
         id: clmButton
-        width: UIConstants.sRect*3
+        width: UIConstants.sRect*4
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.top: parent.top
@@ -102,18 +100,18 @@ Rectangle {
             text: qsTr("Add")
             border.width: 1
             border.color: UIConstants.grayColor
-            width: UIConstants.sRect*3
-            height: UIConstants.sRect
+            width: parent.width
+            height: UIConstants.sRect*1.5
         }
 
         FlatButtonText {
             id: btnEdit
             isAutoReturn: true
-            width: UIConstants.sRect*3
-            height: UIConstants.sRect
+            width: parent.width
+            height: UIConstants.sRect*1.5
             border.width: 1
             border.color: UIConstants.grayColor
-            isEnable: selectedSetting.includes("Setting")
+            visible: selectedSetting.includes("Setting")
             text: qsTr("Edit")
             onClicked: {
                 root.editClicked(selectedSetting);
@@ -124,12 +122,12 @@ Rectangle {
         FlatButtonText {
             id: btnDelete
             isAutoReturn: true
-            width: UIConstants.sRect*3
-            height: UIConstants.sRect
+            width: parent.width
+            height: UIConstants.sRect*1.5
             border.width: 1
             border.color: UIConstants.grayColor
             text: qsTr("Delete")
-            isEnable: selectedSetting.includes("Setting")
+            visible: selectedSetting.includes("Setting")
             onClicked: {
                 root.deleteClicked(selectedSetting);
                 selectedSetting = "";

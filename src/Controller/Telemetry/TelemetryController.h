@@ -26,10 +26,10 @@ Q_SIGNALS:
     void dataSend(QString data);
     void writeLogTimeout(QString ip, int snr, int rssi);
 public Q_SLOTS:
+    void handleCheckConnect();
     void handlePacketReceived();
     void onConnected();
     void onDisconnected();
-
     void onTcpStateChanged(QAbstractSocket::SocketState socketState);
     void onTcpError(QAbstractSocket::SocketError error);
     void gimbalRetryConnect();
@@ -44,7 +44,10 @@ private:
     QTcpSocket* m_socket = nullptr;
     QTimer* m_timerRequest = nullptr;
     QTimer* m_timerWriteLog = nullptr;
-    int m_countRequest = 0;
+    QTimer* m_timerCheck = nullptr;
+    int m_countLast = 0;
+    int m_countParsed = 0;
+    bool m_linkGood = false;
     bool m_sendUser = false;
     bool m_sendPass = false;
     bool m_authenticated = false;

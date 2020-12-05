@@ -322,6 +322,8 @@ void VTrackWorker::run()
         // handle command
         //        printf("m_jsQueue.size() = %d\r\n",m_jsQueue.size());
         if(m_gimbal->context()->m_lockMode == "FREE"){
+            m_dx = w/2;
+            m_dy = h/2;
             m_trackEnable = false;
         }else if(m_gimbal->context()->m_lockMode == "TRACK" ||
                  m_gimbal->context()->m_lockMode == "VISUAL"){
@@ -391,6 +393,7 @@ void VTrackWorker::run()
                             int minIdx = -1;
                             for(size_t i = 0; i < detection_boxes.size(); i++)
                             {
+                                // Use for yolov3-tiny_3l
                                 if(detection_boxes[i].obj_id != 0 && detection_boxes[i].obj_id != 11)
                                 {
                                     float dist = ((detection_boxes[i].x + detection_boxes[i].w/2 - lockPoint.x) * (detection_boxes[i].x + detection_boxes[i].w/2 - lockPoint.x) +
@@ -401,6 +404,17 @@ void VTrackWorker::run()
                                         minIdx = int(i);
                                     }
                                 }
+                                // Use for yolov3-tiny
+//                                if(detection_boxes[i].obj_id >= 0 && detection_boxes[i].obj_id < 8 && detection_boxes[i].obj_id != 4 && detection_boxes[i].obj_id != 6)
+//                                {
+//                                    float dist = ((detection_boxes[i].x + detection_boxes[i].w/2 - lockPoint.x) * (detection_boxes[i].x + detection_boxes[i].w/2 - lockPoint.x) +
+//                                                  (detection_boxes[i].y + detection_boxes[i].h/2 - lockPoint.y) * (detection_boxes[i].y + detection_boxes[i].h/2 - lockPoint.y));
+//                                    if(dist < minDist)
+//                                    {
+//                                        minDist = dist;
+//                                        minIdx = int(i);
+//                                    }
+//                                }
                             }
                             // If there is no valid object detected
                             if(minIdx == -1)
@@ -430,6 +444,7 @@ void VTrackWorker::run()
                             m_tracker->resetTrack();
                         }
                         m_tracker->initTrack(m_grayFramePrev,trackRectTmp);
+                        m_gimbal->resetTrackParam();
 #ifdef _test_ORBSearcher_
                         if(m_objectSearch)
                         {
@@ -505,6 +520,7 @@ void VTrackWorker::run()
                         m_tracker->resetTrack();
                     }
                     m_tracker->initTrack(m_grayFramePrev,trackRectTmp);
+                    m_gimbal->resetTrackParam();
                 }
                 else{
                     m_dx = lockPoint.x;
@@ -589,6 +605,7 @@ void VTrackWorker::run()
                                 init_set.clear();
                                 for(size_t i=0; i < detection_boxes.size(); i++){
                                     printf("=========== Searching for id: %d\n", detection_boxes[i].obj_id);
+                                    // Use for yolov3-tiny_3l
                                     if(m_objectType == 3 || m_objectType == 10)
                                     {
                                         if(detection_boxes[i].obj_id == 3 || detection_boxes[i].obj_id == 10)
@@ -613,6 +630,31 @@ void VTrackWorker::run()
                                                                         int(detection_boxes[i].w),
                                                                         int(detection_boxes[i].h)));
                                     }
+                                    // Use for yolov3-tiny with coco
+//                                    if(m_objectType == 0)
+//                                    {
+//                                        if(detection_boxes[i].obj_id == 0)
+//                                            init_set.push_back(cv::Rect(int(detection_boxes[i].x),
+//                                                                        int(detection_boxes[i].y),
+//                                                                        int(detection_boxes[i].w),
+//                                                                        int(detection_boxes[i].h)));
+//                                    }
+//                                    else if(m_objectType == 1 || m_objectType == 3)
+//                                    {
+//                                        if(detection_boxes[i].obj_id == 1 || detection_boxes[i].obj_id == 3)
+//                                            init_set.push_back(cv::Rect(int(detection_boxes[i].x),
+//                                                                        int(detection_boxes[i].y),
+//                                                                        int(detection_boxes[i].w),
+//                                                                        int(detection_boxes[i].h)));
+//                                    }
+//                                    else if(m_objectType == 2 || m_objectType == 5 || m_objectType == 7)
+//                                    {
+//                                        if(detection_boxes[i].obj_id == 2 || detection_boxes[i].obj_id == 5 || detection_boxes[i].obj_id == 7)
+//                                            init_set.push_back(cv::Rect(int(detection_boxes[i].x),
+//                                                                        int(detection_boxes[i].y),
+//                                                                        int(detection_boxes[i].w),
+//                                                                        int(detection_boxes[i].h)));
+//                                    }
                                 }
                                 if(init_set.empty())
                                     continue;
@@ -625,6 +667,7 @@ void VTrackWorker::run()
                                         m_tracker->resetTrack();
                                     }
                                     m_tracker->initTrack(m_grayFrame,suggestRs);
+                                    m_gimbal->resetTrackParam();
                                 }else{
                                     printf("Try to search object fail!\n");
                                 }

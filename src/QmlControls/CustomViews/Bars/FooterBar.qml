@@ -36,7 +36,6 @@ Item {
     property alias topFooterBarVisible: topFooterBar.visible
     property var footerBarCorresFlyingBtnsEnable: [true,false]
     property string flightView: "MAP" // "WP"
-    property bool   _armed: vehicle.armed
     property var itemListName: UIConstants.itemTextMultilanguages["FOOTERBAR"]
     //-------------------- Signals
     signal preflightCheckNext()
@@ -271,15 +270,15 @@ Item {
                         id: btnArm
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
-                        icon: !rootItem._armed?UIConstants.iArmed:UIConstants.iDisarmed
-                        btnText: !rootItem._armed?
+                        icon: !vehicle.armed?UIConstants.iArmed:UIConstants.iDisarmed
+                        btnText: !vehicle.armed?
                                      itemListName["MISSION"]["ARM"][UIConstants.language[UIConstants.languageID]]:
                                      itemListName["MISSION"]["DISARM"][UIConstants.language[UIConstants.languageID]]
                         isEnable: vehicle.link
                         isTimerActive: true
                         timeout: 1000
                         onClicked: {
-                            rootItem.doArm(!rootItem._armed);
+                            rootItem.doArm(!vehicle.armed);
                         }
                     }
                 }
@@ -626,15 +625,16 @@ Item {
                         id: btnArm02
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
-                        icon: !rootItem._armed?UIConstants.iArmed:UIConstants.iDisarmed
-                        btnText: !rootItem._armed?
+                        icon: !vehicle.armed?UIConstants.iArmed:UIConstants.iDisarmed
+                        iconColor: !vehicle.armed?UIConstants.greenColor:UIConstants.redColor
+                        btnText: !vehicle.armed?
                                      itemListName["MISSION"]["ARM"][UIConstants.language[UIConstants.languageID]]:
                                      itemListName["MISSION"]["DISARM"][UIConstants.language[UIConstants.languageID]]
                         isEnable: vehicle.link
 //                        isTimerActive: true
 //                        timeout: 1000
                         onClicked: {
-                            rootItem.doArm(!rootItem._armed);
+                            rootItem.doArm(!vehicle.armed);
                         }
                     }
                     FooterButton {

@@ -129,8 +129,8 @@ Item {
 
                         TableView{
                             id: tblAdresses
-                            width: parent.width
-                            height: parent.height
+                            anchors.fill: parent
+                            anchors.margins: 1
                             frameVisible: false
                             sortIndicatorVisible: true
                             backgroundVisible: true
@@ -140,6 +140,9 @@ Item {
                                 horizontalAlignment: Label.AlignLeft
                                 radius: 0
                                 color: UIConstants.grayColor
+                            }
+                            rowDelegate: Item{
+                                height: UIConstants.sRect
                             }
 
                             TableViewColumn {
@@ -168,8 +171,10 @@ Item {
                                 resizable: false
                                 width: tblAdresses.viewport.width / 3
                             }
+
                             itemDelegate: TextField{
                                 id: txtIP
+                                implicitHeight: UIConstants.sRect * 2
                                 textColor: UIConstants.textColor
                                 text: styleData.value
                                 horizontalAlignment: Text.AlignLeft

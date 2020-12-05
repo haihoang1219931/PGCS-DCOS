@@ -32,7 +32,7 @@ Flickable {
     property variant targetPolygon
     property variant opticalLine
 
-    property bool isMapSync: false
+    property bool isMapSync: true
     property int index_row_model_trajactory_plane:0
     property int index_row_model_symbol: 0
     property int index_row_model_marker: 0
@@ -83,7 +83,6 @@ Flickable {
     property var markerModel: _markerModel
 
     // === hainh added
-
     property int wpBoundSize: UIConstants.sRect * 5 / 3
     property int wpFontSize: wpBoundSize / 2
 
@@ -667,13 +666,13 @@ Flickable {
                 PluginParameter{name:"esri.mapping.cache.disk.cost_strategy";value:"unitary";}  //use number of tile
                 PluginParameter{name:"esri.mapping.cache.disk.size";value:"1000000";}           //use maximumm 1000000 tile
                 PluginParameter{name:"esri.mapping.cache.directory";value:Helper.convertUrltoPath(urlMaps);}
-                PluginParameter{name:"esri.mapping.minimumZoomLevel";value:"11";}
+                PluginParameter{name:"esri.mapping.minimumZoomLevel";value:"5";}
                 PluginParameter{name:"esri.mapping.maximumZoomLevel";value:"17";}
             }
 
             property variant scaleLengths: [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 2000000]
             maximumZoomLevel: 17
-            minimumZoomLevel: 11
+            minimumZoomLevel: 5
             anchors.fill: parent
             plugin: mapPlugin //createPluginMap("esri","/home/ttuav/mapGCS")//mapPlugin
             center: QtPositioning.coordinate(21.041606, 105.490983) // Oslo
@@ -723,9 +722,25 @@ Flickable {
                 case Qt.Key_7:  if(!waypointEditor.visible)showWaypointId(7); break;
                 case Qt.Key_8:  if(!waypointEditor.visible)showWaypointId(8); break;
                 case Qt.Key_9:  if(!waypointEditor.visible)showWaypointId(9); break;
-                case Qt.Key_Delete:
-                    clearRuler()
+                case Qt.Key_S:   {
+                    if(selectedWP!==undefined){
+                        listwaypoint[selectedIndex].isSelected =false;
+                        selectedWP = undefined;
+                        selectedIndex = -1;
+                        Helper.unselect_all(map,listsymbol)
+                    }
+                    focusAllObject();
                     break;
+                }
+
+                case Qt.Key_Backspace:
+                if(rootItem.ctrlPress){
+                    clearRuler();
+                }else{
+                    removeLastRuler();
+                }
+
+                break;
                 default:
                     break;
                 }
@@ -850,7 +865,7 @@ Flickable {
                     clickedLocation = precoordinate
 
                     if(UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint && mouse.button === Qt.LeftButton){
-                        coordinate_clicked=precoordinate
+                        coordinate_clicked=precoordinate;
                         //console.log("lat:"+coordinate_clicked.latitude+" lon:"+coordinate_clicked.longitude)
                         _arrowModel.clear()
                         _arrowModel.append({arrow_lat : precoordinate.latitude, arrow_lon: precoordinate.longitude});
@@ -1716,8 +1731,8 @@ Flickable {
     function minZoomOut(){
         var minZoom = map.minimumZoomLevel
         var zoom=map.zoomLevel - 0.1
-        if(zoom<11)
-            zoom=11
+        if(zoom<5)
+            zoom=5
         map.zoomLevel = zoom
         map.center = (selectedWP===undefined)? coordinate_clicked:selectedWP.coordinate;
     }
@@ -1727,7 +1742,7 @@ Flickable {
         if(plane.visible === true)
         {
             map.center = plane.coordinate
-            map.zoomLevel = map.minimumZoomLevel
+            coordinate_clicked = plane.coordinate;
         }
     }
 
@@ -2073,6 +2088,21 @@ Flickable {
             rulerCount = rulerCount + 1
     }
 
+    function removeLastRuler(){
+        if(listRuler.length > 0){
+            try{
+                var object = listRuler[listRuler.length-1];
+                object.destroyChildOject();
+                object.destroy();
+                listRuler.pop();
+                //                map.removeMapItem(object)
+            }
+            catch(ex){
+                console.log(ex)
+            }
+        }
+    }
+
     function clearRuler()
     {
         for(var i=0;i<listRuler.length;i++)
@@ -2362,7 +2392,7 @@ Flickable {
         }
 
         var component = Qt.createComponent("qrc:/CustomViews/SubComponents/PolyTrajactory.qml");
-        var object = component.createObject(map, {z:UIConstants.z_targetPolygon,linewidth: 2,color:"black"});
+        var object = component.createObject(map, {z:UIConstants.z_targetPolygon,linewidth: 2,color:"orange"});
         if (object === null) {
             // Error Handling
             console.log("Error creating object");

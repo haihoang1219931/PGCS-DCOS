@@ -289,15 +289,9 @@ void GremseyGimbal::setGimbalRate(float panRate,float tiltRate){
 }
 void GremseyGimbal::snapShot(){
     if(m_videoEngine!=nullptr){
-        m_videoEngine->capture();
-        struct TargetLocalization::GpsPosition from,to;
-        from.Latitude = m_context->m_latitude;
-        from.Longitude = m_context->m_longitude;
-        to.Latitude = m_context->m_centerLat;
-        to.Longitude = m_context->m_centerLon;
-        float flatDistance = m_targetLocation->distanceFlatEarth(from,to);
+        m_videoEngine->capture(true,true);
         QGeoCoordinate target(m_context->m_centerLat,m_context->m_centerLon);
-        Q_EMIT functionHandled("SNAPSHOT",target,flatDistance);
+        Q_EMIT functionHandled("SNAPSHOT",target,m_context->m_targetSlr);
     }
 }
 void GremseyGimbal::changeTrackSize(float trackSize){
@@ -477,7 +471,7 @@ void GremseyGimbal::handleVehicleMessage(mavlink_message_t message)
         mavlink_msg_global_position_int_decode(&message,&gps_pos);
         m_context->m_latitude = (static_cast<float>(gps_pos.lat))/10000000;
         m_context->m_longitude = (static_cast<float>(gps_pos.lon))/10000000;
-        m_context->m_altitudeOffset = m_vehicle->altitudeAGL();
+        m_context->m_altitudeOffset = m_vehicle->altitudeAMSL();
         if(m_targetLocation!=nullptr){            
             double center[2];
             double corner[4][2];
@@ -486,7 +480,7 @@ void GremseyGimbal::handleVehicleMessage(mavlink_message_t message)
             uavPosition[1] = m_context->m_longitude;
             m_targetLocation->visionViewMain(
                 m_context->m_hfov[m_context->m_sensorID] / rad2Deg,
-                m_context->m_rollOffset / rad2Deg,
+                0,
                 m_context->m_pitchOffset / rad2Deg,
                 m_context->m_yawOffset / rad2Deg,
                 m_context->m_panPosition / rad2Deg,
@@ -496,9 +490,14 @@ void GremseyGimbal::handleVehicleMessage(mavlink_message_t message)
                 0,
                 center,corner[0],corner[1],corner[3],corner[2]
             );
+            struct TargetLocalization::GpsPosition from,to;
+            from.Latitude = m_context->m_latitude;
+            from.Longitude = m_context->m_longitude;
+            to.Latitude = m_context->m_centerLat;
+            to.Longitude = m_context->m_centerLon;
+            m_context->m_targetSlr = m_targetLocation->distanceFlatEarth(from,to);
             m_context->m_centerLat = center[0];
             m_context->m_centerLon = center[1];
-
             m_context->m_cornerLat[0] = corner[0][0];
             m_context->m_cornerLon[0] = corner[0][1];
             m_context->m_cornerLat[1] = corner[1][0];

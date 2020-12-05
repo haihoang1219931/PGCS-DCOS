@@ -82,6 +82,19 @@ public:
             Q_EMIT zoomCalculatedChanged(sensorID,zoomCalculated);
         }
     }
+    void  resetTrackParam(){
+//        m_iPan = 0.0;
+//        m_cPan = 0.0;
+//        m_dPanOld = 0.0;
+//        m_panRate = 0.0;
+//        m_uPan = 0.0;
+//        m_iTilt = 0.0;
+//        m_cTilt = 0.0;
+//        m_dTiltOld = 0.0;
+//        m_tiltRate = 0.0;
+//        m_uTilt = 0.0;
+
+    }
 Q_SIGNALS:
     void digitalZoomMaxChanged();
     void zoomMaxChanged();
@@ -130,18 +143,7 @@ protected:
     TargetLocalization* m_targetLocation = nullptr;
 protected:
 
-    void  resetTrackParam(){
-        m_iPan = 0.0;
-        m_cPan = 0.0;
-        m_dPanOld = 0.0;
-        m_panRate = 0.0;
-        m_uPan = 0.0;
-        m_iTilt = 0.0;
-        m_cTilt = 0.0;
-        m_dTiltOld = 0.0;
-        m_tiltRate = 0.0;
-        m_uTilt = 0.0;
-    }
+
     // tracker param
     double m_iPan= 0 ;
     double m_cPan= 0 ;

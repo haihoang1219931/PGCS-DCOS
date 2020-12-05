@@ -83,49 +83,42 @@ Rectangle {
             width: parent.width
             currentIndex: 0
             height: UIConstants.sRect*1.5
+            contentHeight: UIConstants.sRect*1.5-1
             QTabButton{
                 text: "General"
-                height: UIConstants.sRect*1.5
                 width: visible?implicitWidth:-1
                 visible: true
             }
             QTabButton{
                 text: "Wi-Fi"
-                height: UIConstants.sRect*1.5
                 width: visible?implicitWidth:-1
                 visible: false
             }
             QTabButton{
                 text: "Wi-Fi Security"
-                height: UIConstants.sRect*1.5
                 width: visible?implicitWidth:-1
                 visible: deviceType === "Wi-Fi"
             }
             QTabButton{
                 text: "Ethernet"
-                height: UIConstants.sRect*1.5
                 width: visible?implicitWidth:-1
                 visible: false
             }
             QTabButton{
                 text: "802.1x Security"
-                height: UIConstants.sRect*1.5
                 width: visible?implicitWidth:-1
                 visible: false
             }
             QTabButton{
                 text: "DCB"
-                height: UIConstants.sRect*1.5
                 width: -1
                 visible: false
             }
             QTabButton{
                 text: "IPv4 Settings"
-                height: UIConstants.sRect*1.5
             }
             QTabButton{
                 text: "IPv6 Settings"
-                height: UIConstants.sRect*1.5
                 width: -1
                 visible: false
             }

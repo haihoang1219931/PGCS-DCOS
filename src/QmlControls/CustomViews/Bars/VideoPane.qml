@@ -17,6 +17,9 @@ Item{
     width: UIConstants.sRect*19
     height: UIConstants.sRect*13   
     clip: true
+    property int minValue: 0
+    property int maxValue: 400
+    property int currentValue: 200
     property bool isVideoOn: false
     property var player: undefined
     function searchByClass(selectedList){
@@ -62,73 +65,71 @@ Item{
 
 
     }
-    Item{
-        id: item1
-        anchors.fill: parent
-        Slider {
-            id: slider
-            x: 8
-            width: 40
-            anchors.top: lblMin.bottom
-            anchors.topMargin: 12
-            anchors.bottom: lblMax.top
-            anchors.bottomMargin: 6
-            to: 0
-            from: 1
-            orientation: Slider.SnapOnRelease
-            value: 0.5
+    Column{
+        width: UIConstants.sRect * 2
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: UIConstants.sRect*2
+        Label {
+            id: lblMax
+            width: UIConstants.sRect*2
+            height: UIConstants.sRect
+            text: maxValue
+            color: UIConstants.textColor
+            font.pixelSize: UIConstants.fontSize
+            font.family: UIConstants.appFont
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        Slider{
+            id: sldBar
+            orientation: Qt.Vertical
+            width: UIConstants.sRect*2
+            height: parent.height - lblMax.height - lblMin.height
+            from: minValue
+            to: maxValue
+            value: currentValue
+            handle: Rectangle{
+                y: sldBar.bottomPadding + sldBar.visualPosition * (sldBar.availableHeight - height)
+                x: sldBar.leftPadding + sldBar.availableWidth / 2 - width / 2
+                width: sldBar.width
+                height: width
+                color: !sldBar.pressed ?
+                    UIConstants.bgAppColor : UIConstants.textBlueColor
+                radius: UIConstants.rectRadius
+                border.color: UIConstants.grayColor
+                border.width: 1
+                Label{
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    verticalAlignment: Label.AlignVCenter
+                    horizontalAlignment: Label.AlignHCenter
+                    text: Number(sldBar.value).toFixed(0)
+                    font.family: UIConstants.appFont
+                    font.pixelSize: UIConstants.fontSize
+                    color: UIConstants.textColor
+                }
+            }
+
             onValueChanged: {
-                var newTrackSize = value*parseInt(lblMax.text);
+                var newTrackSize = parseInt(value);
                 cameraController.gimbal.changeTrackSize(newTrackSize);
             }
         }
 
         Label {
             id: lblMin
-            width: 40
-            height: 17
-            text: qsTr("0")
+            width: UIConstants.sRect*2
+            height: UIConstants.sRect
+            text: minValue
             color: UIConstants.textColor
             font.pixelSize: UIConstants.fontSize
             font.family: UIConstants.appFont
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 8
-            anchors.top: parent.top
-            anchors.topMargin: 37
-        }
-
-        Label {
-            id: lblMax
-            x: 2
-            y: 212
-            width: 40
-            height: 17
-            text: qsTr("400")
-            color: UIConstants.textColor
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 31
-            anchors.leftMargin: 8
-            anchors.left: parent.left
-        }
-
-        Label {
-            id: label
-            anchors.left: parent.left
-            anchors.leftMargin: 45
-
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            color: UIConstants.textColor
-            font.pixelSize: UIConstants.fontSize
-            font.family: UIConstants.appFont
-            y: (slider.value)*(slider.height-20)+slider.y
-            text: Number(slider.value*parseFloat(lblMax.text)).toFixed(0).toString()
         }
     }
     Component.onCompleted: {

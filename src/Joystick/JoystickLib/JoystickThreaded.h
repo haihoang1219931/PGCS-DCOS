@@ -27,10 +27,12 @@
 class JSAxis: public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int id READ id WRITE setId NOTIFY idChanged)
-    Q_PROPERTY(bool inverted READ inverted WRITE setInverted NOTIFY invertedChanged)
+    Q_PROPERTY(int id READ id WRITE setId NOTIFY idChanged)    
     Q_PROPERTY(float value READ value WRITE setValue NOTIFY valueChanged)
+    Q_PROPERTY(bool inverted READ inverted WRITE setInverted NOTIFY invertedChanged)
     Q_PROPERTY(QString mapFunc READ mapFunc WRITE setMapFunc NOTIFY mapFuncChanged)
+    Q_PROPERTY(bool invertedConfig READ invertedConfig WRITE setInvertedConfig NOTIFY invertedConfigChanged)
+    Q_PROPERTY(QString mapFuncConfig READ mapFuncConfig WRITE setMapFuncConfig NOTIFY mapFuncConfigChanged)
 public:
     JSAxis(QObject *parent = nullptr){ Q_UNUSED(parent);}
     JSAxis(int id, float value = 0){ m_id =id; m_value = value;}
@@ -42,6 +44,13 @@ public:
     void setMapFunc(QString mapFunc){
         m_mapFunc = mapFunc;
         Q_EMIT mapFuncChanged();
+        m_mapFuncConfig = mapFunc;
+        Q_EMIT mapFuncConfigChanged();
+    }
+    QString mapFuncConfig(){ return m_mapFuncConfig; }
+    void setMapFuncConfig(QString mapFuncConfig){
+        m_mapFuncConfig = mapFuncConfig;
+        Q_EMIT mapFuncConfigChanged();
     }
     bool inverted(){return m_inverted;}
     void setInverted(bool invert){
@@ -49,18 +58,38 @@ public:
             m_inverted = invert;
             Q_EMIT invertedChanged();
         }
+        if(m_invertedConfig!=invert){
+            m_invertedConfig = invert;
+            Q_EMIT invertedConfigChanged();
+        }
+    }
+    bool invertedConfig(){return m_invertedConfig;}
+    void setInvertedConfig(bool invertConfig){
+        if(m_invertedConfig!=invertConfig){
+            m_invertedConfig = invertConfig;
+            Q_EMIT invertedConfigChanged();
+        }
+    }
+    void saveConfig(){
+        m_inverted = m_invertedConfig;
+        m_mapFunc = m_mapFuncConfig;
     }
 Q_SIGNALS:
-    void invertedChanged();
     void idChanged();
     void valueChanged();
+    void invertedChanged();
+    void invertedConfigChanged();
     void mapFuncChanged();
+    void mapFuncConfigChanged();
+
 public Q_SLOTS:
 private:
-    bool m_inverted = false;
     int m_id = 0;
     float m_value = 0;
+    bool m_inverted = false;
+    bool m_invertedConfig = false;
     QString m_mapFunc = "Unused";
+    QString m_mapFuncConfig = "Unused";
 };
 class JSButton: public QObject
 {
@@ -68,6 +97,7 @@ class JSButton: public QObject
     Q_PROPERTY(int id READ id WRITE setId NOTIFY idChanged)
     Q_PROPERTY(bool pressed READ pressed WRITE setPressed NOTIFY pressedChanged)
     Q_PROPERTY(QString mapFunc READ mapFunc WRITE setMapFunc NOTIFY mapFuncChanged)
+    Q_PROPERTY(QString mapFuncConfig READ mapFuncConfig WRITE setMapFuncConfig NOTIFY mapFuncConfigChanged)
 public:
     JSButton(QObject *parent = nullptr){ Q_UNUSED(parent);}
     JSButton(int id, bool pressed = false){ m_id =id; m_pressed = pressed;}
@@ -77,17 +107,28 @@ public:
     void setPressed(bool pressed){m_pressed = pressed; Q_EMIT pressedChanged();}
     QString mapFunc(){ return m_mapFunc; }
     void setMapFunc(QString mapFunc){
-        m_mapFunc = mapFunc; Q_EMIT mapFuncChanged();
+        m_mapFunc = mapFunc;
+        Q_EMIT mapFuncChanged();
+    }
+    QString mapFuncConfig(){ return m_mapFuncConfig; }
+    void setMapFuncConfig(QString mapFuncConfig){
+        m_mapFuncConfig = mapFuncConfig;
+        Q_EMIT mapFuncConfigChanged();
+    }
+    void saveConfig(){
+        m_mapFunc = m_mapFuncConfig;
     }
 Q_SIGNALS:
     void idChanged();
     void pressedChanged();
     void mapFuncChanged();
+    void mapFuncConfigChanged();
 public Q_SLOTS:
 private:
     int m_id = 0;
     bool m_pressed = false;
     QString m_mapFunc = "Unused";
+    QString m_mapFuncConfig = "Unused";
 };
 
 class JoystickThreaded: public QObject
@@ -99,13 +140,8 @@ class JoystickThreaded: public QObject
     Q_PROPERTY(bool                 useJoystick                 READ useJoystick        WRITE setUseJoystick        NOTIFY useJoystickChanged)
     Q_PROPERTY(bool                 pic                         READ pic                WRITE setPIC                NOTIFY picChanged)
     Q_PROPERTY(QQmlListProperty<JSAxis> axes READ axes NOTIFY axesChanged)
+    Q_PROPERTY(QQmlListProperty<JSAxis> axesCam READ axesCam NOTIFY axesCamChanged)
     Q_PROPERTY(QQmlListProperty<JSButton> buttons READ buttons NOTIFY buttonsChanged)
-    Q_PROPERTY(QQmlListProperty<JSAxis> axesConfig READ axesConfig NOTIFY axesConfigChanged)
-    Q_PROPERTY(QQmlListProperty<JSButton> buttonsConfig READ buttonsConfig NOTIFY buttonsConfigChanged)
-    Q_PROPERTY(int axisRoll READ axisRoll WRITE setAxisRoll NOTIFY axisRollChanged)
-    Q_PROPERTY(int axisPitch READ axisPitch WRITE setAxisPitch NOTIFY axisPitchChanged)
-    Q_PROPERTY(int axisYaw READ axisYaw WRITE setAxisYaw NOTIFY axisYawChanged)
-    Q_PROPERTY(int axisThrottle READ axisThrottle WRITE setAxisThrottle NOTIFY axisThrottleChanged)
 
 public:
     JoystickThreaded(QObject *parent = nullptr);
@@ -118,11 +154,9 @@ public:
     Q_INVOKABLE void saveConfig();
     Q_INVOKABLE void loadConfig();
     Q_INVOKABLE void resetConfig();
-    Q_INVOKABLE void mapAxisConfig(int axisID, QString mapFunc, bool invert);
-    Q_INVOKABLE void mapButtonConfig(int buttonID, QString mapFunc);
-    Q_INVOKABLE void setInvert(QString camFunc,bool invert);
-    void mapAxis(int axisID, QString mapFunc, bool invert);
-    void mapButton(int buttonID, QString mapFunc);
+    Q_INVOKABLE void mapAxis(int axisID, QString mapFunc, bool invert, bool saveCurrent = true, bool axisCam = false);
+    Q_INVOKABLE void mapButton(int buttonID, QString mapFunc, bool saveCurrent = true);
+    Q_INVOKABLE void setInvertCam(QString camFunc,bool invert);
     QString mapFile(){ return m_mapFile; }
     void setMapFile(QString mapFile){
         m_mapFile = mapFile;
@@ -144,8 +178,19 @@ public:
         m_axes.clear();
         Q_EMIT axesChanged();
     }
-    QQmlListProperty<JSAxis> axesConfig(){
-        return QQmlListProperty<JSAxis>(this, m_axesTemp);
+    // List of AxisCam
+    QQmlListProperty<JSAxis> axesCam(){
+        return QQmlListProperty<JSAxis>(this, m_axesCam);
+    }
+    void appendAxisCam(JSAxis* p) {
+        m_axesCam.append(p);
+        Q_EMIT axesCamChanged();
+    }
+    int axisCamCount() const{return m_axesCam.count();}
+    JSAxis *axisCam(int index) const{ return m_axesCam.at(index);}
+    void clearAxesCam() {
+        m_axesCam.clear();
+        Q_EMIT axesCamChanged();
     }
     // List of Button
     QQmlListProperty<JSButton> buttons(){
@@ -157,14 +202,11 @@ public:
     }
     int buttonCount() const{return m_buttons.count();}
     JSButton *button(int index) const{ return m_buttons.at(index);}
-    JSButton *buttonTemp(int index) const{ return m_buttonsTemp.at(index);}
     void clearButtons() {
         m_buttons.clear();
         Q_EMIT buttonsChanged();
     }
-    QQmlListProperty<JSButton> buttonsConfig(){
-        return QQmlListProperty<JSButton>(this, m_buttonsTemp);
-    }
+
     int axisRoll(){ return m_axisRoll; }
     int axisPitch(){ return m_axisPitch; }
     int axisYaw(){ return m_axisYaw; }
@@ -173,25 +215,21 @@ public:
     void setAxisRoll(int value){
         if(m_axisRoll != value){
             m_axisRoll = value;
-            Q_EMIT axisRollChanged();
         }
     }
     void setAxisPitch(int value){
         if(m_axisPitch != value){
             m_axisPitch = value;
-            Q_EMIT axisPitchChanged();
         }
     }
     void setAxisYaw(int value){
         if(m_axisYaw != value){
             m_axisYaw = value;
-            Q_EMIT axisYawChanged();
         }
     }
     void setAxisThrottle(int value){
         if(m_axisThrottle != value){
             m_axisThrottle = value;
-            Q_EMIT axisThrottleChanged();
         }
     }
 
@@ -217,9 +255,27 @@ public:
     int axisPan(){ return m_axisPan; }
     int axisTilt(){ return m_axisTilt; }
     int axisZoom(){ return m_axisZoom; }
-    int invertPan(){ return  m_invertPan; }
-    int invertTilt(){ return m_invertTilt; }
-    int invertZoom(){ return m_invertZoom; }
+    int invertPan(){
+        if(m_axisPan >=0 && m_axisPan < m_axesCam.size()){
+            return m_axesCam[m_axisPan]->inverted()?-1:1;
+        }else{
+            return 1;
+        }
+    }
+    int invertTilt(){
+        if(m_axisTilt >=0 && m_axisTilt < m_axesCam.size()){
+            return m_axesCam[m_axisTilt]->inverted()?-1:1;
+        }else{
+            return 1;
+        }
+    }
+    int invertZoom(){
+        if(m_axisZoom >=0 && m_axisZoom < m_axesCam.size()){
+            return m_axesCam[m_axisZoom]->inverted()?-1:1;
+        }else{
+            return 1;
+        }
+    }
 public Q_SLOTS:
     void updateButtonAxis(bool connected);
     void changeButtonState(int btnID,bool clicked);
@@ -235,22 +291,16 @@ Q_SIGNALS:
     void buttonAxisLoaded();
     void joystickConnected(bool state);
     void axesChanged();
+    void axesCamChanged();
     void buttonsChanged();
-    void axesConfigChanged();
-    void buttonsConfigChanged();
     void axisValueChanged(int axisID, float value);
     void buttonStateChanged(int buttonID, bool pressed);
-    void axisRollChanged();
-    void axisPitchChanged();
-    void axisYawChanged();
-    void axisThrottleChanged();
 private:
     QThread *m_workerThread;
     JoystickTask* m_task = nullptr;
     QList<JSAxis*> m_axes;
-    QList<JSAxis*> m_axesTemp;
+    QList<JSAxis*> m_axesCam;
     QList<JSButton*> m_buttons;
-    QList<JSButton*> m_buttonsTemp;
     QString m_mapFile;
     bool m_connected = false;
     int m_axisRoll = 0;
@@ -260,9 +310,6 @@ private:
     int m_axisPan = 0;
     int m_axisTilt = 1;
     int m_axisZoom = 2;
-    float m_invertPan = -1;
-    float m_invertTilt = 1;
-    float m_invertZoom = 1;
     int m_butonPICCIC = 0;
     bool m_pic = false;
     bool m_useJoystick = false;

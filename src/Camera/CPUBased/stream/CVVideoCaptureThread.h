@@ -33,7 +33,7 @@ class CVVideoCaptureThread : public VideoEngine
         Q_INVOKABLE void setStab(bool enable) override;
         Q_INVOKABLE void setShare(bool enable) override;
         Q_INVOKABLE void setTrackState(bool enable) override;
-        Q_INVOKABLE void capture() override;
+        Q_INVOKABLE void capture(bool writeTime = true, bool writeLocation = true) override;
         Q_INVOKABLE void updateFOV(float irFOV, float eoFOV) override;
         Q_INVOKABLE void changeTrackSize(int newSize) override;
         Q_INVOKABLE bool getTrackEnable() override;

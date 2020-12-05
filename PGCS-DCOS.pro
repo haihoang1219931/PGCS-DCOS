@@ -187,6 +187,15 @@ unix:!macx: LIBS += -L/usr/local/lib/  \
     -lopencv_imgcodecs \
     -lopencv_imgproc \
     -lopencv_videoio
+## FFMPEG
+INCLUDEPATH += /usr/include/x86_64-linux-gnu/
+DEPENDPATH += /usr/include/x86_64-linux-gnu/
+LIBS +=  \
+    -lavformat \
+    -lavcodec \
+    -lavutil \
+    -lswscale \
+    -lswresample
 # GStreamer
 unix:!macx: DEPENDPATH += /usr/local/include
 unix:!macx: INCLUDEPATH += /usr/include/gstreamer-1.0

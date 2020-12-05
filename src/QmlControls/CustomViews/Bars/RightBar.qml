@@ -393,7 +393,8 @@ Rectangle {
                 color: UIConstants.bgAppColor
                 onClicked: {
                     camState.invertPan = !camState.invertPan;
-                    joystick.setInvert("PAN",camState.invertPan);
+                    joystick.setInvertCam("PAN",camState.invertPan);
+                    joystick.saveConfig();
                 }
             }
             FooterButton {
@@ -406,7 +407,8 @@ Rectangle {
                 color: UIConstants.bgAppColor
                 onClicked: {
                     camState.invertTilt = !camState.invertTilt;
-                    joystick.setInvert("TILT",camState.invertTilt);
+                    joystick.setInvertCam("TILT",camState.invertTilt);
+                    joystick.saveConfig();
                 }
             }
             FooterButton {
@@ -419,7 +421,8 @@ Rectangle {
                 color: UIConstants.bgAppColor
                 onClicked: {
                     camState.invertZoom = !camState.invertZoom;
-                    joystick.setInvert("ZOOM",camState.invertZoom);
+                    joystick.setInvertCam("ZOOM",camState.invertZoom);
+                    joystick.saveConfig();
                 }
             }
         }

@@ -98,6 +98,7 @@ Rectangle {
             anchors.leftMargin: 10
             width: UIConstants.sRect * 23
             height: parent.height-rowRefresh.height - 5
+            currentIndex: 0
             clip: true
             NetworkList{
                 id: accessList

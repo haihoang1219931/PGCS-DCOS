@@ -10,7 +10,7 @@ MapPolygon{
     id:gcs_target_polygon
     color: "green"
     opacity: 0.5
-    border.color: "gray"
+    border.color: "orange"
     border.width: 2
     antialiasing: true
     smooth: true

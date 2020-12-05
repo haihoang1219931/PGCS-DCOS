@@ -1,5 +1,6 @@
 #include "VDisplayWorker.h"
 #include "../VideoEngine/VideoEngineInterface.h"
+#include "Camera/GimbalController/GimbalInterface.h"
 #include "Camera/Algorithms/tracker/mosse/tracker.h"
 VDisplayWorker::VDisplayWorker(QObject *_parent) : QObject(_parent)
 {
@@ -102,7 +103,8 @@ void VDisplayWorker::process()
 //        printf("imgSize[%dx%d]\r\n",imgSize.width,imgSize.height);
 
         m_imgI420 = cv::Mat(imgSize.height * 3 / 2, imgSize.width, CV_8UC1, h_imageData);
-        if(m_imgI420Warped.rows <= 0 || m_imgI420Warped.cols <= 0){
+        if(m_imgI420Warped.rows != m_imgI420.rows ||
+                m_imgI420Warped.cols != m_imgI420.cols){
             m_imgI420Warped = m_imgI420.clone();
             imgYWarped = cv::Mat(static_cast<int>(height), static_cast<int>(width), CV_8UC1, m_imgI420Warped.data);
             imgUWarped = cv::Mat(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420Warped.data + size_t(height * width));
@@ -119,7 +121,7 @@ void VDisplayWorker::process()
         if(processImgItem.sensorID() == 1){
             if(processImgItem.colorMode() == 0){
 
-            }else if(processImgItem.colorMode() == 0){
+            }else if(processImgItem.colorMode() == 1){
                 cv::applyColorMap(m_imgGray,m_imgIRColor,cv::COLORMAP_HOT);
                 cv::cvtColor(m_imgIRColor, m_imgI420, cv::COLOR_BGR2YUV_I420);
             }
@@ -129,10 +131,64 @@ void VDisplayWorker::process()
             m_captureSet = false;
             m_captureMutex.unlock();
             std::string timestamp = FileController::get_time_stamp();
-            std::string captureFile = "flights/" + timestamp + ".jpg";
+            std::string captureFile = "flights/"+ FileController::get_day() +
+                    "/" + timestamp + ".jpg";
             printf("Save file %s\r\n", captureFile.c_str());
             cv::Mat imgSave;
             cv::cvtColor(m_imgI420, imgSave, cv::COLOR_YUV2BGR_I420);
+            time_t t = time(0);   // get time now
+            struct tm * now = localtime( & t );
+            char dayOnTarget[64];
+            sprintf(dayOnTarget, "%04d/%02d/%02d",
+                    (now->tm_year + 1900),
+                    now->tm_mon + 1,
+                    now->tm_mday);
+            char timeOnTarget[64];
+            sprintf(timeOnTarget, "%02d:%02d:%02d",
+                    now->tm_hour,
+                    now->tm_min,
+                    now->tm_sec);
+            char targetLabel[64];
+            char targetLat[64];
+            char targetLon[64];
+            char targetSlr[64];
+            sprintf(targetLabel,"%s","TGT");
+            sprintf(targetLat,"%s: %.07f","LAT",m_gimbal->context()->m_centerLat);
+            sprintf(targetLon,"%s: %.07f","LON",m_gimbal->context()->m_centerLon);
+            sprintf(targetSlr,"%s: %.02fM","SLR",m_gimbal->context()->m_targetSlr);
+
+            int textFont = cv::FONT_HERSHEY_PLAIN;
+            cv::Scalar textColor = cv::Scalar(255, 255, 255);
+            cv::Scalar bgColor = cv::Scalar(0, 0, 0);
+            cv::Point pointTarget(imgSave.cols-170,imgSave.rows);
+            if(m_writeTime){
+                VideoEngine::drawTextOnBackground(imgSave,textColor,bgColor,
+                    std::string(dayOnTarget),cv::Point(20,20),
+                        cv::Rect(10,6,120,18),
+                        textFont, 1, textColor, 1);
+                VideoEngine::drawTextOnBackground(imgSave,textColor,bgColor,
+                    std::string(timeOnTarget),cv::Point(20,40),
+                        cv::Rect(10,26,120,18),
+                        textFont, 1, textColor, 1);
+            }
+            if(m_writeLocation){
+                VideoEngine::drawTextOnBackground(imgSave,textColor,bgColor,
+                    std::string(targetLabel),cv::Point(pointTarget.x,pointTarget.y - 80),
+                        cv::Rect(pointTarget.x,pointTarget.y-94,40,18),
+                        textFont, 1, textColor, 1);
+                VideoEngine::drawTextOnBackground(imgSave,textColor,bgColor,
+                    std::string(targetLat),cv::Point(pointTarget.x,pointTarget.y - 60),
+                        cv::Rect(pointTarget.x,pointTarget.y-74,160,18),
+                        textFont, 1, textColor, 1);
+                VideoEngine::drawTextOnBackground(imgSave,textColor,bgColor,
+                    std::string(targetLon),cv::Point(pointTarget.x,pointTarget.y - 40),
+                        cv::Rect(pointTarget.x,pointTarget.y-54,160,18),
+                        textFont, 1, textColor, 1);
+                VideoEngine::drawTextOnBackground(imgSave,textColor,bgColor,
+                    std::string(targetSlr),cv::Point(pointTarget.x,pointTarget.y - 20),
+                        cv::Rect(pointTarget.x,pointTarget.y-34,160,18),
+                        textFont, 1, textColor, 1);
+            }
             cv::imwrite(captureFile, imgSave);
         }
 
@@ -353,9 +409,11 @@ void VDisplayWorker::setVideoSavingState(bool _state)
     m_enSaving = _state;
 }
 
-void VDisplayWorker::capture(){
+void VDisplayWorker::capture(bool writeTime, bool writeLocation){
     m_captureMutex.lock();
     m_captureSet = true;
+    m_writeTime = writeTime;
+    m_writeLocation = writeLocation;
     m_captureMutex.unlock();
 }
 

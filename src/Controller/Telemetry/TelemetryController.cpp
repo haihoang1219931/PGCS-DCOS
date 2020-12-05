@@ -5,18 +5,45 @@ TelemetryController::TelemetryController(QObject *parent) : QObject(parent)
     m_socket = new QTcpSocket();
     m_timerRequest = new QTimer();
     m_timerRequest->setSingleShot(true);
-    m_timerRequest->setInterval(1000);
+    m_timerRequest->setInterval(2000);
     connect(m_timerRequest,&QTimer::timeout,this,&TelemetryController::handleRequestTimeout);
+
     m_timerWriteLog = new QTimer();
     m_timerWriteLog->setSingleShot(false);
-    m_timerWriteLog->setInterval(1000);
+    m_timerWriteLog->setInterval(5000);
     connect(m_timerWriteLog,&QTimer::timeout,this,&TelemetryController::handleWriteLogTimeout);
+
+    m_timerCheck = new QTimer();
+    m_timerCheck->setSingleShot(false);
+    m_timerCheck->setInterval(5000);
+    connect(m_timerCheck,&QTimer::timeout,this,&TelemetryController::handleCheckConnect);
 }
 TelemetryController::~TelemetryController(){
     if(m_socket->isOpen()){
         m_socket->disconnectFromHost();
         m_socket->deleteLater();
     }
+}
+void TelemetryController::handleCheckConnect(){
+#ifdef DEBUG_FUNC
+    printf("m_countLast[%d] m_countParsed[%d]\r\n",
+           m_countLast,m_countParsed);
+#endif
+    int countCurrent = m_countLast;
+    if(m_countParsed - countCurrent < 1){
+        #ifdef DEBUG_FUNC
+        printf("Link lost\r\n");
+#endif
+        m_linkGood = false;
+        m_snr = -1;
+        m_rssi = -1;
+    }else{
+        #ifdef DEBUG_FUNC
+        printf("Link good\r\n");
+#endif
+        m_linkGood = true;
+    }
+    m_countLast = m_countParsed;
 }
 void TelemetryController::connectToHost(QString ip, int port,QString user, QString pass){
     printf("Connect to %s:%d\r\n",ip.toStdString().c_str(),port);
@@ -30,6 +57,8 @@ void TelemetryController::connectToHost(QString ip, int port,QString user, QStri
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));
     connect(m_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onTcpStateChanged(QAbstractSocket::SocketState)));
     connect(m_socket,&QTcpSocket::readyRead,this,&TelemetryController::handlePacketReceived);
+    m_timerWriteLog->start();
+    m_timerCheck->start();
 }
 int TelemetryController::getConnectionStatus()
 {
@@ -37,7 +66,7 @@ int TelemetryController::getConnectionStatus()
 }
 void TelemetryController::onConnected()
 {
-    qDebug() << "Gimbal Connected";
+    qDebug() << "Telemetry Connected";
     m_status = 1;
     int enableKeepAlive = 1;
     int fd = m_socket->socketDescriptor();
@@ -55,37 +84,48 @@ void TelemetryController::onConnected()
 
 void TelemetryController::onDisconnected()
 {
-    qDebug() << "Gimbal DIsconnected";
+    qDebug() << "Telemetry disconnected";
     m_status = 0;
     m_socket->abort();
     m_socket->close();
 }
 
 void TelemetryController::onTcpStateChanged(QAbstractSocket::SocketState socketState) {
-    //    qDebug() << "State:" << socketState;
+    qDebug() << "State:" << socketState;
 }
 
 void TelemetryController::onTcpError(QAbstractSocket::SocketError error) {
     //    qDebug() << "---------------------------------------------";
-    //    qDebug() << "Error:" << error;
+    qDebug() << "Error:" << error;
     m_status = -1;
     QMetaObject::invokeMethod(this, "gimbalRetryConnect", Qt::QueuedConnection);
 }
 
 void TelemetryController::gimbalRetryConnect()
 {
-    //    qDebug() << " Gimbal retry connect";
-    m_socket->disconnectFromHost();
-    m_socket->connectToHost(m_ip, m_port);
+    qDebug() << " Gimbal retry connect";
+    disconnectFromHost();
+    connectToHost(m_ip, m_port,m_user,m_pass);
 }
 void TelemetryController::disconnectFromHost(){
     printf("Disconnect from host\r\n");
+    disconnect(m_socket, SIGNAL(connected()), this, SLOT(onConnected()));
+    disconnect(m_socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    disconnect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));
+    disconnect(m_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onTcpStateChanged(QAbstractSocket::SocketState)));
     disconnect(m_socket,&QTcpSocket::readyRead,this,&TelemetryController::handlePacketReceived);
+    m_timerRequest->stop();
+    m_timerWriteLog->stop();
+    m_timerCheck->stop();
     m_socket->disconnectFromHost();
+    m_buffer.clear();
+    m_authenticated = false;
+    m_sendUser = false;
+    m_sendPass = false;
 }
 void TelemetryController::sendRawData(QString command){
     QByteArray cmd = QByteArray::fromHex(command.toLatin1());
-    //    printf("TCP Telemetry Send Data: %s\r\n",command.toStdString().c_str());
+//    printf("TCP Telemetry Send Data: %s\r\n",command.toStdString().c_str());
     m_socket->write(cmd,cmd.size());
 }
 void TelemetryController::handlePacketReceived(){
@@ -97,7 +137,6 @@ void TelemetryController::handlePacketReceived(){
         m_socket->read(buffer.data(), buffer.size());
         m_buffer.push_back(buffer);
         QString command(m_buffer);
-//        printf("TCP Received: %s\r\n",command.toStdString().c_str());
         if(!m_authenticated){
             if(command.contains("UserDevice login: ")){
                 if(!m_sendUser){
@@ -118,34 +157,46 @@ void TelemetryController::handlePacketReceived(){
                     printf("Authenticate successfully\r\n");
                     m_authenticated = true;
                     m_timerRequest->start();
-                    m_timerWriteLog->start();
                 }
                 m_buffer.clear();
             }
         }else{
-            parseData(command);
-            //            m_buffer.clear();
-        }
-        while(m_buffer.size()>512){
-            m_buffer.remove(0,m_buffer.size()-512);
+            if(command.contains("UserDevice>")){
+                m_timerRequest->start();
+                parseData(command);
+                m_buffer.clear();
+            }
         }
     }
 }
 void TelemetryController::handleRequestTimeout(){
-    m_timerRequest->stop();
     QString response = "AT+MWSTATUS\n";
     m_socket->write(response.toStdString().c_str(),response.length());
-    m_timerRequest->start();
+    #ifdef DEBUG_FUNC
+    printf("Request Data ===========================\r\n");
+#endif
 }
 void TelemetryController::handleWriteLogTimeout(){
-//    printf("[%s:%d] [RSSI:%d] [SNR:%d]\r\n",
-//           m_ip.toStdString().c_str(),
-//           m_port,
-//           m_rssi,
-//           m_snr);
+    #ifdef DEBUG_FUNC
+    printf("[%s:%d] [%s] [RSSI:%d] [SNR:%d]\r\n",
+               m_ip.toStdString().c_str(),
+               m_port,
+               m_linkGood?"LINK GOOD":"LINK LOST",
+               m_rssi,
+               m_snr);
+#endif
     Q_EMIT writeLogTimeout(m_ip,m_snr,m_rssi);
 }
 void TelemetryController::parseData(QString data){
+    m_countParsed++;
+    if(m_countParsed > 5){
+        m_countLast = m_countLast-m_countParsed;
+        m_countParsed = 0;
+    }
+    #ifdef DEBUG_FUNC
+//    printf("Parse data\r\n");
+#endif
+    //    printf("TCP Received =========================== : %s\r\n",data.toStdString().c_str());
     if(data.contains("SNR")){
         QRegularExpression re("SNR[ ]+\\(dB\\)[ ]+:[ ]+([-]*\\d+)");
         QRegularExpressionMatch match = re.match(data);
@@ -153,6 +204,8 @@ void TelemetryController::parseData(QString data){
             QString value = match.captured(1);
             m_snr = value.toInt();
         }
+    }else{
+        m_snr = -1;
     }
     if(data.contains("RSSI")){
         QRegularExpression re("RSSI[ ]+\\(dBm\\)[ ]+:[ ]+([-]*\\d+)");
@@ -161,5 +214,7 @@ void TelemetryController::parseData(QString data){
             QString value = match.captured(1);
             m_rssi = value.toInt();
         }
+    }else{
+        m_rssi = -1;
     }
 }

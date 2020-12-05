@@ -34,11 +34,12 @@ Rectangle {
     property alias text: label.text
     property alias horizontalAlignment: label.horizontalAlignment
     property alias verticalAlignment: label.verticalAlignment
+    property color textColor: UIConstants.textColor
     Label{
         id: label
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        color: UIConstants.textColor
+        color: textColor
         font.pixelSize:UIConstants.fontSize
         font.family: UIConstants.appFont
         text: "Label"
