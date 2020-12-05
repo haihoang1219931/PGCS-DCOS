@@ -30,6 +30,7 @@ public:
     void setShare(bool enable) override;
     void setGimbalPreset(QString mode) override;
     void setGimbalMode(QString mode) override;
+    void setDefog(QString mode) override;
     void setGimbalPos(float panPos,float tiltPos) override;
     void setObjectSearch(bool enable) override;
 

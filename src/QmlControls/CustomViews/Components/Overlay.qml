@@ -245,7 +245,7 @@ Item {
         //        width: (parent.width - 10 * 3)/2
         //        height: width
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 8 - UIConstants.sRect/2
+        anchors.bottomMargin: UIConstants.sRect/2
         Column{
             width: (parent.width-parent.spacing)/2
             height: width

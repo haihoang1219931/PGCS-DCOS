@@ -375,7 +375,37 @@ void GremseyGimbal::setGimbalPreset(QString mode)
         printf("m_vehicle == nullptr\r\n");
     }
 }
-
+void GremseyGimbal::setDefog(QString mode)
+{
+    if(mode == "NEXT"){
+        QString nextDefog = "OFF";
+        if(m_context->m_defogMode.contains("OFF")){
+            nextDefog = "AUTO";
+        }else if(m_context->m_defogMode.contains("AUTO")){
+            nextDefog = "LOW";
+        }else if(m_context->m_defogMode.contains("LOW")){
+            nextDefog = "MID";
+        }else if(m_context->m_defogMode.contains("MID")){
+            nextDefog = "HIGH";
+        }else if(m_context->m_defogMode.contains("HIGH")){
+            nextDefog = "OFF";
+        }
+        m_context->m_defogMode = nextDefog;
+    }else{
+        m_context->m_defogMode = mode;
+    }
+    if(m_context->m_defogMode == "OFF"){
+        m_sensor->sendRawData("810104370300FF");
+    }else if(m_context->m_defogMode == "AUTO"){
+        m_sensor->sendRawData("810104370200FF");
+    }else if(m_context->m_defogMode == "LOW"){
+        m_sensor->sendRawData("810104370201FF");
+    }else if(m_context->m_defogMode == "MID"){
+        m_sensor->sendRawData("810104370202FF");
+    }else if(m_context->m_defogMode == "HIGH"){
+        m_sensor->sendRawData("810104370203FF");
+    }
+}
 void GremseyGimbal::setGimbalMode(QString mode)
 {
     if(m_vehicle != nullptr &&  m_vehicle->m_firmwarePlugin != nullptr)

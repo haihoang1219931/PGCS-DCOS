@@ -170,6 +170,9 @@ void GimbalInterface::setGimbalMode(QString mode){
 void GimbalInterface::setGimbalPreset(QString mode){
     Q_UNUSED(mode);
 }
+void GimbalInterface::setDefog(QString mode){
+    Q_UNUSED(mode);
+}
 void GimbalInterface::setGimbalRecorder(bool enable){
     Q_UNUSED(enable);
 }

@@ -239,6 +239,7 @@ public Q_SLOTS:
         map.insert("VIDEO_PORT", m_videoPort);
         map.insert("GCS_SHARED",m_gcsShare);
         map.insert("PRESET",m_presetMode);
+        map.insert("DEFOG",m_defogMode);
         map.insert("SEARCH",m_gcsSearch);
         map.insert("LOCALIZATION",m_gcsTargetLocalization);
         //        printf("m_enableGyroStabilisationPan = %s\r\n",m_enableGyroStabilisationPan==true?"ON":"OFF");
@@ -373,6 +374,7 @@ public:
     QString m_gimbalMode = "NA";
     QString m_trackMode = "";
     QString m_presetMode = "OFF";
+    QString m_defogMode = "OFF";
     bool m_gcsSearch = false;
     bool m_gcsTargetLocalization = false;
     float m_geoLon,m_geoLat,m_geoAlt;

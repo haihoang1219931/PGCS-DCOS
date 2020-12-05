@@ -1974,6 +1974,7 @@ ApplicationWindow {
             camState.gcsShare = data["GCS_SHARED"];
             camState.digitalStab = data["STAB_DIGITAL"];
             camState.presetMode = data["PRESET"];
+            camState.defogMode = data["DEFOG"];
             camState.panPos = data["panPos"];
             camState.tiltPos = data["tiltPos"];
             mapPane.drawTargetLocalization(

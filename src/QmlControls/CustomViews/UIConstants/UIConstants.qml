@@ -274,6 +274,7 @@ QtObject {
     readonly property string iSensor:               "\uf042"
     readonly property string iObserve:              "\uf06e"
     readonly property string iPreset:               "\uf0b2"
+    readonly property string iDefog:                "\uf0c2"
     readonly property string iSnapshot:             "\uf030"
     readonly property string iMinorInfo:            "\uf141"
     readonly property string iMeasureDistance:      "\uf547"
@@ -411,6 +412,13 @@ QtObject {
                 "BEHIND":["BEHIND","SAU"],
                 "LEFT":["LEFT","TRÁI"],
                 "NADIR":["NADIR","DƯỚI\nBỤNG"],
+            },
+            "DEFOG":{
+                "OFF":["OFF","Tắt"],
+                "AUTO":["AUTO","Tự\nđộng"],
+                "LOW":["LOW","Thấp"],
+                "MID":["MID","Vừa"],
+                "HIGH":["HIGH","Cao"],
             },
             "COLOR":{
                 "EO":{

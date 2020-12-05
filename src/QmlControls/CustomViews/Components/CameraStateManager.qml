@@ -29,13 +29,10 @@ Item {
     property string sensorIDIR: "IR"
     property string lockMode: "FREE" // "VISUAL","GEO","TRACK"
     property string presetMode: "OFF" // "RIGHT_WING","NADIR","OFF"
+    property string defogMode: "OFF" // "RIGHT_WING","NADIR","OFF"
     property var colorMode: {
                             "EO":"NORMAL",// "COLOR","DAWN"
                             "IR":"WHITE_HOT" // "BLACK_HOT","REDDISH","COLOR"
-                            }
-    property var defogMode: {
-                            "EO":"OFF",//"AUTO","LOW","MEDIUM","HIGH"
-                            "IR":"OFF" //"AUTO","LOW","MEDIUM","HIGH"
                             }
     property string gimbalMode: "NA" //"OFF" "ON","SECURE","SLEEP"
     property bool gimbalRecord: false // true
@@ -162,19 +159,7 @@ Item {
     function changePresetMode(presetMode){
         root.presetMode = presetMode
     }
-    function changeSensorDefog(sensor,defog){
-        var lastDefog;
-        if(sensor === "EO"){
-            lastDefog = defogMode["IR"];
-            defogMode = {"EO":defog,"IR":lastDefog}
-        }else if(sensor === "IR"){
-            lastDefog = defogMode["EO"];
-            defogMode = {"EO":lastDefog,"IR":defog}
-        }
-//        console.log("change defog "+sensor+" to "+defog)
-//        defogMode[sensor] = defog
-//        sensorID = sensorID;
-    }
+
     function changeGimbalMode(gimbalMode){
         root.gimbalMode = gimbalMode
 

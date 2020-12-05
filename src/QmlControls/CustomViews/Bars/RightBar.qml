@@ -92,36 +92,6 @@ Rectangle {
 //                    btnPreset.setButtonDisable()
                     cameraController.gimbal.setGimbalPreset("NEXT");
                 }
-//                Connections {
-//                    target: cameraController.gimbal
-//                    onPresetChanged:{
-//                        console.log("end preset");
-//                        if(result === true && btnPreset.isEnable === false)
-//                        {
-//                            switch(btnPreset.btnText)
-//                            {
-//                            case itemListName["MISSION_PRESET_FRONT"][UIConstants.language[UIConstants.languageID]]:
-//                                btnPreset.btnText = itemListName["MISSION_PRESET_RIGHTWING"][UIConstants.language[UIConstants.languageID]]
-//                                break;
-//                            case itemListName["MISSION_PRESET_RIGHTWING"][UIConstants.language[UIConstants.languageID]]:
-//                                btnPreset.btnText = itemListName["MISSION_PRESET_BEHIND"][UIConstants.language[UIConstants.languageID]]
-//                                break;
-//                            case itemListName["MISSION_PRESET_BEHIND"][UIConstants.language[UIConstants.languageID]]:
-//                                btnPreset.btnText = itemListName["MISSION_PRESET_LEFTWING"][UIConstants.language[UIConstants.languageID]]
-//                                break;
-//                            case itemListName["MISSION_PRESET_LEFTWING"][UIConstants.language[UIConstants.languageID]]:
-//                                btnPreset.btnText = itemListName["MISSION_PRESET_NADIR"][UIConstants.language[UIConstants.languageID]]
-//                                break;
-//                            case itemListName["MISSION_PRESET_NADIR"][UIConstants.language[UIConstants.languageID]]:
-//                                btnPreset.btnText = itemListName["MISSION_PRESET_FRONT"][UIConstants.language[UIConstants.languageID]]
-//                                break;
-//                            default:
-//                                break;
-//                            }
-//                        }
-//                        btnPreset.setButtonEnable()
-//                    }
-//                }
             }
             FooterButton {
                 id: btnSensorColor
@@ -145,6 +115,19 @@ Rectangle {
                         camState.colorMode = {"EO":"NORMAL","IR":color};
                         cameraController.gimbal.setSensorColor(camState.sensorID,color);
                     }
+                }
+            }
+            FooterButton {
+                id: btnDefog
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iDefog
+                btnText: itemListName["DEFOG"][camState.defogMode][UIConstants.language[UIConstants.languageID]]
+                color: UIConstants.bgAppColor
+                enabled: camState.sensorID === camState.sensorIDEO
+                onClicked: {
+//                    btnPreset.setButtonDisable()
+                    cameraController.gimbal.setDefog("NEXT");
                 }
             }
             FooterButton {
@@ -203,96 +186,7 @@ Rectangle {
                     }
                 }
             }
-            SwitchFlatButton {
-                id: btnGCSObjectDetect
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: parent.width
-                icon: UIConstants.iCar
-                btnText: itemListName["OBJECT_DETECT"]
-                         [UIConstants.language[UIConstants.languageID]]
-                color: UIConstants.bgAppColor
-                isSync: true
-                isOn: camState.gcsOD
-                onClicked: {
-                    camState.gcsOD=!camState.gcsOD;
-//                    console.log("setVideoSavingState to "+camState.gcsRecord)
-                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.videoEngine.setObjectDetect(camState.gcsOD);
-                    }
-                }
-            }
-            SwitchFlatButton {
-                id: btnGCSLineDetect
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: parent.width
-                icon: UIConstants.iBolt
-                btnText: itemListName["POWERLINE_DETECT"]
-                         [UIConstants.language[UIConstants.languageID]]
-                color: UIConstants.bgAppColor
-                isSync: true
-                isOn: camState.gcsPD
-                onClicked: {
-                    camState.gcsPD=!camState.gcsPD;
-//                    console.log("setVideoSavingState to "+camState.gcsRecord)
-                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.videoEngine.setPowerLineDetect(camState.gcsPD);
-                    }
-                }
-            }
 
-//            SwitchFlatButton {
-//                id: btnVisualLock
-//                Layout.preferredWidth: parent.width
-//                Layout.preferredHeight: parent.width
-//                icon: UIConstants.iVisualLock
-//                isSync: true
-//                btnText: "Visual\nlock"
-//                color: UIConstants.bgAppColor
-//                isOn: camState.lockMode === "VISUAL"
-//                onClicked: {
-//                    if(isOn){
-//                        camState.changeLockMode("FREE")
-//                        if(gimbalNetwork.isGimbalConnected === true)
-//                            gimbalNetwork.ipcCommands.changeLockMode("LOCK_FREE", "GEOLOCATION_OFF");
-//                    }else{
-//                        camState.changeLockMode("VISUAL")
-//                            if(gimbalNetwork.isGimbalConnected === true)
-//                        gimbalNetwork.ipcCommands.doSceneSteering(cameraController.gimbal.frameID);
-//                    }
-//                }
-//            }
-
-//            SwitchFlatButton {
-//                id: btnDigitalStab
-//                Layout.preferredWidth: parent.width
-//                Layout.preferredHeight: parent.width
-//                icon: UIConstants.iDigitalStab
-//                isSync: true
-//                btnText: "Digital\nStab"
-//                color: UIConstants.bgAppColor
-//                isOn: camState.digitalStab
-//                onClicked: {
-
-//                    if(CAMERA_CONTROL){
-//                        if(gimbalNetwork.isGimbalConnected){
-//                            console.log("set digital stab to "+!isOn);
-//                            gimbalNetwork.ipcCommands.enableImageStab(!isOn?"ISTAB_ON":"ISTAB_OFF", !isOn?0.2:0.0);
-//                        }
-//                    }
-//                }
-//            }
-
-//            FooterButton {
-//                id: btnVideoConfig
-//                Layout.preferredWidth: parent.width
-//                Layout.preferredHeight: parent.width
-//                icon: UIConstants.iVideoConfig
-//                btnText: "Video\nconfig"
-//                color: UIConstants.bgAppColor
-//                onClicked: {
-//                    configPane.visible = !configPane.visible;
-//                }
-//            }
         }
         ColumnLayout {
             id: group2
@@ -335,21 +229,41 @@ Rectangle {
                 }
             }
             SwitchFlatButton {
-                id: btnDigitalStab
+                id: btnGCSObjectDetect
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: parent.width
-                icon: UIConstants.iGCSStab
-                isSync: true
-                btnText: itemListName["GCS_STAB"]
+                icon: UIConstants.iCar
+                btnText: itemListName["OBJECT_DETECT"]
                          [UIConstants.language[UIConstants.languageID]]
                 color: UIConstants.bgAppColor
-                isOn: camState.digitalStab
+                isSync: true
+                isOn: camState.gcsOD
                 onClicked: {
+                    camState.gcsOD=!camState.gcsOD;
+//                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setDigitalStab(!camState.gcsStab)
+                        cameraController.videoEngine.setObjectDetect(camState.gcsOD);
                     }
                 }
             }
+//            SwitchFlatButton {
+//                id: btnGCSLineDetect
+//                Layout.preferredWidth: parent.width
+//                Layout.preferredHeight: parent.width
+//                icon: UIConstants.iBolt
+//                btnText: itemListName["POWERLINE_DETECT"]
+//                         [UIConstants.language[UIConstants.languageID]]
+//                color: UIConstants.bgAppColor
+//                isSync: true
+//                isOn: camState.gcsPD
+//                onClicked: {
+//                    camState.gcsPD=!camState.gcsPD;
+////                    console.log("setVideoSavingState to "+camState.gcsRecord)
+//                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
+//                        cameraController.videoEngine.setPowerLineDetect(camState.gcsPD);
+//                    }
+//                }
+//            }
             SwitchFlatButton {
                 id: btnSearch
                 Layout.preferredWidth: parent.width
@@ -384,20 +298,6 @@ Rectangle {
                 }
             }
             FooterButton {
-                id: btnInvertPan
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: parent.width
-                icon: UIConstants.iInvertPan
-                btnText: itemListName["INVERT_PAN"]
-                         [UIConstants.language[UIConstants.languageID]]
-                color: UIConstants.bgAppColor
-                onClicked: {
-                    camState.invertPan = !camState.invertPan;
-                    joystick.setInvertCam("PAN",camState.invertPan);
-                    joystick.saveConfig();
-                }
-            }
-            FooterButton {
                 id: btnInvertTilt
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: parent.width
@@ -408,20 +308,6 @@ Rectangle {
                 onClicked: {
                     camState.invertTilt = !camState.invertTilt;
                     joystick.setInvertCam("TILT",camState.invertTilt);
-                    joystick.saveConfig();
-                }
-            }
-            FooterButton {
-                id: btnInvertZoom
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: parent.width
-                icon: UIConstants.iZoomIn
-                btnText: itemListName["INVERT_ZOOM"]
-                         [UIConstants.language[UIConstants.languageID]]
-                color: UIConstants.bgAppColor
-                onClicked: {
-                    camState.invertZoom = !camState.invertZoom;
-                    joystick.setInvertCam("ZOOM",camState.invertZoom);
                     joystick.saveConfig();
                 }
             }
