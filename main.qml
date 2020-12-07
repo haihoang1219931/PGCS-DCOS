@@ -958,7 +958,7 @@ ApplicationWindow {
                 anchors {right: rightBar.left; top: parent.top;topMargin: UIConstants.sRect + 8; rightMargin: 8 }
                 z: 5
                 visible: UIConstants.monitorMode === UIConstants.monitorModeFlight &&
-                         (vehicle.vehicleType === 2 || vehicle.vehicleType === 3)
+                         (vehicle.vehicleType === 2 || vehicle.vehicleType === 14)
             }
             AhrsHUD{
                 id:ahrsHUD

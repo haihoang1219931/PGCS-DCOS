@@ -138,6 +138,7 @@ public Q_SLOTS:
 protected:
     GimbalData* m_context = nullptr;
     VideoEngine* m_videoEngine = nullptr;
+    Vehicle* m_vehicle = nullptr;
     bool m_isGimbalConnected = false;
     Config* m_config = nullptr;
     JoystickThreaded*  m_joystick = nullptr;

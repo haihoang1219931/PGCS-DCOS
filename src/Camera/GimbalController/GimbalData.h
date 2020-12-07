@@ -203,7 +203,7 @@ public Q_SLOTS:
         map.insert("GEO_LAT", m_geoLat);
         map.insert("GEO_ALT", m_geoAlt);
         // IPC Status
-        QString  sensor = m_sensorID == 0?"EO":"IR";
+        QString  sensor = (m_sensorID == 0?"EO":"IR");
         map.insert("SENSOR", sensor);
         QVariantMap mapFov;
         mapFov.insert("EO",m_hfov[0]);

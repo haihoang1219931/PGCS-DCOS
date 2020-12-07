@@ -55,7 +55,7 @@ private:
     SensorController* m_sensor;
     QVector<int> m_zoom;
     QMap<int,int> m_mapZoom;
-    Vehicle* m_vehicle = nullptr;
+
     float m_presetAngleSet_Pan = 0;
     float m_presetAngleSet_Tilt = 0;
 //    QString m_modePreset = "OFF";

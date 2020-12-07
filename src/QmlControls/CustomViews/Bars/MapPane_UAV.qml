@@ -594,7 +594,7 @@ Flickable {
 
     property var vehicleSymbolLink: {
         "MAV_TYPE_QUADROTOR":"qrc:/qmlimages/uavIcons/QuadRotorX.png",
-                "MAV_TYPE_COAXIAL":"qrc:/qmlimages/uavIcons/OctoRotorXCoaxial.svg",
+                "MAV_TYPE_OCTOROTOR":"qrc:/qmlimages/uavIcons/QuadRotorX.png",
                 "MAV_TYPE_VTOL_QUADROTOR":"qrc:/qmlimages/uavIcons/VTOLPlane.png",
                 "MAV_TYPE_FIXED_WING":"qrc:/qmlimages/uavIcons/Plane.png",
                 "MAV_TYPE_GENERIC":"qrc:/qmlimages/uavIcons/Unknown.png"
@@ -1817,10 +1817,10 @@ Flickable {
             waypointEditor.vehicleType = rootItem.vehicleType;
             vehicleSymbolUrl = vehicleSymbolLink["MAV_TYPE_QUADROTOR"];
             break;
-        case 3:
-            rootItem.vehicleType = "MAV_TYPE_COAXIAL";
+        case 14:
+            rootItem.vehicleType = "MAV_TYPE_OCTOROTOR";
             waypointEditor.vehicleType = rootItem.vehicleType;
-            vehicleSymbolUrl = vehicleSymbolLink["MAV_TYPE_COAXIAL"];
+            vehicleSymbolUrl = vehicleSymbolLink["MAV_TYPE_OCTOROTOR"];
             break;
         case 20:
             rootItem.vehicleType = "MAV_TYPE_VTOL_QUADROTOR";

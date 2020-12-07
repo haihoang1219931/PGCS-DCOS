@@ -185,11 +185,11 @@ void SBusGimbal::disconnectGimbal(){
 void SBusGimbal::changeSensor(QString sensorID){
     if(m_videoEngine!=nullptr){
         if(sensorID == "IR"){
-            m_videoEngine->setVideo(m_config->value("Settings:StreamIR:Value:data").toString());
             m_context->setSensorID(1);
+            m_videoEngine->setVideo(m_config->value("Settings:StreamIR:Value:data").toString());            
         }else{
-            m_videoEngine->setVideo(m_config->value("Settings:StreamEO:Value:data").toString());
             m_context->setSensorID(0);
+            m_videoEngine->setVideo(m_config->value("Settings:StreamEO:Value:data").toString());
         }
         Q_EMIT digitalZoomMaxChanged();
         Q_EMIT zoomMaxChanged();
@@ -303,6 +303,10 @@ void SBusGimbal::setShare(bool enable){
         m_videoEngine->setShare(m_context->m_gcsShare);
     }
 }
+void SBusGimbal::setVehicle(Vehicle *vehicle)
+{
+    m_vehicle = vehicle;
+}
 void SBusGimbal::sendQueryZoom(){
     m_sensor->sendRawData("0681090447FF");
 }
@@ -321,6 +325,7 @@ void SBusGimbal::handleQuery(QString data){
 
                 m_context->m_zoom[0] = zoomPosF;
                 m_context->m_hfov[0] = atanf(tan(m_context->m_hfovMax[0]/2/180*M_PI)/zoomPosF)/M_PI*180*2;
+                Q_EMIT GimbalInterface::zoomChanged();
                 break;
             }
         }
