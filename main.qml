@@ -241,7 +241,7 @@ ApplicationWindow {
         id: missionController
         vehicle: vehicle
         onCurrentIndexChanged: {
-            console.log("changeCurrentWP to "+sequence);
+//            console.log("changeCurrentWP to "+sequence);
             mapPane.changeCurrentWP(sequence);
         }
     }
@@ -2018,7 +2018,7 @@ ApplicationWindow {
     Timer{
         repeat: true
         interval: 1000
-        running: true
+        running: false
         onTriggered: {
             console.log("=================================================\r\n");
         }

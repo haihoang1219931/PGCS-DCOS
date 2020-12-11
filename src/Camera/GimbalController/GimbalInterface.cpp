@@ -23,7 +23,10 @@ void GimbalInterface::setVehicle(Vehicle *vehicle)
 {
     Q_UNUSED(vehicle);
 }
-
+void GimbalInterface::enableSensor(QString sensorID, bool enable){
+    Q_UNUSED(sensorID);
+    Q_UNUSED(enable);
+}
 void GimbalInterface::disconnectGimbal(){
 
 }

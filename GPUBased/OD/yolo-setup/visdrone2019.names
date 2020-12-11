@@ -1,12 +1,6 @@
-ignore
-pedestrian
-people
-bicycle
-car
-van
-truck
-tricycle
-awning-tricycle
-bus
 motor
-others
+truck
+bike
+car
+pedestrian
+bus

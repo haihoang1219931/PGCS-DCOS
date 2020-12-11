@@ -297,6 +297,23 @@ Rectangle {
 //                    }
                 }
             }
+            SwitchFlatButton {
+                id: btnEnableEO
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.width
+                icon: UIConstants.iGCSStab
+                isSync: true
+                btnText: "Enable\nEO"
+                color: UIConstants.bgAppColor
+                isOn: camState.eoEnable
+                onClicked: {
+                    camState.eoEnable = !camState.eoEnable;
+
+                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
+                        cameraController.gimbal.enableSensor("EO",camState.eoEnable);
+                    }
+                }
+            }
             FooterButton {
                 id: btnInvertTilt
                 Layout.preferredWidth: parent.width

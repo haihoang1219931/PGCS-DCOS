@@ -186,7 +186,7 @@ void SBusGimbal::changeSensor(QString sensorID){
     if(m_videoEngine!=nullptr){
         if(sensorID == "IR"){
             m_context->setSensorID(1);
-            m_videoEngine->setVideo(m_config->value("Settings:StreamIR:Value:data").toString());            
+            m_videoEngine->setVideo(m_config->value("Settings:StreamIR:Value:data").toString());
         }else{
             m_context->setSensorID(0);
             m_videoEngine->setVideo(m_config->value("Settings:StreamEO:Value:data").toString());
@@ -306,6 +306,13 @@ void SBusGimbal::setShare(bool enable){
 void SBusGimbal::setVehicle(Vehicle *vehicle)
 {
     m_vehicle = vehicle;
+}
+void SBusGimbal::enableSensor(QString sensorID, bool enable){
+    if(sensorID == "EO"){
+        printf("%s[%s=%s]\r\n",__func__,sensorID.toStdString().c_str(),enable?"true":"false");
+        m_sensor->sendRawData(enable?"8101040002FF":
+                                     "8101040003FF");
+    }
 }
 void SBusGimbal::sendQueryZoom(){
     m_sensor->sendRawData("0681090447FF");

@@ -22,9 +22,7 @@ class GimbalInterface : public QObject
 public:
     explicit GimbalInterface(QObject *parent = nullptr);
     GimbalData* context(){ return m_context; }
-    void setVideoEngine(VideoEngine* videoEngine);
-
-    virtual void setVehicle(Vehicle* vehicle);
+    void setVideoEngine(VideoEngine* videoEngine);    
 
     JoystickThreaded* joystick();
     virtual void setJoystick(JoystickThreaded* joystick);
@@ -95,6 +93,8 @@ public:
 //        m_uTilt = 0.0;
 
     }
+    Q_INVOKABLE virtual void setVehicle(Vehicle* vehicle);
+    Q_INVOKABLE virtual void enableSensor(QString sensorID, bool enable);
 Q_SIGNALS:
     void digitalZoomMaxChanged();
     void zoomMaxChanged();

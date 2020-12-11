@@ -57,6 +57,7 @@ Item {
     property bool gimbalStab: false
     property bool gcsSearch: false
     property bool gcsTargetLocalization: false
+    property bool eoEnable: true
     property bool gcsStab: true
     property bool gcsRecord: true
     property bool record: true

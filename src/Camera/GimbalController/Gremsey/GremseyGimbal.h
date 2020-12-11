@@ -33,8 +33,7 @@ public:
     void setDefog(QString mode) override;
     void setGimbalPos(float panPos,float tiltPos) override;
     void setObjectSearch(bool enable) override;
-
-    Q_INVOKABLE void setVehicle(Vehicle* vehicle) override;
+    void setVehicle(Vehicle* vehicle) override;
 Q_SIGNALS:
 
 public Q_SLOTS:

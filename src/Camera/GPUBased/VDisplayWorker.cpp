@@ -209,7 +209,8 @@ void VDisplayWorker::process()
             cv::warpAffine(imgU,imgUWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgU.cols,imgU.rows),cv::INTER_LINEAR);
             cv::warpAffine(imgV,imgVWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgV.cols,imgV.rows),cv::INTER_LINEAR);
             if(m_enOD){
-                if(m_countUpdateOD == 0){
+//                if(m_countUpdateOD == 0)
+                {
                     //----------------------------- Draw EO object detected
                     DetectedObjectsCacheItem& detectedObjsItem = m_rbSearchObjs->last();
 
@@ -226,10 +227,10 @@ void VDisplayWorker::process()
                     }
                 }
                 this->drawDetectedObjects(imgYWarped,imgUWarped,imgVWarped, m_listObj);
-                m_countUpdateOD ++;
-                if(m_countUpdateOD > 15){
-                    m_countUpdateOD = 0;
-                }
+//                m_countUpdateOD ++;
+//                if(m_countUpdateOD > 15){
+//                    m_countUpdateOD = 0;
+//                }
             }
             // draw track
             cv::Rect trackRect = processImgItem.trackRect();
