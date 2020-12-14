@@ -403,7 +403,8 @@ Item {
                         disableColor: UIConstants.btnMiddleColorNormal
                         isEnable: vehicle.link
                                   &&
-                                  (((vehicle.vehicleType === 2 || vehicle.vehicleType === 14) && vehicle.flightMode === "Guided")
+                                  (((vehicle.vehicleType === 2 || vehicle.vehicleType === 14) &&
+                                    vehicle.flightMode === "Guided")
                                    ||
                                    (vehicle.vehicleType === 1))
                         Connections{

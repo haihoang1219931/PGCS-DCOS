@@ -958,12 +958,12 @@ ApplicationWindow {
                 anchors {right: rightBar.left; top: parent.top;topMargin: UIConstants.sRect + 8; rightMargin: 8 }
                 z: 5
                 visible: UIConstants.monitorMode === UIConstants.monitorModeFlight &&
-                         (vehicle.vehicleType === 2 || vehicle.vehicleType === 14)
+                         (FCSConfig.value("Settings:HUDVisible:Value:data") === "True")
             }
             AhrsHUD{
                 id:ahrsHUD
                 visible: UIConstants.monitorMode === UIConstants.monitorModeFlight &&
-                         (vehicle.vehicleType === 1)
+                         (FCSConfig.value("Settings:AHRSHUDVisible:Value:data") === "True")
                 anchors{
                     bottom: mapPane.bottom
                     bottomMargin: 8
@@ -1583,16 +1583,8 @@ ApplicationWindow {
                 if(!isShowConfirm){
                     isShowConfirm = true;
                     console.log("Do Altitude changed");
-                    var minValue = 10;
-                    var maxValue = 500;
-                    var currentValue = 0;
-                    if(vehicle.vehicleType === 2 || vehicle.vehicleType == 14){
-                        minValue = 10;
-                        maxValue = 500;
-                    }else {
-                        minValue = 150;
-                        maxValue = 3000;
-                    }
+                    var minValue = parseInt(FCSConfig.value("Settings:AltitudeMin:Value:data"));
+                    var maxValue = parseInt(FCSConfig.value("Settings:AltitudeMax:Value:data"));
 
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/AltitudeEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
@@ -1622,15 +1614,8 @@ ApplicationWindow {
                 if(!isShowConfirm){
                     isShowConfirm = true;
                     console.log("Do Speed changed");
-                    var minValue = 0;
-                    var maxValue = 36;
-                    if(vehicle.vehicleType === 2 || vehicle.vehicleType == 14){
-                        minValue = 0;
-                        maxValue = 45;
-                    }else {
-                        minValue = 85;
-                        maxValue = 110;
-                    }
+                    var minValue = parseInt(FCSConfig.value("Settings:SpeedMin:Value:data"));
+                    var maxValue = parseInt(FCSConfig.value("Settings:SpeedMax:Value:data"));
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/SpeedEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
                                                                   "x":parent.width / 2 - UIConstants.sRect * 14 / 2,

@@ -702,7 +702,7 @@ Flickable {
                     console.log("showAdvancedConfigChanged");
                     rootItem.ctrlPress = false;
                 }else if(rootItem.ctrlPress && event.key === Qt.Key_A){
-                    if(vehicle.vehicleType === 1){
+                    if(FCSConfig.value("Settings:AHRSHUDVisible:Value:data") === "True"){
                         ahrsHUD.visible = !ahrsHUD.visible;
                     }
                     rootItem.ctrlPress = false;
