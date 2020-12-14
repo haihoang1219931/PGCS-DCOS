@@ -62,9 +62,9 @@ Rectangle {
                 onClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         if(camState.sensorID === camState.sensorIDIR){
-                            cameraController.gimbal.changeSensor("EO");
+                            CameraController.gimbal.changeSensor("EO");
                         }else{
-                            cameraController.gimbal.changeSensor("IR");
+                            CameraController.gimbal.changeSensor("IR");
                         }
                     }
                 }
@@ -90,7 +90,7 @@ Rectangle {
                 color: UIConstants.bgAppColor
                 onClicked: {
 //                    btnPreset.setButtonDisable()
-                    cameraController.gimbal.setGimbalPreset("NEXT");
+                    CameraController.gimbal.setGimbalPreset("NEXT");
                 }
             }
             FooterButton {
@@ -113,7 +113,7 @@ Rectangle {
                             color = "WHITE_HOT";
                         }
                         camState.colorMode = {"EO":"NORMAL","IR":color};
-                        cameraController.gimbal.setSensorColor(camState.sensorID,color);
+                        CameraController.gimbal.setSensorColor(camState.sensorID,color);
                     }
                 }
             }
@@ -127,7 +127,7 @@ Rectangle {
                 enabled: camState.sensorID === camState.sensorIDEO
                 onClicked: {
 //                    btnPreset.setButtonDisable()
-                    cameraController.gimbal.setDefog("NEXT");
+                    CameraController.gimbal.setDefog("NEXT");
                 }
             }
             FooterButton {
@@ -140,7 +140,7 @@ Rectangle {
                 color: UIConstants.bgAppColor
                 onClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.snapShot();
+                        CameraController.gimbal.snapShot();
                     }
                 }
             }
@@ -182,7 +182,7 @@ Rectangle {
                 onClicked: {
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setRecord(!camState.record);
+                        CameraController.gimbal.setRecord(!camState.record);
                     }
                 }
             }
@@ -225,7 +225,7 @@ Rectangle {
                     }else{
                         camState.lockMode = "VISUAL"
                     }
-                    cameraController.gimbal.setLockMode(camState.lockMode);
+                    CameraController.gimbal.setLockMode(camState.lockMode);
                 }
             }
             SwitchFlatButton {
@@ -242,7 +242,7 @@ Rectangle {
                     camState.gcsOD=!camState.gcsOD;
 //                    console.log("setVideoSavingState to "+camState.gcsRecord)
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.videoEngine.setObjectDetect(camState.gcsOD);
+                        CameraController.videoEngine.setObjectDetect(camState.gcsOD);
                     }
                 }
             }
@@ -260,7 +260,7 @@ Rectangle {
 //                    camState.gcsPD=!camState.gcsPD;
 ////                    console.log("setVideoSavingState to "+camState.gcsRecord)
 //                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-//                        cameraController.videoEngine.setPowerLineDetect(camState.gcsPD);
+//                        CameraController.videoEngine.setPowerLineDetect(camState.gcsPD);
 //                    }
 //                }
 //            }
@@ -276,7 +276,7 @@ Rectangle {
                 isOn: camState.gcsSearch
                 onClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setObjectSearch(!camState.gcsSearch)
+                        CameraController.gimbal.setObjectSearch(!camState.gcsSearch)
                     }
                 }
             }
@@ -293,7 +293,7 @@ Rectangle {
                 onClicked: {
                     camState.gcsTargetLocalization = !camState.gcsTargetLocalization
 //                    if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-//                        cameraController.gimbal.setObjectSearch(!camState.gcsSearch)
+//                        CameraController.gimbal.setObjectSearch(!camState.gcsSearch)
 //                    }
                 }
             }
@@ -310,7 +310,7 @@ Rectangle {
                     camState.eoEnable = !camState.eoEnable;
 
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.enableSensor("EO",camState.eoEnable);
+                        CameraController.gimbal.enableSensor("EO",camState.eoEnable);
                     }
                 }
             }
@@ -324,8 +324,8 @@ Rectangle {
                 color: UIConstants.bgAppColor
                 onClicked: {
                     camState.invertTilt = !camState.invertTilt;
-                    joystick.setInvertCam("TILT",camState.invertTilt);
-                    joystick.saveConfig();
+                    Joystick.setInvertCam("TILT",camState.invertTilt);
+                    Joystick.saveConfig();
                 }
             }
         }

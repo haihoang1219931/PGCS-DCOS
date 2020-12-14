@@ -27,8 +27,8 @@ Item {
     property real size: UIConstants.sRect * 5
     property bool showHeading:  false
 
-    property real _rollAngle:   vehicle ? vehicle.roll  : 0
-    property real _pitchAngle:  vehicle ? vehicle.pitch : 0
+    property real _rollAngle:   vehicle ? FlightVehicle.roll  : 0
+    property real _pitchAngle:  vehicle ? FlightVehicle.pitch : 0
 
     width:  size
     height: size
@@ -127,7 +127,7 @@ Item {
         color:                      "white"
         visible:                    showHeading
 
-        property string _headingString: vehicle ? Number(vehicle.heading).toFixed(0).toString() : "OFF"
+        property string _headingString: vehicle ? Number(FlightVehicle.heading).toFixed(0).toString() : "OFF"
         property string _headingString2: _headingString.length === 1 ? "0" + _headingString : _headingString
         property string _headingString3: _headingString2.length === 2 ? "0" + _headingString2 : _headingString2
     }

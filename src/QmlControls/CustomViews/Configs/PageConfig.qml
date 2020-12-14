@@ -125,7 +125,7 @@ Rectangle {
                     onClicked: {
                         lstItem.currentIndex = index;
                         if(index === 2){
-                            rootItem.vehicle.paramsController._updateParamTimeout();
+                            rootItem.FlightVehicle.paramsController._updateParamTimeout();
                         }
                     }
                 }

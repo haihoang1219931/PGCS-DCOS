@@ -8,8 +8,8 @@ import QtQuick 2.0
 import CustomViews.UIConstants 1.0
 
 Item {
-    property real windHeading: vehicle.link ? vehicle.windHeading:0 //deg
-    property real windSpeed: vehicle.link ? vehicle.windSpeed * 3.6 :0 //km/h
+    property real windHeading: FlightVehicle.link ? FlightVehicle.windHeading:0 //deg
+    property real windSpeed: FlightVehicle.link ? FlightVehicle.windSpeed * 3.6 :0 //km/h
     width: UIConstants.sRect*3
     height: UIConstants.sRect*3
     Rectangle{
@@ -20,7 +20,7 @@ Item {
         border.color: "gray"
         border.width: 1
 //        opacity: 0.7
-        rotation: vehicle.link ? vehicle.windHeading:0
+        rotation: FlightVehicle.link ? FlightVehicle.windHeading:0
         Canvas{
             id: arrowWind
             anchors.fill: parent

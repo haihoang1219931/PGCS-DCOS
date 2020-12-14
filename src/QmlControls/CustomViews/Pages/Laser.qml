@@ -113,7 +113,7 @@ Rectangle{
 
             Label {
                 id: label2
-                text:  (vehicle?Number(vehicle.sonarRange).toFixed(1).toString():"0") + " " + "m"
+                text:  (vehicle?Number(FlightVehicle.sonarRange).toFixed(1).toString():"0") + " " + "m"
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize
                 font.family: UIConstants.appFont

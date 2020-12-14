@@ -65,7 +65,7 @@
 
 //                GridLayout {
 //                    id:                 engineGrid
-////                    visible:            (vehicle && vehicle.countGPS >= 0)
+////                    visible:            (vehicle && FlightVehicle.countGPS >= 0)
 //                    columnSpacing:      UIConstants.defaultFontPixelWidth
 //                    anchors.left: parent.left
 //                    columns: 1
@@ -101,11 +101,11 @@
 
 
 
-//                    Label { text: qsTr("Used Fuel(l): ") + vehicle.fuelUsed.toFixed(2);
+//                    Label { text: qsTr("Used Fuel(l): ") + FlightVehicle.fuelUsed.toFixed(2);
 //                        color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize
 //                    }
 
-//                    Label { text: qsTr("Available Fuel(l): ") + (engineGrid.getOriginalFuel() - vehicle.fuelUsed).toFixed(2).toString() ;
+//                    Label { text: qsTr("Available Fuel(l): ") + (engineGrid.getOriginalFuel() - FlightVehicle.fuelUsed).toFixed(2).toString() ;
 //                        id:lbAvailbleFuel
 //                        color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize
 //                        onTextChanged:{
@@ -132,8 +132,8 @@
 //                    }
 
 //                    function getAvailbleFuel(){
-//                        if(vehicle.fuelUsed != null && vehicle.fuelUsed != undefined){
-//                            var fuel = getOriginalFuel() - vehicle.fuelUsed;
+//                        if(FlightVehicle.fuelUsed != null && FlightVehicle.fuelUsed != undefined){
+//                            var fuel = getOriginalFuel() - FlightVehicle.fuelUsed;
 //                            return fuel;
 //                        }else return 0;
 //                    }
@@ -175,9 +175,9 @@
 //            id: lbTime
 //            anchors.top:   engineIcon.top
 //            anchors.left: engineIcon.right
-//            visible:                    vehicle && !isNaN(vehicle.fuelUsed)
+//            visible:                    vehicle && !isNaN(FlightVehicle.fuelUsed)
 //            color:                      UIConstants.textColor
-//            //text:                       vehicle ? Number(vehicle.countGPS).toString() : ""
+//            //text:                       vehicle ? Number(FlightVehicle.countGPS).toString() : ""
 //            font.family: UIConstants.appFont
 //            font.pixelSize: UIConstants.fontSize
 //            opacity: 0.6
@@ -185,9 +185,9 @@
 
 ////        Label {
 ////            id:         hdopValue
-////            visible:    vehicle && !isNaN(vehicle.hdopGPS)
-////            color:      vehicle && vehicle.countGPS > 0 ? UIConstants.navIconColor : UIConstants.textColor
-////            text:       vehicle ? vehicle.hdopGPS.toFixed(1) : ""
+////            visible:    vehicle && !isNaN(FlightVehicle.hdopGPS)
+////            color:      vehicle && FlightVehicle.countGPS > 0 ? UIConstants.navIconColor : UIConstants.textColor
+////            text:       vehicle ? FlightVehicle.hdopGPS.toFixed(1) : ""
 ////            font.family: UIConstants.appFont
 ////            font.pixelSize: UIConstants.fontSize
 ////        }
@@ -271,7 +271,7 @@ Item {
                 ListView{
                     id:listEngineData
                     anchors.left: parent.left
-                    model: vehicle.propertiesModel
+                    model: FlightVehicle.propertiesModel
                     height: UIConstants.sRect * 4 + 10
                     width: parent.width
                     anchors.margins:    UIConstants.defaultFontPixelHeight
@@ -322,9 +322,9 @@ Item {
                                         error = true
                             }
                             if(error)
-                                engineIcon.color =  vehicle.link ? UIConstants.redColor : UIConstants.textColor
+                                engineIcon.color =  FlightVehicle.link ? UIConstants.redColor : UIConstants.textColor
                             else
-                                engineIcon.color =  vehicle.link ? UIConstants.navIconColor  : UIConstants.textColor
+                                engineIcon.color =  FlightVehicle.link ? UIConstants.navIconColor  : UIConstants.textColor
                         }
                     }
                 }

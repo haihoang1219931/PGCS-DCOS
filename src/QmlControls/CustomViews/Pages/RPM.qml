@@ -134,7 +134,7 @@ Rectangle{
 
             Label {
                 id: label2
-                text: vehicle? (Number(vehicle.engineSensor_2).toFixed(0).toString() + " RPM") : qsTr("0 RPM")
+                text: vehicle? (Number(FlightVehicle.engineSensor_2).toFixed(0).toString() + " RPM") : qsTr("0 RPM")
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent

@@ -64,7 +64,7 @@ Item {
                 ListView{
                     id:listBatteryData
                     anchors.left: parent.left
-                    model: vehicle.propertiesModel
+                    model: FlightVehicle.propertiesModel
                     height: UIConstants.sRect * 5 + 10
                     width: parent.width
                     anchors.margins:    UIConstants.defaultFontPixelHeight
@@ -111,31 +111,31 @@ Item {
                                         error = true
                             }
                             if(error)
-                                batteryIcon.color =  vehicle.link ? UIConstants.redColor : UIConstants.textColor
+                                batteryIcon.color =  FlightVehicle.link ? UIConstants.redColor : UIConstants.textColor
                             else
-                                batteryIcon.color =  vehicle.link ? UIConstants.navIconColor  : UIConstants.textColor
+                                batteryIcon.color =  FlightVehicle.link ? UIConstants.navIconColor  : UIConstants.textColor
                         }
                     }
                 }
 
 //                GridLayout {
 //                    id:                 batteryGrid
-////                    visible:            (vehicle && vehicle.countGPS >= 0)
+////                    visible:            (vehicle && FlightVehicle.countGPS >= 0)
 //                    columnSpacing:      UIConstants.defaultFontPixelWidth
 //                    anchors.left: parent.left
 //                    columns: 1
 
-//                    Label { text: qsTr("V_batt12S: ") + (vehicle ? vehicle.vBatt12S.toFixed(2).toString() + "V" : "N/A")
+//                    Label { text: qsTr("V_batt12S: ") + (vehicle ? FlightVehicle.vBatt12S.toFixed(2).toString() + "V" : "N/A")
 //                        color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize }
-//                    Label { text: qsTr("V_battA: ") + (vehicle ? vehicle.vBattA.toFixed(2).toString() + "V" : "N/A")
+//                    Label { text: qsTr("V_battA: ") + (vehicle ? FlightVehicle.vBattA.toFixed(2).toString() + "V" : "N/A")
 //                        color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize }
-//                    Label { text: qsTr("I_battA: ") + (vehicle ? vehicle.iBattA.toFixed(2).toString() + "A" : "N/A")
+//                    Label { text: qsTr("I_battA: ") + (vehicle ? FlightVehicle.iBattA.toFixed(2).toString() + "A" : "N/A")
 //                        color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize }
-//                    Label { text: qsTr("V_battB: ")+  (vehicle ? vehicle.vBattB.toFixed(2).toString() + "V" : "N/A")
+//                    Label { text: qsTr("V_battB: ")+  (vehicle ? FlightVehicle.vBattB.toFixed(2).toString() + "V" : "N/A")
 //                        color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize }
-//                    Label { text: qsTr("I_battB: ") + (vehicle ? vehicle.iBattA.toFixed(2).toString() + "A" : "N/A")
+//                    Label { text: qsTr("I_battB: ") + (vehicle ? FlightVehicle.iBattA.toFixed(2).toString() + "A" : "N/A")
 //                        color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize }
-//                    Label { text: qsTr("GenStatus: ") + (vehicle ? vehicle.genStatus : "N/A")
+//                    Label { text: qsTr("GenStatus: ") + (vehicle ? FlightVehicle.genStatus : "N/A")
 //                        color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize }
 //                }
             }

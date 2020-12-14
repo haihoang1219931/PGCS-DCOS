@@ -66,7 +66,7 @@ Rectangle{
             anchors.topMargin: 8
 
             onClicked: {
-                vehicle.motorTest(1,8)
+                FlightVehicle.motorTest(1,8)
             }
         }
 
@@ -86,7 +86,7 @@ Rectangle{
             anchors.right: parent.right
             anchors.rightMargin: 8
             onClicked: {
-                vehicle.motorTest(2,8)
+                FlightVehicle.motorTest(2,8)
             }
         }
 
@@ -106,7 +106,7 @@ Rectangle{
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 8
             onClicked: {
-                vehicle.motorTest(3,8)
+                FlightVehicle.motorTest(3,8)
             }
         }
 
@@ -125,7 +125,7 @@ Rectangle{
             anchors.left: parent.left
             anchors.leftMargin: 8
             onClicked: {
-                vehicle.motorTest(4,8)
+                FlightVehicle.motorTest(4,8)
             }
         }
     }

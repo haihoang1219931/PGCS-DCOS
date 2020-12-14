@@ -27,7 +27,7 @@ Rectangle{
     height: 600
     color: "transparent"
     property var itemListName:
-        UIConstants.itemTextMultilanguages["PRECHECK"]["JOYSTICK"]
+        UIConstants.itemTextMultilanguages["PRECHECK"]["Joystick"]
     QLabel {
         id: lblTitle
         height: 54
@@ -63,7 +63,7 @@ Rectangle{
         Repeater {
             id:     axisMonitorRepeater
             width:  parent.width
-            model: joystick.axesConfig
+            model: Joystick.axesConfig
 
             delegate:Row {
                 id: rowAxis
@@ -153,7 +153,7 @@ Rectangle{
             spacing:    UIConstants.sRect/2
             Label {
                 height: UIConstants.sRect*1.5
-                text: qsTr("RCIN_chan1: ") + vehicle.rcinChan1 +" us"
+                text: qsTr("RCIN_chan1: ") + FlightVehicle.rcinChan1 +" us"
                 verticalAlignment: Label.AlignVCenter
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize
@@ -161,7 +161,7 @@ Rectangle{
             }
             Label {
                 height: UIConstants.sRect*1.5
-                text: qsTr("RCIN_chan2: ") + vehicle.rcinChan2 +" us"
+                text: qsTr("RCIN_chan2: ") + FlightVehicle.rcinChan2 +" us"
                 verticalAlignment: Label.AlignVCenter
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize
@@ -169,7 +169,7 @@ Rectangle{
             }
             Label {
                 height: UIConstants.sRect*1.5
-                text: qsTr("RCIN_chan4: ") + vehicle.rcinChan4 +" us"
+                text: qsTr("RCIN_chan4: ") + FlightVehicle.rcinChan4 +" us"
                 verticalAlignment: Label.AlignVCenter
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize
@@ -177,7 +177,7 @@ Rectangle{
             }
             Label {
                 height: UIConstants.sRect*1.5
-                text: qsTr("RCIN_chan3: ") + vehicle.rcinChan3  +" us"
+                text: qsTr("RCIN_chan3: ") + FlightVehicle.rcinChan3  +" us"
                 verticalAlignment: Label.AlignVCenter
                 color: UIConstants.textColor
                 font.pixelSize: UIConstants.fontSize

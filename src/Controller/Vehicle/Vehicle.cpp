@@ -1,13 +1,24 @@
 #include "Vehicle.h"
+#include "../Mission/MissionController.h"
 #include "../../Joystick/JoystickLib/JoystickThreaded.h"
 #include "../Firmware/FirmwarePluginManager.h"
 #include "../Firmware/FirmwarePlugin.h"
 #include "src/Joystick/JoystickLib/JoystickThreaded.h"
 
-Vehicle::Vehicle(QObject *parent) : QObject(parent)
-{
+Vehicle::Vehicle(QString configFile){
+    // --- Create config instance
+    Config *fcsConfig = new Config();
+    fcsConfig->readConfig(configFile);
+    // --- Create communication instance
+    m_com = new IOFlightController();
+    m_com->loadConfig(fcsConfig);
+    // --- Create plan instance
+    m_planController = new PlanController(this);
+    // --- Create mission instance
+    m_missionController = new MissionController(this);
+    // --- Create params instance
+    m_paramsController = new ParamsController();
 
-    _defaultComponentId = MAV_COMP_ID_ALL;
     m_uas = new UAS();
     m_firmwarePluginManager = new FirmwarePluginManager();
     m_firmwarePlugin = m_firmwarePluginManager->firmwarePluginForAutopilot(this,_firmwareType, static_cast<MAV_TYPE>(_vehicleType));
@@ -26,53 +37,13 @@ Vehicle::Vehicle(QObject *parent) : QObject(parent)
     _mavCommandAckTimer.setInterval(_highLatencyLink ? _mavCommandAckTimeoutMSecsHighLatency : _mavCommandAckTimeoutMSecs);
     connect(&_mavCommandAckTimer, &QTimer::timeout, this, &Vehicle::_sendMavCommandAgain);
     m_paramsController = new ParamsController(this);
-    //    m_paramsController->_vehicle = this;
 }
 Vehicle::~Vehicle()
 {
-}
-Vehicle* Vehicle::uav(){
-    return m_uav;
-}
-void Vehicle::setUav(Vehicle* uav){
-    if(uav != nullptr){
-        m_uav = uav;
-    }
-}
-JoystickThreaded* Vehicle::joystick(){
-    return m_joystick;
-}
-void Vehicle::setJoystick(JoystickThreaded* joystick){
-    m_joystick = joystick;
-    m_firmwarePlugin->setJoystick(m_joystick);
-}
 
-ParamsController *Vehicle::paramsController()
-{
-    return m_paramsController;
 }
-
-void Vehicle::setParamsController(ParamsController *paramsController)
-{
-    m_paramsController = paramsController;
-}
-PlanController *Vehicle::planController()
-{
-    return m_planController;
-}
-void Vehicle::setPlanController(PlanController *planController)
-{
-    m_planController = planController;
-}
-IOFlightController *Vehicle::communication()
-{
-    return m_com;
-}
-void Vehicle::setCommunication(IOFlightController *com)
-{
-
+void Vehicle::startConnection(){
     _requestPlanAfterParams = false;
-    m_com = com;
     _logFile = m_com->getLogFile();
     // Request firmware version
     connect(m_com,SIGNAL(messageReceived(mavlink_message_t)),
@@ -107,6 +78,40 @@ void Vehicle::setCommunication(IOFlightController *com)
 
     _mavHeartbeat.start();
     _cameraLink.start();
+    m_com->connectLink();
+}
+void Vehicle::stopConnection(){
+    m_com->disConnectLink();
+}
+Vehicle* Vehicle::uav(){
+    return m_uav;
+}
+void Vehicle::setUav(Vehicle* uav){
+    if(uav != nullptr){
+        m_uav = uav;
+    }
+}
+JoystickThreaded* Vehicle::joystick(){
+    return m_joystick;
+}
+void Vehicle::setJoystick(JoystickThreaded* joystick){
+    m_joystick = joystick;
+}
+
+ParamsController *Vehicle::paramsController()
+{
+    return m_paramsController;
+}
+PlanController *Vehicle::planController()
+{
+    return m_planController;
+}
+MissionController *Vehicle::missionController(){
+    return m_missionController;
+}
+IOFlightController *Vehicle::communication()
+{
+    return m_com;
 }
 ParamsController* Vehicle::params(){
     return m_paramsController;

@@ -86,7 +86,7 @@ Item {
                     }
 
                     onClicked: {
-                        joystick.setJoyID(cbxListJoystick.currentText);
+                        Joystick.setJoyID(cbxListJoystick.currentText);
                     }
                 }
             }
@@ -189,7 +189,7 @@ Item {
                     height: parent.height
                     radius: 3
                     Rectangle{
-                        visible: joystick.useJoystick
+                        visible: Joystick.useJoystick
                         color: "#555"
                         border.color: "#333"
                         radius: 1
@@ -199,7 +199,7 @@ Item {
                     MouseArea{
                         anchors.fill: parent
                         onClicked: {
-                            joystick.useJoystick = !joystick.useJoystick;
+                            Joystick.useJoystick = !Joystick.useJoystick;
                         }
                     }
                 }
@@ -238,7 +238,7 @@ Item {
                     text: itemListName["BTN_SAVE"]
                           [UIConstants.language[UIConstants.languageID]]
                     onClicked: {
-                        joystick.saveConfig();
+                        Joystick.saveConfig();
                     }
                 }
                 OldCtrl.Button{
@@ -262,7 +262,7 @@ Item {
                     text: itemListName["BTN_RESET"]
                           [UIConstants.language[UIConstants.languageID]]
                     onClicked: {
-                        joystick.resetConfig();
+                        Joystick.resetConfig();
                     }
                 }
             }
@@ -287,7 +287,7 @@ Item {
                 id:     buttonMonitorRepeater
                 width: parent.width
                 height: parent.height - lblButtonMonitor.height - parent.spacing
-                model: joystick.buttons
+                model: Joystick.buttons
                 spacing:    UIConstants.sRect/2
                 clip: true
                 delegate: Row{
@@ -316,7 +316,7 @@ Item {
                         currentIndex: mapButton[mapFuncConfig]+1
                         onCurrentTextChanged: {
                             if(currentText !== mapFuncConfig)
-                                joystick.mapButton(id,cbxButton.currentText,false)
+                                Joystick.mapButton(id,cbxButton.currentText,false)
                         }
                     }
                 }
@@ -343,7 +343,7 @@ Item {
                 Repeater {
                     id:     axisMonitorRepeater
                     width:  parent.width
-                    model: joystick.axes
+                    model: Joystick.axes
 
                     delegate:Row {
                         id: rowAxis
@@ -403,7 +403,7 @@ Item {
                             currentIndex: mapAxis[mapFuncConfig]+1
                             onCurrentTextChanged: {
                                 if(currentText !== mapFuncConfig){
-                                    joystick.mapAxis(id,cbxAxis.currentText,!invertedConfig,false);
+                                    Joystick.mapAxis(id,cbxAxis.currentText,!invertedConfig,false);
                                 }
                             }
                         }
@@ -428,7 +428,7 @@ Item {
                                 MouseArea{
                                     anchors.fill: parent
                                     onClicked: {
-                                        joystick.mapAxis(id,cbxAxis.currentText,!invertedConfig,false);
+                                        Joystick.mapAxis(id,cbxAxis.currentText,!invertedConfig,false);
                                     }
                                 }
                             }
@@ -461,7 +461,7 @@ Item {
                 Repeater {
                     id:     axisCamMonitorRepeater
                     width:  parent.width
-                    model: joystick.axesCam
+                    model: Joystick.axesCam
 
                     delegate:Row {
                         id: rowAxisCam
@@ -521,7 +521,7 @@ Item {
                             currentIndex: mapAxisCam[mapFuncConfig]+1
                             onCurrentTextChanged: {
                                 if(currentText !== mapFuncConfig){
-                                    joystick.mapAxis(id,cbxAxisCam.currentText,!invertedConfig,false,true);
+                                    Joystick.mapAxis(id,cbxAxisCam.currentText,!invertedConfig,false,true);
                                 }
                             }
                         }
@@ -546,7 +546,7 @@ Item {
                                 MouseArea{
                                     anchors.fill: parent
                                     onClicked: {
-                                        joystick.mapAxis(id,cbxAxisCam.currentText,!invertedConfig,false,true);
+                                        Joystick.mapAxis(id,cbxAxisCam.currentText,!invertedConfig,false,true);
                                     }
                                 }
                             }
@@ -567,11 +567,11 @@ Item {
         }
     }
     Connections{
-        target: joystick
+        target: Joystick
         onJoystickConnected:{
             if(state){
-                var joystickInfo = joystick.task.getJoystickInfo(
-                            joystick.task.joyID);
+                var joystickInfo = Joystick.task.getJoystickInfo(
+                            Joystick.task.joyID);
                 lblJSName.text = joystickInfo["NAME"];
                 lblJSVersion.text = joystickInfo["VERSION"];
                 lblJSAxes.text = joystickInfo["AXES"];
@@ -581,6 +581,6 @@ Item {
     }
 
     Component.onCompleted: {
-        cbxListJoystick.model = joystick.task.getListJoystick();
+        cbxListJoystick.model = Joystick.task.getListJoystick();
     }
 } // SetupPage

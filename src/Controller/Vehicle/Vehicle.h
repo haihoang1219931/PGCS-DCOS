@@ -24,6 +24,7 @@ class UAS;
 class ParamsController;
 class PlanController;
 class IOFlightController;
+class MissionController;
 class FirmwarePlugin;
 class FirmwarePluginManager;
 class JoystickThreaded;
@@ -32,9 +33,11 @@ class Vehicle : public QObject
     Q_OBJECT
     Q_PROPERTY(Vehicle*             uav                         READ uav            WRITE setUav)
     Q_PROPERTY(JoystickThreaded*    joystick                    READ joystick       WRITE setJoystick)
-    Q_PROPERTY(IOFlightController*  communication               READ communication      WRITE setCommunication)
-    Q_PROPERTY(PlanController*      planController              READ planController     WRITE setPlanController)
-    Q_PROPERTY(ParamsController*    paramsController            READ paramsController   WRITE setParamsController)
+    Q_PROPERTY(Config*    config    READ config)
+    Q_PROPERTY(IOFlightController*  communication               READ communication)
+    Q_PROPERTY(PlanController*      planController              READ planController)
+    Q_PROPERTY(MissionController*   missionController           READ missionController)
+    Q_PROPERTY(ParamsController*    paramsController            READ paramsController)
     Q_PROPERTY(QStringList          flightModes                 READ flightModes                                    NOTIFY flightModesChanged)
     Q_PROPERTY(QStringList          flightModesOnAir            READ flightModesOnAir                               NOTIFY flightModesOnAirChanged)
     Q_PROPERTY(QStringList          flightModesOnGround         READ flightModesOnGround                            NOTIFY flightModesOnGroundChanged)
@@ -120,7 +123,8 @@ public:
         bool        showError;
     } MavCommandQueueEntry_t;
 
-    explicit Vehicle(QObject *parent = nullptr);
+//    explicit Vehicle(QObject *parent = nullptr);
+    Vehicle(QString configFile);
     ~Vehicle();
     enum MavlinkSysStatus {
         SysStatusSensor3dGyro =                 MAV_SYS_STATUS_SENSOR_3D_GYRO,
@@ -153,7 +157,7 @@ public:
     Q_ENUM(MavlinkSysStatus)
     enum VEHICLE_MAV_TYPE
     {
-       MAV_TYPE_GENERIC=0, /* Generic micro air vehicle. | */
+       MAV_TYPE_GENERIC=0, /* Generic micro air FlightVehicle. | */
        MAV_TYPE_FIXED_WING=1, /* Fixed wing aircraft. | */
        MAV_TYPE_QUADROTOR=2, /* Quadrotor | */
        MAV_TYPE_COAXIAL=3, /* Coaxial helicopter | */
@@ -190,6 +194,7 @@ public:
     };
     Q_ENUMS(VEHICLE_MAV_TYPE)
 public:
+    Config* config(){return m_config;}
     int defaultComponentId(){return _defaultComponentId;}
     //nhatdn1
     int gimbalComponentId(){return MAV_COMP_ID_GIMBAL;}
@@ -299,6 +304,10 @@ public:
     float rcinChan3(){return _rcinChan3;}
     float rcinChan4(){return _rcinChan4;}
 public:
+    /// Connect to vehicle
+    Q_INVOKABLE void startConnection();
+    /// Disconnect to vehicle
+    Q_INVOKABLE void stopConnection();
     /// Command vehicle to change loiter time
     Q_INVOKABLE void commandLoiterRadius(float radius);
     /// Command vehicle to return to launch
@@ -396,11 +405,9 @@ public:
     JoystickThreaded* joystick();
     void setJoystick(JoystickThreaded* joystick);
     ParamsController* paramsController();
-    void setParamsController(ParamsController* paramsController);
     PlanController* planController();
-    void setPlanController(PlanController* planController);
+    MissionController* missionController();
     IOFlightController* communication();
-    void setCommunication(IOFlightController* com);
     ParamsController* params();
     bool armed(void) { return _armed; }
     Q_INVOKABLE void setArmed(bool armed);
@@ -619,10 +626,12 @@ public:
 private:
     Vehicle* m_uav = nullptr;
     JoystickThreaded*  m_joystick = nullptr;
+    Config* m_config = nullptr;
     UAS* m_uas;
     ParamsController *              m_paramsController;
     PlanController *                m_planController;
     FirmwarePluginManager*          m_firmwarePluginManager;
+    MissionController*              m_missionController;
     // Queue Message
     QTimer                          _cameraLink;
     QTimer                          _mavParams;

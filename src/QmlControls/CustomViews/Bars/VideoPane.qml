@@ -116,7 +116,7 @@ Item{
 
             onValueChanged: {
                 var newTrackSize = parseInt(value);
-                cameraController.gimbal.changeTrackSize(newTrackSize);
+                CameraController.gimbal.changeTrackSize(newTrackSize);
             }
         }
 
@@ -134,10 +134,10 @@ Item{
     }
     Component.onCompleted: {
         if(USE_VIDEO_GPU || USE_VIDEO_CPU){
-            rootItem.player = cameraController.videoEngine;
+            rootItem.player = CameraController.videoEngine;
             rootItem.player.plateLog = listPlateLog.plateLog;
             videoOutput.anchors.fill = rootItem;
-            cameraController.videoEngine.addVideoRender(videoOutput);
+            CameraController.videoEngine.addVideoRender(videoOutput);
         }
     }
 }

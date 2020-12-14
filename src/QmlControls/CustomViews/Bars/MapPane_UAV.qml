@@ -704,13 +704,8 @@ Flickable {
                     rootItem.showAdvancedConfigChanged();
                     console.log("showAdvancedConfigChanged");
                     rootItem.ctrlPress = false;
-<<<<<<< HEAD
                 }else if(rootItem.ctrlPress && event.key === Qt.Key_A){
-                    if(FCSConfig.value("Settings:AHRSHUDVisible:Value:data") === "True"){
-=======
-                }else if(rootItem.ctrlPress && event.key === Qt.Key_Z){
-                    if(vehicle.vehicleType === 1){
->>>>>>> origin/6H_v1.0.3
+                    if(FlightVehicle.config.value("Settings:AHRSHUDVisible:Value:data") === "True"){
                         ahrsHUD.visible = !ahrsHUD.visible;
                     }
                     rootItem.ctrlPress = false;
@@ -1621,7 +1616,7 @@ Flickable {
                 //                homePositionChanged(selectedWP.coordinate.latitude,
                 //                                selectedWP.coordinate.longitude,
                 //                                position.altitude);
-                vehicle.setAltitudeRTL(alt)
+                FlightVehicle.setAltitudeRTL(alt)
                 console.log("change RTL altitude: "+alt)
                 return;
 //            }
@@ -1839,7 +1834,7 @@ Flickable {
 
     function changeVehicleType(vehicleType){
         console.log("changeVehicleType to "+vehicleType);
-        console.log("vehicle.MAV_TYPE_FIXED_WING="+Vehicle.MAV_TYPE_FIXED_WING);
+        console.log("FlightVehicle.MAV_TYPE_FIXED_WING="+Vehicle.MAV_TYPE_FIXED_WING);
         var vehicleSymbolUrl = vehicleSymbolLink["MAV_TYPE_GENERIC"];
         //        var vehicleHeading = uavGraphic.symbol.angle;
         //        var opacity = uavGraphic.symbol.opacity;
@@ -1919,7 +1914,7 @@ Flickable {
 
     function changeCurrentWP(index)
     {
-        var altHome = vehicle.link ? (vehicle.altitudeAMSL - vehicle.altitudeRelative) : mapPane.virtualHomeAMSL
+        var altHome = FlightVehicle.link ? (FlightVehicle.altitudeAMSL - FlightVehicle.altitudeRelative) : mapPane.virtualHomeAMSL
         currentWpIndex=index;
         if(currentWpIndex !== old_currentWpIndex)
         {
@@ -2035,7 +2030,7 @@ Flickable {
     }
 
     function showWPDistancePath(index){
-        var altHome = vehicle.link ? (vehicle.altitudeAMSL - vehicle.altitudeRelative) : mapPane.virtualHomeAMSL
+        var altHome = FlightVehicle.link ? (FlightVehicle.altitudeAMSL - FlightVehicle.altitudeRelative) : mapPane.virtualHomeAMSL
         var lastWP = listwaypoint[index-1]
         var currentWP = listwaypoint[index]
         while(index>0 && lastWP!==undefined && lastWP!==null &&
@@ -2311,7 +2306,7 @@ Flickable {
         else{
             gotohereSymbol.coordinate = position
         }
-        if(mainWindow.seqTab === 2 && vehicle.link && visible === true ){
+        if(mainWindow.seqTab === 2 && FlightVehicle.link && visible === true ){
             position.altitude = plane.coordinate.altitude;
             uavProfilePath.setUavProfilePathMode(1)
             uavProfilePath.setLocation(plane.coordinate, position);

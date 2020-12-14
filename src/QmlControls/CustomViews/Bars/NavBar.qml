@@ -97,25 +97,25 @@ Item {
             lstFlightMode.model = flightmodes;
             lstFlightMode.prevItem = "";
         }
-        if(lstFlightMode.prevItem !== vehicle.flightMode && !lstFlightMode.visible){
-            setFlightMode(vehicle.flightMode);
+        if(lstFlightMode.prevItem !== FlightVehicle.flightMode && !lstFlightMode.visible){
+            setFlightMode(FlightVehicle.flightMode);
         }
     }
     Connections{
         target: vehicle
         onLandedChanged:{
-            if(vehicle.landed){
-                setFlightModes(vehicle.flightModesOnGround);
+            if(FlightVehicle.landed){
+                setFlightModes(FlightVehicle.flightModesOnGround);
             }else{
-                setFlightModes(vehicle.flightModesOnAir);
+                setFlightModes(FlightVehicle.flightModesOnAir);
             }
         }
         onFlightModesChanged:{
             console.log("List flight mode update");
-            if(vehicle.landed){
-                setFlightModes(vehicle.flightModesOnGround);
+            if(FlightVehicle.landed){
+                setFlightModes(FlightVehicle.flightModesOnGround);
             }else{
-                setFlightModes(vehicle.flightModesOnAir);
+                setFlightModes(FlightVehicle.flightModesOnAir);
             }
         }
         onFlightModeChanged:{
@@ -268,7 +268,7 @@ Item {
             width: visible?parent.height:0
             iconSize: UIConstants.sRect*3/2
             z: navbarWrapper.z + 1
-            visible: vehicle.vehicleType === 1
+            visible: FlightVehicle.vehicleType === 1
             showIndicator: dialogShow === "DIALOG_ENGINE"
             onClicked: {
                 if(dialogShow !== "DIALOG_ENGINE"){
@@ -289,7 +289,7 @@ Item {
             width: visible?parent.height:0
             iconSize: UIConstants.sRect*3/2
             z: navbarWrapper.z + 1
-            visible: vehicle.vehicleType === 1
+            visible: FlightVehicle.vehicleType === 1
             showIndicator: dialogShow === "DIALOG_BATTERY"
             onClicked: {
                 if(dialogShow !== "DIALOG_BATTERY"){
@@ -311,8 +311,8 @@ Item {
             icon: UIConstants.iGamepad
             iconSize: UIConstants.sRect*3/2 - 5
             isAutoReturn: true
-            iconColor: isEnable ? (!joystick.useJoystick ? UIConstants.textColor:UIConstants.greenColor) : UIConstants.grayColor
-            isEnable: joystick.connected
+            iconColor: isEnable ? (!Joystick.useJoystick ? UIConstants.textColor:UIConstants.greenColor) : UIConstants.grayColor
+            isEnable: Joystick.connected
             property bool showIndicator: dialogShow === "DIALOG_JOYSTICK"
             onClicked: {
                 if(dialogShow !== "DIALOG_JOYSTICK"){
@@ -456,7 +456,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 3
                 height: parent.height
-                color: vehicle.link?UIConstants.greenColor:UIConstants.redColor
+                color: FlightVehicle.link?UIConstants.greenColor:UIConstants.redColor
                 radius: UIConstants.rectRadius
                 property var timeCount: 0 // time count in second
                 Label{
@@ -485,9 +485,9 @@ Item {
                 Connections{
                     target: vehicle
                     onLinkChanged:{
-                        console.log("onLinkChanged "+vehicle.link)
+                        console.log("onLinkChanged "+FlightVehicle.link)
                         rectLink.timeCount = 0;
-                        if(vehicle.link === false){
+                        if(FlightVehicle.link === false){
                             timerLinkLost.start();
                         }else{
                             timerLinkLost.stop();
@@ -501,7 +501,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.gpsSignal?UIConstants.greenColor:UIConstants.redColor
+                color: FlightVehicle.gpsSignal?UIConstants.greenColor:UIConstants.redColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor
@@ -518,7 +518,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.ekfSignal !== "green"? vehicle.ekfSignal: UIConstants.greenColor
+                color: FlightVehicle.ekfSignal !== "green"? FlightVehicle.ekfSignal: UIConstants.greenColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor
@@ -535,7 +535,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: vehicle.vibeSignal !== "green"? vehicle.vibeSignal: UIConstants.greenColor
+                color: FlightVehicle.vibeSignal !== "green"? FlightVehicle.vibeSignal: UIConstants.greenColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor
@@ -552,11 +552,11 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 width: UIConstants.sRect * 2
                 height: parent.height
-                color: joystick.pic?UIConstants.blueColor:UIConstants.greenColor
+                color: Joystick.pic?UIConstants.blueColor:UIConstants.greenColor
                 radius: UIConstants.rectRadius
                 Label{
                     color: UIConstants.textColor
-                    text: joystick.pic?"PIC":"CIC"
+                    text: Joystick.pic?"PIC":"CIC"
                     font.family: UIConstants.appFont
                     anchors.fill: parent
                     verticalAlignment: Text.AlignVCenter
@@ -585,7 +585,7 @@ Item {
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
-                    text: (vehicle?Number(vehicle.batteryVoltage).toFixed(2).toString():"")+"V"
+                    text: (vehicle?Number(FlightVehicle.batteryVoltage).toFixed(2).toString():"")+"V"
                     anchors.fill: parent
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
@@ -612,7 +612,7 @@ Item {
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
                     font.family: UIConstants.appFont
-                    text: (vehicle?Number(vehicle.batteryAmpe).toFixed(2).toString():"")+"A"
+                    text: (vehicle?Number(FlightVehicle.batteryAmpe).toFixed(2).toString():"")+"A"
                     anchors.fill: parent
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
@@ -661,14 +661,14 @@ Item {
                 Connections{
                     target: vehicle
                     onLandedChanged:{
-                        if(vehicle.landed === false && _oldLandedFlag === true){
+                        if(FlightVehicle.landed === false && _oldLandedFlag === true){
                             console.log("flight time started")
                             _flightTime = 0;
                             timerFlightTime.start();
-                        }else if(vehicle.landed === true){
+                        }else if(FlightVehicle.landed === true){
                             timerFlightTime.stop();
                         }
-                        _oldLandedFlag = vehicle.landed;
+                        _oldLandedFlag = FlightVehicle.landed;
                     }
                 }
 
@@ -697,7 +697,7 @@ Item {
                     id: lblWP0
                     Layout.alignment: Qt.AlignVCenter
                     text: itemListName["UAV_WP"][UIConstants.language[UIConstants.languageID]]+"["+
-                          (vehicle?Number(vehicle.currentWaypoint).toFixed(0).toString():"")
+                          (vehicle?Number(FlightVehicle.currentWaypoint).toFixed(0).toString():"")
                     +"]"
                     color: UIConstants.textColor
                     font.pixelSize: UIConstants.fontSize
@@ -714,7 +714,7 @@ Item {
                     radius: UIConstants.rectRadius
                     Label{
                         color: UIConstants.textColor
-                        text: vehicle? (Number(vehicle.distanceToCurrentWaypoint).toFixed(2).toString() + "m"):"0m"
+                        text: vehicle? (Number(FlightVehicle.distanceToCurrentWaypoint).toFixed(2).toString() + "m"):"0m"
                         anchors.fill: parent
                         font.pixelSize: UIConstants.fontSize
                         font.family: UIConstants.appFont
@@ -747,7 +747,7 @@ Item {
                         color: UIConstants.textColor
                         font.pixelSize: UIConstants.fontSize
                         font.family: UIConstants.appFont
-                        text: vehicle? (Number(vehicle.distanceToHome).toFixed(2).toString() + "m"):"0m"
+                        text: vehicle? (Number(FlightVehicle.distanceToHome).toFixed(2).toString() + "m"):"0m"
                         anchors.fill: parent
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignHCenter
@@ -780,7 +780,7 @@ Item {
                         font.pixelSize: UIConstants.fontSize
                         font.family: UIConstants.appFont
 //                        text: lstFlightMode.model.length > 0? lstFlightMode.model[lstFlightMode.currentIndex]:"UNDEFINED"
-                        text: vehicle.flightMode
+                        text: FlightVehicle.flightMode
                         anchors.fill: parent
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignHCenter
@@ -850,7 +850,7 @@ Item {
         anchors.left: parent.left
         visible: rootItem._showParams
         Connections{
-            target: planController
+            target: FlightVehicle.planController
             onProgressPct:{
                 rectParamLoading.width = rootItem.width*progressPercentPct;
             }

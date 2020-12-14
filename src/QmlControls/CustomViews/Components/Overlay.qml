@@ -14,11 +14,11 @@ import CustomViews.UIConstants 1.0
 import io.qdt.dev 1.0
 Item {
     id: root
-    property real zoomMin: cameraController.gimbal.zoomMin
-    property real zoomMax: cameraController.gimbal.zoomMax
-    property real zoomRatio: cameraController.gimbal.zoom
-    property real digitalZoomMax: cameraController.gimbal.digitalZoomMax
-    property real zoomTarget: cameraController.gimbal.zoomTarget
+    property real zoomMin: CameraController.gimbal.zoomMin
+    property real zoomMax: CameraController.gimbal.zoomMax
+    property real zoomRatio: CameraController.gimbal.zoom
+    property real digitalZoomMax: CameraController.gimbal.digitalZoomMax
+    property real zoomTarget: CameraController.gimbal.zoomTarget
     property real zoomCalculate
     property real pan: camState.panPos
     property real tilt: camState.tiltPos
@@ -389,7 +389,7 @@ Item {
             value: 1
             onValueChanged: {
                 if(value > 0)
-                    cameraController.gimbal.setEOZoom("",value)
+                    CameraController.gimbal.setEOZoom("",value)
             }
         }
     }
@@ -412,8 +412,8 @@ Item {
         repeat: true
         running: false
         onTriggered: {
-            var posCurrent = cameraController.videoEngine.getTime("CURRENT")/1000000000;
-            var totalTime = cameraController.videoEngine.getTime("TOTAL")/1000000000;
+            var posCurrent = CameraController.videoEngine.getTime("CURRENT")/1000000000;
+            var totalTime = CameraController.videoEngine.getTime("TOTAL")/1000000000;
             var value = posCurrent/totalTime;
             //            console.log("time:"+posCurrent+"/"+totalTime+":"+value);
             var totalTimeSeconds = Number(totalTime % 60).toFixed(0);
@@ -443,7 +443,7 @@ Item {
             property bool pause: false
             onClicked: {
                 pause = !pause;
-                cameraController.videoEngine.pause(pause);
+                CameraController.videoEngine.pause(pause);
             }
         }
         ComboBox {
@@ -465,7 +465,7 @@ Item {
                 case "8x": speed = 8; break;
                 }
                 if(timer.running)
-                    cameraController.videoEngine.setSpeed(speed);
+                    CameraController.videoEngine.setSpeed(speed);
             }
         }
         Label {
@@ -488,7 +488,7 @@ Item {
                 console.log("pressed = "+pressed+" value change to "+value);
                 if(pressed == false){
                     timerPause.start();
-                    cameraController.videoEngine.goToPosition(value);
+                    CameraController.videoEngine.goToPosition(value);
                 }
             }
         }
@@ -503,7 +503,7 @@ Item {
         }
     }
     Connections{
-        target: cameraController.videoEngine
+        target: CameraController.videoEngine
         onSourceLinkChanged:{
             loadVideo(isVideo);
         }

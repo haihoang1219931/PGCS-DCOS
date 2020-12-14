@@ -32,7 +32,7 @@ Item {
     IconSVG {
         id: messageIcon
         source: "qrc:/qmlimages/ToolBar/Images/Signal.svg"
-        color:  !vehicle.link ? UIConstants.textColor: UIConstants.navIconColor
+        color:  !FlightVehicle.link ? UIConstants.textColor: UIConstants.navIconColor
 
         anchors.horizontalCenter: parent.horizontalCenter
         width:              iconSize
@@ -41,8 +41,8 @@ Item {
     }
     Label {
         color: messageIcon.color
-        text: vehicle ? ( (!isNaN(vehicle.mavlinkLossPercent)?
-                               Number(100.0 - vehicle.mavlinkLossPercent).toFixed(0).toString():"100")
+        text: vehicle ? ( (!isNaN(FlightVehicle.mavlinkLossPercent)?
+                               Number(100.0 - FlightVehicle.mavlinkLossPercent).toFixed(0).toString():"100")
                          + "%") : "100%"
         anchors.top: parent.top
         anchors.topMargin: 2
@@ -80,14 +80,14 @@ Item {
         opacity: 0.6
     }
     Connections{
-            target: comVehicle
+            target: FlightVehicle.communication
             onTeleDataReceived:{
                 var value = parseInt(dataType)
     //            console.log("value:"+value)
                 if(value !== undefined && value !== null){
                     if(srcAddr === "LOCAL"){
                         lblSNRLocal.text = "DH-SNR:" + dataType;
-                        if(vehicle.link){
+                        if(FlightVehicle.link){
                             if(value < 10) lblSNRLocal.color = UIConstants.redColor;
                             else if(value >=15)lblSNRLocal.color = messageIcon.color;
                             else lblSNRLocal.color = UIConstants.orangeColor
@@ -95,7 +95,7 @@ Item {
                         else lblSNRLocal.color = messageIcon.color
                     }else if(srcAddr === "REMOTE"){
                         lblSNRRemote.text = "VH-SNR:" + dataType;
-                        if(vehicle.link){
+                        if(FlightVehicle.link){
                             if(value < 10) lblSNRRemote.color = UIConstants.redColor;
                             else if(value >=15)lblSNRRemote.color = messageIcon.color;
                             else lblSNRRemote.color = UIConstants.orangeColor

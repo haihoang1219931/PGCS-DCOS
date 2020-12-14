@@ -97,9 +97,9 @@ Rectangle{
         Label {
             id: label2
             text: vehicle?(itemListName["LATITUDE"]
-                           [UIConstants.language[UIConstants.languageID]]+"   "+Number(vehicle.coordinate.latitude).toFixed(7).toString()+
+                           [UIConstants.language[UIConstants.languageID]]+"   "+Number(FlightVehicle.coordinate.latitude).toFixed(7).toString()+
                           "\n"+itemListName["LONGITUDE"]
-                           [UIConstants.language[UIConstants.languageID]]+"  "+Number(vehicle.coordinate.longitude).toFixed(7).toString()):
+                           [UIConstants.language[UIConstants.languageID]]+"  "+Number(FlightVehicle.coordinate.longitude).toFixed(7).toString()):
                           qsTr("0")
             color: UIConstants.textColor
             font.pixelSize: UIConstants.fontSize

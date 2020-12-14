@@ -41,11 +41,11 @@ Rectangle {
             height: UIConstants.sRect * 1.5
             onCurrentIndexChanged: {
                 if(cbxListConfig.currentIndex === 0){
-                    root.config = FCSConfig;
+                    root.config = FlightVehicle.config;
                 }else if(cbxListConfig.currentIndex === 1){
-                    root.config = TRKConfig;
+                    root.config = GPSTracker.config;
                 }else if(cbxListConfig.currentIndex === 2){
-                    root.config = PCSConfig
+                    root.config = CameraController.config;
                 }else if(cbxListConfig.currentIndex === 3){
                     root.config = UcApiConfig
                 }

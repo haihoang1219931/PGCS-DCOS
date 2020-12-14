@@ -31,7 +31,7 @@ Item {
     property real _defaultSize: UIConstants.sRect * 4
     property real _sizeRatio:   1.2
     property int  _fontSize:    UIConstants.fontSize
-    property real _heading:     vehicle ? vehicle.heading : 0
+    property real _heading:     vehicle ? FlightVehicle.heading : 0
 
     Rectangle {
         id:             borderRect

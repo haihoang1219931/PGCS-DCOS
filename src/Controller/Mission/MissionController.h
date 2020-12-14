@@ -6,18 +6,12 @@
 class MissionController : public QObject
 {
     Q_OBJECT
-public:
-    explicit MissionController(QObject *parent = nullptr);
-    Q_PROPERTY(Vehicle* vehicle READ vehicle WRITE setVehicle)
     Q_PROPERTY(bool forceCurrentWP READ forceCurrentWP WRITE setForceShowCurrentWP)
-
-    Vehicle* vehicle();
-    void setVehicle(Vehicle* vehicle);
+public:
+    MissionController(Vehicle *vehicle);
     void _handleMissionCurrent(const mavlink_message_t& message);
     void _handleHeartbeat(const mavlink_message_t& message);
-
     void setForceShowCurrentWP(bool force);
-
 protected:
     void _connectToMavlink(void);
     void _disconnectFromMavlink(void);

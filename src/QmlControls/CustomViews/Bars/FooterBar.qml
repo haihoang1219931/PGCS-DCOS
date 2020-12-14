@@ -237,7 +237,7 @@ Item {
                         btnText: itemListName["MISSION"]["UPLOAD_PLAN"][UIConstants.language[UIConstants.languageID]]
                         isTimerActive: true
                         timeout: 1000
-                        isEnable: vehicle.link
+                        isEnable: FlightVehicle.link
                         onClicked: {
                             rootItem.doUploadPlan()
                         }
@@ -250,7 +250,7 @@ Item {
                         btnText: itemListName["MISSION"]["DOWNLOAD_PLAN"][UIConstants.language[UIConstants.languageID]]
                         isTimerActive: true
                         timeout: 1000
-                        isEnable: vehicle.link
+                        isEnable: FlightVehicle.link
                         onClicked: {
                                 rootItem.doDownloadPlan()
                                 isEnable = false;
@@ -270,15 +270,15 @@ Item {
                         id: btnArm
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
-                        icon: !vehicle.armed?UIConstants.iArmed:UIConstants.iDisarmed
-                        btnText: !vehicle.armed?
+                        icon: !FlightVehicle.armed?UIConstants.iArmed:UIConstants.iDisarmed
+                        btnText: !FlightVehicle.armed?
                                      itemListName["MISSION"]["ARM"][UIConstants.language[UIConstants.languageID]]:
                                      itemListName["MISSION"]["DISARM"][UIConstants.language[UIConstants.languageID]]
-                        isEnable: vehicle.link
+                        isEnable: FlightVehicle.link
                         isTimerActive: true
                         timeout: 1000
                         onClicked: {
-                            rootItem.doArm(!vehicle.armed);
+                            rootItem.doArm(!FlightVehicle.armed);
                         }
                     }
                 }
@@ -397,37 +397,37 @@ Item {
                         Layout.alignment: Qt.AlignTop
                         midColor: UIConstants.normalValueColor
                         topValue: "100"
-                        middleValue: (vehicle?Number(vehicle.altitudeRelative).toFixed(0).toString():"0")
+                        middleValue: (vehicle?Number(FlightVehicle.altitudeRelative).toFixed(0).toString():"0")
                         bottomValue: "m"
                         middleColor: UIConstants.btnMiddleColorNormal
                         disableColor: UIConstants.btnMiddleColorNormal
-                        isEnable: vehicle.link
+                        isEnable: FlightVehicle.link
                                   &&
-                                  (((vehicle.vehicleType === 2 || vehicle.vehicleType === 14) &&
-                                    vehicle.flightMode === "Guided")
+                                  (((FlightVehicle.vehicleType === 2 || FlightVehicle.vehicleType === 14) &&
+                                    FlightVehicle.flightMode === "Guided")
                                    ||
-                                   (vehicle.vehicleType === 1))
+                                   (FlightVehicle.vehicleType === 1))
                         Connections{
                             target: missionController
                             onCurrentIndexChanged:{
-                                if((vehicle.flightMode === "Auto" || vehicle.flightMode === "RTL" )&&
-                                        planController.missionItems.length > sequence
+                                if((FlightVehicle.flightMode === "Auto" || FlightVehicle.flightMode === "RTL" )&&
+                                        FlightVehicle.planController.missionItems.length > sequence
                                         ){
                                     if(sequence !== rootItem.waypointIDSetProperty || missionController.forceCurrentWP === true){
                                         if(sequence > 0){
                                             rootItem.setFlightAltitudeTarget(
                                                 sequence,
-                                                planController.missionItems[sequence].param7);
+                                                FlightVehicle.planController.missionItems[sequence].param7);
                                         }else{
                                             rootItem.setFlightAltitudeTarget(
                                                 sequence,
-                                                vehicle.homePosition.altitude);
+                                                FlightVehicle.homePosition.altitude);
                                         }
                                     }else {
                                         if(sequence === 0){
                                             rootItem.setFlightAltitudeTarget(
                                                 sequence,
-                                                vehicle.homePosition.altitude);
+                                                FlightVehicle.homePosition.altitude);
                                         }
                                     }
                                 }
@@ -443,19 +443,19 @@ Item {
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
                         Layout.alignment: Qt.AlignTop
-                        topValue: Math.round(vehicle.paramAirSpeed*3.6)
+                        topValue: Math.round(FlightVehicle.paramAirSpeed*3.6)
                         middleValue: (vehicle?Math.round(
-                                                   ((vehicle.vehicleType === 2 || vehicle.vehicleType === 14)?vehicle.groundSpeed:vehicle.airSpeed)
+                                                   ((FlightVehicle.vehicleType === 2 || FlightVehicle.vehicleType === 14)?FlightVehicle.groundSpeed:FlightVehicle.airSpeed)
                                                    *3.6).toString():"0")
                         bottomValue: "km/h"
                         middleColor:  (middleValue < UIConstants.speedMinValue)? UIConstants.dangerousValueColor:
                                     ((middleValue > UIConstants.speedGoodValue)? UIConstants.normalValueColor : UIConstants.warningValueColor)
                         disableColor: UIConstants.btnMiddleColorNormal
-                        isEnable: vehicle.link
+                        isEnable: FlightVehicle.link
                                   &&
-                                  (((vehicle.vehicleType === 2 || vehicle.vehicleType === 14) && vehicle.flightMode === "Guided")
+                                  (((FlightVehicle.vehicleType === 2 || FlightVehicle.vehicleType === 14) && FlightVehicle.flightMode === "Guided")
                                    ||
-                                   (vehicle.vehicleType === 1))
+                                   (FlightVehicle.vehicleType === 1))
                         onClicked: {
                             rootItem.doFlyAction(5);
                         }
@@ -470,7 +470,7 @@ Item {
                             anchors.left: parent.left
                             color: UIConstants.textColor
                             text: itemListName["MISSION"]["GROUND_SPEED"][UIConstants.language[UIConstants.languageID]]+
-                                  ":\n"+(vehicle?Number(vehicle.groundSpeed*3.6).toFixed(2).toString():"--")+" km/h"
+                                  ":\n"+(vehicle?Number(FlightVehicle.groundSpeed*3.6).toFixed(2).toString():"--")+" km/h"
                             font.pixelSize: UIConstants.fontSize - 2
                             font.family: UIConstants.appFont
                         }
@@ -481,7 +481,7 @@ Item {
                             anchors.bottomMargin: 5
                             color: UIConstants.textColor
                             text: itemListName["MISSION"]["AMSL"][UIConstants.language[UIConstants.languageID]]+
-                                  ":\n"+(vehicle?Math.round(vehicle.altitudeAMSL).toString():"--")+" m"
+                                  ":\n"+(vehicle?Math.round(FlightVehicle.altitudeAMSL).toString():"--")+" m"
                             font.pixelSize: UIConstants.fontSize - 2
                             font.family: UIConstants.appFont
                         }
@@ -495,7 +495,7 @@ Item {
                             anchors.left: parent.left
                             color: UIConstants.textColor
                             text: itemListName["MISSION"]["CLIMB_SPEED"][UIConstants.language[UIConstants.languageID]]+
-                                  ":\n"+(vehicle?Number(vehicle.climbSpeed*3.6).toFixed(2).toString():"--")+" km/h"
+                                  ":\n"+(vehicle?Number(FlightVehicle.climbSpeed*3.6).toFixed(2).toString():"--")+" km/h"
                             font.pixelSize: UIConstants.fontSize - 2
                             font.family: UIConstants.appFont
                         }
@@ -506,7 +506,7 @@ Item {
                             anchors.bottomMargin: 5
                             color: UIConstants.textColor
                             text: itemListName["MISSION"]["AGL"][UIConstants.language[UIConstants.languageID]]+
-                                  ":\n"+(vehicle?Number(vehicle.altitudeRelative).toFixed(2).toString():"--")+" m"
+                                  ":\n"+(vehicle?Number(FlightVehicle.altitudeRelative).toFixed(2).toString():"--")+" m"
                             font.pixelSize: UIConstants.fontSize - 2
                             font.family: UIConstants.appFont
                         }
@@ -521,18 +521,18 @@ Item {
                         btnText: mapPane.selectedWP !== undefined ?
                                     itemListName["MISSION"]["GO_WP"][UIConstants.language[UIConstants.languageID]]:
                                     itemListName["MISSION"]["GO_LOCATION"][UIConstants.language[UIConstants.languageID]]
-                        isEnable: vehicle.link
+                        isEnable: FlightVehicle.link
                                   &&
-                                  ((vehicle.vehicleType === 2 && !joystick.pic)
+                                  ((FlightVehicle.vehicleType === 2 && !Joystick.pic)
                                    ||
-                                   (vehicle.vehicleType === 14 && !joystick.pic)
+                                   (FlightVehicle.vehicleType === 14 && !Joystick.pic)
                                    ||
-                                   (vehicle.vehicleType === 1 && mapPane.selectedIndex >= 0 ) )
+                                   (FlightVehicle.vehicleType === 1 && mapPane.selectedIndex >= 0 ) )
                         onClicked: {
                             if(mapPane.selectedIndex >= 0){
                                 rootItem.doGoWP();
                             }else{
-                                if(vehicle.vehicleType === 2 || vehicle.vehicleType === 14)
+                                if(FlightVehicle.vehicleType === 2 || FlightVehicle.vehicleType === 14)
                                 rootItem.doGoPosition();
                             }
                         }
@@ -585,7 +585,7 @@ Item {
                         Layout.alignment: Qt.AlignTop
                         icon: UIConstants.iAuto
                         btnText: itemListName["MISSION"]["AUTO"][UIConstants.language[UIConstants.languageID]]
-                        isEnable: vehicle.link && !joystick.pic
+                        isEnable: FlightVehicle.link && !Joystick.pic
                         onClicked: {
                             rootItem.doFlyAction(1);
                         }
@@ -597,7 +597,7 @@ Item {
 //                        Layout.alignment: Qt.AlignTop
 //                        icon: UIConstants.iManual
 //                        btnText: "Guided"
-//                        isEnable: vehicle.link
+//                        isEnable: FlightVehicle.link
 //                        onClicked: {
 //                            rootItem.doFlyAction(2);
 //                        }
@@ -616,8 +616,8 @@ Item {
                         Layout.preferredHeight: parent.height
                         icon: UIConstants.iDeparture
                         btnText: itemListName["MISSION"]["TAKE_OFF"][UIConstants.language[UIConstants.languageID]]
-                        isEnable: vehicle.link && vehicle.armed &&
-                                  (joystick.useJoystick? !joystick.pic: true)
+                        isEnable: FlightVehicle.link && FlightVehicle.armed &&
+                                  (Joystick.useJoystick? !Joystick.pic: true)
                         onClicked: {
                             rootItem.doFlyAction(3);
                         }
@@ -626,27 +626,27 @@ Item {
                         id: btnArm02
                         Layout.preferredWidth: parent.height
                         Layout.preferredHeight: parent.height
-                        icon: !vehicle.armed?UIConstants.iArmed:UIConstants.iDisarmed
-                        iconColor: !vehicle.armed?UIConstants.greenColor:UIConstants.redColor
-                        btnText: !vehicle.armed?
+                        icon: !FlightVehicle.armed?UIConstants.iArmed:UIConstants.iDisarmed
+                        iconColor: !FlightVehicle.armed?UIConstants.greenColor:UIConstants.redColor
+                        btnText: !FlightVehicle.armed?
                                      itemListName["MISSION"]["ARM"][UIConstants.language[UIConstants.languageID]]:
                                      itemListName["MISSION"]["DISARM"][UIConstants.language[UIConstants.languageID]]
-                        isEnable: vehicle.link
+                        isEnable: FlightVehicle.link
 //                        isTimerActive: true
 //                        timeout: 1000
                         onClicked: {
-                            rootItem.doArm(!vehicle.armed);
+                            rootItem.doArm(!FlightVehicle.armed);
                         }
                     }
                     FooterButton {
                         id: btnStartEngine
-                        visible: vehicle.vehicleType === 1
-                        Layout.preferredWidth: vehicle.vehicleType === 1 ?
+                        visible: FlightVehicle.vehicleType === 1
+                        Layout.preferredWidth: FlightVehicle.vehicleType === 1 ?
                                                    parent.height:0
                         Layout.preferredHeight: parent.height
 //                        icon:
                         btnText: "Start\nEngine"
-                        isEnable: vehicle.link
+                        isEnable: FlightVehicle.link
                         onClicked: {
                             rootItem.doStartEngine()
                         }
@@ -669,7 +669,7 @@ Item {
                                 btnText: itemListName["MISSION"]["UPLOAD_PLAN"][UIConstants.language[UIConstants.languageID]]
                                 isTimerActive: true
                                 timeout: 1000
-                                isEnable: vehicle.link
+                                isEnable: FlightVehicle.link
                                 onClicked: {
                                     rootItem.doUploadPlan();
                                 }
@@ -682,7 +682,7 @@ Item {
                                 btnText: itemListName["MISSION"]["DOWNLOAD_PLAN"][UIConstants.language[UIConstants.languageID]]
                                 isTimerActive: true
                                 timeout: 1000
-                                isEnable: vehicle.link
+                                isEnable: FlightVehicle.link
                                 onClicked: {
                                         rootItem.doDownloadPlan();
                                 }
@@ -719,7 +719,7 @@ Item {
                                 id: btnLoiterRadius
                                 Layout.preferredWidth: parent.height
                                 Layout.preferredHeight: parent.height
-                                icon: Math.round(vehicle.paramLoiterRadius)
+                                icon: Math.round(FlightVehicle.paramLoiterRadius)
                                 isEnable: btnLoiter.isOn
                                 isSolid: true
                                 btnText: itemListName["MISSION"]["LOITER_RADIUS"][UIConstants.language[UIConstants.languageID]]

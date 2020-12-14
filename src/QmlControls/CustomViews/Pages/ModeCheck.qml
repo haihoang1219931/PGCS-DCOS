@@ -62,7 +62,7 @@ Rectangle{
             anchors.horizontalCenter: parent.horizontalCenter
             enabled: false
             horizontalAlignment: TextInput.AlignHCenter
-            text: joystick.pic ? "PIC":"CIC"
+            text: Joystick.pic ? "PIC":"CIC"
         }
         QLabel {
             id: lblModeTiltle
@@ -77,7 +77,7 @@ Rectangle{
             width: UIConstants.sRect * 8
             height: UIConstants.sRect
             anchors.horizontalCenter: parent.horizontalCenter
-            text: vehicle.flightMode
+            text: FlightVehicle.flightMode
             horizontalAlignment: TextInput.AlignHCenter
             enabled: false
         }

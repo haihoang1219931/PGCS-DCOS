@@ -1,13 +1,7 @@
 #include "MissionController.h"
 
-MissionController::MissionController(QObject *parent) : QObject(parent)
+MissionController::MissionController(Vehicle *vehicle)
 {
-
-}
-Vehicle* MissionController::vehicle(){
-    return m_vehicle;
-}
-void MissionController::setVehicle(Vehicle* vehicle){
     m_vehicle = vehicle;
     _connectToMavlink();
 }

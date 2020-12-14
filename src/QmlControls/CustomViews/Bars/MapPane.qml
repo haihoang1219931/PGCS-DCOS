@@ -923,7 +923,7 @@ Item {
     }
     function changeVehicleType(vehicleType){
         console.log("changeVehicleType to "+vehicleType);
-        console.log("vehicle.MAV_TYPE_FIXED_WING="+Vehicle.MAV_TYPE_FIXED_WING);
+        console.log("FlightVehicle.MAV_TYPE_FIXED_WING="+Vehicle.MAV_TYPE_FIXED_WING);
         var vehicleSymbolUrl = vehicleSymbolLink["MAV_TYPE_GENERIC"];
         var vehicleHeading = uavGraphic.symbol.angle;
         var opacity = uavGraphic.symbol.opacity;

@@ -182,33 +182,6 @@ void IOFlightController::loadConfig(Config* linkConfig){
                                            linkConfig->value("Settings:LinkName:Value:data").toString().toStdString()+" "+
                                            FileController::get_day()+" "+FileController::get_time()+".tlog");
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/6H_v1.0.3
-    QString telnetlIP   = linkConfig->value("Settings:TeleLocalIP:Value:data").toString();
-    int telnetPort     = linkConfig->value("Settings:TeleLocalPort:Value:data").toInt();
-    QString telnetUser = linkConfig->value("Settings:TeleLocalUser:Value:data").toString();
-    QString telnetPass = linkConfig->value("Settings:TeleLocalPass:Value:data").toString();
-
-    if (telnetlIP != "" && telnetPort>0 && telnetUser !="" && telnetPass != ""){
-        m_comNetLocal = new TelemetryController();
-        m_comNetLocal->connectToHost(telnetlIP,telnetPort,telnetUser,telnetPass);
-        connect(m_comNetLocal,&TelemetryController::writeLogTimeout,this,&IOFlightController::handleDataReceived);
-    }
-
-    telnetlIP = linkConfig->value("Settings:TeleRemoteIP:Value:data").toString();
-    telnetPort = linkConfig->value("Settings:TeleRemotePort:Value:data").toInt();
-    telnetUser = linkConfig->value("Settings:TeleRemoteUser:Value:data").toString();
-    telnetPass = linkConfig->value("Settings:TeleRemotePass:Value:data").toString();
-
-    if (telnetlIP != "" && telnetPort>0 && telnetUser !="" && telnetPass != ""){
-        m_comNetRemote = new TelemetryController();
-        m_comNetRemote->connectToHost(telnetlIP,telnetPort,telnetUser,telnetPass);
-        connect(m_comNetRemote,&TelemetryController::writeLogTimeout,this,&IOFlightController::handleDataReceived);
-    }
-
-<<<<<<< HEAD
 }
 void IOFlightController::handleDataReceived(QString ip, int snr, int rssi){
     if(ip == m_linkConfig->value("Settings:TeleLocalIP:Value:data").toString()){
@@ -222,23 +195,6 @@ void IOFlightController::handleDataReceived(QString ip, int snr, int rssi){
             Q_EMIT teleDataReceived("REMOTE",QString::fromStdString(std::to_string(m_remoteSNR))
                                     ,0);
         }
-
-=======
-
-}
-void IOFlightController::handleDataReceived(QString ip, int snr, int rssi){
-    if(ip == m_linkConfig->value("Settings:TeleLocalIP:Value:data").toString()){
-        m_localSNR = snr;
-        m_localRSSI = rssi;
-        Q_EMIT teleDataReceived("LOCAL",QString::fromStdString(std::to_string(m_localSNR))
-                                ,0);
-    }else if(ip == m_linkConfig->value("Settings:TeleRemoteIP:Value:data").toString()){
-        m_remoteSNR = snr;
-        m_remoteRSSI = rssi;
-        Q_EMIT teleDataReceived("REMOTE",QString::fromStdString(std::to_string(m_remoteSNR))
-                                ,0);
-    }
->>>>>>> origin/6H_v1.0.3
     mavlink_message_t msg;
     mavlink_msg_radio_pack_chan(systemId(),
                                 componentId(),
@@ -263,6 +219,27 @@ void IOFlightController::handleDataReceived(QString ip, int snr, int rssi){
 }
 void IOFlightController::connectLink(){
     m_linkInterface->connect2host();
+    QString telnetlIP   = m_linkConfig->value("Settings:TeleLocalIP:Value:data").toString();
+    int telnetPort     = m_linkConfig->value("Settings:TeleLocalPort:Value:data").toInt();
+    QString telnetUser = m_linkConfig->value("Settings:TeleLocalUser:Value:data").toString();
+    QString telnetPass = m_linkConfig->value("Settings:TeleLocalPass:Value:data").toString();
+
+    if (telnetlIP != "" && telnetPort>0 && telnetUser !="" && telnetPass != ""){
+        m_comNetLocal = new TelemetryController();
+        m_comNetLocal->connectToHost(telnetlIP,telnetPort,telnetUser,telnetPass);
+        connect(m_comNetLocal,&TelemetryController::writeLogTimeout,this,&IOFlightController::handleDataReceived);
+    }
+
+    telnetlIP = m_linkConfig->value("Settings:TeleRemoteIP:Value:data").toString();
+    telnetPort = m_linkConfig->value("Settings:TeleRemotePort:Value:data").toInt();
+    telnetUser = m_linkConfig->value("Settings:TeleRemoteUser:Value:data").toString();
+    telnetPass = m_linkConfig->value("Settings:TeleRemotePass:Value:data").toString();
+
+    if (telnetlIP != "" && telnetPort>0 && telnetUser !="" && telnetPass != ""){
+        m_comNetRemote = new TelemetryController();
+        m_comNetRemote->connectToHost(telnetlIP,telnetPort,telnetUser,telnetPass);
+        connect(m_comNetRemote,&TelemetryController::writeLogTimeout,this,&IOFlightController::handleDataReceived);
+    }
 }
 void IOFlightController::disConnectLink(){
     m_linkInterface->closeConnection();

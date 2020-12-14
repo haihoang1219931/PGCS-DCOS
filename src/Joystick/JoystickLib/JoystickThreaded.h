@@ -236,7 +236,6 @@ public:
     static void expose(){
         qmlRegisterType<JSAxis>();
         qmlRegisterType<JSButton>();
-        qmlRegisterType<JoystickThreaded>("io.qdt.dev", 1, 0, "Joystick");
     }
     bool connected(){ return m_connected; }
 

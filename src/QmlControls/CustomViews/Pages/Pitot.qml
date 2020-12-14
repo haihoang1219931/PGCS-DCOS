@@ -130,7 +130,7 @@ Rectangle{
             border.color: "gray"
             Label {
                 id: label2
-                text: (vehicle?Number(vehicle.airSpeed*3.6).toFixed(1).toString():"0") + " km/h"
+                text: (vehicle?Number(FlightVehicle.airSpeed*3.6).toFixed(1).toString():"0") + " km/h"
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent

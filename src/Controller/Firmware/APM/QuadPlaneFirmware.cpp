@@ -45,7 +45,6 @@ QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
 //    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
 //    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_B,  "FBW B");
 
-
 }
 //void QuadPlaneFirmware::setJoystick(JoystickThreaded* joystick){
 //    if(m_vehicle->joystick()->connected()){

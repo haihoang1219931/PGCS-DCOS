@@ -60,7 +60,16 @@ int main(int argc, char *argv[])
     QSurfaceFormat format;
     format.setSamples(8);
     QSurfaceFormat::setDefaultFormat(format);
-
+    //--- Joystick
+    JoystickThreaded joystick;
+    joystick.setMapFile("conf/joystick.conf");
+    engine.rootContext()->setContextProperty("Joystick", &joystick);
+    JoystickThreaded::expose();
+    //--- Network
+    NetworkManager::expose();
+    //--- Other things
+    qmlRegisterType<PlateLog>("io.qdt.dev", 1, 0, "PlateLog");
+    engine.rootContext()->setContextProperty("applicationDirPath", QGuiApplication::applicationDirPath());
 #ifdef UC_API
     QtWebEngine::initialize();
 #endif
@@ -99,7 +108,6 @@ int main(int argc, char *argv[])
     qmlRegisterType<ParamsController>("io.qdt.dev", 1, 0, "ParamsController");
     qmlRegisterType<IOFlightController>("io.qdt.dev",1,0,"IOFlightController");
     qmlRegisterType<Fact>("io.qdt.dev",1,0,"Fact");
-    qmlRegisterType<Vehicle>("io.qdt.dev",1,0,"Vehicle");
     qmlRegisterType<UAS>("io.qdt.dev",1,0,"UAS");
     qmlRegisterType<UASMessage>("io.qdt.dev",1,0,"UASMessage");
     qmlRegisterType<PlanController>("io.qdt.dev",1,0,"PlanController");
@@ -111,14 +119,11 @@ int main(int argc, char *argv[])
     //----Model nhatdn1-----------
     qmlRegisterType<ProfilePath>("io.qdt.dev", 1, 0,    "ProfilePath");
     qmlRegisterType<SymbolModel>("io.qdt.dev", 1, 0,    "SymbolModel");
-
-//    qmlRegisterType<MAV_TYPE>("io.qdt.dev", 1, 0, "MAV_TYPE", "MAV_TYPE");
-    Config fcsConfig;
-    fcsConfig.readConfig("conf/fcs.conf");
-    engine.rootContext()->setContextProperty("FCSConfig", &fcsConfig);
-    Config trkConfig;
-    trkConfig.readConfig("conf/trk.conf");
-    engine.rootContext()->setContextProperty("TRKConfig", &trkConfig);
+    Vehicle vehicle("conf/fcs.conf");
+    engine.rootContext()->setContextProperty("FlightVehicle", &vehicle);
+    Vehicle tracker("conf/trk.conf");
+    tracker.setUav(&vehicle);
+    engine.rootContext()->setContextProperty("GPSTracker", &tracker);
 #ifdef USE_VIDEO_CPU
     //--- Camera controller
     qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
@@ -128,7 +133,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("USE_VIDEO_CPU", QVariant(false));
 #endif
 #ifdef USE_VIDEO_GPU
-
     qmlRegisterType<TrackObjectInfo>("io.qdt.dev", 1, 0, "TrackObjectInfo");
     qmlRegisterType<VDisplay>("io.qdt.dev", 1, 0, "Player");
     engine.rootContext()->setContextProperty("USE_VIDEO_GPU", QVariant(true));
@@ -136,10 +140,10 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("USE_VIDEO_GPU", QVariant(false));
 #endif
 #ifdef CAMERA_CONTROL
-    Config pcsConfig;
-    pcsConfig.readConfig("conf/pcs.conf");
-    engine.rootContext()->setContextProperty("PCSConfig", &pcsConfig);
-    qmlRegisterType<CameraController>("io.qdt.dev", 1, 0, "CameraController");
+    CameraController cameraController("conf/pcs.conf");
+    cameraController.gimbal()->setJoystick(&joystick);
+    cameraController.gimbal()->setVehicle(&vehicle);
+    engine.rootContext()->setContextProperty("CameraController", &cameraController);
     qmlRegisterType<VideoRender>("io.qdt.dev", 1, 0, "VideoRender");
     engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(true));
 #else
@@ -147,14 +151,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<QObject>("io.qdt.dev", 1, 0, "CameraController");
     engine.rootContext()->setContextProperty("CAMERA_CONTROL", QVariant(false));
 #endif
-    qmlRegisterType<PlateLog>("io.qdt.dev", 1, 0, "PlateLog");
-    //--- Joystick
-    JoystickThreaded::expose();
-    //--- Network
-    NetworkManager::expose();
-    //--- Other things
 
-    engine.rootContext()->setContextProperty("applicationDirPath", QGuiApplication::applicationDirPath());
+
     engine.addImportPath("qrc:/");
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())

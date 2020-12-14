@@ -33,12 +33,12 @@ Item {
     anchors.bottom: parent.bottom
     property int iconSize: 30
     property bool showIndicator: false
-    property bool   _isMessageImportant:  vehicle.messageSecurity !== "MSG_INFO"
+    property bool   _isMessageImportant:  FlightVehicle.messageSecurity !== "MSG_INFO"
     signal clicked()
     IconSVG {
         id: messageIcon
         source: "qrc:/qmlimages/ToolBar/Images/Megaphone.svg"
-        color:  vehicle.uas.messages.length > 0? (!_isMessageImportant?
+        color:  FlightVehicle.uas.messages.length > 0? (!_isMessageImportant?
                                                                   UIConstants.navIconColor:UIConstants.redColor) :
                                                              UIConstants.textColor
         anchors.horizontalCenter: parent.horizontalCenter
@@ -48,7 +48,7 @@ Item {
     }
     Label {
         color: messageIcon.color
-        text: vehicle ? Number(vehicle.uas.messages.length).toString() : ""
+        text: vehicle ? Number(FlightVehicle.uas.messages.length).toString() : ""
         anchors.top: parent.top
         anchors.topMargin: 2
         anchors.left: messageIcon.right
@@ -83,7 +83,7 @@ Item {
             anchors.fill:       parent
             pixelAligned:       true
             clip:               true
-            model: vehicle.uas.messages
+            model: FlightVehicle.uas.messages
             delegate: TextEdit {
                 id:             messageText
                 width: parent.width
@@ -137,7 +137,7 @@ Item {
                 anchors.fill:   parent
                 onClicked: {
                     if(true) {
-                        vehicle.uas.messages = [];
+                        FlightVehicle.uas.messages = [];
                         rootItem.clicked();
                     }
                 }

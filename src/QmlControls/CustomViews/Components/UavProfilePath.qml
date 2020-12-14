@@ -93,7 +93,7 @@ Item
     }
 
     function setLocation(_coord1,_coord2){ //relative alt
-        //var altHome = vehicle.link ? (vehicle.altitudeAMSL - vehicle.altitudeRelative) : mapPane.virtualHomeAMSL
+        //var altHome = FlightVehicle.link ? (FlightVehicle.altitudeAMSL - FlightVehicle.altitudeRelative) : mapPane.virtualHomeAMSL
         coord1 = _coord1;
         coord2 = _coord2;
         profilePath.addElevation(coord1,coord2);
@@ -112,7 +112,7 @@ Item
 
             //update warning
 
-            var prePlanePos = profilePath.planePosPrediction(coord,coord2,vehicle.groundSpeed,60); //60s
+            var prePlanePos = profilePath.planePosPrediction(coord,coord2,FlightVehicle.groundSpeed,60); //60s
             //console.log("coord2:"+coord2.altitude)
             p = profilePath.convertCoordinatetoXY(prePlanePos,coord1,coord2);
             if( p.x < 0) p.x=0;
@@ -131,7 +131,7 @@ Item
     function setWpLineOfSight(coord1,coord2){ //absolute
         setLocation(coord1,coord2)
         console.log("setLocaaiton light of sight")
-        //var altHome = vehicle.link ? (vehicle.altitudeAMSL - vehicle.altitudeRelative) : mapPane.virtualHomeAMSL
+        //var altHome = FlightVehicle.link ? (FlightVehicle.altitudeAMSL - FlightVehicle.altitudeRelative) : mapPane.virtualHomeAMSL
         profilePath.setLineOfSight(0,coord1.altitude, coord1.distanceTo(coord2),coord2.altitude);
     }
 

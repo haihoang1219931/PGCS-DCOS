@@ -1,8 +1,10 @@
+#include "MissionItem.h"
 #include "PlanController.h"
 #include "../Vehicle/Vehicle.h"
 Q_LOGGING_CATEGORY(PlanManagerLog, "PlanManagerLog");
-PlanController::PlanController(QObject *parent) : QObject(parent)
+PlanController::PlanController(Vehicle *vehicle)
 {
+    m_vehicle = vehicle;
     m_planType = MAV_MISSION_TYPE_MISSION;
     m_ackTimeoutTimerDownload = new QTimer(this);
     m_ackTimeoutTimerDownload->setInterval(_ackTimeoutMilliseconds);
@@ -12,12 +14,6 @@ PlanController::PlanController(QObject *parent) : QObject(parent)
     m_ackTimeoutTimerUpload->setInterval(_ackTimeoutMilliseconds);
     m_ackTimeoutTimerUpload->setSingleShot(true);
     system("/bin/mkdir -p missions");
-}
-Vehicle* PlanController::vehicle(){
-    return m_vehicle;
-}
-void PlanController::setVehicle(Vehicle* vehicle){
-    m_vehicle = vehicle;
 }
 void PlanController::_startAckTimeout(AckType_t ack)
 {

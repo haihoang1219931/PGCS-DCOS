@@ -155,8 +155,8 @@ Rectangle {
             text: "<font color=\"white\">Track Boxes</font>"
             checked: true
             onCheckedChanged: {
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setOverlay(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setOverlay(
                                 hudCameraEnable,
                                 cbxLaserActive.checked,
                                 cbxLimitWarning.checked,
@@ -180,8 +180,8 @@ Rectangle {
             height: 32
             text: "<font color=\"white\">Target Loc</font>"
             onCheckedChanged: {
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setOverlay(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setOverlay(
                                 hudCameraEnable,
                                 cbxLaserActive.checked,
                                 cbxLimitWarning.checked,
@@ -205,8 +205,8 @@ Rectangle {
             height: 32
             text: "<font color=\"white\">H-FOV</font>"
             onCheckedChanged: {
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setOverlay(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setOverlay(
                                 hudCameraEnable,
                                 cbxLaserActive.checked,
                                 cbxLimitWarning.checked,
@@ -230,8 +230,8 @@ Rectangle {
             height: 32
             text: "<font color=\"white\">Limit Warning</font>"
             onCheckedChanged: {
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setOverlay(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setOverlay(
                                 hudCameraEnable,
                                 cbxLaserActive.checked,
                                 cbxLimitWarning.checked,
@@ -255,8 +255,8 @@ Rectangle {
             height: 32
             text: "<font color=\"white\">Crosshair</font>"
             onCheckedChanged: {
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setOverlay(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setOverlay(
                                 hudCameraEnable,
                                 cbxLaserActive.checked,
                                 cbxLimitWarning.checked,
@@ -280,8 +280,8 @@ Rectangle {
             height: 32
             text: "<font color=\"white\">Slant Range</font>"
             onCheckedChanged: {
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setOverlay(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setOverlay(
                                 hudCameraEnable,
                                 cbxLaserActive.checked,
                                 cbxLimitWarning.checked,
@@ -305,8 +305,8 @@ Rectangle {
             height: 32
             text: "<font color=\"white\">Timestamp</font>"
             onCheckedChanged: {
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setOverlay(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setOverlay(
                                 hudCameraEnable,
                                 cbxLaserActive.checked,
                                 cbxLimitWarning.checked,
@@ -330,8 +330,8 @@ Rectangle {
             height: 32
             text: "<font color=\"white\">Stab Mode</font>"
             onCheckedChanged: {
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setOverlay(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setOverlay(
                                 hudCameraEnable,
                                 cbxLaserActive.checked,
                                 cbxLimitWarning.checked,
@@ -355,8 +355,8 @@ Rectangle {
             height: 32
             text: "<font color=\"white\">Gimbal Mode</font>"
             onCheckedChanged: {
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setOverlay(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setOverlay(
                                 hudCameraEnable,
                                 cbxLaserActive.checked,
                                 cbxLimitWarning.checked,
@@ -380,8 +380,8 @@ Rectangle {
             height: 32
             text: "<font color=\"white\">Laser Active</font>"
             onCheckedChanged: {
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setOverlay(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setOverlay(
                                 hudCameraEnable,
                                 cbxLaserActive.checked,
                                 cbxLimitWarning.checked,
@@ -407,8 +407,8 @@ Rectangle {
             onClicked: {
                 hudCameraEnable = !hudCameraEnable;
                 camState.hudCameraEnable = hudCameraEnable;
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setOverlay(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setOverlay(
                                 hudCameraEnable,
                                 cbxLaserActive.checked,
                                 cbxLimitWarning.checked,
@@ -450,11 +450,11 @@ Rectangle {
             onClicked: {
                 digitalStab = !digitalStab;
                 camState.digitalStab = digitalStab;
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setEStabilisationParameters(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setEStabilisationParameters(
                                 root.digitalStab,
                                 255,255,15,camState.stabBackground);
-                    cameraController.gimbal.setStabiliseOnTrack(true);
+                    CameraController.gimbal.setStabiliseOnTrack(true);
                 }
             }
         }
@@ -468,11 +468,11 @@ Rectangle {
             model: ["Previous Background","Gray Background"]
             onCurrentIndexChanged: {
                 camState.stabBackground = currentIndex;
-                if(camState.isConnected && camState.isPingOk && cameraController.gimbal.isConnected){
-                    cameraController.gimbal.setEStabilisationParameters(
+                if(camState.isConnected && camState.isPingOk && CameraController.gimbal.isConnected){
+                    CameraController.gimbal.setEStabilisationParameters(
                                 root.digitalStab,
                                 255,255,15,camState.stabBackground);
-                    cameraController.gimbal.setStabiliseOnTrack(true);
+                    CameraController.gimbal.setStabiliseOnTrack(true);
                 }
             }
         }

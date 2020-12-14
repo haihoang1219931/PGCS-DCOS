@@ -54,27 +54,27 @@ Item {
 
                 Label {
                     id:             gpsLabel
-                    text:           (vehicle && vehicle.countGPS >= 0) ? qsTr("GPS Status") : qsTr("GPS Data Unavailable")
+                    text:           (vehicle && FlightVehicle.countGPS >= 0) ? qsTr("GPS Status") : qsTr("GPS Data Unavailable")
                     color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
 
                 GridLayout {
                     id:                 gpsGrid
-//                    visible:            (vehicle && vehicle.countGPS >= 0)
+//                    visible:            (vehicle && FlightVehicle.countGPS >= 0)
                     columnSpacing:      UIConstants.defaultFontPixelWidth
                     anchors.left: parent.left
                     columns: 1
 
-                    Label { text: qsTr("GPS Count:") + (vehicle.countGPS > 0 ? vehicle.countGPS : qsTr("N/A", "No data to display"))
+                    Label { text: qsTr("GPS Count:") + (FlightVehicle.countGPS > 0 ? FlightVehicle.countGPS : qsTr("N/A", "No data to display"))
                         color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize }
-                    Label { text: qsTr("GPS Lock:") + (vehicle.countGPS > 0 ? vehicle.lockGPS : qsTr("N/A", "No data to display"))
+                    Label { text: qsTr("GPS Lock:") + (FlightVehicle.countGPS > 0 ? FlightVehicle.lockGPS : qsTr("N/A", "No data to display"))
                         color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize }
-                    Label { text: qsTr("HDOP:") + (vehicle.countGPS > 0 ? Number(vehicle.hdopGPS).toFixed(2).toString() : qsTr("--.--", "No data to display"))
+                    Label { text: qsTr("HDOP:") + (FlightVehicle.countGPS > 0 ? Number(FlightVehicle.hdopGPS).toFixed(2).toString() : qsTr("--.--", "No data to display"))
                         color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize }
-                    Label { text: qsTr("VDOP:")+ (vehicle.countGPS > 0 ? Number(vehicle.vdopGPS).toFixed(2).toString() : qsTr("--.--", "No data to display"))
+                    Label { text: qsTr("VDOP:")+ (FlightVehicle.countGPS > 0 ? Number(FlightVehicle.vdopGPS).toFixed(2).toString() : qsTr("--.--", "No data to display"))
                         color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize }
-                    Label { text: qsTr("Course Over Ground:") + (vehicle.countGPS > 0 ? Number(vehicle.courseOverGroundGPS).toFixed(2).toString() : qsTr("--.--", "No data to display"))
+                    Label { text: qsTr("Course Over Ground:") + (FlightVehicle.countGPS > 0 ? Number(FlightVehicle.courseOverGroundGPS).toFixed(2).toString() : qsTr("--.--", "No data to display"))
                         color: UIConstants.textColor; font.family: UIConstants.appFont; font.pixelSize: UIConstants.fontSize }
                 }
             }
@@ -85,7 +85,7 @@ Item {
         id:                 gpsIcon
         anchors.top:        parent.top
         source:             "qrc:/qmlimages/ToolBar/Images/Gps.svg"
-        color:              vehicle && vehicle.countGPS > 0 ? UIConstants.navIconColor : UIConstants.textColor
+        color:              vehicle && FlightVehicle.countGPS > 0 ? UIConstants.navIconColor : UIConstants.textColor
         anchors.horizontalCenter: parent.horizontalCenter
         width:              iconSize
         height:             iconSize
@@ -104,18 +104,18 @@ Item {
         opacity: 0.6
         Label {
             anchors.horizontalCenter:   hdopValue.horizontalCenter
-            visible:                    vehicle && !isNaN(vehicle.hdopGPS)
-            color:                      vehicle && vehicle.countGPS > 0 ? UIConstants.navIconColor : UIConstants.textColor
-            text:                       vehicle ? Number(vehicle.countGPS).toString() : ""
+            visible:                    vehicle && !isNaN(FlightVehicle.hdopGPS)
+            color:                      vehicle && FlightVehicle.countGPS > 0 ? UIConstants.navIconColor : UIConstants.textColor
+            text:                       vehicle ? Number(FlightVehicle.countGPS).toString() : ""
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize
         }
 
         Label {
             id:         hdopValue
-            visible:    vehicle && !isNaN(vehicle.hdopGPS)
-            color:      vehicle && vehicle.countGPS > 0 ? UIConstants.navIconColor : UIConstants.textColor
-            text:       vehicle ? vehicle.hdopGPS.toFixed(1) : ""
+            visible:    vehicle && !isNaN(FlightVehicle.hdopGPS)
+            color:      vehicle && FlightVehicle.countGPS > 0 ? UIConstants.navIconColor : UIConstants.textColor
+            text:       vehicle ? FlightVehicle.hdopGPS.toFixed(1) : ""
             font.family: UIConstants.appFont
             font.pixelSize: UIConstants.fontSize
         }

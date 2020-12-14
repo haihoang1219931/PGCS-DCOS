@@ -4,26 +4,21 @@
 #include <QObject>
 #include <mavlink_types.h>
 #include <mavlink.h>
-#include "MissionItem.h"
 #include <QQmlListProperty>
 #include <QVector>
 #include <QLoggingCategory>
 #include <QtQml>
 #include <QtGui>
 #include <QTimer>
+class MissionItem;
 class Vehicle;
 class PlanController : public QObject
 {
     Q_OBJECT
-public:
-//    typedef MissionItem WriteMissionItem;
-    explicit PlanController(QObject *parent = nullptr);
-    Q_PROPERTY(Vehicle* vehicle READ vehicle WRITE setVehicle)
     Q_PROPERTY(QQmlListProperty<MissionItem> missionItems READ missionItems NOTIFY missionItemsChanged)
     Q_PROPERTY(QQmlListProperty<MissionItem> writeMissionItems READ writeMissionItems NOTIFY writeMissionItemsChanged)
 public:
-    Vehicle* vehicle();
-    void setVehicle(Vehicle* vehicle);
+    PlanController(Vehicle* vehicle);
     // Mission Item download from AP
     QQmlListProperty<MissionItem> missionItems(){
         return QQmlListProperty<MissionItem>(this, this,

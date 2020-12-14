@@ -13,13 +13,16 @@
 class CameraController : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(Config*          config      READ config             NOTIFY configChanged)
     Q_PROPERTY(GimbalInterface* gimbal      READ gimbal             NOTIFY gimbalChanged)
     Q_PROPERTY(GimbalData* context          READ context             NOTIFY contextChanged)
     Q_PROPERTY(VideoEngine* videoEngine     READ videoEngine NOTIFY videoEngineChanged)
 
 public:
-    explicit CameraController(QObject *parent = nullptr);    
+    explicit CameraController(QObject *parent = nullptr);
+    CameraController(QString configPath);
     ~CameraController();
+    Config* config(){ return m_config; }
     GimbalInterface* gimbal(){ return m_gimbal;}
     GimbalData* context(){
         if(m_gimbal!=nullptr)
@@ -28,11 +31,10 @@ public:
             return nullptr;
     }
     VideoEngine* videoEngine(){ return m_videoEngine; }
-
-
     Q_INVOKABLE void loadConfig(Config *config);
 
 Q_SIGNALS:
+    void configChanged();
     void gimbalChanged();
     void contextChanged();
     void videoEngineChanged();

@@ -22,7 +22,7 @@ Rectangle {
     property int fontSize: UIConstants.fontSize
     signal clicked(string type,string func)
     signal died()
-    width: vehicle.vehicleType === 1 ? UIConstants.sRect * 14 : UIConstants.sRect * 12.5
+    width: FlightVehicle.vehicleType === 1 ? UIConstants.sRect * 14 : UIConstants.sRect * 12.5
     height: UIConstants.sRect * 3/2 + listView.height
     function setFocus(enable){
         rectangle.focus = enable
@@ -70,7 +70,7 @@ Rectangle {
                     rectMinize.scale = 1;
                 }
                 onClicked: {
-                    if(vehicle.propertiesShowCount > 0){
+                    if(FlightVehicle.propertiesShowCount > 0){
                         showContent =!showContent;
                         animParamsShow.start()
                     }
@@ -82,13 +82,13 @@ Rectangle {
             clip: true
             anchors.top: rectMinize.bottom
             anchors.topMargin: 4
-            height: vehicle.propertiesShowCount < 15? vehicle.propertiesShowCount * UIConstants.sRect:
+            height: FlightVehicle.propertiesShowCount < 15? FlightVehicle.propertiesShowCount * UIConstants.sRect:
                                                   15*UIConstants.sRect
             anchors.right: parent.right
             anchors.rightMargin: 8
             anchors.left: parent.left
             anchors.leftMargin: 8
-            model: vehicle.propertiesModel
+            model: FlightVehicle.propertiesModel
 //            model: ListModel {
 //                ListElement {selected: false;paramName: "Param A"; unit:"m/s"; value:"12"}
 //                ListElement {selected: true;paramName: "Param B"; unit:"m/s"; value:"12"}
@@ -101,7 +101,7 @@ Rectangle {
                 width: listView.width
                 Label {
                     id: lblName
-                    width: vehicle.vehicleType === 1 ? UIConstants.sRect * 6 : UIConstants.sRect * 4
+                    width: FlightVehicle.vehicleType === 1 ? UIConstants.sRect * 6 : UIConstants.sRect * 4
                     height: UIConstants.sRect
                     text: name
                     anchors.verticalCenter: parent.verticalCenter
@@ -114,7 +114,7 @@ Rectangle {
                 }
                 Rectangle {
                     id: rectValue
-                    color: vehicle.vehicleType === 1 ?(!isNaN(parseFloat(value)) ?
+                    color: FlightVehicle.vehicleType === 1 ?(!isNaN(parseFloat(value)) ?
                                                            ((parseFloat(value) < lowerValue) ?
                                                                 lowerColor :
                                                                 ((parseFloat(value) > upperValue) ? upperColor : middleColor))

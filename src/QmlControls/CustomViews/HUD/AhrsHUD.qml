@@ -11,11 +11,11 @@ import CustomViews.Components 1.0
 import CustomViews.UIConstants 1.0
 
 Item {
-    property real pitchAngle:       vehicle ? vehicle.pitch  : 0
-    property real rollAngle:        vehicle ? vehicle.roll  : 0
-    property real yawAngle:         vehicle ? vehicle.heading  : 0
-    property real altitude:         vehicle ? vehicle.altitudeRelative  : 0
-    property real airspeed:         vehicle ? vehicle.airSpeed * 3.6  : 0
+    property real pitchAngle:       vehicle ? FlightVehicle.pitch  : 0
+    property real rollAngle:        vehicle ? FlightVehicle.roll  : 0
+    property real yawAngle:         vehicle ? FlightVehicle.heading  : 0
+    property real altitude:         vehicle ? FlightVehicle.altitudeRelative  : 0
+    property real airspeed:         vehicle ? FlightVehicle.airSpeed * 3.6  : 0
 
     property real _reticleHeight:   1
     property real _reticleSpacing:  rootItem.height * 0.10

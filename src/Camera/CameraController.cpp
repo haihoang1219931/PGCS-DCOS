@@ -12,8 +12,17 @@ CameraController::CameraController(QObject *parent) : QObject(parent)
     m_videoEngine = new CVVideoCaptureThread();
 #endif
     m_gimbalManager = new GimbalInterfaceManager();
-
-    //    m_videoEngine->decoder()->setContext(m_gimbal->context());
+}
+CameraController::CameraController(QString configPath){
+#ifdef USE_VIDEO_GPU
+    m_videoEngine = new VDisplay();
+#elif USE_VIDEO_CPU
+    m_videoEngine = new CVVideoCaptureThread();
+#endif
+    m_gimbalManager = new GimbalInterfaceManager();
+    m_config = new Config();
+    m_config->readConfig(configPath);
+    loadConfig(m_config);
 }
 void CameraController::loadConfig(Config *config){
     if(config != nullptr){
@@ -36,6 +45,7 @@ void CameraController::loadConfig(Config *config){
         m_gimbal->connectToGimbal(config);
         m_videoEngine->loadConfig(config);
     }
+    Q_EMIT configChanged();
 }
 CameraController::~CameraController(){
     if(m_gimbal != nullptr){

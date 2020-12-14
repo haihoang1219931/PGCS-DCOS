@@ -67,7 +67,7 @@ Rectangle {
         anchors.rightMargin: 8
         anchors.left: parent.left
         anchors.leftMargin: 8
-        model: vehicle.paramsModel
+        model: FlightVehicle.paramsModel
         delegate: Rectangle {
             id: rectItem
             height: visible?UIConstants.sRect:0
@@ -137,7 +137,7 @@ Rectangle {
 //                    }
 
 //                    Keys.onReturnPressed: {
-//                        vehicle.paramsController._writeParameterRaw(lblName.text,lblValue.text);
+//                        FlightVehicle.paramsController._writeParameterRaw(lblName.text,lblValue.text);
 ////                        isEditing = false;
 //                        focus = false;
 //                    }
@@ -168,7 +168,7 @@ Rectangle {
                 text: "Save"
                 isEnable: lblValue.text != value
                 onClicked: {
-                    vehicle.paramsController._writeParameterRaw(lblName.text,lblValue.text);
+                    FlightVehicle.paramsController._writeParameterRaw(lblName.text,lblValue.text);
                     lblValue.focus = false;
                 }
             }

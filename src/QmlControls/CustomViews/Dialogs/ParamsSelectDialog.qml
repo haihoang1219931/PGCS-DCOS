@@ -44,7 +44,7 @@ Rectangle {
             anchors.leftMargin: 8
             cellWidth: UIConstants.sRect * 7
             cellHeight: UIConstants.sRect * 3 / 2
-            model: vehicle.propertiesModel
+            model: FlightVehicle.propertiesModel
             layoutDirection: Qt.LeftToRight
             flow: GridView.FlowTopToBottom
             delegate: Item {
@@ -85,7 +85,7 @@ Rectangle {
                     checked: selected
                     onPressedChanged: {
                         if(vehicle !== null)
-                            vehicle.activeProperty(name,checked);
+                            FlightVehicle.activeProperty(name,checked);
                     }
                 }
             }
@@ -128,7 +128,7 @@ Rectangle {
 //        console.log("Set Focus true");
 //        setFocus(true);
 //        if(vehicle !== null)
-//            gridView.model = vehicle.propertiesModel;
+//            gridView.model = FlightVehicle.propertiesModel;
 //    }
 }
 

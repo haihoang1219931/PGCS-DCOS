@@ -110,60 +110,41 @@ ApplicationWindow {
     //                  Components
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    CameraController{
-        id: cameraController
-    }
-    Joystick{
-        id: joystick
-    }
-
     Computer{
         id: computer
     }
-    IOFlightController{
-        id: comTracker
-    }
 
-    Vehicle{
-        id: tracker
+    Connections{
+        target: GPSTracker
         onCoordinateChanged: {
-            mapPane.updateTracker(tracker.coordinate);
+            mapPane.updateTracker(GPSTracker.coordinate);
         }
         onHeadingChanged: {
-            mapPane.updateHeadingTracker(tracker.heading);
+            mapPane.updateHeadingTracker(GPSTracker.heading);
         }
     }
-    IOFlightController{
-        id: comVehicle
-    }
 
-    Vehicle{
-        id: vehicle
-        //        communication: comVehicle
+    Connections{
+        target: vehicle
         onCoordinateChanged: {
             mapPane.updatePlane(position);
-//            console.log("alt:"+position.altitue)
         }
         onHeadingChanged: {
-            mapPane.updateHeadingPlane(vehicle.heading);
+            mapPane.updateHeadingPlane(FlightVehicle.heading);
         }
 
         onVehicleTypeChanged: {
-            mapPane.changeVehicleType(vehicle.vehicleType);
-            preflightCheck.changeVehicleType(vehicle.vehicleType);
-            FCSConfig.changeData("VehicleType",vehicle.vehicleType);
+            mapPane.changeVehicleType(FlightVehicle.vehicleType);
+            preflightCheck.changeVehicleType(FlightVehicle.vehicleType);
+            FlightVehicle.config.changeData("VehicleType",FlightVehicle.vehicleType);
         }
 
         onHomePositionChanged:{
-            mapPane.changeHomePosition(vehicle.homePosition);
+            mapPane.changeHomePosition(FlightVehicle.homePosition);
             if(!timerSendHome.running){
                 timerSendHome.start();
             }
         }
-        //        Component.onCompleted: {
-        //            console.log("vehicle----------------->:"+vehicle)
-        //            cameraController.gimbal.setVehicle(vehicle);
-        //        }
     }
     Timer{
         id: timerSendHome
@@ -171,20 +152,18 @@ ApplicationWindow {
         repeat: true
         running: false
         onTriggered: {
-            //            console.log("Send home postion to tracker");
-            tracker.sendHomePosition(vehicle.homePosition);
+            GPSTracker.sendHomePosition(FlightVehicle.homePosition);
         }
     }
 
-    PlanController{
-        id: planController
-        vehicle: vehicle
+    Connections{
+        target: FlightVehicle.planController
         onRequestMissionDone: {
             if(valid){
                 mapPane.clearWPs();
-                console.log("Mission count received "+planController.missionItems.length);
-                for(var i=0; i< planController.missionItems.length; i++){
-                    var missionItem = planController.missionItems[i];
+                console.log("Mission count received "+FlightVehicle.planController.missionItems.length);
+                for(var i=0; i< FlightVehicle.planController.missionItems.length; i++){
+                    var missionItem = FlightVehicle.planController.missionItems[i];
                     console.log("missionItem["+missionItem.sequence+"]"+missionItem.frame+":["+missionItem.command+"]"
                                 +missionItem.param1+":"+missionItem.param2+":"+missionItem.param3+":"+missionItem.param4+":"
                                 +missionItem.param5+":"+missionItem.param6+":"+missionItem.param7
@@ -209,9 +188,9 @@ ApplicationWindow {
         onUploadMissionDone: {
             if(!valid){
                 mapPane.clearWPs();
-                console.log("Mission count received "+planController.missionItems.length);
-                for(var i=0; i< planController.missionItems.length; i++){
-                    var missionItem = planController.missionItems[i];
+                console.log("Mission count received "+FlightVehicle.planController.missionItems.length);
+                for(var i=0; i< FlightVehicle.planController.missionItems.length; i++){
+                    var missionItem = FlightVehicle.planController.missionItems[i];
                     console.log("missionItem["+missionItem.sequence+"]"+missionItem.frame+":["+missionItem.command+"]"
                                 +missionItem.param1+":"+missionItem.param2+":"+missionItem.param3+":"+missionItem.param4+":"
                                 +missionItem.param5+":"+missionItem.param6+":"+missionItem.param7
@@ -227,22 +206,19 @@ ApplicationWindow {
                 }
             }else{
                 console.log("onUploadMissionDone\r\n");
-                //                planController.missionItems = mapPane.getCurrentListWaypoint();
                 toastFlightControler.callActionAppearance = false;
                 toastFlightControler.rejectButtonAppearance = false;
                 toastFlightControler.toastContent = "Plan upload success";
                 toastFlightControler.show();
                 var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
-                planController.missionItems = listCurrentWaypoint;
+                FlightVehicle.planController.missionItems = listCurrentWaypoint;
                 mapPane.isMapSync = true;
             }
         }
     }
-    MissionController{
-        id: missionController
-        vehicle: vehicle
+    Connections{
+        target: FlightVehicle.missionController
         onCurrentIndexChanged: {
-//            console.log("changeCurrentWP to "+sequence);
             mapPane.changeCurrentWP(sequence);
         }
     }
@@ -646,7 +622,7 @@ ApplicationWindow {
                 footerBar.confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
                         setFlightMode(currentMode);
-                        vehicle.flightMode = currentMode;
+                        FlightVehicle.flightMode = currentMode;
                     }else if(func === "DIALOG_CANCEL"){
                         setFlightMode(previousMode);
                     }
@@ -664,7 +640,7 @@ ApplicationWindow {
                 footerBar.isShowConfirm = true;
                 footerBar.compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                 footerBar.confirmDialogObj = footerBar.compo.createObject(parent,{
-                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["JOYSTICK_"+(!joystick.useJoystick?"ACTIVE":"DEACTIVE")]
+                              "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["JOYSTICK_"+(!Joystick.useJoystick?"ACTIVE":"DEACTIVE")]
                                 [UIConstants.language[UIConstants.languageID]],
                               "type": "CONFIRM",
                               "x":parent.width / 2 - UIConstants.sRect * 13 / 2,
@@ -672,8 +648,8 @@ ApplicationWindow {
                               "z":200});
                 footerBar.confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
-                        joystick.useJoystick = !joystick.useJoystick;
-                        joystick.saveConfig();
+                        Joystick.useJoystick = !Joystick.useJoystick;
+                        Joystick.saveConfig();
                     }else if(func === "DIALOG_CANCEL"){
 
                     }
@@ -724,7 +700,7 @@ ApplicationWindow {
                        [UIConstants.language[UIConstants.languageID]]
                 z:6
                 vehicle: vehicle
-                width: vehicle.vehicleType === 1 ? UIConstants.sRect * 12.5 : hud.width
+                width: FlightVehicle.vehicleType === 1 ? UIConstants.sRect * 12.5 : hud.width
                 anchors {
                     bottom: parent.bottom;
                     bottomMargin: 5;
@@ -775,9 +751,9 @@ ApplicationWindow {
                     repeat: true
                     running: false
                     onTriggered: {
-                        if((vehicle.engineRpm < 100) &&
-                             (vehicle.airSpeed > 14) &&
-                            (vehicle.altitudeRelative > 100)
+                        if((FlightVehicle.engineRpm < 100) &&
+                             (FlightVehicle.airSpeed > 14) &&
+                            (FlightVehicle.altitudeRelative > 100)
                                 ){
                             dlgEngine.visible = true;
                         }
@@ -797,7 +773,7 @@ ApplicationWindow {
                     id: videoOverlay
                     anchors.fill: parent
                     Connections{
-                        target: cameraController.gimbal
+                        target: CameraController.gimbal
                         onZoomCalculatedChanged:{
                             console.log("zoom_end")
                             //                            if(viewIndex === 0)
@@ -812,7 +788,7 @@ ApplicationWindow {
                     anchors.fill: parent
 //                    visible: camState.gcsTargetLocalization
                     visible: false
-                    player: cameraController.videoEngine
+                    player: CameraController.videoEngine
                 }
             }
             PaneControl{
@@ -843,31 +819,31 @@ ApplicationWindow {
                 onSensorClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
                         if(camState.sensorID === camState.sensorIDIR){
-                            cameraController.gimbal.changeSensor("EO");
+                            CameraController.gimbal.changeSensor("EO");
                         }else{
-                            cameraController.gimbal.changeSensor("IR");
+                            CameraController.gimbal.changeSensor("IR");
                         }
                     }
                 }
                 onGcsSnapshotClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.snapShot();
+                        CameraController.gimbal.snapShot();
                     }
                 }
                 onGcsStabClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setDigitalStab(!camState.digitalStab)
+                        CameraController.gimbal.setDigitalStab(!camState.digitalStab)
                     }
                 }
 
                 onGcsRecordClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setRecord(!camState.record);
+                        CameraController.gimbal.setRecord(!camState.record);
                     }
                 }
                 onGcsShareClicked: {
                     if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                        cameraController.gimbal.setShare(!camState.gcsShare);
+                        CameraController.gimbal.setShare(!camState.gcsShare);
                     }
                 }
 
@@ -931,7 +907,7 @@ ApplicationWindow {
                             mapPane.addWP(mapPane.lastWPIndex()+1);
                             // update mission items
                             var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
-                            planController.writeMissionItems = listCurrentWaypoint;
+                            FlightVehicle.planController.writeMissionItems = listCurrentWaypoint;
                         }
                     }
                 }
@@ -942,21 +918,21 @@ ApplicationWindow {
 
                 onHomePositionChanged: {
                     console.log("Home change to "+lat+","+lon);
-                    vehicle.setHomeLocation(lat,lon);
+                    FlightVehicle.setHomeLocation(lat,lon);
                 }
                 onShowAdvancedConfigChanged: {
                     pageConfig.showAdvancedConfig(true);
                 }
                 onTotalWPsDistanceChanged: {
                     if(vehicle){
-                        vehicle.setTotalWPDistance(val);
+                        FlightVehicle.setTotalWPDistance(val);
                     }
                 }
 
                 Connections{
                     target: vehicle
                     onFlightModeChanged:{
-                        if(vehicle.flightMode !== "Guided"){
+                        if(FlightVehicle.flightMode !== "Guided"){
                             mapPane.changeClickedPosition(mapPane.clickedLocation,false);
                         }
                     }
@@ -990,12 +966,12 @@ ApplicationWindow {
                 anchors {right: rightBar.left; top: parent.top;topMargin: UIConstants.sRect + 8; rightMargin: 8 }
                 z: 5
                 visible: UIConstants.monitorMode === UIConstants.monitorModeFlight &&
-                         (FCSConfig.value("Settings:HUDVisible:Value:data") === "True")
+                         (FlightVehicle.config.value("Settings:HUDVisible:Value:data") === "True")
             }
             AhrsHUD{
                 id:ahrsHUD
                 visible: UIConstants.monitorMode === UIConstants.monitorModeFlight &&
-                         (FCSConfig.value("Settings:AHRSHUDVisible:Value:data") === "True")
+                         (FlightVehicle.config.value("Settings:AHRSHUDVisible:Value:data") === "True")
                 anchors{
                     bottom: mapPane.bottom
                     bottomMargin: 8
@@ -1008,7 +984,7 @@ ApplicationWindow {
             WindIndicator{
                 id:windIndicator
                 visible: UIConstants.monitorMode === UIConstants.monitorModeFlight &&
-                         (vehicle.vehicleType === 1)
+                         (FlightVehicle.vehicleType === 1)
                 anchors{
                     right: mapPane.right
                     top: mapPane.top
@@ -1381,7 +1357,7 @@ ApplicationWindow {
                 horizontalCenter: parent.horizontalCenter;
             }
             Connections{
-                target: cameraController.gimbal
+                target: CameraController.gimbal
                 onFunctionHandled:{
                     toastFlightControler.callActionAppearance = false;
                     toastFlightControler.rejectButtonAppearance = false;
@@ -1412,13 +1388,13 @@ ApplicationWindow {
                                                        });
                 fileDialogObj.fileSelected.connect(function (file){
                     mapPane.setMap(file);
-                    FCSConfig.changeData("MapDefault",file);
+                    FlightVehicle.config.changeData("MapDefault",file);
                 });
 
                 fileDialogObj.modeSelected.connect(function (mode){
                     if(mode === "ONLINE"){
                         mapPane.setMapOnline();
-                        FCSConfig.changeData("MapDefault","");
+                        FlightVehicle.config.changeData("MapDefault","");
                     }
                 });
                 fileDialogObj.clicked.connect(function (type,func){
@@ -1452,7 +1428,7 @@ ApplicationWindow {
                         // unescape html codes like '%23' for '#'
                         var cleanPath = decodeURIComponent(path);
                         console.log("Load file "+cleanPath);
-                        planController.readWaypointFile(cleanPath);
+                        FlightVehicle.planController.readWaypointFile(cleanPath);
                         mapPane.loadMarker(cleanPath+".markers");
                     }else if (func === "DIALOG_CANCEL"){
 
@@ -1501,8 +1477,8 @@ ApplicationWindow {
                         //                                                missionItem.param1+":"+missionItem.param2+":"+missionItem.param3+":"+missionItem.param4+
                         //                                                missionItem.param5+":"+missionItem.param6+":"+missionItem.param7+":");
                         //                                }
-                        planController.missionItems = listCurrentWaypoint;
-                        planController.writeWaypointFile(cleanPath);
+                        FlightVehicle.planController.missionItems = listCurrentWaypoint;
+                        FlightVehicle.planController.writeWaypointFile(cleanPath);
                         mapPane.saveMarker(cleanPath+".markers");
                     }else if(func === "DIALOG_CANCEL"){
 
@@ -1558,7 +1534,7 @@ ApplicationWindow {
                                   "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
-                            vehicle.flightMode = "Auto";
+                            FlightVehicle.flightMode = "Auto";
                         }else if(func === "DIALOG_CANCEL"){
 
                         }
@@ -1583,7 +1559,7 @@ ApplicationWindow {
                                   "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
-                            vehicle.flightMode = "Guided";
+                            FlightVehicle.flightMode = "Guided";
                         }else if(func === "DIALOG_CANCEL"){
 
                         }
@@ -1602,7 +1578,7 @@ ApplicationWindow {
                     var confirmDialogObj = compo.createObject(parent,{
                                   "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["WANT_TO"]
                                       [UIConstants.language[UIConstants.languageID]]+
-                                      "\n"+(!vehicle.armed?
+                                      "\n"+(!FlightVehicle.armed?
                                                 (mainWindow.itemListName["DIALOG"]["CONFIRM"]["ARM"]
                                                  [UIConstants.language[UIConstants.languageID]]+" and "):
                                                 "")
@@ -1614,7 +1590,7 @@ ApplicationWindow {
                                   "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
-                            vehicle.startMission();
+                            FlightVehicle.startMission();
                         }else if(func === "DIALOG_CANCEL"){
 
                         }
@@ -1629,22 +1605,8 @@ ApplicationWindow {
                 if(!isShowConfirm){
                     isShowConfirm = true;
                     console.log("Do Altitude changed");
-<<<<<<< HEAD
-                    var minValue = parseInt(FCSConfig.value("Settings:AltitudeMin:Value:data"));
-                    var maxValue = parseInt(FCSConfig.value("Settings:AltitudeMax:Value:data"));
-=======
-                    var minValue = 10;
-                    var maxValue = 500;
-                    var currentValue = 0;
-                    if(vehicle.vehicleType === 2 || vehicle.vehicleType == 14){
-                        minValue = 10;
-                        maxValue = 500;
-                    }else {
-                        minValue = 100;
-                        maxValue = 3000;
-                    }
->>>>>>> origin/6H_v1.0.3
-
+                    var minValue = parseInt(FlightVehicle.config.value("Settings:AltitudeMin:Value:data"));
+                    var maxValue = parseInt(FlightVehicle.config.value("Settings:AltitudeMax:Value:data"));
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/AltitudeEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
                                       "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
@@ -1654,10 +1616,10 @@ ApplicationWindow {
                                       "maxValue": maxValue,
                                       "currentValue": footerBar.getFlightAltitudeTarget()});
                     confirmDialogObj.confirmClicked.connect(function (){
-                        console.log("vehicle.currentWaypoint = "+vehicle.currentWaypoint);
+                        console.log("FlightVehicle.currentWaypoint = "+FlightVehicle.currentWaypoint);
                         footerBar.isShowConfirm = false;
-                        footerBar.setFlightAltitudeTarget(vehicle.currentWaypoint,confirmDialogObj.currentValue);
-                        vehicle.commandSetAltitude(confirmDialogObj.currentValue);
+                        footerBar.setFlightAltitudeTarget(FlightVehicle.currentWaypoint,confirmDialogObj.currentValue);
+                        FlightVehicle.commandSetAltitude(confirmDialogObj.currentValue);
                         confirmDialogObj.destroy();
                         compo.destroy();
                     });
@@ -1673,8 +1635,8 @@ ApplicationWindow {
                 if(!isShowConfirm){
                     isShowConfirm = true;
                     console.log("Do Speed changed");
-                    var minValue = parseInt(FCSConfig.value("Settings:SpeedMin:Value:data"));
-                    var maxValue = parseInt(FCSConfig.value("Settings:SpeedMax:Value:data"));
+                    var minValue = parseInt(FlightVehicle.config.value("Settings:SpeedMin:Value:data"));
+                    var maxValue = parseInt(FlightVehicle.config.value("Settings:SpeedMax:Value:data"));
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/SpeedEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
                                                                   "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
@@ -1684,7 +1646,7 @@ ApplicationWindow {
                                                                   "maxValue": maxValue,
                                                                   "currentValue": Math.round(footerBar.getFlightSpeedTarget())});
                     confirmDialogObj.confirmClicked.connect(function (){
-                        vehicle.commandChangeSpeed(confirmDialogObj.currentValue);
+                        FlightVehicle.commandChangeSpeed(confirmDialogObj.currentValue);
                         confirmDialogObj.destroy();
                         compo.destroy();
                         //                        footerBar.setFlightSpeedTarget(confirmDialogObj.currentValue);
@@ -1708,9 +1670,9 @@ ApplicationWindow {
                                                                   "x":parent.width / 2 - UIConstants.sRect * 14 / 2,
                                                                   "y":parent.height / 2 - UIConstants.sRect * 18 / 4,
                                                                   "z":200,
-                                                                  "currentValue": vehicle.paramLoiterRadius});
+                                                                  "currentValue": FlightVehicle.paramLoiterRadius});
                     confirmDialogObj.confirmClicked.connect(function (){
-                        vehicle.commandLoiterRadius(confirmDialogObj.currentValue);
+                        FlightVehicle.commandLoiterRadius(confirmDialogObj.currentValue);
                         confirmDialogObj.destroy();
                         compo.destroy();
                         footerBar.isShowConfirm = false;
@@ -1741,7 +1703,7 @@ ApplicationWindow {
                     "z":200});
                 confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
-                        vehicle.startEngine()
+                        FlightVehicle.startEngine()
 //                            navbar.startFlightTimer();
                     }else if(func === "DIALOG_CANCEL"){
 
@@ -1762,8 +1724,7 @@ ApplicationWindow {
             mapPane.removeWP(mapPane.selectedIndex);
             // update mission items
             var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
-            planController.writeMissionItems = listCurrentWaypoint;
-            //            planController.missionItems = planController.writeMissionItems;
+            FlightVehicle.planController.writeMissionItems = listCurrentWaypoint;
 
         }
         onDoNextWP: {
@@ -1775,7 +1736,7 @@ ApplicationWindow {
         }
 
         onDoDownloadPlan: {
-            planController.loadFromVehicle();
+            FlightVehicle.planController.loadFromVehicle();
         }
 
         function uploadMission(){
@@ -1787,8 +1748,8 @@ ApplicationWindow {
                             missionItem.param1+":"+missionItem.param2+":"+missionItem.param3+":"+missionItem.param4+
                             missionItem.param5+":"+missionItem.param6+":"+missionItem.param7+":");
             }
-            planController.writeMissionItems = listCurrentWaypoint;
-            planController.sendToVehicle();
+            FlightVehicle.planController.writeMissionItems = listCurrentWaypoint;
+            FlightVehicle.planController.sendToVehicle();
         }
 
         onDoUploadPlan: {
@@ -1824,10 +1785,10 @@ ApplicationWindow {
         onDoGoWP: {
 
             if(mapPane.selectedIndex > 0){
-                if(vehicle.flightMode === "Guided"){
-                    vehicle.flightMode = "Auto";
+                if(FlightVehicle.flightMode === "Guided"){
+                    FlightVehicle.flightMode = "Auto";
                 }
-                vehicle.setCurrentMissionSequence(mapPane.selectedIndex);
+                FlightVehicle.setCurrentMissionSequence(mapPane.selectedIndex);
                 mapPane.isGotoWP = true;
                 missionController.forceCurrentWP = true;//added by nhatdn1
             }else if(mapPane.selectedIndex === 0){
@@ -1844,7 +1805,7 @@ ApplicationWindow {
                                   "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
-                            vehicle.flightMode = "RTL";
+                            FlightVehicle.flightMode = "RTL";
                             mapPane.isGotoWP = true;
                         }else if(func === "DIALOG_CANCEL"){
 
@@ -1860,7 +1821,7 @@ ApplicationWindow {
             if(!isShowConfirm){
                 isShowConfirm = true;
                 console.log("Do Arm");
-                var armed = vehicle.armed;
+                var armed = FlightVehicle.armed;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                 var confirmDialogObj = compo.createObject(parent,{
                                   "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["WANT_TO"]
@@ -1876,9 +1837,9 @@ ApplicationWindow {
                                   "z":200});
                 confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
-                        vehicle.setArmed(!armed);
+                        FlightVehicle.setArmed(!armed);
                         if(armed){
-                            mapPane.moveWPWithID(0,vehicle.coordinate);
+                            mapPane.moveWPWithID(0,FlightVehicle.coordinate);
                         }
                     }else if(func === "DIALOG_CANCEL"){
 
@@ -1897,8 +1858,8 @@ ApplicationWindow {
 
                 // update mission items
                 var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
-                planController.writeMissionItems = listCurrentWaypoint;
-                planController.sendToVehicle();
+                FlightVehicle.planController.writeMissionItems = listCurrentWaypoint;
+                FlightVehicle.planController.sendToVehicle();
             }
         }
         onDoWaypoint: {
@@ -1907,15 +1868,15 @@ ApplicationWindow {
                                         0,0,0,0);
                 // update mission items
                 var listCurrentWaypoint = mapPane.getCurrentListWaypoint();
-                planController.writeMissionItems = listCurrentWaypoint;
-                planController.sendToVehicle();
+                FlightVehicle.planController.writeMissionItems = listCurrentWaypoint;
+                FlightVehicle.planController.sendToVehicle();
             }
         }
         onDoGoPosition:{
             if(!isShowConfirm){
                 isShowConfirm = true;
                 console.log("Do Go Position");
-                if(vehicle.flightMode !== "Guided"){
+                if(FlightVehicle.flightMode !== "Guided"){
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                     var confirmDialogObj = compo.createObject(parent,{
                               "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["GO_LOCATION_NOT_GUIDED"]
@@ -1926,9 +1887,9 @@ ApplicationWindow {
                               "z":200});
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
-                            vehicle.flightMode = "Guided";
+                            FlightVehicle.flightMode = "Guided";
                             mapPane.changeClickedPosition(mapPane.clickedLocation,true);
-                            vehicle.commandGotoLocation(mapPane.clickedLocation);
+                            FlightVehicle.commandGotoLocation(mapPane.clickedLocation);
                         }else if(func === "DIALOG_CANCEL"){
 
                         }
@@ -1948,7 +1909,7 @@ ApplicationWindow {
                     confirmDialogObj.clicked.connect(function (type,func){
                         if(func === "DIALOG_OK"){
                             mapPane.changeClickedPosition(mapPane.clickedLocation,true);
-                            vehicle.commandGotoLocation(mapPane.clickedLocation);
+                            FlightVehicle.commandGotoLocation(mapPane.clickedLocation);
                         }else if(func === "DIALOG_CANCEL"){
 
                         }
@@ -1988,7 +1949,7 @@ ApplicationWindow {
                                                                   "x":parent.width / 2 - UIConstants.sRect * 19 / 2,
                                                                   "y":parent.height / 2 - UIConstants.sRect * 13 / 2,
                                                                   "camState": camState,
-                                                                  "player": cameraController.videoEngine});
+                                                                  "player": CameraController.videoEngine});
                 }
             }
         }
@@ -2007,10 +1968,10 @@ ApplicationWindow {
             //            console.log("Get gimbal data");
             var frameID = 0;
             if(USE_VIDEO_CPU || USE_VIDEO_GPU){
-                //                frameID = cameraController.videoEngine.frameID;
+                //                frameID = CameraController.videoEngine.frameID;
             }
 
-            var data = cameraController.context.getData(frameID);
+            var data = CameraController.context.getData(frameID);
             camState.sensorID = data["SENSOR"];
             camState.changeLockMode(data["LOCK_MODE"]);
             camState.record = data["RECORD"];
@@ -2076,29 +2037,15 @@ ApplicationWindow {
         onTriggered: {            
             // --- Map
             // --- Joystick
-            joystick.mapFile = "conf/joystick.conf"
-            joystick.start();
+            Joystick.start();
             // --- Flight
-            comVehicle.loadConfig(FCSConfig);
-            comVehicle.connectLink();
-            vehicle.communication = comVehicle;
-            vehicle.planController = planController;
-            vehicle.joystick = joystick;
-            comTracker.loadConfig(TRKConfig);
-            comTracker.connectLink();
-            tracker.communication = comTracker;
-            tracker.uav = vehicle;
 
-            if(FCSConfig.value("Settings:WarningEngine:Value:data") === "True"){
+            if(FlightVehicle.config.value("Settings:WarningEngine:Value:data") === "True"){
                 timerCheckError.start();
             }
 
-            console.log("CAMERA_CONTROL = "+CAMERA_CONTROL)
             // --- Payload
             if(CAMERA_CONTROL){
-                cameraController.loadConfig(PCSConfig);
-                cameraController.gimbal.joystick = joystick;
-                cameraController.gimbal.setVehicle(vehicle);
                 timerRequestData.start();
             }
             if(UC_API)
@@ -2121,15 +2068,15 @@ ApplicationWindow {
     }
     Component.onCompleted: {
         UIConstants.changeTheme(UIConstants.themeNormal);
-        navbar.engineInfoVisible = (FCSConfig.value("Settings:EngineInfo:Value:data") === "True");
-        navbar.batteryInfoVisible = (FCSConfig.value("Settings:BatteryInfo:Value:data") === "True");
+        navbar.engineInfoVisible = (FlightVehicle.config.value("Settings:EngineInfo:Value:data") === "True");
+        navbar.batteryInfoVisible = (FlightVehicle.config.value("Settings:BatteryInfo:Value:data") === "True");
         // --- Map
-        if(FCSConfig.value("Settings:MapDefault:Value:data") !== ""){
-            mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));
-            mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));
+        if(FlightVehicle.config.value("Settings:MapDefault:Value:data") !== ""){
+            mapPane.setMap(FlightVehicle.config.value("Settings:MapDefault:Value:data"));
+            mapPane.setMap(FlightVehicle.config.value("Settings:MapDefault:Value:data"));
         }
-        if(FCSConfig.value("Settings:VehicleType:Value:data") !== ""){
-            mapPane.changeVehicleType(parseInt(FCSConfig.value("Settings:VehicleType:Value:data")));
+        if(FlightVehicle.config.value("Settings:VehicleType:Value:data") !== ""){
+            mapPane.changeVehicleType(parseInt(FlightVehicle.config.value("Settings:VehicleType:Value:data")));
         }
 
         if(ApplicationConfig.value("Settings:Language:Value:data") !== "")

@@ -145,7 +145,6 @@ public:
 
     void changeGimbalCurrentMode() override;
     QString getGimbalCurrentMode() override;
-    void setJoystick(JoystickThreaded* joystick) override;
 Q_SIGNALS:
 
 
