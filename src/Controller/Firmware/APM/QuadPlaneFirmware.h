@@ -119,16 +119,17 @@ public:
 
     void setGimbalMode(QString mode) override;
 
+//    void setJoystick(JoystickThreaded* joystick) override;
 Q_SIGNALS:
 
 public Q_SLOTS:
-    void sendJoystickData();
-    void sendClearRC();
-    void handleJSButton(int id, bool clicked) override;
-    void handleUseJoystick(bool enable) override;
-    void handleJoystickConnected(bool connected);
+//    void sendJoystickData();
+//    void sendClearRC();
+//    void handleJSButton(int id, bool clicked) override;
+//    void handleUseJoystick(bool enable) override;
+//    void handleJoystickConnected(bool connected);
 private:
-    float convertRC(float input, int channel);
+//    float convertRC(float input, int channel);
 private:
     int m_connectedSequence = 0;
 };

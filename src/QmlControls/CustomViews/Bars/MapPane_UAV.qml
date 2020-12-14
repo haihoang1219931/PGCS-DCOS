@@ -90,6 +90,9 @@ Flickable {
 
     property bool mousePressed: false
 
+    property bool idleRefreshWaypoints: false
+    property bool dragingWaypoint: false
+
     property var lstWaypointCommand:{
         "MAV_TYPE_GENERIC":{
             "WAYPOINT":{
@@ -614,7 +617,7 @@ Flickable {
                 var waypoint = listwaypoint[i]
                 if(waypoint !== null && waypoint.missionItemType === UIConstants.dojumpType)
                 {
-                    waypoint.coordinate = QtPositioning.coordinate(previousWP.coordinate.latitude,previousWP.coordinate.longitude + 0.0047 / Helper.getScale(map))
+                    waypoint.coordinate = QtPositioning.coordinate(previousWP.coordinate.latitude,previousWP.coordinate.longitude + 0.00016*UIConstants.sRect / Helper.getScale(map))
                 }
             }
         }
@@ -701,8 +704,13 @@ Flickable {
                     rootItem.showAdvancedConfigChanged();
                     console.log("showAdvancedConfigChanged");
                     rootItem.ctrlPress = false;
+<<<<<<< HEAD
                 }else if(rootItem.ctrlPress && event.key === Qt.Key_A){
                     if(FCSConfig.value("Settings:AHRSHUDVisible:Value:data") === "True"){
+=======
+                }else if(rootItem.ctrlPress && event.key === Qt.Key_Z){
+                    if(vehicle.vehicleType === 1){
+>>>>>>> origin/6H_v1.0.3
                         ahrsHUD.visible = !ahrsHUD.visible;
                     }
                     rootItem.ctrlPress = false;
@@ -789,7 +797,7 @@ Flickable {
                 visible: scaleText.text != "0 m"
                 anchors.bottom: parent.bottom;
                 anchors.right: parent.right
-                anchors{bottomMargin: 15;rightMargin: 380;}
+                anchors{bottomMargin: UIConstants.sRect /2;rightMargin: UIConstants.sRect * 13;}
                 height: scaleText.height * 2
                 width: scaleImage.width
 
@@ -818,7 +826,8 @@ Flickable {
                     text: "1 m"
                 }
                 Component.onCompleted: {
-                    Helper.calculateScale(map,scaleLine,scaleImage,scaleImageLeft,map.scaleLengths,scaleText)
+                    if(map.scaleLengths !== undefined)
+                        Helper.calculateScale(map,scaleLine,scaleImage,scaleImageLeft,map.scaleLengths,scaleText)
                 }
             }
 
@@ -1082,17 +1091,32 @@ Flickable {
                                 homePositionChanged(_waypoint.coordinate.latitude,_waypoint.coordinate.longitude,_waypoint.coordinate.altitude)
                             }
                             _waypointModel.moveSymbol(_waypoint.symbolId,_waypoint.coordinate)
+                            var npoint = normalizePoint(_waypoint.x+mouseX,_waypoint.y+mouseY)
+                            _waypoint.coordinate = map.toCoordinate(npoint)
+                            _trajactoryModel.moveSymbol(_waypoint.symbolId,_waypoint.coordinate)
+                            symbolMoving(_waypoint.coordinate.latitude , _waypoint.coordinate.longitude)
                             //scrollWP.showScrollWp();
                         }
                     }
                     _waypoint.stopTimerEditSymbol()
                     totalWPsDistanceChanged(getTotalDistanceWP())
+
+                    //added before go to VT
+                    dragingWaypoint = false
+                    if(idleRefreshWaypoints)
+                    {
+                        _waypointModel.refreshModel()
+                        idleRefreshWaypoints = false
+                    }
                 }
 
                 onPositionChanged:{
                     if(UIConstants.mouseOnMapMode === UIConstants.mouseOnMapModeWaypoint){
-                        if(pressSymbol && (Math.abs(mouseX-pressMouseX)>3 || Math.abs(mouseY-pressMouseY)>3) && _waypoint.missionItemType !== UIConstants.dojumpType)
+                        if(pressSymbol && ((Math.abs(mouseX-pressMouseX)>UIConstants.sRect/2 || Math.abs(mouseY-pressMouseY)>UIConstants.sRect/2)||dragingWaypoint===true) && _waypoint.missionItemType !== UIConstants.dojumpType)
                         {
+                            //added before go to VT
+                            dragingWaypoint = true
+
                             var npoint = normalizePoint(_waypoint.x+mouseX,_waypoint.y+mouseY)
                             _waypoint.coordinate = map.toCoordinate(npoint)
                             _trajactoryModel.moveSymbol(_waypoint.symbolId,_waypoint.coordinate)
@@ -1325,7 +1349,7 @@ Flickable {
                 acceptEditWP(selectedIndex,QtPositioning.coordinate(latitude,longitude,agl),itemType,param1,param2,param3,param4)
             }
             waypointEditor.visible = false;
-            isMapSync = false;
+//            isMapSync = false;
         }
         onCancelClicked: {
             rootItem.restoreWP();
@@ -1577,7 +1601,14 @@ Flickable {
 
     function acceptEditWP(index,position,command,param1,param2,param3,param4)
     {
-        console.log("accept edit wp id:"+index)
+//        console.log("accept edit wp id:"+index + ":"+position.altitude)
+        var alt = position.altitude
+        if(index === 0){
+                var homeWP = listwaypoint[0]
+                if( homeWP !== undefined && homeWP !== null){
+                    position.altitude = homeWP.coordinate.altitude
+                }
+        }
         _waypointModel.editSymbol(index,command,param1,param2,param3,param4,"",position)
         _trajactoryModel.editSymbol(index,command,0,0,0,0,"",position)
 
@@ -1585,14 +1616,15 @@ Flickable {
         //            rollbackhomeposition=position
 
         console.log("alt wp:"+ position.altitude)
-        if(index === 0 && selectedWP !== null && selectedWP !== undefined){
-            if(position.altitude !== selectedWP.coordinate.altitude){
+        if(index === 0 && homeWP !== null && homeWP !== undefined){
+//            if(alt !== homeWP.coordinate.altitude){
                 //                homePositionChanged(selectedWP.coordinate.latitude,
                 //                                selectedWP.coordinate.longitude,
                 //                                position.altitude);
-                vehicle.setAltitudeRTL(position.altitude)
-                console.log("change altitude: "+position.altitude)
-            }
+                vehicle.setAltitudeRTL(alt)
+                console.log("change RTL altitude: "+alt)
+                return;
+//            }
         }
 
         isMapSync = false;
@@ -1891,7 +1923,10 @@ Flickable {
         currentWpIndex=index;
         if(currentWpIndex !== old_currentWpIndex)
         {
-            _waypointModel.refreshModel()
+            if(dragingWaypoint === true)
+                idleRefreshWaypoints = true
+            else
+                _waypointModel.refreshModel()
 
             //show vehicle point on profile path
             var p1 = listwaypoint[old_currentWpIndex]
@@ -1949,7 +1984,7 @@ Flickable {
             console.log("goto wp"+currentWpIndex)
             isGotoWP = false;
             var p = listwaypoint[currentWpIndex]
-            if(mainWindow.seqTab === 2){
+            if(mainWindow.seqTab === 2 && p !== undefined){
                 var toPos2 = normalizeCoordinate(p.coordinate,altHome)
                 uavProfilePath.setUavProfilePathMode(1)
                 uavProfilePath.setLocation(plane.coordinate, toPos2);

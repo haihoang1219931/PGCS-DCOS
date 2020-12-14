@@ -142,6 +142,7 @@ ApplicationWindow {
         //        communication: comVehicle
         onCoordinateChanged: {
             mapPane.updatePlane(position);
+//            console.log("alt:"+position.altitue)
         }
         onHeadingChanged: {
             mapPane.updateHeadingPlane(vehicle.heading);
@@ -723,7 +724,7 @@ ApplicationWindow {
                        [UIConstants.language[UIConstants.languageID]]
                 z:6
                 vehicle: vehicle
-                width: hud.width
+                width: vehicle.vehicleType === 1 ? UIConstants.sRect * 12.5 : hud.width
                 anchors {
                     bottom: parent.bottom;
                     bottomMargin: 5;
@@ -751,6 +752,37 @@ ApplicationWindow {
                 y: parent.height/2-height/2
                 visible: paneControl.visible && chkLog.checked && (USE_VIDEO_CPU || USE_VIDEO_GPU)
                 z: 8
+            }
+
+            ConfirmDialog{
+                id: dlgEngine
+                x: parent.width/2-width/2
+                y: parent.height/2-height/2
+                z: 200
+                title: "Engine failure"
+                visible: false
+                onClicked: {
+                    if(func === "DIALOG_OK"){
+
+                    }else if(func === "DIALOG_CANCEL"){
+
+                    }
+                    visible = false;
+                }
+                Timer{
+                    id: timerCheckError
+                    interval: 10000
+                    repeat: true
+                    running: false
+                    onTriggered: {
+                        if((vehicle.engineRpm < 100) &&
+                             (vehicle.airSpeed > 14) &&
+                            (vehicle.altitudeRelative > 100)
+                                ){
+                            dlgEngine.visible = true;
+                        }
+                    }
+                }
             }
 
             VideoPane{
@@ -972,6 +1004,20 @@ ApplicationWindow {
                 }
                 z: 5
             }
+
+            WindIndicator{
+                id:windIndicator
+                visible: UIConstants.monitorMode === UIConstants.monitorModeFlight &&
+                         (vehicle.vehicleType === 1)
+                anchors{
+                    right: mapPane.right
+                    top: mapPane.top
+                    rightMargin: UIConstants.sRect / 2
+                    topMargin: UIConstants.sRect * 3/ 2
+                }
+                z:5
+            }
+
             StackLayout{
                 id: popUpInfo
 
@@ -1583,8 +1629,21 @@ ApplicationWindow {
                 if(!isShowConfirm){
                     isShowConfirm = true;
                     console.log("Do Altitude changed");
+<<<<<<< HEAD
                     var minValue = parseInt(FCSConfig.value("Settings:AltitudeMin:Value:data"));
                     var maxValue = parseInt(FCSConfig.value("Settings:AltitudeMax:Value:data"));
+=======
+                    var minValue = 10;
+                    var maxValue = 500;
+                    var currentValue = 0;
+                    if(vehicle.vehicleType === 2 || vehicle.vehicleType == 14){
+                        minValue = 10;
+                        maxValue = 500;
+                    }else {
+                        minValue = 100;
+                        maxValue = 3000;
+                    }
+>>>>>>> origin/6H_v1.0.3
 
                     var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/AltitudeEditor.qml");
                     var confirmDialogObj = compo.createObject(parent,{
@@ -1801,10 +1860,11 @@ ApplicationWindow {
             if(!isShowConfirm){
                 isShowConfirm = true;
                 console.log("Do Arm");
+                var armed = vehicle.armed;
                 var compo = Qt.createComponent("qrc:/CustomViews/Dialogs/ConfirmDialog.qml");
                 var confirmDialogObj = compo.createObject(parent,{
                                   "title":mainWindow.itemListName["DIALOG"]["CONFIRM"]["WANT_TO"]
-                                        [UIConstants.language[UIConstants.languageID]]+" \n"+(!vehicle.armed?
+                                        [UIConstants.language[UIConstants.languageID]]+" \n"+(!armed?
                                           mainWindow.itemListName["DIALOG"]["CONFIRM"]["ARM"]
                                             [UIConstants.language[UIConstants.languageID]]:
                                           mainWindow.itemListName["DIALOG"]["CONFIRM"]["DISARM"]
@@ -1816,8 +1876,8 @@ ApplicationWindow {
                                   "z":200});
                 confirmDialogObj.clicked.connect(function (type,func){
                     if(func === "DIALOG_OK"){
-                        vehicle.setArmed(!vehicle.armed);
-                        if(arm){
+                        vehicle.setArmed(!armed);
+                        if(armed){
                             mapPane.moveWPWithID(0,vehicle.coordinate);
                         }
                     }else if(func === "DIALOG_CANCEL"){
@@ -2005,7 +2065,7 @@ ApplicationWindow {
         interval: 1000
         running: false
         onTriggered: {
-            console.log("=================================================\r\n");
+//            console.log("=================================================\r\n");
         }
     }
 
@@ -2028,6 +2088,10 @@ ApplicationWindow {
             comTracker.connectLink();
             tracker.communication = comTracker;
             tracker.uav = vehicle;
+
+            if(FCSConfig.value("Settings:WarningEngine:Value:data") === "True"){
+                timerCheckError.start();
+            }
 
             console.log("CAMERA_CONTROL = "+CAMERA_CONTROL)
             // --- Payload
@@ -2057,6 +2121,8 @@ ApplicationWindow {
     }
     Component.onCompleted: {
         UIConstants.changeTheme(UIConstants.themeNormal);
+        navbar.engineInfoVisible = (FCSConfig.value("Settings:EngineInfo:Value:data") === "True");
+        navbar.batteryInfoVisible = (FCSConfig.value("Settings:BatteryInfo:Value:data") === "True");
         // --- Map
         if(FCSConfig.value("Settings:MapDefault:Value:data") !== ""){
             mapPane.setMap(FCSConfig.value("Settings:MapDefault:Value:data"));

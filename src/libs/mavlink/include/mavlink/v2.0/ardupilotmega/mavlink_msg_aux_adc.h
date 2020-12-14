@@ -9,15 +9,16 @@ typedef struct __mavlink_aux_adc_t {
  float Raw_fuel_level; /*<  Raw fuel level.*/
  float env_temp; /*<  Environment temperature.*/
  float env_RH; /*<  Environment relative humidity.*/
+ float Voltage12S_ADC; /*<  Voltage battery quad.*/
 }) mavlink_aux_adc_t;
 
-#define MAVLINK_MSG_ID_AUX_ADC_LEN 16
-#define MAVLINK_MSG_ID_AUX_ADC_MIN_LEN 16
-#define MAVLINK_MSG_ID_11025_LEN 16
-#define MAVLINK_MSG_ID_11025_MIN_LEN 16
+#define MAVLINK_MSG_ID_AUX_ADC_LEN 20
+#define MAVLINK_MSG_ID_AUX_ADC_MIN_LEN 20
+#define MAVLINK_MSG_ID_11025_LEN 20
+#define MAVLINK_MSG_ID_11025_MIN_LEN 20
 
-#define MAVLINK_MSG_ID_AUX_ADC_CRC 67
-#define MAVLINK_MSG_ID_11025_CRC 67
+#define MAVLINK_MSG_ID_AUX_ADC_CRC 61
+#define MAVLINK_MSG_ID_11025_CRC 61
 
 
 
@@ -25,21 +26,23 @@ typedef struct __mavlink_aux_adc_t {
 #define MAVLINK_MESSAGE_INFO_AUX_ADC { \
     11025, \
     "AUX_ADC", \
-    4, \
+    5, \
     {  { "Fuel_level", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_aux_adc_t, Fuel_level) }, \
          { "Raw_fuel_level", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_aux_adc_t, Raw_fuel_level) }, \
          { "env_temp", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_aux_adc_t, env_temp) }, \
          { "env_RH", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_aux_adc_t, env_RH) }, \
+         { "Voltage12S_ADC", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_aux_adc_t, Voltage12S_ADC) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_AUX_ADC { \
     "AUX_ADC", \
-    4, \
+    5, \
     {  { "Fuel_level", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_aux_adc_t, Fuel_level) }, \
          { "Raw_fuel_level", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_aux_adc_t, Raw_fuel_level) }, \
          { "env_temp", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_aux_adc_t, env_temp) }, \
          { "env_RH", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_aux_adc_t, env_RH) }, \
+         { "Voltage12S_ADC", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_aux_adc_t, Voltage12S_ADC) }, \
          } \
 }
 #endif
@@ -54,10 +57,11 @@ typedef struct __mavlink_aux_adc_t {
  * @param Raw_fuel_level  Raw fuel level.
  * @param env_temp  Environment temperature.
  * @param env_RH  Environment relative humidity.
+ * @param Voltage12S_ADC  Voltage battery quad.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_aux_adc_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               float Fuel_level, float Raw_fuel_level, float env_temp, float env_RH)
+                               float Fuel_level, float Raw_fuel_level, float env_temp, float env_RH, float Voltage12S_ADC)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_AUX_ADC_LEN];
@@ -65,6 +69,7 @@ static inline uint16_t mavlink_msg_aux_adc_pack(uint8_t system_id, uint8_t compo
     _mav_put_float(buf, 4, Raw_fuel_level);
     _mav_put_float(buf, 8, env_temp);
     _mav_put_float(buf, 12, env_RH);
+    _mav_put_float(buf, 16, Voltage12S_ADC);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_AUX_ADC_LEN);
 #else
@@ -73,6 +78,7 @@ static inline uint16_t mavlink_msg_aux_adc_pack(uint8_t system_id, uint8_t compo
     packet.Raw_fuel_level = Raw_fuel_level;
     packet.env_temp = env_temp;
     packet.env_RH = env_RH;
+    packet.Voltage12S_ADC = Voltage12S_ADC;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_AUX_ADC_LEN);
 #endif
@@ -91,11 +97,12 @@ static inline uint16_t mavlink_msg_aux_adc_pack(uint8_t system_id, uint8_t compo
  * @param Raw_fuel_level  Raw fuel level.
  * @param env_temp  Environment temperature.
  * @param env_RH  Environment relative humidity.
+ * @param Voltage12S_ADC  Voltage battery quad.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_aux_adc_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   float Fuel_level,float Raw_fuel_level,float env_temp,float env_RH)
+                                   float Fuel_level,float Raw_fuel_level,float env_temp,float env_RH,float Voltage12S_ADC)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_AUX_ADC_LEN];
@@ -103,6 +110,7 @@ static inline uint16_t mavlink_msg_aux_adc_pack_chan(uint8_t system_id, uint8_t 
     _mav_put_float(buf, 4, Raw_fuel_level);
     _mav_put_float(buf, 8, env_temp);
     _mav_put_float(buf, 12, env_RH);
+    _mav_put_float(buf, 16, Voltage12S_ADC);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_AUX_ADC_LEN);
 #else
@@ -111,6 +119,7 @@ static inline uint16_t mavlink_msg_aux_adc_pack_chan(uint8_t system_id, uint8_t 
     packet.Raw_fuel_level = Raw_fuel_level;
     packet.env_temp = env_temp;
     packet.env_RH = env_RH;
+    packet.Voltage12S_ADC = Voltage12S_ADC;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_AUX_ADC_LEN);
 #endif
@@ -129,7 +138,7 @@ static inline uint16_t mavlink_msg_aux_adc_pack_chan(uint8_t system_id, uint8_t 
  */
 static inline uint16_t mavlink_msg_aux_adc_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_aux_adc_t* aux_adc)
 {
-    return mavlink_msg_aux_adc_pack(system_id, component_id, msg, aux_adc->Fuel_level, aux_adc->Raw_fuel_level, aux_adc->env_temp, aux_adc->env_RH);
+    return mavlink_msg_aux_adc_pack(system_id, component_id, msg, aux_adc->Fuel_level, aux_adc->Raw_fuel_level, aux_adc->env_temp, aux_adc->env_RH, aux_adc->Voltage12S_ADC);
 }
 
 /**
@@ -143,7 +152,7 @@ static inline uint16_t mavlink_msg_aux_adc_encode(uint8_t system_id, uint8_t com
  */
 static inline uint16_t mavlink_msg_aux_adc_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_aux_adc_t* aux_adc)
 {
-    return mavlink_msg_aux_adc_pack_chan(system_id, component_id, chan, msg, aux_adc->Fuel_level, aux_adc->Raw_fuel_level, aux_adc->env_temp, aux_adc->env_RH);
+    return mavlink_msg_aux_adc_pack_chan(system_id, component_id, chan, msg, aux_adc->Fuel_level, aux_adc->Raw_fuel_level, aux_adc->env_temp, aux_adc->env_RH, aux_adc->Voltage12S_ADC);
 }
 
 /**
@@ -154,10 +163,11 @@ static inline uint16_t mavlink_msg_aux_adc_encode_chan(uint8_t system_id, uint8_
  * @param Raw_fuel_level  Raw fuel level.
  * @param env_temp  Environment temperature.
  * @param env_RH  Environment relative humidity.
+ * @param Voltage12S_ADC  Voltage battery quad.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_aux_adc_send(mavlink_channel_t chan, float Fuel_level, float Raw_fuel_level, float env_temp, float env_RH)
+static inline void mavlink_msg_aux_adc_send(mavlink_channel_t chan, float Fuel_level, float Raw_fuel_level, float env_temp, float env_RH, float Voltage12S_ADC)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_AUX_ADC_LEN];
@@ -165,6 +175,7 @@ static inline void mavlink_msg_aux_adc_send(mavlink_channel_t chan, float Fuel_l
     _mav_put_float(buf, 4, Raw_fuel_level);
     _mav_put_float(buf, 8, env_temp);
     _mav_put_float(buf, 12, env_RH);
+    _mav_put_float(buf, 16, Voltage12S_ADC);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_AUX_ADC, buf, MAVLINK_MSG_ID_AUX_ADC_MIN_LEN, MAVLINK_MSG_ID_AUX_ADC_LEN, MAVLINK_MSG_ID_AUX_ADC_CRC);
 #else
@@ -173,6 +184,7 @@ static inline void mavlink_msg_aux_adc_send(mavlink_channel_t chan, float Fuel_l
     packet.Raw_fuel_level = Raw_fuel_level;
     packet.env_temp = env_temp;
     packet.env_RH = env_RH;
+    packet.Voltage12S_ADC = Voltage12S_ADC;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_AUX_ADC, (const char *)&packet, MAVLINK_MSG_ID_AUX_ADC_MIN_LEN, MAVLINK_MSG_ID_AUX_ADC_LEN, MAVLINK_MSG_ID_AUX_ADC_CRC);
 #endif
@@ -186,7 +198,7 @@ static inline void mavlink_msg_aux_adc_send(mavlink_channel_t chan, float Fuel_l
 static inline void mavlink_msg_aux_adc_send_struct(mavlink_channel_t chan, const mavlink_aux_adc_t* aux_adc)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_aux_adc_send(chan, aux_adc->Fuel_level, aux_adc->Raw_fuel_level, aux_adc->env_temp, aux_adc->env_RH);
+    mavlink_msg_aux_adc_send(chan, aux_adc->Fuel_level, aux_adc->Raw_fuel_level, aux_adc->env_temp, aux_adc->env_RH, aux_adc->Voltage12S_ADC);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_AUX_ADC, (const char *)aux_adc, MAVLINK_MSG_ID_AUX_ADC_MIN_LEN, MAVLINK_MSG_ID_AUX_ADC_LEN, MAVLINK_MSG_ID_AUX_ADC_CRC);
 #endif
@@ -200,7 +212,7 @@ static inline void mavlink_msg_aux_adc_send_struct(mavlink_channel_t chan, const
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_aux_adc_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  float Fuel_level, float Raw_fuel_level, float env_temp, float env_RH)
+static inline void mavlink_msg_aux_adc_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  float Fuel_level, float Raw_fuel_level, float env_temp, float env_RH, float Voltage12S_ADC)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
@@ -208,6 +220,7 @@ static inline void mavlink_msg_aux_adc_send_buf(mavlink_message_t *msgbuf, mavli
     _mav_put_float(buf, 4, Raw_fuel_level);
     _mav_put_float(buf, 8, env_temp);
     _mav_put_float(buf, 12, env_RH);
+    _mav_put_float(buf, 16, Voltage12S_ADC);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_AUX_ADC, buf, MAVLINK_MSG_ID_AUX_ADC_MIN_LEN, MAVLINK_MSG_ID_AUX_ADC_LEN, MAVLINK_MSG_ID_AUX_ADC_CRC);
 #else
@@ -216,6 +229,7 @@ static inline void mavlink_msg_aux_adc_send_buf(mavlink_message_t *msgbuf, mavli
     packet->Raw_fuel_level = Raw_fuel_level;
     packet->env_temp = env_temp;
     packet->env_RH = env_RH;
+    packet->Voltage12S_ADC = Voltage12S_ADC;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_AUX_ADC, (const char *)packet, MAVLINK_MSG_ID_AUX_ADC_MIN_LEN, MAVLINK_MSG_ID_AUX_ADC_LEN, MAVLINK_MSG_ID_AUX_ADC_CRC);
 #endif
@@ -268,6 +282,16 @@ static inline float mavlink_msg_aux_adc_get_env_RH(const mavlink_message_t* msg)
 }
 
 /**
+ * @brief Get field Voltage12S_ADC from aux_adc message
+ *
+ * @return  Voltage battery quad.
+ */
+static inline float mavlink_msg_aux_adc_get_Voltage12S_ADC(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_float(msg,  16);
+}
+
+/**
  * @brief Decode a aux_adc message into a struct
  *
  * @param msg The message to decode
@@ -280,6 +304,7 @@ static inline void mavlink_msg_aux_adc_decode(const mavlink_message_t* msg, mavl
     aux_adc->Raw_fuel_level = mavlink_msg_aux_adc_get_Raw_fuel_level(msg);
     aux_adc->env_temp = mavlink_msg_aux_adc_get_env_temp(msg);
     aux_adc->env_RH = mavlink_msg_aux_adc_get_env_RH(msg);
+    aux_adc->Voltage12S_ADC = mavlink_msg_aux_adc_get_Voltage12S_ADC(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_AUX_ADC_LEN? msg->len : MAVLINK_MSG_ID_AUX_ADC_LEN;
         memset(aux_adc, 0, MAVLINK_MSG_ID_AUX_ADC_LEN);

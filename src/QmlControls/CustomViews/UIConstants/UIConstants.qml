@@ -638,7 +638,10 @@ QtObject {
                 "LONGITUDE":["Longitude","Kinh độ"],
             },
             "ALTITUDE_EDITOR":{
-                "TITTLE":["Altitude editor","Chỉnh sửa điểm"],
+                "TITTLE":["Altitude editor","Chỉnh sửa độ cao"],
+            },
+            "LOITER_EDITOR":{
+                "TITTLE":["Loiter Radius editor","Chỉnh sửa bán kính"],
             },
             "SPEED_EDITOR":{
                 "TITTLE":["Speed editor","Chỉnh sửa điểm"],
@@ -734,6 +737,6 @@ QtObject {
 
     readonly property color planeTrajactoryColor: "#ffee44"
 
-    readonly property int maxDistance: 20000 //m
+    readonly property int maxDistance: 400000 //m
 
 }

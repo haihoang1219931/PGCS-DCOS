@@ -25,10 +25,22 @@ void FirmwarePlugin::loadFromFile(QString fileName){
             XMLElement * pSelected = pListElement->FirstChildElement("Selected");
             XMLElement * pName = pListElement->FirstChildElement("Name");
             XMLElement * pUnit = pListElement->FirstChildElement("Unit");
+            XMLElement * pLowerValue = pListElement->FirstChildElement("LowerValue");
+            XMLElement * pUpperValue = pListElement->FirstChildElement("UpperValue");
+            XMLElement * pLowerColor = pListElement->FirstChildElement("LowerColor");
+            XMLElement * pUpperColor = pListElement->FirstChildElement("UpperColor");
+            XMLElement * pMiddleColor = pListElement->FirstChildElement("MiddleColor");
+
             Fact *tmp = new Fact(QString::fromLocal8Bit(pSelected->GetText()).contains("true"),
                                  QString::fromLocal8Bit(pName->GetText()),
-                                 "",
-                                 QString::fromLocal8Bit(pUnit->GetText()));
+                                 "0",
+                                 QString::fromLocal8Bit(pUnit->GetText()),
+                                 QString::fromLocal8Bit(pLowerValue->GetText()).toDouble(),
+                                 QString::fromLocal8Bit(pUpperValue->GetText()).toDouble(),
+                                 QString::fromLocal8Bit(pLowerColor->GetText()),
+                                 QString::fromLocal8Bit(pUpperColor->GetText()),
+                                 QString::fromLocal8Bit(pMiddleColor->GetText())
+                                 );
             pListElement = pListElement->NextSiblingElement("Property");
             //i++;
             _listParamShow.append(tmp);
@@ -53,34 +65,44 @@ void FirmwarePlugin::loadFromFile(QString fileName){
         _listParamShow.append(new Fact(false,"GroundLevel","0","m"));
         _listParamShow.append(new Fact(false,"GroundSpeed","0","m"));
         _listParamShow.append(new Fact(false,"Landed","False",""));
-        _listParamShow.append(new Fact(false,"LatHome","0","deg"));
-        _listParamShow.append(new Fact(false,"LongHome","0","deg"));
-        _listParamShow.append(new Fact(false,"Latitude","0","deg"));
-        _listParamShow.append(new Fact(false,"Longitude","0","deg"));
-        _listParamShow.append(new Fact(true,"PitchDeg","0","m"));
-        _listParamShow.append(new Fact(true,"PMU_IBatA","0","A"));
-        _listParamShow.append(new Fact(true,"PMU_IBatB","0","A"));
+        _listParamShow.append(new Fact(false,"LatHome","0","Deg"));
+        _listParamShow.append(new Fact(false,"LongHome","0","Deg"));
+        _listParamShow.append(new Fact(false,"Latitude","0","Deg"));
+        _listParamShow.append(new Fact(false,"Longitude","0","Deg"));
+        _listParamShow.append(new Fact(true,"Pitch","0","Deg"));
         _listParamShow.append(new Fact(true,"PMU_Rpm","0","rpm"));
-        _listParamShow.append(new Fact(true,"PMU_Temp","0","deg"));
-        _listParamShow.append(new Fact(true,"PMU_vBatt12S","0","V"));
-        _listParamShow.append(new Fact(true,"PMU_vBatA","0","V"));
-        _listParamShow.append(new Fact(true,"PMU_vBatB","0","V"));
+        _listParamShow.append(new Fact(true,"PMU_Temp","0","°C",65.0,75.0,QString("transparent"),QString("red"),QString("sandybrown")));
+
+
 
         //pw
-        _listParamShow.append(new Fact(true,"PW_VBattA","0","V"));
-        _listParamShow.append(new Fact(true,"PW_IBattA","0","A"));
-        _listParamShow.append(new Fact(true,"PW_EBattA","0","mAh"));
-        _listParamShow.append(new Fact(true,"PW_VBattB","0","V"));
-        _listParamShow.append(new Fact(true,"PW_IBattB","0","A"));
-        _listParamShow.append(new Fact(true,"PW_EBattB","0","mAh"));
-        _listParamShow.append(new Fact(true,"PW_VBat12S","0","V"));
-        _listParamShow.append(new Fact(true,"PW_Temp","0","°C"));
+        _listParamShow.append(new Fact(true,"V_BattA","0","V",22.8,24,QString("red"),QString("transparent"),QString("sandybrown")));
+        _listParamShow.append(new Fact(true,"I_BattA","0","A",0.0,3.0,QString("red"),QString("transparent"),QString("transparent")));
+        _listParamShow.append(new Fact(true,"V_BattB","0","V",22.8,24,QString("red"),QString("transparent"),QString("sandybrown")));
+        _listParamShow.append(new Fact(true,"I_BattB","0","A",0.0,3.0,QString("red"),QString("transparent"),QString("transparent")));
+        _listParamShow.append(new Fact(true,"V_Gen","0","V"));
+
+        _listParamShow.append(new Fact(true,"PW_Vavionics","0","V"));
+        _listParamShow.append(new Fact(true,"PW_Iavionics","0","A"));
+        _listParamShow.append(new Fact(true,"PW_Vpayload","0","V"));
+        _listParamShow.append(new Fact(true,"PW_Ipayload","0","A"));
+        _listParamShow.append(new Fact(true,"PW_Vservo","0","V"));
+
+        _listParamShow.append(new Fact(true,"PW_Iservo","0","A"));
+        _listParamShow.append(new Fact(true,"PW_V28DC","0","V"));
+        _listParamShow.append(new Fact(true,"PW_I28DC","0","A"));
+        _listParamShow.append(new Fact(true,"PW_energyA","0","mAh"));
+        _listParamShow.append(new Fact(true,"PW_energyB","0","mAh"));
+
+        //        _listParamShow.append(new Fact(true,"PW_Temp","0","°C",65.0,75.0,QString("transparent"),QString("red"),QString("sandybrown")));
+
+        _listParamShow.append(new Fact(true,"GenStatus","0"," ",0.5,1.5,QString("red"),QString("transparent"),QString("sandybrown")));
 
         //ecu
         _listParamShow.append(new Fact(true,"ECU_Throttle","0","%"));
         _listParamShow.append(new Fact(true,"ECU_FuelUsed","0","l"));
-        _listParamShow.append(new Fact(true,"ECU_CHT","0","°C"));
-        _listParamShow.append(new Fact(true,"ECU_FuelPressure","0","Bar"));
+        _listParamShow.append(new Fact(true,"ECU_CHT","0","°C",100,140,QString("sandybrown"),QString("red"),QString("transparent")));
+        _listParamShow.append(new Fact(true,"ECU_FuelPressure","0","Bar",2.95,3.05,QString("red"),QString("red"),QString("transparent")));
         _listParamShow.append(new Fact(true,"ECU_Hobbs","0","s"));
         _listParamShow.append(new Fact(true,"ECU_CPULoad","0","%"));
         _listParamShow.append(new Fact(true,"ECU_ChargeTemp","0","°C"));
@@ -91,8 +113,9 @@ void FirmwarePlugin::loadFromFile(QString fileName){
         //aux_adc
         _listParamShow.append(new Fact(true,"ADC_FuelLevel","0"," "));
         _listParamShow.append(new Fact(true,"ADC_RawFuelLevel","0"," "));
-        _listParamShow.append(new Fact(true,"ADC_EnvTemp","0"," "));
-        _listParamShow.append(new Fact(true,"ADC_EnvRH","0"," "));
+        _listParamShow.append(new Fact(true,"ADC_EnvTemp","0"," ",0,7,QString("red"),QString("transparent"),QString("sandybrown")));
+        _listParamShow.append(new Fact(true,"ADC_EnvRH","0"," ",40,70,QString("transparent"),QString("red"),QString("sandybrown")));
+        _listParamShow.append(new Fact(true,"V_Batt12S","0","V",46.08,48.96,QString("red"),QString("transparent"),QString("sandybrown")));
 
 
         _listParamShow.append(new Fact(false,"PTU_Alt","0","m"));
@@ -100,9 +123,9 @@ void FirmwarePlugin::loadFromFile(QString fileName){
         _listParamShow.append(new Fact(false,"PTU_Press","0","m"));
         _listParamShow.append(new Fact(false,"PTU_RSSI","0","m"));
         _listParamShow.append(new Fact(false,"PTU_Temperature","0","m"));
-        _listParamShow.append(new Fact(false,"RollDeg","0","m"));
-        _listParamShow.append(new Fact(false,"RPM1","0","m"));
-        _listParamShow.append(new Fact(false,"RPM2","0","m"));
+        _listParamShow.append(new Fact(false,"Roll","0","Deg"));
+        _listParamShow.append(new Fact(false,"RPM1","0","Rpm"));
+        _listParamShow.append(new Fact(false,"RPM2","0","Rpm"));
         _listParamShow.append(new Fact(false,"Sonarrange","0","m"));
         _listParamShow.append(new Fact(false,"TargetAlt","0","m"));
         _listParamShow.append(new Fact(false,"VibeX","0",""));
@@ -112,31 +135,56 @@ void FirmwarePlugin::loadFromFile(QString fileName){
         _listParamShow.append(new Fact(false,"Voltage2","0","V"));
         _listParamShow.append(new Fact(false,"WindHeading","0","Deg"));
         _listParamShow.append(new Fact(false,"WindSpeed","0","km/h"));
-        _listParamShow.append(new Fact(false,"YawDeg","0","Deg"));
+        _listParamShow.append(new Fact(false,"Yaw","0","Deg"));
         saveToFile("conf/Properties.conf",_listParamShow);
     }
 }
 void FirmwarePlugin::saveToFile(QString fileName,QList<Fact*> _listParamShow){
     if(fileName.contains(".conf")){
-        XMLDocument xmlDoc;
-        XMLNode * pRoot = xmlDoc.NewElement("ArrayOfProperties");
-        xmlDoc.InsertFirstChild(pRoot);
-        for(int i=0; i< _listParamShow.size(); i++){
-            Fact *tmp = _listParamShow[i];
-            XMLElement * pElement = xmlDoc.NewElement("Property");
-            XMLElement * pSelected = xmlDoc.NewElement("Selected");
-            pSelected->SetText(tmp->selected()?"true":"false");
-            pElement->InsertEndChild(pSelected);
-            XMLElement * pName = xmlDoc.NewElement("Name");
-            pName->SetText(tmp->name().toStdString().c_str());
-            pElement->InsertEndChild(pName);
-            XMLElement * pUnit = xmlDoc.NewElement("Unit");
-            pUnit->SetText(tmp->unit().toStdString().c_str());
-            pElement->InsertEndChild(pUnit);
-            pRoot->InsertEndChild(pElement);
+            XMLDocument xmlDoc;
+            XMLNode * pRoot = xmlDoc.NewElement("ArrayOfProperties");
+            xmlDoc.InsertFirstChild(pRoot);
+            for(int i=0; i< _listParamShow.size(); i++){
+                Fact *tmp = _listParamShow[i];
+                XMLElement * pElement = xmlDoc.NewElement("Property");
+                XMLElement * pSelected = xmlDoc.NewElement("Selected");
+                pSelected->SetText(tmp->selected()?"true":"false");
+                pElement->InsertEndChild(pSelected);
+
+                XMLElement * pName = xmlDoc.NewElement("Name");
+                pName->SetText(tmp->name().toStdString().c_str());
+                pElement->InsertEndChild(pName);
+
+                XMLElement * pUnit = xmlDoc.NewElement("Unit");
+                pUnit->SetText(tmp->unit().toStdString().c_str());
+                pElement->InsertEndChild(pUnit);
+
+                XMLElement * pLowerValue = xmlDoc.NewElement("LowerValue");
+                QString lowerValue = QString::number( tmp->lowerValue());
+                pLowerValue->SetText(lowerValue.toStdString().c_str());
+                pElement->InsertEndChild(pLowerValue);
+
+                XMLElement * pUpperValue = xmlDoc.NewElement("UpperValue");
+                QString upperValue = QString::number( tmp->upperValue());
+                pUpperValue->SetText(upperValue.toStdString().c_str());
+                pElement->InsertEndChild(pUpperValue);
+
+                XMLElement * pLowerColor = xmlDoc.NewElement("LowerColor");
+                pLowerColor->SetText(tmp->lowerColor().toStdString().c_str());
+                pElement->InsertEndChild(pLowerColor);
+
+                XMLElement * pUpperColor = xmlDoc.NewElement("UpperColor");
+                pUpperColor->SetText(tmp->upperColor().toStdString().c_str());
+                pElement->InsertEndChild(pUpperColor);
+
+                XMLElement * pMiddleColor = xmlDoc.NewElement("MiddleColor");
+                pMiddleColor->SetText(tmp->middleColor().toStdString().c_str());
+                pElement->InsertEndChild(pMiddleColor);
+
+                pRoot->InsertEndChild(pElement);
+            }
+            XMLError eResult = xmlDoc.SaveFile(fileName.toStdString().c_str());
         }
-        XMLError eResult = xmlDoc.SaveFile(fileName.toStdString().c_str());
-    }
 }
 QList<Fact*> FirmwarePlugin::listParamsShow(){
     return _listParamShow;
@@ -368,7 +416,9 @@ QString FirmwarePlugin::getGimbalCurrentMode()
 {
 
 }
+void FirmwarePlugin::setJoystick(JoystickThreaded* joystick){
 
+}
 void FirmwarePlugin::setGimbalAngle(float pan, float tilt)
 {
     Q_UNUSED(pan);

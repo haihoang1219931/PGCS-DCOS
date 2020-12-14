@@ -15,7 +15,7 @@ Item {
     property real rollAngle:        vehicle ? vehicle.roll  : 0
     property real yawAngle:         vehicle ? vehicle.heading  : 0
     property real altitude:         vehicle ? vehicle.altitudeRelative  : 0
-    property real airspeed:         vehicle ? vehicle.airSpeed  : 0
+    property real airspeed:         vehicle ? vehicle.airSpeed * 3.6  : 0
 
     property real _reticleHeight:   1
     property real _reticleSpacing:  rootItem.height * 0.10
@@ -61,8 +61,9 @@ Item {
 
     layer.enabled: true
     layer.effect: OpacityMask {
+        anchors.fill: rootItem
         maskSource: Item {
-            anchors.fill: rootItem
+            anchors.fill: parent
             width: rootItem.width
             height: rootItem.height
             Rectangle {
@@ -118,7 +119,7 @@ Item {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 width: (_pitch % 20) === 0 ? _longDash : _shortDash
                                 height: _reticleHeight
-                                color: ((_pitch - pitchAngle) < 30)? UIConstants.textColor : UIConstants.transparentColor
+                                color: ((_pitch - pitchAngle) < 30 && (_pitch - pitchAngle) > -40)? UIConstants.textColor : UIConstants.transparentColor
                                 antialiasing: true
                                 smooth: true
 
@@ -130,8 +131,9 @@ Item {
                                     text: _pitch
                                     color: UIConstants.textColor
                                     font.family: "Arial"
-                                    font.pixelSize: UIConstants.fontSize
-                                    visible: (_pitch != 0) && ((_pitch % 20) === 0) && ((_pitch - pitchAngle) < 30)
+                                    font.pixelSize: UIConstants.fontSize/1.2
+                                    visible: (_pitch != 0) && ((_pitch % 20) === 0) &&
+                                             (((_pitch - pitchAngle) < 30) && ((_pitch - pitchAngle) > -40))
                                 }
                                 Text {
                                     anchors.horizontalCenter: parent.horizontalCenter
@@ -141,8 +143,9 @@ Item {
                                     text: _pitch
                                     color: UIConstants.textColor
                                     font.family: "Arial"
-                                    font.pixelSize: UIConstants.fontSize
-                                    visible: (_pitch != 0) && ((_pitch % 20) === 0) && ((_pitch - pitchAngle) < 30)
+                                    font.pixelSize: UIConstants.fontSize/1.2
+                                    visible: (_pitch != 0) && ((_pitch % 20) === 0) &&
+                                             (((_pitch - pitchAngle) < 30) && ((_pitch - pitchAngle) > -40))
                                 }
                             }
                         }
@@ -299,7 +302,7 @@ Item {
                             visible: (_yaw - yawAngle) < -10 || (_yaw - yawAngle) >10
                             font.family: "Arial"
                             color: UIConstants.textColor
-                            font.pixelSize: UIConstants.fontSize
+                            font.pixelSize: UIConstants.fontSize/1.2
                             font.bold: (_yaw % 45 == 0) ? true : false
                             text: {
                                 var yaw = parseInt(_yaw);
@@ -411,7 +414,7 @@ Item {
                                 text: _alt
                                 color: UIConstants.textColor
                                 font.family: "Arial"
-                                font.pixelSize: UIConstants.fontSize
+                                font.pixelSize: UIConstants.fontSize/1.2
                                 visible: (_alt != 0) && ((_alt % 5) === 0)
                             }
                         }
@@ -428,7 +431,7 @@ Item {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width - _rulerLongDash
-                height: UIConstants.sRect
+                height: UIConstants.sRect/1.1
                 clip:true
                 onPaint: {
                     var ctx = getContext("2d")
@@ -495,7 +498,7 @@ Item {
                                 text: _airspeed
                                 color: UIConstants.textColor
                                 font.family: "Arial"
-                                font.pixelSize: UIConstants.fontSize
+                                font.pixelSize: UIConstants.fontSize/1.2
                                 visible: (_airspeed != 0) && ((_airspeed % 5) === 0)
                             }
                         }
@@ -512,7 +515,7 @@ Item {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width - _rulerLongDash
-                height: UIConstants.sRect
+                height: UIConstants.sRect/1.1
                 clip:true
                 onPaint: {
                     var ctx = getContext("2d")
@@ -674,9 +677,9 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 text:"-180"
-                anchors.topMargin: - UIConstants.sRect/2.2
+                anchors.topMargin: - UIConstants.sRect/3
                 font.family: "Arial"
-                font.pixelSize: UIConstants.fontSize
+                font.pixelSize: UIConstants.fontSize / 1.2
                 color:"white"
                 transform: [
                     Rotation {
@@ -691,9 +694,9 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 text:"180"
-                anchors.topMargin: - UIConstants.sRect/2.2
+                anchors.topMargin: - UIConstants.sRect/3
                 font.family: "Arial"
-                font.pixelSize: UIConstants.fontSize
+                font.pixelSize: UIConstants.fontSize / 1.2
                 color:"white"
                 transform: [
                     Rotation {

@@ -166,6 +166,15 @@ void Config::createFile(QString fileName){
                             "\t\t<Setting Name=\"TeleRemotePass\" Type=\"System.String\" Scope=\"User\">\r\n"
                                 "\t\t\t<Value Profile=\"(Default)\">ttuav</Value>\r\n"
                             "\t\t</Setting>\r\n"
+                            "\t\t<Setting Name=\"WarningEngine\" Type=\"System.String\" Scope=\"User\">\r\n"
+                                "\t\t\t<Value Profile=\"(Default)\">False</Value>\r\n"
+                            "\t\t</Setting>\r\n"
+                            "\t\t<Setting Name=\"EngineInfo\" Type=\"System.String\" Scope=\"User\">\r\n"
+                                "\t\t\t<Value Profile=\"(Default)\">False</Value>\r\n"
+                            "\t\t</Setting>\r\n"
+                            "\t\t<Setting Name=\"BatteryInfo\" Type=\"System.String\" Scope=\"User\">\r\n"
+                                "\t\t\t<Value Profile=\"(Default)\">False</Value>\r\n"
+                            "\t\t</Setting>\r\n"
                         "\t</Settings>\r\n"
                     "</SettingsFile>\r\n";
         FileController::addLine(fileName.toStdString(),text);

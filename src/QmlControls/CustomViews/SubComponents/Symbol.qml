@@ -147,7 +147,11 @@ MapQuickItem {
 
                     case UIConstants.landType:
                         _waypoint_text.visible=true
-                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
+//                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
+                        if(iscurrentWP)
+                            _rec_symbol.color = current_waypoint_Color
+                        else
+                             _rec_symbol.color = waypoint_Color
                         _imageTakeOfforLandorHome.visible=true
                         _imageTakeOfforLandorHome.source=land_Source
                         _imageTakeOfforLandorHome.opacity = 0.7
@@ -155,7 +159,11 @@ MapQuickItem {
 
                     case UIConstants.takeoffType:
                         _waypoint_text.visible=true
-                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
+//                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
+                        if(iscurrentWP)
+                            _rec_symbol.color = current_waypoint_Color
+                        else
+                             _rec_symbol.color = waypoint_Color
                         _imageTakeOfforLandorHome.visible=true
                         _imageTakeOfforLandorHome.source=takeoff_Source
                         _imageTakeOfforLandorHome.opacity = 0.7
@@ -163,7 +171,11 @@ MapQuickItem {
 
                     case UIConstants.vtoltakeoffType:
                         _waypoint_text.visible=true
-                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
+//                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
+                        if(iscurrentWP)
+                            _rec_symbol.color = current_waypoint_Color
+                        else
+                             _rec_symbol.color = waypoint_Color
                         _imageTakeOfforLandorHome.visible=true
                         _imageTakeOfforLandorHome.source=takeoff_Source
                         _imageTakeOfforLandorHome.opacity = 0.7
@@ -171,7 +183,11 @@ MapQuickItem {
 
                     case UIConstants.vtollandType:
                         _waypoint_text.visible=true
-                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
+//                        _rec_symbol.color = waypoint_Color //takeoffOrland_Color
+                        if(iscurrentWP)
+                            _rec_symbol.color = current_waypoint_Color
+                        else
+                             _rec_symbol.color = waypoint_Color
                         _imageTakeOfforLandorHome.visible=true
                         _imageTakeOfforLandorHome.source=land_Source
                         _imageTakeOfforLandorHome.opacity = 0.7

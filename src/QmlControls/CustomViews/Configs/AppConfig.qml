@@ -155,8 +155,8 @@ Rectangle {
                 onClicked: {
                     if(mainWindow.visibility === ApplicationWindow.FullScreen){                        
                         mainWindow.visibility = ApplicationWindow.Windowed;
-                        mainWindow.width = Screen.width;
-                        mainWindow.height = Screen.height;
+                        mainWindow.width = Screen.width/2;
+                        mainWindow.height = Screen.height/2;
                     }else{
                         mainWindow.visibility = ApplicationWindow.FullScreen;
                     }

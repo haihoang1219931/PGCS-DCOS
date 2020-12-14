@@ -162,8 +162,7 @@ public:
     virtual void setGimbalMode(QString mode);
     virtual void changeGimbalCurrentMode();
     virtual QString getGimbalCurrentMode();
-
-
+    virtual void setJoystick(JoystickThreaded* joystick);
 Q_SIGNALS:
 //    void gimbalModeChanged(QString mode);
 //    void gimbalModeSetFail();

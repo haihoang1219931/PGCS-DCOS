@@ -448,7 +448,7 @@ Item {
                                                    ((vehicle.vehicleType === 2 || vehicle.vehicleType === 14)?vehicle.groundSpeed:vehicle.airSpeed)
                                                    *3.6).toString():"0")
                         bottomValue: "km/h"
-                        midColor:  (middleValue < UIConstants.speedMinValue)? UIConstants.dangerousValueColor:
+                        middleColor:  (middleValue < UIConstants.speedMinValue)? UIConstants.dangerousValueColor:
                                     ((middleValue > UIConstants.speedGoodValue)? UIConstants.normalValueColor : UIConstants.warningValueColor)
                         disableColor: UIConstants.btnMiddleColorNormal
                         isEnable: vehicle.link

@@ -6,13 +6,6 @@ QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
 {
     m_connectedSequence = 0;
     m_vehicle = vehicle;
-    if(m_vehicle->joystick()->connected()){
-        m_vehicle->joystick()->setUseJoystick(false);
-        connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&QuadPlaneFirmware::handleUseJoystick);
-        m_connectedSequence = 1;
-    }
-    connect(m_vehicle->joystick(),&JoystickThreaded::joystickConnected,this,&QuadPlaneFirmware::handleJoystickConnected);
-    connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&QuadPlaneFirmware::handleJSButton);
 
     loadFromFile("conf/Properties.conf");
     m_rtlAltParamName = "ALT_HOLD_RTL";
@@ -39,24 +32,35 @@ QuadPlaneFirmware::QuadPlaneFirmware(Vehicle* vehicle)
     m_mapFlightMode.insert(QRTL,           "QuadPlane RTL");
 
     m_mapFlightModeOnGround.insert(MANUAL,         "Manual");
-    m_mapFlightModeOnGround.insert(GUIDED,         "Guided");
-    m_mapFlightModeOnGround.insert(LOITER,         "Loiter");
-    m_mapFlightModeOnGround.insert(STABILIZE,      "Stabilize");
-    m_mapFlightModeOnGround.insert(FLY_BY_WIRE_A,  "FBW A");
-    m_mapFlightModeOnGround.insert(FLY_BY_WIRE_B,  "FBW B");
+//    m_mapFlightModeOnGround.insert(GUIDED,         "Guided");//comment for quadplane
+//    m_mapFlightModeOnGround.insert(LOITER,         "Loiter");
+//    m_mapFlightModeOnGround.insert(STABILIZE,      "Stabilize");
+//    m_mapFlightModeOnGround.insert(FLY_BY_WIRE_A,  "FBW A");
+//    m_mapFlightModeOnGround.insert(FLY_BY_WIRE_B,  "FBW B");
 
     m_mapFlightModeOnAir.insert(MANUAL,         "Manual");
-    m_mapFlightModeOnAir.insert(GUIDED,         "Guided");
-    m_mapFlightModeOnAir.insert(LOITER,         "Loiter");
-    m_mapFlightModeOnAir.insert(STABILIZE,      "Stabilize");
-    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
-    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_B,  "FBW B");
+//    m_mapFlightModeOnAir.insert(GUIDED,         "Guided"); //comment for quadplane
+//    m_mapFlightModeOnAir.insert(LOITER,         "Loiter");
+//    m_mapFlightModeOnAir.insert(STABILIZE,      "Stabilize");
+//    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_A,  "FBW A");
+//    m_mapFlightModeOnAir.insert(FLY_BY_WIRE_B,  "FBW B");
 
-    connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
-    connect(&m_joystickClearRCTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendClearRC);
-    m_joystickTimer.start();
-    m_vehicle->joystick()->setPIC(false);
+
 }
+//void QuadPlaneFirmware::setJoystick(JoystickThreaded* joystick){
+//    if(m_vehicle->joystick()->connected()){
+//        m_vehicle->joystick()->setUseJoystick(false);
+//        connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&QuadPlaneFirmware::handleUseJoystick);
+//        m_connectedSequence = 1;
+//    }
+//    connect(m_vehicle->joystick(),&JoystickThreaded::joystickConnected,this,&QuadPlaneFirmware::handleJoystickConnected);
+//    connect(m_vehicle->joystick(),&JoystickThreaded::buttonStateChanged,this,&QuadPlaneFirmware::handleJSButton);
+
+//    connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
+//    connect(&m_joystickClearRCTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendClearRC);
+//    m_joystickTimer.start();
+//    m_vehicle->joystick()->setPIC(false);
+//}
 QString QuadPlaneFirmware::flightMode(int flightModeId){
     if(m_mapFlightMode.contains(flightModeId)) {
         return m_mapFlightMode[flightModeId];
@@ -264,155 +268,155 @@ void QuadPlaneFirmware::setGimbalMode(QString mode)
 {
     Q_UNUSED(mode);
 }
-void QuadPlaneFirmware::sendJoystickData(){
-    if (m_vehicle == nullptr)
-        return;
+//void QuadPlaneFirmware::sendJoystickData(){
+//    if (m_vehicle == nullptr)
+//        return;
 
-    if(m_vehicle->joystick() == nullptr){
-        return;
-    }
-    if(m_vehicle->joystick()->axisCount() < 4 ||
-            !m_vehicle->joystick()->useJoystick()){
-        return;
-    }
-    mavlink_message_t msg;
-    JSAxis *axisRoll = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisRoll());
-    JSAxis *axitPitch = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisPitch());
-    JSAxis *axisYaw = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisYaw());
-    JSAxis *axisThrottle = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisThrottle());
+//    if(m_vehicle->joystick() == nullptr){
+//        return;
+//    }
+//    if(m_vehicle->joystick()->axisCount() < 4 ||
+//            !m_vehicle->joystick()->useJoystick()){
+//        return;
+//    }
+//    mavlink_message_t msg;
+//    JSAxis *axisRoll = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisRoll());
+//    JSAxis *axitPitch = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisPitch());
+//    JSAxis *axisYaw = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisYaw());
+//    JSAxis *axisThrottle = m_vehicle->joystick()->axis(m_vehicle->joystick()->axisThrottle());
 
-    float roll = axisRoll != nullptr?axisRoll->value()*(axisRoll->inverted()?-1:1):0;
-    float pitch = axitPitch != nullptr?axitPitch->value()*(axitPitch->inverted()?-1:1):0;
-    float yaw = axisYaw != nullptr?axisYaw->value()*(axisYaw->inverted()?-1:1):0;
-    float throttle = axisThrottle != nullptr?axisThrottle->value()*(axisThrottle->inverted()?-1:1):0;
-    mavlink_msg_rc_channels_override_pack_chan(
-                m_vehicle->communication()->systemId(),
-                m_vehicle->communication()->componentId(),
-                m_vehicle->communication()->mavlinkChannel(),
-                &msg,
-                m_vehicle->id(),
-                m_vehicle->_compID,
-                static_cast<uint16_t>(convertRC(roll,1)),
-                static_cast<uint16_t>(convertRC(pitch,2)),
-                static_cast<uint16_t>(convertRC(throttle,3)),
-                static_cast<uint16_t>(convertRC(yaw,4)),
-                0,//static_cast<uint16_t>(convertRC(0,5)),
-                0,//static_cast<uint16_t>(convertRC(0,6)),
-                0,//static_cast<uint16_t>(convertRC(0,7)),
-                0,//static_cast<uint16_t>(convertRC(0,8)),
-                0,//static_cast<uint16_t>(convertRC(0,9)),
-                0,//static_cast<uint16_t>(convertRC(0,10)),
-                0,//static_cast<uint16_t>(convertRC(0,11)),
-                0,//static_cast<uint16_t>(convertRC(0,12)),
-                0,//static_cast<uint16_t>(convertRC(0,13)),
-                0,//static_cast<uint16_t>(convertRC(0,14)),
-                0,//static_cast<uint16_t>(convertRC(0,15)),
-                0,//static_cast<uint16_t>(convertRC(0,16)),
-                0,//static_cast<uint16_t>(convertRC(0,17)),
-                0//static_cast<uint16_t>(convertRC(0,18))
-                );
-    m_vehicle->sendMessageOnLink(m_vehicle->communication(),msg);
-}
-void QuadPlaneFirmware::sendClearRC(){
-    if(m_sendClearRCCount == m_sendClearRCMax){
-        m_joystickClearRCTimer.stop();
-    }else{
-        printf("%s\r\n",__func__);
-        mavlink_message_t msg;
-        mavlink_msg_rc_channels_override_pack_chan(
-                    m_vehicle->communication()->systemId(),
-                    m_vehicle->communication()->componentId(),
-                    m_vehicle->communication()->mavlinkChannel(),
-                    &msg,
-                    m_vehicle->id(),
-                    m_vehicle->_compID,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
-                    );
-        m_vehicle->sendMessageOnLink(m_vehicle->communication(),msg);
-    }
-    m_sendClearRCCount++;
-}
-void QuadPlaneFirmware::handleJSButton(int id, bool clicked){
+//    float roll = axisRoll != nullptr?axisRoll->value()*(axisRoll->inverted()?-1:1):0;
+//    float pitch = axitPitch != nullptr?axitPitch->value()*(axitPitch->inverted()?-1:1):0;
+//    float yaw = axisYaw != nullptr?axisYaw->value()*(axisYaw->inverted()?-1:1):0;
+//    float throttle = axisThrottle != nullptr?axisThrottle->value()*(axisThrottle->inverted()?-1:1):0;
+//    mavlink_msg_rc_channels_override_pack_chan(
+//                m_vehicle->communication()->systemId(),
+//                m_vehicle->communication()->componentId(),
+//                m_vehicle->communication()->mavlinkChannel(),
+//                &msg,
+//                m_vehicle->id(),
+//                m_vehicle->_compID,
+//                static_cast<uint16_t>(convertRC(roll,1)),
+//                static_cast<uint16_t>(convertRC(pitch,2)),
+//                static_cast<uint16_t>(convertRC(throttle,3)),
+//                static_cast<uint16_t>(convertRC(yaw,4)),
+//                0,//static_cast<uint16_t>(convertRC(0,5)),
+//                0,//static_cast<uint16_t>(convertRC(0,6)),
+//                0,//static_cast<uint16_t>(convertRC(0,7)),
+//                0,//static_cast<uint16_t>(convertRC(0,8)),
+//                0,//static_cast<uint16_t>(convertRC(0,9)),
+//                0,//static_cast<uint16_t>(convertRC(0,10)),
+//                0,//static_cast<uint16_t>(convertRC(0,11)),
+//                0,//static_cast<uint16_t>(convertRC(0,12)),
+//                0,//static_cast<uint16_t>(convertRC(0,13)),
+//                0,//static_cast<uint16_t>(convertRC(0,14)),
+//                0,//static_cast<uint16_t>(convertRC(0,15)),
+//                0,//static_cast<uint16_t>(convertRC(0,16)),
+//                0,//static_cast<uint16_t>(convertRC(0,17)),
+//                0//static_cast<uint16_t>(convertRC(0,18))
+//                );
+//    m_vehicle->sendMessageOnLink(m_vehicle->communication(),msg);
+//}
+//void QuadPlaneFirmware::sendClearRC(){
+//    if(m_sendClearRCCount == m_sendClearRCMax){
+//        m_joystickClearRCTimer.stop();
+//    }else{
+//        printf("%s\r\n",__func__);
+//        mavlink_message_t msg;
+//        mavlink_msg_rc_channels_override_pack_chan(
+//                    m_vehicle->communication()->systemId(),
+//                    m_vehicle->communication()->componentId(),
+//                    m_vehicle->communication()->mavlinkChannel(),
+//                    &msg,
+//                    m_vehicle->id(),
+//                    m_vehicle->_compID,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0,
+//                    0
+//                    );
+//        m_vehicle->sendMessageOnLink(m_vehicle->communication(),msg);
+//    }
+//    m_sendClearRCCount++;
+//}
+//void QuadPlaneFirmware::handleJSButton(int id, bool clicked){
 
-}
-void QuadPlaneFirmware::handleUseJoystick(bool enable) {
-    printf("%s enable=%s\r\n",__func__,enable?"true":"false");
-    if(enable){
-        m_vehicle->setFlightMode("FBW B");
-        connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
-        m_joystickTimer.start();
-    }else{
-        m_vehicle->setFlightMode("Auto");
-        disconnect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
-        m_joystickTimer.stop();
-        m_sendClearRCCount = 0;
-        m_joystickClearRCTimer.start();
-    }
-}
+//}
+//void QuadPlaneFirmware::handleUseJoystick(bool enable) {
+//    printf("%s enable=%s\r\n",__func__,enable?"true":"false");
+//    if(enable){
+//        m_vehicle->setFlightMode("FBW B");
+//        connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
+//        m_joystickTimer.start();
+//    }else{
+//        m_vehicle->setFlightMode("Auto");
+//        disconnect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
+//        m_joystickTimer.stop();
+//        m_sendClearRCCount = 0;
+//        m_joystickClearRCTimer.start();
+//    }
+//}
 
-void QuadPlaneFirmware::handleJoystickConnected(bool connected){
-    printf("%s %s\r\n",__func__,connected?"true":"false");
-    if(!connected){
-        m_vehicle->setFlightMode("Auto");
-        disconnect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
-        m_joystickTimer.stop();
-        m_sendClearRCCount = 0;
-        m_joystickClearRCTimer.start();
-    }else{
-        if(m_connectedSequence == 0){
-            m_vehicle->joystick()->setUseJoystick(false);
-            connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&QuadPlaneFirmware::handleUseJoystick);
-        }
-        printf("current useJoystick %s\r\n",m_vehicle->joystick()->useJoystick()?"true":"false");
-        if(m_vehicle->joystick()->useJoystick()){
-            m_vehicle->setFlightMode("FBW B");
-            connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
-            m_joystickTimer.start();
-        }
-        m_connectedSequence ++;
-    }
+//void QuadPlaneFirmware::handleJoystickConnected(bool connected){
+//    printf("%s %s\r\n",__func__,connected?"true":"false");
+//    if(!connected){
+//        m_vehicle->setFlightMode("Auto");
+//        disconnect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
+//        m_joystickTimer.stop();
+//        m_sendClearRCCount = 0;
+//        m_joystickClearRCTimer.start();
+//    }else{
+//        if(m_connectedSequence == 0){
+//            m_vehicle->joystick()->setUseJoystick(false);
+//            connect(m_vehicle->joystick(),&JoystickThreaded::useJoystickChanged,this,&QuadPlaneFirmware::handleUseJoystick);
+//        }
+//        printf("current useJoystick %s\r\n",m_vehicle->joystick()->useJoystick()?"true":"false");
+//        if(m_vehicle->joystick()->useJoystick()){
+//            m_vehicle->setFlightMode("FBW B");
+//            connect(&m_joystickTimer,&QTimer::timeout,this,&QuadPlaneFirmware::sendJoystickData);
+//            m_joystickTimer.start();
+//        }
+//        m_connectedSequence ++;
+//    }
 
-}
-float QuadPlaneFirmware::convertRC(float input, int channel){
-    float result = 0;
-    if(m_vehicle!=nullptr){
-        float axisMin = -32768;
-        float axisMax = 32768;
-        float axisZero = 0;
-        float min = m_vehicle->paramsController()->containKey("RC"+QString::fromStdString(std::to_string(channel))+"_MIN")?
-                    m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_MIN").toFloat():1000;
-        float max = m_vehicle->paramsController()->containKey("RC"+QString::fromStdString(std::to_string(channel))+"_MIN")?
-                    m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_MAX").toFloat():2000;
-        float trim = m_vehicle->paramsController()->containKey("RC"+QString::fromStdString(std::to_string(channel))+"_MIN")?
-                    m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_TRIM").toFloat():1500;
+//}
+//float QuadPlaneFirmware::convertRC(float input, int channel){
+//    float result = 0;
+//    if(m_vehicle!=nullptr){
+//        float axisMin = -32768;
+//        float axisMax = 32768;
+//        float axisZero = 0;
+//        float min = m_vehicle->paramsController()->containKey("RC"+QString::fromStdString(std::to_string(channel))+"_MIN")?
+//                    m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_MIN").toFloat():1000;
+//        float max = m_vehicle->paramsController()->containKey("RC"+QString::fromStdString(std::to_string(channel))+"_MIN")?
+//                    m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_MAX").toFloat():2000;
+//        float trim = m_vehicle->paramsController()->containKey("RC"+QString::fromStdString(std::to_string(channel))+"_MIN")?
+//                    m_vehicle->paramsController()->getParam("RC"+QString::fromStdString(std::to_string(channel))+"_TRIM").toFloat():1500;
 
-        if(channel == 3){
-            trim = (max+min)/2;
-        }
-        if(input < 0){
-            result = (input-axisZero) / (axisMin-axisZero) * (min-trim)+trim;
-        }else {
-            result = (input-axisZero) / (axisMax-axisZero) * (max-trim)+trim;
-        }
-//        printf("RC%d[%f - %f - %f] from %f to %f\r\n",channel,min,trim,max,input,result);
-    }
+//        if(channel == 3){
+//            trim = (max+min)/2;
+//        }
+//        if(input < 0){
+//            result = (input-axisZero) / (axisMin-axisZero) * (min-trim)+trim;
+//        }else {
+//            result = (input-axisZero) / (axisMax-axisZero) * (max-trim)+trim;
+//        }
+////        printf("RC%d[%f - %f - %f] from %f to %f\r\n",channel,min,trim,max,input,result);
+//    }
 
-    return result;
-}
+//    return result;
+//}
