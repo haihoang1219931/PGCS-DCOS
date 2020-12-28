@@ -60,7 +60,7 @@ public:
     int m_height = 1080;
     int m_fps = 30;
     bool m_stop = false;
-    bool m_factoryShare = TRUE;
+    bool m_factoryShare = false;
     QString m_source;
     GMainContext * context = nullptr;
     GstElement *element;

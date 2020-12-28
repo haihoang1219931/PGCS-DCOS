@@ -142,6 +142,7 @@ cv::Mat ITrack::getPatch(cv::Mat &img, float ctx, float cty, float scale, cv::Si
 
     std::vector<int> border = limitRect( roi, cv::Size(img.cols, img.rows));
     patch = img(roi).clone();
+    std::cout << "ROI: " << roi.size() << std::endl;
     if( (border[0] != 0) || (border[1] != 0) || (border[2] != 0) || (border[3] != 0) )
     {
         cv::copyMakeBorder(patch, patch, border[0], border[1], border[2], border[3], cv::BORDER_CONSTANT);
@@ -172,6 +173,7 @@ cv::Mat ITrack::extractFeatures( cv::Mat &patch )
         CvLSVMFeatureMapCaskade *map;
         getFeatureMaps( &iplPatch, CELL_SIZE, &map );
         normalizeAndTruncate( map, 0.2f );
+        std::cout << map->sizeX << map->sizeY << map->numFeatures << std::endl;
         PCAFeatureMaps( map );          // each reduced feature vector has 31 components
 
         featureMap = cv::Mat( cv::Size(map->numFeatures, map->sizeX*map->sizeY), CV_32F, map->map );
@@ -210,7 +212,7 @@ cv::Point2f ITrack::fastdetect( cv::Mat &z, cv::Mat &x, float &peak_value, float
     cv::Mat spec;
     cv::mulSpectrums( m_params.Alpha, FFTTools::fftd( kernel ), spec, 0, false );
     cv::Mat response = FFTTools::real( FFTTools::fftd( spec, true ) );
-
+    std::cout << response.size() << std::endl;
     //===== Compute PSR score
     psr_value = calcPsr( response );
 
@@ -355,6 +357,7 @@ void ITrack::initTrack( cv::Mat &_image, cv::Rect _selRoi )
     //----- Extract template
     float   cx = m_objRoi.x + m_objRoi.width / 2.0f,
             cy = m_objRoi.y + m_objRoi.height / 2.0f;
+    std::cout << "Init size: " << paddedW << paddedH << std::endl;
     cv::Mat initPatch = getPatch( _image, cx, cy, 1.0f, cv::Size(paddedW, paddedH) );
 
     printf( "%s: initPatch size: [%d x %d]\n", __FUNCTION__, initPatch.cols, initPatch.rows );
@@ -444,8 +447,12 @@ void ITrack::performTrack( cv::Mat &_image )
                 std::chrono::high_resolution_clock::time_point start02 = std::chrono::high_resolution_clock::now();
 #endif
     //----- Apply KCF with scale = 1
+    std::cout << "roi: " << m_objRoi.size() << std::endl;
     bestPatch   = getPatch( _image, newCx, newCy, 1.0, cv::Size(m_objRoi.width, m_objRoi.height) );
+    std::cout << "Giap ===============>>" << bestPatch.size() << std::endl;
     bestFeature = extractFeatures( bestPatch );
+    std::cout << "Giap Feature ===============>>" << bestFeature.size() << std::endl;
+
     bestPeakLoc = fastdetect( m_tmpl, bestFeature, bestPeakVal, bestPsrVal );
 #ifdef  DEBUG_PERFORMANCE
     std::chrono::high_resolution_clock::time_point stop02  = std::chrono::high_resolution_clock::now();

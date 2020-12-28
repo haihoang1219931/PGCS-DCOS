@@ -14,14 +14,15 @@ void VDisplayWorker::init()
 {
     m_currID = 0;
     std::string names_file = "../GPUBased/OD/yolo-setup/visdrone2019.names";
-    m_objName = this->objects_names_from_file(names_file);
+    m_objName = this->readLabelNamesToMap(names_file);
 }
 
 void VDisplayWorker::process()
 {
     m_matImageBuff = Cache::instance()->getTrackImageCache();
+    m_rbDetectedObjs = Cache::instance()->getDetectedObjectsCache();
     m_rbSearchObjs = Cache::instance()->getSearchCache();
-    m_rbMOTObjs = Cache::instance()->getMOTCache();
+//    m_rbMOTObjs = Cache::instance()->getMOTCache();
     //    m_rbTrackResEO = Cache::instance()->getEOTrackingCache();
     //    m_rbXPointEO = Cache::instance()->getEOSteeringCache();
     //    m_rbTrackResIR = Cache::instance()->getIRTrackingCache();
@@ -59,6 +60,9 @@ void VDisplayWorker::process()
     m_warpDataRender[3*4+3] = 1;
     float width = 0;
     float height = 0;
+    cv::Mat imgY;
+    cv::Mat imgU;
+    cv::Mat imgV;
     cv::Mat imgYWarped;
     cv::Mat imgUWarped;
     cv::Mat imgVWarped;
@@ -200,9 +204,9 @@ void VDisplayWorker::process()
             warpMatrix.at<float>(1,0) = stabMatrix.at<float>(1,0);
             warpMatrix.at<float>(1,1) = stabMatrix.at<float>(1,1);
             warpMatrix.at<float>(1,2) = stabMatrix.at<float>(1,2);
-            cv::Mat imgY(static_cast<int>(height), static_cast<int>(width), CV_8UC1, m_imgI420.data);
-            cv::Mat imgU(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420.data + size_t(height * width));
-            cv::Mat imgV(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420.data + size_t(height * width * 5 / 4));
+            imgY = cv::Mat(static_cast<int>(height), static_cast<int>(width), CV_8UC1, m_imgI420.data);
+            imgU = cv::Mat(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420.data + size_t(height * width));
+            imgV = cv::Mat(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420.data + size_t(height * width * 5 / 4));
             cv::warpAffine(imgY,imgYWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgY.cols,imgY.rows),cv::INTER_LINEAR);
             warpMatrix.at<float>(0,2) = stabMatrix.at<float>(0,2)/2;
             warpMatrix.at<float>(1,2) = stabMatrix.at<float>(1,2)/2;
@@ -212,11 +216,9 @@ void VDisplayWorker::process()
 //                if(m_countUpdateOD == 0)
                 {
                     //----------------------------- Draw EO object detected
-                    DetectedObjectsCacheItem& detectedObjsItem = m_rbSearchObjs->last();
-
-                    if(abs(
-                        static_cast<int>(detectedObjsItem.getDetectedObjects().size() - 0)) > 1 | m_listObj.size() == 0)
+                    DetectedObjectsCacheItem& detectedObjsItem = m_rbDetectedObjs->last();
                     m_listObj = detectedObjsItem.getDetectedObjects();
+//                    printf("Draw [%d]objects\r\n",m_listObj.size());
                     for(int i=0; i< m_listObj.size(); i++){
                         bbox_t objBeforeStab = m_listObj[i];
                         cv::Point pointAfterStab = convertPoint(cv::Point(objBeforeStab.x+objBeforeStab.w/2,
@@ -346,7 +348,7 @@ cv::Point VDisplayWorker::convertPoint(cv::Point originPoint, cv::Mat stabMatrix
     return result;
 }
 std::vector<std::string>
-VDisplayWorker::objects_names_from_file(std::string const filename)
+VDisplayWorker::readLabelNamesToMap(std::string const filename)
 {
     std::ifstream file(filename);
     std::vector<std::string> file_lines;
@@ -423,60 +425,67 @@ void VDisplayWorker::drawDetectedObjects(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &im
 {
     unsigned int limitW = 30;
     unsigned int limitH = 60;
-    for (auto b : _listObj) {
+    for (auto obj : _listObj) {
         cv::Rect rectObject = cv::Rect(
-                    static_cast<int>(b.x),
-                    static_cast<int>(b.y),
-                    static_cast<int>(b.w),
-                    static_cast<int>(b.h)
+                    static_cast<int>(obj.x),
+                    static_cast<int>(obj.y),
+                    static_cast<int>(obj.w),
+                    static_cast<int>(obj.h)
                     );
-        if((b.w * b.h) < (limitW * limitH) ){
-            continue;
-        }
-        VideoEngine::rectangle(imgY,imgU,imgV, rectObject, cv::Scalar(255, 0, 0,255), 2);
+//        if((b.w * b.h) < (limitW * limitH) ){
+//            continue;
+//        }
+        VideoEngine::rectangle(imgY,imgU,imgV, rectObject, cv::Scalar(255, 255, 255,255), 2);
         {
             std::string obj_name;
-            std::string string_id(b.track_info.stringinfo);
+            std::string plate_id(obj.track_info.stringinfo);
+            std::string string_id(m_objName[obj.obj_id]);
             if (string_id.empty())
                 obj_name = std::string();
             else
                 obj_name = /*std::to_string(i.track_id) + " - " + */ string_id;
 
-            cv::Size const text_size = getTextSize(obj_name, cv::FONT_HERSHEY_COMPLEX_SMALL, 1.2, 2, nullptr);
+            cv::Size const text_size = getTextSize(obj_name + plate_id + "[]", cv::FONT_HERSHEY_COMPLEX_SMALL, 1.2, 2, nullptr);
             //			int max_width = (text_size.width > i.w + 2) ? text_size.width : (i.w + 2);
             //			max_width = std::max(max_width, (int)i.w + 2);
             int max_width = text_size.width;
 
-            if (!obj_name.empty()){
-                cv::Rect rectName(cv::Point2f(std::max((int)b.x - 1, 0), std::max((int)b.y - 35, 0)),
-                                  cv::Point2f(std::min((int)b.x + max_width, imgY.cols - 1), std::min((int)b.y, imgY.rows - 1)));
+            if (!obj_name.empty() || !plate_id.empty()){
+                cv::Rect rectName(cv::Point2f(std::max((int)obj.x - 1, 0), std::max((int)obj.y - 35, 0)),
+                                  cv::Point2f(std::min((int)obj.x + max_width, imgY.cols - 1), std::min((int)obj.y, imgY.rows - 1)));
                 VideoEngine::rectangle(imgY,imgU,imgV,rectName,
                               cv::Scalar(255, 255, 255,255), CV_FILLED, 8, 0);
                 VideoEngine::putText(imgY,imgU,imgV,
-                            obj_name, cv::Point2f(b.x, b.y - 16), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.2, cv::Scalar(0, 0, 0,255), 2);
+                            plate_id.empty()?obj_name:obj_name + "[" + plate_id+"]",
+                            cv::Point2f(obj.x, obj.y - 16), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.2, cv::Scalar(0, 0, 0,255), 2);
                 //                printf("obj_name = %s\r\n",obj_name.c_str());
-
-                QString qstrObjName = QString::fromStdString(obj_name);
-                qstrObjName.replace("/","-");
-                std::string timestampt = FileController::get_time_stamp();
-                bool writeLog = false;
-                if(m_mapPlates.keys().contains(qstrObjName)){
-                    if(!(m_mapPlates[qstrObjName] == QString::fromStdString(timestampt))){
-                        writeLog = true;
-                    }
-                }else{
-                    writeLog = true;
-                }
-                if(writeLog){
-                    m_mapPlates[qstrObjName] = QString::fromStdString(timestampt);
-                    std::string fileName = timestampt+"_"+qstrObjName.toStdString()+".jpg";
-                    cv::imwrite("plates/"+fileName,imgY(rectObject));
-                    std::string lineLog = timestampt+","+qstrObjName.toStdString()+","+fileName;
-                    FileController::addLine("plates/plate_log.csv",lineLog);
-                    if(m_plateLog != nullptr){
-                        m_plateLog->appendLogFile("plates/plate_log.csv",QString::fromStdString(lineLog));
-                    }
-                }
+//                if(rectObject.x + rectObject.width <= imgY.cols &&
+//                        rectObject.y + rectObject.height <= imgY.rows){
+//                    QString qstrObjName = QString::fromStdString(plate_id);
+//                    qstrObjName.replace("/","-");
+//                    std::string timestampt = FileController::get_time_stamp();
+//                    bool writeLog = false;
+//                    if(m_mapPlates.keys().contains(qstrObjName)){
+//                        if(!(m_mapPlates[qstrObjName] == QString::fromStdString(timestampt))){
+//                            writeLog = true;
+//                        }
+//                    }else{
+//                        writeLog = true;
+//                    }
+//                    if(writeLog && !plate_id.empty()){
+//                        printf("plate_id = %s\r\n",plate_id.c_str());
+//                        m_mapPlates[qstrObjName] = QString::fromStdString(timestampt);
+//                        std::string fileName = timestampt+"_"+qstrObjName.toStdString()+".jpg";
+//                        printf("Before write image\r\n");
+//                        cv::imwrite("plates/"+fileName,imgY(rectObject));
+//                        printf("After write image\r\n");
+//                        std::string lineLog = timestampt+","+qstrObjName.toStdString()+","+fileName;
+//                        FileController::addLine("plates/plate_log.csv",lineLog);
+//                        if(m_plateLog != nullptr){
+//                            m_plateLog->appendLogFile("plates/plate_log.csv",QString::fromStdString(lineLog));
+//                        }
+//                    }
+//                }
             }
         }
     }

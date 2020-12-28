@@ -657,7 +657,7 @@ LIBS += -L$$HOME/install/tensorflow/tensorflow-1.14.0/bazel-bin/tensorflow -lten
 LIBS += `pkg-config --libs opencv`
 # End TensorFlow
 LIBS += -LD:\usr\local\lib \
- -ldarknet
+ -ldatdarknet
 message($$LIBS)
 
 DEFINES += GPU

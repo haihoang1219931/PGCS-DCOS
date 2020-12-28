@@ -35,6 +35,8 @@
 //#define _dbg_show_level_1_
 #endif
 //#define TRACK_DANDO
+
+#define Detector YoloDetector
 //#define DEBUG_TIMER
 class ClickTrack;
 class GimbalInterface;

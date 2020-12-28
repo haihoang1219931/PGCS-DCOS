@@ -93,7 +93,7 @@ void VDisplay::init()
     std::string plate_cfg_search = "../GPUBased/plateOCR/yolo-setup/yolov3-tiny.cfg";
     std::string plate_weights_search = "../GPUBased/plateOCR/yolo-setup/yolov3-tiny_best.weights";
     m_detector = new Detector(cfg_file, weights_file);
-    m_vODWorker->setDetector(m_detector);
+    m_vODWorker->setObjectClassifier(m_detector);
     m_clicktrackDetector = new Detector(plate_cfg_file_click, plate_weights_file_click);
     m_vTrackWorker->setClicktrackDetector(m_clicktrackDetector);
     m_vTrackWorker->setObjDetector(m_detector);
@@ -140,13 +140,13 @@ void VDisplay::setObjectDetect(bool enable){
         m_vDisplayWorker->setListObjClassID(classIDs);
         m_enOD = true;
         m_vODWorker->enableOD();
-        m_vMOTWorker->enableMOT();
+//        m_vMOTWorker->enableMOT();
         // this line should be remove in the final product
         m_vSearchWorker->enableSearch();
     }else{
         m_enOD = false;
         m_vODWorker->disableOD();
-        m_vMOTWorker->disableMOT();
+//        m_vMOTWorker->disableMOT();
         // this line should be remove in the final product
         m_vSearchWorker->disableSearch();
     }
@@ -244,13 +244,11 @@ void VDisplay::setShare(bool enable)
     m_vDisplayWorker->m_enShare = enable;
     if(enable){
 #ifdef USE_VIDEO_CPU
-    setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=1500000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
+    setSourceRTSP("( appsrc name=othersrc ! avenc_mpeg4 bitrate=4000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
                   8554,m_sourceSize.width(),m_sourceSize.height());
 #endif
 #ifdef USE_VIDEO_GPU
-//    setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=1500000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
-//                  8554,m_sourceSize.width(),m_sourceSize.height());
-    setSourceRTSP("( appsrc name=othersrc ! videoscale ! video/x-raw,width=1280,height=720 ! avenc_mpeg4 bitrate=2000000 ! rtpmp4vpay config-interval=3 name=pay0 pt=96 )",
+    setSourceRTSP("( appsrc name=othersrc ! nvh264enc bitrate=4000000 ! h264parse ! rtph264pay mtu=1400 name=pay0 pt=96 )",
                   8554,m_sourceSize.width(),m_sourceSize.height());
 #endif
     }else{

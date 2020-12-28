@@ -311,7 +311,7 @@ bool VFrameGrabber::initPipeline()
     createFolder("plates");
     std::string m_pipelineStr = m_ip + std::string(" ! appsink name=mysink sync=")+
         (QString::fromStdString(m_ip).contains("filesrc")?std::string("true"):std::string("false"))+""
-        " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
+//        " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4 "
 //        " appsrc name=klvsrc ! mux. "
             ;
     printf("\nReading pipeline: %s\r\n", m_pipelineStr.data());

@@ -34,8 +34,8 @@ class VSearchWorker : public QThread
     private:
         index_type m_currID = 0;
         RollBuffer<ProcessImageCacheItem> *m_matImageBuff;
-//        RollBuffer<DetectedObjectsCacheItem> *m_rbDetectedObjs;
-        RollBuffer<DetectedObjectsCacheItem> *m_rbMOTObjs;
+        RollBuffer<DetectedObjectsCacheItem> *m_rbDetectedObjs;
+//        RollBuffer<DetectedObjectsCacheItem> *m_rbMOTObjs;
         RollBuffer<DetectedObjectsCacheItem> *m_rbSearchObjs;
 //        RollBuffer<Eye::MotionImage> *m_rbIPCEO;
 //        RollBuffer<Eye::MotionImage> *m_rbIPCIR;

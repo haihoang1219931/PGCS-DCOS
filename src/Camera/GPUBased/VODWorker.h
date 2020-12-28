@@ -13,9 +13,10 @@
 
 // OD
 #include "OD/yolo_v2_class.hpp"
+#define Detector YoloDetector
 
 using namespace rva;
-
+class PlateDetector;
 class VODWorker : public QThread
 {
         Q_OBJECT
@@ -30,7 +31,8 @@ class VODWorker : public QThread
         void enableOD();
         void disableOD();
 
-        void setDetector(Detector *_detector);
+        void setObjectClassifier(Detector *_detector);
+        void setPlateIdentifier(PlateDetector* plateDetector);
 
     private:
         index_type m_currID;
@@ -43,7 +45,8 @@ class VODWorker : public QThread
         std::condition_variable m_cvEnOD;
         bool m_enOD = false;
 
-        Detector *m_detector;
+        Detector* m_objectClassifier;
+        PlateDetector* m_plateDetector;
 };
 
 #endif // VODWORKER_H

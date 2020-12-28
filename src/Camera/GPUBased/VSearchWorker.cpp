@@ -27,7 +27,8 @@ void VSearchWorker::run()
     std::chrono::high_resolution_clock::time_point start, stop;
     long sleepTime = 0;
     m_matImageBuff = Cache::instance()->getProcessImageCache();     /**< */
-    m_rbMOTObjs = Cache::instance()->getMOTCache();                 /**< */
+//    m_rbMOTObjs = Cache::instance()->getMOTCache();                 /**< */
+    m_rbDetectedObjs = Cache::instance()->getDetectedObjectsCache();
     m_rbSearchObjs = Cache::instance()->getSearchCache();           /**< */
 //    m_rbIPCEO = Cache::instance()->getMotionImageEOCache();         /**< */
 //    m_rbIPCIR = Cache::instance()->getMotionImageIRCache();         /**< */    
@@ -50,7 +51,7 @@ void VSearchWorker::run()
         }
         // For OD mode is enable
         start = std::chrono::high_resolution_clock::now();
-        DetectedObjectsCacheItem& motCacheItem = m_rbMOTObjs->last();     /**< */
+        DetectedObjectsCacheItem& motCacheItem = m_rbDetectedObjs->last();     /**< */
 
         // If buffer is empty or there have no new frame, go to the next loop
         if ((motCacheItem.getIndex() == -1) ||
@@ -81,15 +82,17 @@ void VSearchWorker::run()
 
         // TODO: OCR
         m_plateOCR->run(motBoxs, input, grayImage, bgrImg, 1);
-
+        for(int i=0; i< motBoxs.size(); i++){
+            motCacheItem.getDetectedObjects()[i].track_info.stringinfo = motBoxs[i].track_info.stringinfo;
+        }
         // TODO: search
-//        printf("%s motBoxs size = %d\r\n",__func__,motBoxs.size());
+        printf("%s motBoxs size = %d\r\n",__func__,motCacheItem.getDetectedObjects().size());
         std::vector<std::string> platesForSearch;
         std::vector<std::string> foundPlate;
-        for(auto car: motBoxs)
+        for(auto car: motCacheItem.getDetectedObjects())
         {
             if ( car.track_info.stringinfo.empty() ) continue;
-//			std::cout << "\n   Plate: " << car.track_info.stringinfo << std::endl;
+            std::cout << "Plate: \r\n" << car.track_info.stringinfo << std::endl;
             /*for(auto truth_plate: platesForSearch)
             {
                 std::string curPlate = car.track_info.stringinfo;
@@ -101,13 +104,13 @@ void VSearchWorker::run()
                     }
                 }
             }*/
-            std::string curPlate = car.track_info.stringinfo;
+//            std::string curPlate = car.track_info.stringinfo;
 //            std::cout << PlateOCR::get_strings_correlation(curPlate, std::string("30E-57066")) << std::endl;
-            if(PlateOCR::get_strings_correlation(curPlate, std::string("30E-57066")) >= 0.4f)
-            {
-                printf("OK\n");
+//            if(PlateOCR::get_strings_correlation(curPlate, std::string("30E-57066")) >= 0.4f)
+//            {
+//                printf("OK\n");
 //                exit(0);
-            }
+//            }
 
         }
 
@@ -119,7 +122,7 @@ void VSearchWorker::run()
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::micro> timeSpan = stop - start;
         sleepTime = (long)(33333 - timeSpan.count());
-        printf("\nVSearchWorker: process: %d | %d | %d | Box Size = %d", sleepTime, m_currID, processImgItem.getIndex(), foundPlate.size());
+        printf("VSearchWorker: process: %d | %d | %d | Box Size = %d\r\n", sleepTime, m_currID, processImgItem.getIndex(), foundPlate.size());
         prevID = m_currID;
 
         if (sleepTime > 1000) {

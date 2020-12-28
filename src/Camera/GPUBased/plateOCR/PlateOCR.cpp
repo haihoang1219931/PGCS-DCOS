@@ -183,25 +183,27 @@ std::vector<bbox_t> PlateOCR::getPlateBoxes(const image_t& frame, const cv::Rect
 
 std::string PlateOCR::getPlateString(const image_t& frame, const cv::Mat &cpu_gray_frame, const cv::Mat &cpu_bgr_frame, const bbox_t& box)
 {
-	if (m_maxPlateDetect-- < 0) return std::string();
+//    printf("%s Line[%d]\r\n",__func__,__LINE__);
+//	if (m_maxPlateDetect-- < 0) return std::string();
+//    printf("%s Line[%d]\r\n",__func__,__LINE__);
 //    cv::Rect searchRoi(0, 72, 1280, 576);
     cv::Rect roi(
                 static_cast<int>(box.x),
                 static_cast<int>(box.y),
                 static_cast<int>(box.w),
                 static_cast<int>(box.h));
-    if ((box.w * box.h) < 12000 /*&& (roi & searchRoi) != roi*/)
-		return std::string();
-
+//    if ((box.w * box.h) < 12000 /*&& (roi & searchRoi) != roi*/)
+//		return std::string();
+//    printf("%s Line[%d]\r\n",__func__,__LINE__);
     auto plates_result_vec = getPlateBoxes(frame, roi);
 
-    //      std::cout << "plates_result_vec len: " << plates_result_vec.size() << std::endl;
+//    std::cout << "plates_result_vec len: " << plates_result_vec.size() << std::endl;
     for(auto i: plates_result_vec)
     {
         // loai bo xe co
-		if(i.w > 40 && i.h > 20 && i.w * i.h > 1200 && i.w > i.h)
+//		if(i.w > 40 && i.h > 20 && i.w * i.h > 1200 && i.w > i.h)
 		{
-			//              std::cout << "possible plate" << std::endl;
+            std::cout << "possible plate" << std::endl;
 			cv::Rect r(i.x, i.y, i.w, i.h);
             // Rectangle for checking type of plates: White or blue?
             cv::Rect p_rect(r.x >= 0 ? r.x : 0,
@@ -244,9 +246,9 @@ std::string PlateOCR::getPlateString(const image_t& frame, const cv::Mat &cpu_gr
 //            std::cout << "R: " << r << std::endl;
 //            assert(!cpu_gray_frame(r).empty());
 
-			cv::Mat cpu_plateimage( cpu_gray_frame(r) );
+            cv::Mat cpu_plateimage( cpu_gray_frame(r) );
 			cv::Mat cpu_thresh_plate = deskewImage(cpu_plateimage);
-            cv::imwrite("/home/pgcs-01/Desktop/imgs/0.jpg", cpu_thresh_plate);
+//            cv::imwrite("/home/pgcs-01/Desktop/imgs/0.jpg", cpu_thresh_plate);
 
 			// TODO: output string from cpu_thresh_plate
             // do something with m_OCR
@@ -262,14 +264,14 @@ std::string PlateOCR::getPlateString(const image_t& frame, const cv::Mat &cpu_gr
                 if(chars.size() > 6)
                 {
                     std::string code = m_OCR->recognize(chars, sign);
-//                    printf("Code : %s\n", code.c_str());
+                    printf("Code : %s\n", code.c_str());
                     int cc = 0;
                     for(uint l = 0; l < code.size(); l++)
                     {
                         if(code[l] != '_')
                             cc++;
                     }
-                    if(cc > 7)
+//                    if(cc > 7)
                     {
                         return code;
                     }
@@ -304,71 +306,83 @@ void PlateOCR::setOCR(OCR* _OCR)
     m_OCR = _OCR;
 }
 
-void PlateOCR::run(std::vector<bbox_t> & track_vec, const image_t &frame, const cv::Mat &cpu_gray_frame, const cv::Mat &cpu_bgr_frame, int max_info_read)
-{
-    // Define region for searching
-    cv::Rect searchRoi(0, 72, 1280, 576);
-	m_maxPlateDetect = max_info_read;
-    for (auto i : sort_indexes(track_vec)) {// Sort objects that are tracked
+//void PlateOCR::run(std::vector<bbox_t> & track_vec, const image_t &frame, const cv::Mat &cpu_gray_frame, const cv::Mat &cpu_bgr_frame, int max_info_read)
+//{
+//    // Define region for searching
+//    cv::Rect searchRoi(0, 72, 1280, 576);
+//	m_maxPlateDetect = max_info_read;
+//    for (auto i : sort_indexes(track_vec)) {// Sort objects that are tracked
+//        cv::Rect r(track_vec[i].x, track_vec[i].y, track_vec[i].w, track_vec[i].h);
+//        if(std::find(wanted_class.begin(), wanted_class.end(), track_vec[i].obj_id) == wanted_class.end() || (r & searchRoi) == r)
+//            continue;
+
+//        unsigned int cur_track_id = track_vec[i].track_id;
+//        if (!data.count(cur_track_id)) {
+//            std::vector<std::string> current_data;
+//            current_data.push_back(std::string());
+//            // Do OCR
+//            std::string plate = getPlateString(frame, cpu_gray_frame, cpu_bgr_frame, track_vec[i]);
+//            if (!plate.empty()) {
+//                current_data.push_back(plate);
+//                // update database
+//                data.insert(std::pair<int, std::vector<std::string>>(cur_track_id, current_data));
+//            }
+//            // return
+//            track_vec[i].track_info.stringinfo = plate;
+//        }
+//		else {
+//            // query the data at cur_track_id
+//            auto cur_data = data.at(cur_track_id);
+//            // check if final exists
+//            if (!cur_data[0].empty())
+//            {
+//                track_vec[i].track_info.stringinfo = cur_data[0];
+//            }
+//            else {
+//                if (cur_data.size() >= 4)
+//                {
+//                    // combine here
+//                    // dau vao: cur_data[1,2,3]
+//                    // dau ra final: cur_data[0]
+//                    std::string temp = search_combine_plates(cur_data);
+
+//                    // return
+//                    cur_data[0] = temp;
+//                    track_vec[i].track_info.stringinfo = cur_data[0];
+
+//                    // update database
+//                    data.at(cur_track_id) = cur_data;
+//                }
+//                else
+//                {
+
+//                    std::string plate = getPlateString(frame, cpu_gray_frame, cpu_bgr_frame, track_vec[i]);
+////                    std::string time = FileController::get_time_stamp();
+////                    std::string imgFile = "plates/"+ time+"_"+plate+".png";
+////                    std::string lineLog = time + ";" + plate + ";" + imgFile;
+//                    if (!plate.empty())
+//                        cur_data.push_back(plate);
+//                    track_vec[i].track_info.stringinfo = cur_data.back(); // the last detected plate
+//                    // update database
+//                    data.at(cur_track_id) = cur_data;
+//                }
+//            }
+//		}
+//	}
+//}
+void PlateOCR::run(std::vector<bbox_t> & track_vec, const image_t &frame, const cv::Mat &cpu_gray_frame, const cv::Mat &cpu_bgr_frame, int max_info_read){
+    return;
+    //    printf("OCR run\r\n");
+    int count = 0;
+    for (int i=0; i< track_vec.size(); i++) {
+        // select object except bike pedestrian
         cv::Rect r(track_vec[i].x, track_vec[i].y, track_vec[i].w, track_vec[i].h);
-        if(std::find(wanted_class.begin(), wanted_class.end(), track_vec[i].obj_id) == wanted_class.end() || (r & searchRoi) == r)
-            continue;
-
-        unsigned int cur_track_id = track_vec[i].track_id;
-        if (!data.count(cur_track_id)) {
-            std::vector<std::string> current_data;
-            current_data.push_back(std::string());
-            // Do OCR
-            std::string plate = getPlateString(frame, cpu_gray_frame, cpu_bgr_frame, track_vec[i]);
-            if (!plate.empty()) {
-                current_data.push_back(plate);
-                // update database
-                data.insert(std::pair<int, std::vector<std::string>>(cur_track_id, current_data));
-            }
-            // return
-            track_vec[i].track_info.stringinfo = plate;
-        }
-		else {
-            // query the data at cur_track_id
-            auto cur_data = data.at(cur_track_id);
-            // check if final exists
-            if (!cur_data[0].empty())
-            {
-                track_vec[i].track_info.stringinfo = cur_data[0];
-            }
-            else {
-                if (cur_data.size() >= 4)
-                {
-                    // combine here
-                    // dau vao: cur_data[1,2,3]
-                    // dau ra final: cur_data[0]
-                    std::string temp = search_combine_plates(cur_data);
-
-                    // return
-                    cur_data[0] = temp;
-                    track_vec[i].track_info.stringinfo = cur_data[0];
-
-                    // update database
-                    data.at(cur_track_id) = cur_data;
-                }
-                else
-                {
-
-                    std::string plate = getPlateString(frame, cpu_gray_frame, cpu_bgr_frame, track_vec[i]);
-//                    std::string time = FileController::get_time_stamp();
-//                    std::string imgFile = "plates/"+ time+"_"+plate+".png";
-//                    std::string lineLog = time + ";" + plate + ";" + imgFile;
-                    if (!plate.empty())
-                        cur_data.push_back(plate);
-                    track_vec[i].track_info.stringinfo = cur_data.back(); // the last detected plate
-                    // update database
-                    data.at(cur_track_id) = cur_data;
-                }
-            }
-		}
-	}
+        std::string plate = getPlateString(frame, cpu_gray_frame, cpu_bgr_frame, track_vec[i]);
+        track_vec[i].track_info.stringinfo = plate;
+//        std::cout << count  << "[" <<plate << "]" <<std::endl;
+        count++;
+    }
 }
-
 bool isUpperCase(const char c)
 {
 	if((int)c >= 65 && (int)c <= 90)

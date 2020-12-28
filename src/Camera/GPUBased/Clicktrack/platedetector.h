@@ -2,7 +2,7 @@
 #define PLATEDETECTOR_H
 
 #include "../OD/yolo_v2_class.hpp"
-
+#define Detector YoloDetector
 class PlateDetector
 {
 	Detector* roi_detector;

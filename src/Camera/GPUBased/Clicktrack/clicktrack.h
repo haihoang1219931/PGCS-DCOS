@@ -10,7 +10,7 @@
 #define PLATE_RUNNING 2
 #define PLATE_FAIL    3
 #define PLATE_DETECTED 4
-
+#define Detector YoloDetector
 class ClickTrack
 {
     PlateDetector *m_plateDetector;

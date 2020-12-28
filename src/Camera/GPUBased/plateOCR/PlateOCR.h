@@ -6,6 +6,7 @@
 #include "../Clicktrack/recognition.h"
 #include "../Clicktrack/preprocessing.h"
 #include "../../Files/FileControler.h"
+#define Detector YoloDetector
 class PlateOCR
 {
 public:

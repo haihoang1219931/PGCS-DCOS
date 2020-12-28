@@ -47,7 +47,7 @@ class VDisplayWorker : public QObject
         void init();
         void drawDetectedObjects(cv::Mat &imgY,cv::Mat &imgU,cv::Mat &imgV,
                                  const std::vector<bbox_t> &m_listObj);
-        std::vector<std::string> objects_names_from_file(std::string const filename);
+        std::vector<std::string> readLabelNamesToMap(std::string const filename);
 
         index_type readBarcode(const cv::Mat &_rgbImg);
 
@@ -61,8 +61,9 @@ class VDisplayWorker : public QObject
         RollBuffer<GstFrameCacheItem> *m_gstRTSPBuff;
         RollBuffer<GstFrameCacheItem> *m_gstEOSavingBuff;
         RollBuffer<GstFrameCacheItem> *m_gstIRSavingBuff;
+        RollBuffer<DetectedObjectsCacheItem> *m_rbDetectedObjs;
         RollBuffer<DetectedObjectsCacheItem> *m_rbSearchObjs;
-        RollBuffer<DetectedObjectsCacheItem> *m_rbMOTObjs;
+//        RollBuffer<DetectedObjectsCacheItem> *m_rbMOTObjs;
         std::vector<std::string> m_objName;
         cv::Mat m_imgI420;
         cv::Mat m_imgI420Warped;

@@ -1,5 +1,5 @@
-#ifndef YOLO_V2_CLASS_HPP
-#define YOLO_V2_CLASS_HPP
+#ifndef YOLO_V3_CLASS_HPP
+#define YOLO_V3_CLASS_HPP
 
 #ifndef LIB_API
 #ifdef LIB_EXPORTS
@@ -20,11 +20,11 @@
 #include <string>
 #include <vector>
 
+
 struct track_info_t {
-    std::string stringinfo;
-    int age;
-    float prob;
-    bool found = false;
+	std::string stringinfo;
+	int age;
+	float prob;
 };
 
 
@@ -35,14 +35,14 @@ struct bbox_t {
     unsigned int track_id;         // tracking id for video (0 - untracked, 1 - inf - tracked object)
     unsigned int frames_counter;   // counter of frames on which the object was detected
     bool operator > (const bbox_t& other) const
-    {
-        return (w*h > other.w*other.h);
-    }
-    // track_info_t * track_info;
-    // bbox_t() {
-    // 	track_info = new track_info_t();
-    // }
-    track_info_t track_info;
+	{
+		return (w*h > other.w*other.h);
+	}
+	// track_info_t * track_info;
+	// bbox_t() {
+	// 	track_info = new track_info_t();
+	// }
+	track_info_t track_info;
 };
 
 struct image_t {
@@ -76,10 +76,17 @@ extern "C" {
 #ifdef GPU
 
 LIB_API void preprocess_RGBA(unsigned char* input, int in_h, int in_w, float*output, int out_h, int out_w);
+LIB_API void preprocess_NV12_hell(unsigned char* input, int in_h, int in_w, float*output, int out_h, int out_w);
+LIB_API void preprocess_RGB (unsigned char* input, int in_h, int in_w, float*output, int out_h, int out_w);
 LIB_API void preprocess_I420(unsigned char* input, int in_h, int in_w, float*output, int out_h, int out_w);
 LIB_API void getROI_blobed_gpu_RGBA(image_t in, image_t blob_resized, int roi_top, int roi_left, int roi_width, int roi_height);
+LIB_API void getROI_blobed_gpu_RGB (image_t in, image_t blob_resized, int roi_top, int roi_left, int roi_width, int roi_height);
 LIB_API void getROI_blobed_gpu_I420(image_t in, image_t blob_resized, int roi_top, int roi_left, int roi_width, int roi_height);
-//float *network_predict_gpu_custom(network net, float *device_input);
+LIB_API void preprocess_RGB_python (char* data, int in_h, int in_w, float*output, int out_h, int out_w);
+
+
+LIB_API image_t allocateImageOnDevice(int h, int w, int c, int type);
+LIB_API void copyHostToDevice(void* dst, void* src, int size);
 
 #endif
 #ifdef __cplusplus
@@ -88,28 +95,38 @@ LIB_API void getROI_blobed_gpu_I420(image_t in, image_t blob_resized, int roi_to
 
 #include <opencv2/opencv.hpp>
 
-class Detector
+class YoloDetector
 {
-    std::shared_ptr<void> detector_gpu_ptr;
-    float nms = 0.4f;
+	std::shared_ptr<void> detector_gpu_ptr;
+	float nms = 0.4f;
+	int m_batch_size;
 public:
-    LIB_API Detector(std::string cfg_filename, std::string weight_filename);
-    LIB_API ~Detector();
+	LIB_API YoloDetector(std::string cfg_filename, std::string weight_filename, int batch=1);
+	LIB_API ~YoloDetector();
 
-    LIB_API std::vector<bbox_t> gpu_detect_RGBA(image_t img, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
-    LIB_API std::vector<bbox_t> gpu_detect_roi_RGBA(image_t img, cv::Rect roi, float thresh = 0.2f, bool use_mean = false);
+	LIB_API std::vector<bbox_t> gpu_detect_RGBA(image_t img, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
+	LIB_API std::vector<bbox_t> gpu_detect_roi_RGBA(image_t img, cv::Rect roi, float thresh = 0.2f, bool use_mean = false);
 
-    LIB_API std::vector<bbox_t> gpu_detect_I420(image_t img, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
-    LIB_API std::vector<bbox_t> gpu_detect_roi_I420(image_t img, cv::Rect roi, float thresh = 0.2f, bool use_mean = false);
+	LIB_API std::vector<bbox_t> gpu_detect_I420(image_t img, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
+	LIB_API std::vector<bbox_t> gpu_detect_roi_I420(image_t img, cv::Rect roi, float thresh = 0.2f, bool use_mean = false);
+
+	LIB_API std::vector<bbox_t> gpu_detect_RGB(image_t img, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
+	LIB_API std::vector<bbox_t> gpu_detect_roi_RGB(image_t img, cv::Rect roi, float thresh = 0.2f, bool use_mean = false);
+
+	LIB_API std::vector<bbox_t> gpu_detect_NV12(image_t img, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
+	LIB_API std::vector<std::vector<bbox_t>> gpu_detect_batch_NV12(std::vector<image_t> imgs, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
+
+	LIB_API std::vector<bbox_t> gpu_detect_preprocessed(uchar* blobbed_data, int init_w, int init_h, float thresh = 0.2, bool use_mean = false);
 
 public:
-    LIB_API int get_net_height();
-    LIB_API int get_net_width();
-    LIB_API std::vector<bbox_t> gpu_detect_resized(image_t img, float thresh, bool use_mean);
+	LIB_API int get_net_height();
+	LIB_API int get_net_width();
+	LIB_API std::vector<bbox_t> gpu_detect_resized(image_t img, float thresh, bool use_mean);
+	LIB_API std::vector<std::vector<bbox_t>> gpu_detect_resized_batch(image_t img, float thresh, bool use_mean);
 private:
-    image_t blob_resized;
+	image_t blob_resized;
 };
 
 #endif    // __cplusplus
 
-#endif    // YOLO_V2_CLASS_HPP
+#endif    // YOLO_V3_CLASS_HPP
