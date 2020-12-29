@@ -1977,6 +1977,7 @@ ApplicationWindow {
             camState.defogMode = data["DEFOG"];
             camState.panPos = data["panPos"];
             camState.tiltPos = data["tiltPos"];
+            videoOverlay.updateCanvas();
             mapPane.drawTargetLocalization(
                         QtPositioning.coordinate(data["CORNER01"].x,data["CORNER01"].y),
                         QtPositioning.coordinate(data["CORNER02"].x,data["CORNER02"].y),

@@ -21,12 +21,16 @@ Item {
     property real zoomTarget: cameraController.gimbal.zoomTarget
     property real zoomCalculate
     property real pan: camState.panPos
-    property real tilt: camState.tiltPos
+    property real tilt: -camState.tiltPos
     property color drawColor: UIConstants.redColor
     property var itemListName:
         UIConstants.itemTextMultilanguages["VIDEO"]
     onZoomRatioChanged:{
         console.log("Overlay Zoom = "+zoomRatio);
+    }
+    function updateCanvas(){
+        cvsPan.requestPaint();
+        cvsTilt.requestPaint();
     }
 
     function loadVideo(isVideo){
@@ -262,7 +266,7 @@ Item {
                     var lineSize = 5;
                     var losSize = width /2 - lineSize*2;
                     var tiltDraw = tilt < 180?tilt:tilt-360;
-                    tiltDraw = 90 - tilt;
+                    tiltDraw = -tilt;
                     ctx.beginPath();
                     ctx.lineWidth = 1
                     // draw circle
@@ -351,9 +355,6 @@ Item {
                     ctx.beginPath();
                     //                    ctx.fillStyle = drawColor
                     ctx.moveTo(width/2,height/2)
-                    //                    ctx.arc(x, y, losSize,
-                    //                            (pan - hfov/2 - 90)/180*Math.PI,
-                    //                            (pan + hfov/2 - 90)/180*Math.PI, false)
                     ctx.lineTo(width/2+Math.cos((pan)/180*Math.PI)*losSize,
                                height/2+Math.sin((pan)/180*Math.PI)*losSize);
                     //            ctx.fill()

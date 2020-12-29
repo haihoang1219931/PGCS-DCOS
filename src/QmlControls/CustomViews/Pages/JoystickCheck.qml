@@ -63,7 +63,7 @@ Rectangle{
         Repeater {
             id:     axisMonitorRepeater
             width:  parent.width
-            model: joystick.axesConfig
+            model: joystick.axes
 
             delegate:Row {
                 id: rowAxis
