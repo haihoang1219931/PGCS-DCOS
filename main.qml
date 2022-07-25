@@ -2075,6 +2075,7 @@ ApplicationWindow {
         }
         if(FCSConfig.value("Settings:VehicleType:Value:data") !== ""){
             mapPane.changeVehicleType(parseInt(FCSConfig.value("Settings:VehicleType:Value:data")));
+            preflightCheck.changeVehicleType(parseInt(FCSConfig.value("Settings:VehicleType:Value:data")));
         }
 
         if(ApplicationConfig.value("Settings:Language:Value:data") !== "")

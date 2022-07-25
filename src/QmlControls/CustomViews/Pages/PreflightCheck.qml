@@ -45,6 +45,7 @@ Rectangle {
             sidebarGeneralConfigs.model.setProperty(3,"showed_",true);
             sidebarGeneralConfigs.model.setProperty(7,"showed_",true);
         }
+        loadCheckList();
     }
     function reload(){
         for(var i=0; i< sidebarGeneralConfigs.model.count; i++){
@@ -61,10 +62,12 @@ Rectangle {
         sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
                    text_: itemListName["PROPELLERS"]["MENU_TITTLE"]
                    [UIConstants.language[UIConstants.languageID]] });
-        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: rootItem.vehicleType != 2 &&
+                                                                       rootItem.vehicleType != 14,
                    text_: itemListName["STEERING"]["MENU_TITTLE"]
                    [UIConstants.language[UIConstants.languageID]] });
-        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: rootItem.vehicleType != 2 &&
+                                                                       rootItem.vehicleType != 14,
                    text_: itemListName["PITOT"]["MENU_TITTLE"]
                    [UIConstants.language[UIConstants.languageID]] });
         sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
@@ -76,7 +79,8 @@ Rectangle {
         sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
                    text_: itemListName["JOYSTICK"]["MENU_TITTLE"]
                    [UIConstants.language[UIConstants.languageID]] });
-        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
+        sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: rootItem.vehicleType != 2 &&
+                                                                       rootItem.vehicleType != 14,
                    text_: itemListName["RPM"]["MENU_TITTLE"]
                    [UIConstants.language[UIConstants.languageID]] });
         sidebarGeneralConfigs.model.append({state_: "uncheck",showed_: true,
