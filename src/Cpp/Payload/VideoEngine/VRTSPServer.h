@@ -10,7 +10,6 @@
 #include <iostream>
 #include <thread>
 #include <unistd.h>
-#include <opencv2/opencv.hpp>
 #include <string.h>
 #include <gst/app/gstappsrc.h>
 #include <gst/video/gstvideometa.h>

@@ -2,7 +2,7 @@
 #define PROCESSIMAGECACHEITEM_H
 
 #include "CacheItem.h"
-#include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
 #include <QObject>
 #include <vector>
 #include <iostream>

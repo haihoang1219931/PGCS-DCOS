@@ -7,6 +7,7 @@
 #include "Payload/Cache/TrackObject.h"
 #include "Payload/GimbalController/GimbalInterface.h"
 
+#include <opencv2/imgproc.hpp>
 #ifndef rad2Deg
 #define rad2Deg 57.2957795f
 #endif

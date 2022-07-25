@@ -22,7 +22,7 @@ CONFIG += use_utils
 
 CONFIG += use_flight_control
 
-CONFIG += use_ucapi
+#CONFIG += use_ucapi
 
 CONFIG += use_camera_control
 

@@ -9,7 +9,7 @@
 #include <gst/app/gstappsrc.h>
 #include <gst/gst.h>
 #include <iostream>
-#include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
