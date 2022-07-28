@@ -27,6 +27,7 @@ public:
     void setLockMode(QString mode, QPointF location = QPointF(0,0)) override;
     void setRecord(bool enable) override;
     void setShare(bool enable) override;
+    void setVehicle(Vehicle* vehicle) override;
 Q_SIGNALS:
 
 public Q_SLOTS:

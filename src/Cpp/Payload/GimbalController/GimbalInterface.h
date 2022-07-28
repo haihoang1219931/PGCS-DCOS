@@ -24,7 +24,7 @@ public:
     GimbalData* context(){ return m_context; }
     void setVideoEngine(VideoEngine* videoEngine);
 
-    virtual void setVehicle(Vehicle* vehicle);
+    Q_INVOKABLE virtual void setVehicle(Vehicle* vehicle);
 
     JoystickThreaded* joystick();
     virtual void setJoystick(JoystickThreaded* joystick);
@@ -125,6 +125,7 @@ protected:
     GimbalData* m_context = nullptr;
     VideoEngine* m_videoEngine = nullptr;
     bool m_isGimbalConnected = false;
+    Vehicle* m_vehicle = nullptr;
     Config* m_config = nullptr;
     JoystickThreaded*  m_joystick = nullptr;
     TargetLocalization* m_targetLocation = nullptr;

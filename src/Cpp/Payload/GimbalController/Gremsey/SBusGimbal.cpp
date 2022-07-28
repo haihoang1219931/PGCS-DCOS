@@ -303,6 +303,10 @@ void SBusGimbal::setShare(bool enable){
         m_videoEngine->setShare(m_context->m_gcsShare);
     }
 }
+void SBusGimbal::setVehicle(Vehicle *vehicle)
+{
+    m_vehicle = vehicle;
+}
 void SBusGimbal::sendQueryZoom(){
     m_sensor->sendRawData("0681090447FF");
 }

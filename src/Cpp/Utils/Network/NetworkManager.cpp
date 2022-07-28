@@ -64,7 +64,7 @@ void NetworkManager::reloadAddresses(){
                     system(multicast.toStdString().c_str());
                 }else if(hostString.length() >= 1 && hostInterface.at(0) == QChar('w')){
                     QString internet =  QString("echo ") + m_pass +
-                            QString(" | sudo -S ip route replace default via ")+
+                            QString(" | sudo -S cip route replace default via ")+
                             hostGateway + QString(" dev ") +
                             hostInterface + QString(" proto static &");
                     printf("%s\r\n",internet.toStdString().c_str());
