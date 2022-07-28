@@ -290,7 +290,7 @@ gboolean CVVideoCapture::gstreamer_pipeline_operate()
     std::string m_filename =  "flights/"+getFileNameByTime();
     std::string m_pipelineStr = m_source + std::string(" ! appsink name=mysink async=true sync=")+
         (QString::fromStdString(m_source).contains("filesrc")?std::string("true"):std::string("false"))+""
-//        " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4"
+        " t. ! queue ! mpegtsmux name=mux mux. ! filesink location="+m_filename+".mp4"
 //        " appsrc name=klvsrc ! mux. "
             ;
     std::cout << m_pipelineStr.c_str() << std::endl;
