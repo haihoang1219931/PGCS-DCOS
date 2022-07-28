@@ -333,6 +333,8 @@ void JoystickThreaded::changeAxisValue(int axisID, float value){
 //        qDebug("axisStateChanged %d value to %f\n", axisID, value);
         m_axesTemp[axisID]->setValue(value);
         m_axes[axisID]->setValue(value);
+        m_axesCamTemp[axisID]->setValue(value);
+        m_axesCam[axisID]->setValue(value);
         Q_EMIT axisValueChanged(axisID,value);
     }
 }
