@@ -22,6 +22,7 @@ public:
     int m_width = 0;
     int m_height = 0;
     float* m_warpMatrix = nullptr;
+    QRect m_drawPosition;
 };
 
 #endif // VIDEORENDER_H

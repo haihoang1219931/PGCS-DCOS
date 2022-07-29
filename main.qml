@@ -1254,6 +1254,7 @@ ApplicationWindow {
                                     confirmDialogObj.destroy();
                                     compo.destroy();
                                     footerBar.isShowConfirm = false;
+                                    mainWindow.hide();
                                     computer.quitApplication();
                                 }else if(func === "DIALOG_CANCEL"){
                                     confirmDialogObj.destroy();

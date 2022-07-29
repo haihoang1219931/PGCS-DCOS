@@ -57,8 +57,9 @@ I420Render::I420Render()
     idV = ids[2];
 }
 
-void I420Render::render(uchar *dataPtr, int w, int h,float *aWarpPtr)
+void I420Render::render(uchar *dataPtr, int w, int h,float *aWarpPtr, QRect drawPosition)
 {
+    glViewport(drawPosition.x(),drawPosition.y(),drawPosition.width(),drawPosition.height());
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);

@@ -115,6 +115,8 @@ public:
     // ptz
     float m_dx = -1;
     float m_dy = -1;
+    float m_w = -1;
+    float m_h = -1;
     float m_r = 1.0f;
     float m_scale = 1.0f;
     float m_zoomIR = 1.0f;

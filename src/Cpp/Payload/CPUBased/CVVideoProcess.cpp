@@ -213,7 +213,7 @@ void CVVideoProcess::doWork()
         gst_buffer_map(buf, &map, GST_MAP_READ);
         //        printf("map.size=%d\r\n", map.size);
         m_imgI420 = cv::Mat(height * 3 / 2 ,  map.size / height / 3 * 2, CV_8UC1, map.data);
-        if(m_imgI420Warped.rows <= 0 || m_imgI420Warped.cols <= 0){
+        if(m_imgI420Warped.rows != height * 3 / 2 || m_imgI420Warped.cols != map.size / height / 3 * 2){
             m_imgI420Warped = cv::Mat(height * 3 / 2 ,  map.size / height / 3 * 2, CV_8UC1);
             imgYWarped = cv::Mat(static_cast<int>(height), static_cast<int>(width), CV_8UC1, m_imgI420Warped.data);
             imgUWarped = cv::Mat(static_cast<int>(height/2), static_cast<int>(width/2), CV_8UC1, m_imgI420Warped.data + size_t(height * width));
@@ -225,13 +225,20 @@ void CVVideoProcess::doWork()
         m_grayFrame = cv::Mat(height,width,CV_8UC1,map.data);
         gst_buffer_unmap(buf, &map);
         gst_buffer_unref(buf);
-        start = std::chrono::high_resolution_clock::now();
+        start = std::chrono::high_resolution_clock::now();        
         if(!m_gimbal->context()->m_processOnBoard){
             //TODO: Perfrom tracking
-            float w = static_cast<float>(m_grayFrame.cols);
-            float h = static_cast<float>(m_grayFrame.rows);
-            if (m_dx < 0) m_dx = w/2;
-            if (m_dy < 0) m_dy = h/2;
+            if(static_cast<int>(m_w) != m_grayFrame.cols)
+            {
+                m_w = static_cast<float>(m_grayFrame.cols);
+                m_dx = m_w / 2;
+            }
+
+            if(static_cast<int>(m_h) != m_grayFrame.rows)
+            {
+                m_h = static_cast<float>(m_grayFrame.rows);
+                m_dy = m_h / 2;
+            }
             // handle command
             if(m_gimbal->context()->m_lockMode == "FREE"){
                 m_trackEnable = false;
@@ -239,11 +246,11 @@ void CVVideoProcess::doWork()
                      m_gimbal->context()->m_lockMode == "VISUAL"){
                 m_trackEnable = true;
                 if(!m_tracker->isInitialized()){
-                    setClick(w/2,h/2,w,h);
+                    setClick(m_w/2,m_h/2,m_w,m_h);
                 }
                 if(m_gimbal->context()->m_lockMode == "VISUAL"){
-                    if( h/2 > m_trackSize)
-                        m_trackSize = h/2;
+                    if( m_h/2 > m_trackSize)
+                        m_trackSize = m_h/2;
                 }else{
                     if(m_trackSizePrev != m_trackSize){
                         m_trackSize = m_trackSizePrev;
@@ -271,8 +278,8 @@ void CVVideoProcess::doWork()
                         cv::Rect trackRectTmp(lockPoint.x-m_trackSize/2,
                                               lockPoint.y-m_trackSize/2,
                                               m_trackSize,m_trackSize);
-                        if(trackRectTmp.x > 0 && trackRectTmp.x + trackRectTmp.width < w &&
-                                trackRectTmp.y > 0 && trackRectTmp.y + trackRectTmp.height < h){
+                        if(trackRectTmp.x > 0 && trackRectTmp.x + trackRectTmp.width < m_w &&
+                                trackRectTmp.y > 0 && trackRectTmp.y + trackRectTmp.height < m_h){
                             if(m_tracker->isInitialized()){
                                 m_tracker->resetTrack();
                             }
@@ -295,6 +302,7 @@ void CVVideoProcess::doWork()
                                 m_zoomIR = 1;
                             }
                             m_gimbal->context()->m_zoom[1]= m_zoomIR;
+                            Q_EMIT m_gimbal->zoomChanged();
                             //                        m_gimbal->context()->m_hfov[1] = atanf(
                             //                                    tan(m_gimbal->context()->m_hfovMax[1]/2/180*M_PI)/m_zoomIR
                             //                                )/M_PI*180*2;
@@ -321,14 +329,14 @@ void CVVideoProcess::doWork()
                         int deadSpace = 10;
                         if(trackRectTmp.x < deadSpace){
                             trackRectTmp.x = deadSpace;
-                        }else if(trackRectTmp.x + trackRectTmp.width > w - deadSpace){
-                            trackRectTmp.x = w - deadSpace - trackRectTmp.width;
+                        }else if(trackRectTmp.x + trackRectTmp.width > m_w - deadSpace){
+                            trackRectTmp.x = m_w - deadSpace - trackRectTmp.width;
                         }
 
                         if(trackRectTmp.y < deadSpace){
                             trackRectTmp.y = deadSpace;
-                        }else if(trackRectTmp.y + trackRectTmp.height > h - deadSpace){
-                            trackRectTmp.y = h - deadSpace - trackRectTmp.height;
+                        }else if(trackRectTmp.y + trackRectTmp.height > m_h - deadSpace){
+                            trackRectTmp.y = m_h - deadSpace - trackRectTmp.height;
                         }
 
                         if(m_tracker->isInitialized()){
@@ -363,8 +371,8 @@ void CVVideoProcess::doWork()
                                                static_cast<double>(m_trackRect.y),
                                                static_cast<double>(m_trackRect.width),
                                                static_cast<double>(m_trackRect.height),
-                                               static_cast<double>(w),
-                                               static_cast<double>(h));
+                                               static_cast<double>(m_w),
+                                               static_cast<double>(m_h));
                     }else{
                         Q_EMIT trackStateLost();
                     }
@@ -379,15 +387,15 @@ void CVVideoProcess::doWork()
             }
             if(m_stabEnable){
                 if(m_gimbal->context()->m_sensorID == 0){
-                    m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,1 * m_scale,m_rotationAlpha);
+                    m_ptzMatrix = createPtzMatrix(m_w,m_h,m_dx,m_dy,1 * m_scale,m_rotationAlpha);
                 }else{
-                    m_ptzMatrix = createPtzMatrix(w,h,m_dx,m_dy,m_zoomIR * m_scale,m_rotationAlpha);
+                    m_ptzMatrix = createPtzMatrix(m_w,m_h,m_dx,m_dy,m_zoomIR * m_scale,m_rotationAlpha);
                 }
             }else{
                 if(m_gimbal->context()->m_sensorID == 0){
-                    m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,1,m_rotationAlpha);
+                    m_ptzMatrix = createPtzMatrix(m_w,m_h,m_w/2,m_h/2,1,m_rotationAlpha);
                 }else{
-                    m_ptzMatrix = createPtzMatrix(w,h,w/2,h/2,m_zoomIR,m_rotationAlpha);
+                    m_ptzMatrix = createPtzMatrix(m_w,m_h,m_w/2,m_h/2,m_zoomIR,m_rotationAlpha);
                 }
             }
 

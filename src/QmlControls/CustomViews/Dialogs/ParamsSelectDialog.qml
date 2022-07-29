@@ -124,15 +124,4 @@ Rectangle {
             root.clicked(root.type,"DIALOG_CANCEL");
         }
     }
-//    Component.onCompleted: {
-//        console.log("Set Focus true");
-//        setFocus(true);
-//        if(vehicle !== null)
-//            gridView.model = vehicle.propertiesModel;
-//    }
 }
-
-/*##^## Designer {
-    D{i:2;anchors_height:0}
-}
- ##^##*/

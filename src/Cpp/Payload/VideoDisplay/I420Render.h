@@ -19,10 +19,9 @@ class I420Render : public QOpenGLFunctions
 {
 public:
     I420Render();
-    void render(uchar*i420ptr, int w, int h,float *affine_warp_ptr);
+    void render(uchar*i420ptr, int w, int h,float *affine_warp_ptr, QRect drawPosition);
 
 private:
-    QImage m_image;
     QOpenGLShaderProgram program;
     GLuint idY,idUV, idU, idV;
     QOpenGLBuffer vbo;

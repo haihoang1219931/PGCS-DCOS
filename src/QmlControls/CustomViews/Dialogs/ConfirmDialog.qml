@@ -98,7 +98,6 @@ Rectangle {
         }
     }
     Component.onCompleted: {
-        console.log("Set Focus true");
         setFocus(true)
     }
 }

@@ -18,11 +18,6 @@ CVVideoCapture::CVVideoCapture(QObject *parent) : QObject(parent)
 CVVideoCapture::~CVVideoCapture()
 {
     setStateRun(false);
-    //    GError* err = NULL;
-    //    GMainLoop *loop;
-    //    GstPipeline *pipeline;
-    //    GstElement *vsink;
-    //    GstElement* mPipeline;
 }
 gint64 CVVideoCapture::getTotalTime()
 {

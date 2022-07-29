@@ -48,6 +48,7 @@ Item{
     }
     VideoRender{
         id: videoOutput
+        anchors.fill: parent
     }
 
     MouseArea{

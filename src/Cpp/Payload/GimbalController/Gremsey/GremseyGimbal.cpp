@@ -365,8 +365,8 @@ void GremseyGimbal::setGimbalPreset(QString mode)
         }else{
             m_context->m_presetMode = mode;
         }
-
-        printf("%s from %s to %s\r\n",__func__,
+        if(m_context->m_presetMode != mode)
+            printf("%s from %s to %s\r\n",__func__,
                m_context->m_presetMode.toStdString().c_str(),
                mode.toStdString().c_str());
         if (mode.contains("OFF")) {
@@ -387,7 +387,6 @@ void GremseyGimbal::setGimbalMode(QString mode)
     if(m_vehicle != nullptr &&  m_vehicle->m_firmwarePlugin != nullptr)
     {
         m_vehicle->m_firmwarePlugin->setGimbalMode(mode);
-         printf("set preset mode \r\n");
     }
 }
 
