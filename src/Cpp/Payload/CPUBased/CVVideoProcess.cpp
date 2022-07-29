@@ -413,13 +413,13 @@ void CVVideoProcess::doWork()
             cv::Scalar color(100,100,100);
             double y,u,v;
             VideoEngine::convertRGB2YUV((double)color.val[0],(double)color.val[1],(double)color.val[2],y,u,v);
-            cv::warpAffine(imgY,imgYWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgY.cols,imgY.rows),cv::INTER_LINEAR,borderType,cv::Scalar(y));
+            cv::warpAffine(imgY,imgYWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgY.cols,imgY.rows),cv::INTER_NEAREST,borderType,cv::Scalar(y));
 
             warpMatrix.at<float>(0,2) = static_cast<float>(m_ptzMatrix.at<double>(0,2))/2;
             warpMatrix.at<float>(1,2) = static_cast<float>(m_ptzMatrix.at<double>(1,2))/2;
 
-            cv::warpAffine(imgU,imgUWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgU.cols,imgU.rows),cv::INTER_LINEAR,borderType,cv::Scalar(u));
-            cv::warpAffine(imgV,imgVWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgV.cols,imgV.rows),cv::INTER_LINEAR,borderType,cv::Scalar(v));
+            cv::warpAffine(imgU,imgUWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgU.cols,imgU.rows),cv::INTER_NEAREST,borderType,cv::Scalar(u));
+            cv::warpAffine(imgV,imgVWarped,warpMatrix(cv::Rect(0,0,3,2)),cv::Size(imgV.cols,imgV.rows),cv::INTER_NEAREST,borderType,cv::Scalar(v));
             // draw track
             warpMatrix.at<float>(0,2) = static_cast<float>(m_ptzMatrix.at<double>(0,2));
             warpMatrix.at<float>(1,2) = static_cast<float>(m_ptzMatrix.at<double>(1,2));
@@ -460,12 +460,12 @@ void CVVideoProcess::doWork()
             }
         }
         else{
-//            cv::cvtColor(m_i420Img, *m_imgShow, CV_YUV2BGRA_I420);
+            m_imgI420.copyTo(m_imgI420Warped);
         }
 
         Q_EMIT readyDrawOnRenderID(0,m_imgI420Warped.data,width,height,m_warpDataRender.data(),nullptr);
         Q_EMIT readyDrawOnRenderID(1,m_imgI420Warped.data,width,height,m_warpDataRender.data(),nullptr);
-//        if(false)
+        if(false)
         {
             if(m_sharedEnable && m_recordEnable){
                 GstBuffer *rtspImage = gst_buffer_new();
