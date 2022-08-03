@@ -384,7 +384,7 @@ void ArduCopterFirmware::setGimbalMove(float pan, float tilt)
     cmd.target_component =  MAV_COMP_ID_GIMBAL;
     cmd.command =           MAV_CMD_DO_MOUNT_CONTROL;
     cmd.confirmation =      true;
-    cmd.param1 =            static_cast<float>(tilt);
+    cmd.param1 =            static_cast<float>(-tilt);
     cmd.param2 =            static_cast<float>(0);
     cmd.param3 =            static_cast<float>(-pan);
     cmd.param7 =            static_cast<float>(MAV_MOUNT_MODE_MAVLINK_TARGETING);
